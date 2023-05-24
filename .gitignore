@@ -1,0 +1,14 @@
+*.class
+*.log
+*.db
+
+# Package Files #
+*.jar
+*.war
+*.ear
+.DS_Store/
+.svn/
+.idea/
+target/
+/.idea
+/GuttenBase.iml
