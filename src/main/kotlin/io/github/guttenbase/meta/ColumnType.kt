@@ -12,6 +12,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.sql.*
 import java.sql.Date
+import java.time.LocalDateTime
 import java.util.*
 
 /**
@@ -23,58 +24,43 @@ import java.util.*
  *
  * @author M. Dahm
  */
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 enum class ColumnType(vararg classes: Class<*>) {
     CLASS_UNKNOWN(Void::class.java),
-
     //
     CLASS_STRING(String::class.java),
-
     //
     CLASS_BIGDECIMAL(BigDecimal::class.java),
-
     //
     CLASS_BLOB(Blob::class.java),
-
     //
     CLASS_CLOB(Clob::class.java),
-
     //
     CLASS_SQLXML(SQLXML::class.java),
-
     //
     CLASS_OBJECT(Any::class.java, Serializable::class.java, Util.ByteArrayClass),
-
     //
     CLASS_DATE(Date::class.java),
-
     //
     CLASS_TIMESTAMP(Timestamp::class.java),
-
+    //
+    CLASS_DATETIME(LocalDateTime::class.java),
     //
     CLASS_TIME(Time::class.java),
-
     //
     CLASS_INTEGER(Int::class.java),
-
     //
     CLASS_BOOLEAN(Boolean::class.java),
-
     //
     CLASS_LONG(Long::class.java, BigInteger::class.java),
-
     //
     CLASS_DOUBLE(Double::class.java),
-
     //
     CLASS_FLOAT(Float::class.java),
-
     //
     CLASS_BYTE(Byte::class.javaPrimitiveType!!),
-
     //
     CLASS_BYTES(ByteArray::class.java),
-
     //
     CLASS_SHORT(Short::class.java);
 
@@ -114,6 +100,7 @@ enum class ColumnType(vararg classes: Class<*>) {
             CLASS_DATE -> resultSet.getDate(columnIndex)
             CLASS_SHORT -> resultSet.getShort(columnIndex)
             CLASS_TIME -> resultSet.getTime(columnIndex)
+            CLASS_DATETIME -> resultSet.getObject(columnIndex, LocalDateTime::class.java)
             CLASS_OBJECT -> resultSet.getObject(columnIndex)
             CLASS_BYTE -> resultSet.getByte(columnIndex)
             CLASS_BYTES -> resultSet.getBytes(columnIndex)
@@ -182,6 +169,7 @@ enum class ColumnType(vararg classes: Class<*>) {
             CLASS_FLOAT -> insertStatement.setFloat(columnIndex, (data as Float))
             CLASS_SHORT -> insertStatement.setShort(columnIndex, (data as Short))
             CLASS_TIME -> insertStatement.setTime(columnIndex, data as Time)
+            CLASS_DATETIME -> insertStatement.setObject(columnIndex, data)
             CLASS_OBJECT -> insertStatement.setObject(columnIndex, data)
             CLASS_BYTE -> insertStatement.setByte(columnIndex, data as Byte)
             CLASS_BYTES -> insertStatement.setBytes(columnIndex, data as ByteArray)
@@ -240,7 +228,7 @@ enum class ColumnType(vararg classes: Class<*>) {
          * Map class to [ColumnType].
          */
         fun valueOf(columnClass: Class<*>) = COLUMN_TYPES[columnClass]
-                ?: throw UnhandledColumnTypeException("Unhandled column class $columnClass")
+                ?: throw UnhandledColumnTypeException("Unhandled column class ${columnClass.name}")
 
         /**
          * Check if class can be mapped to [ColumnType].
