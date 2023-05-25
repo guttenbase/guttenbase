@@ -10,6 +10,6 @@ import io.github.guttenbase.meta.TableMetaData
  * for the given tables.
  */
 interface TableRowCountFilter {
-    fun accept(tableMetaData: TableMetaData): Boolean
-    fun defaultRowCount(tableMetaData: TableMetaData): Int
+  fun accept(tableMetaData: TableMetaData): Boolean
+  fun defaultRowCount(tableMetaData: TableMetaData): Int
 }

@@ -10,6 +10,6 @@ package io.github.guttenbase.meta
  *
  * @author M. Dahm
  */
-interface InternalForeignKeyMetaData : ForeignKeyMetaData {
-    fun addColumnTuple(referencingColumn: ColumnMetaData, referencedColumn: ColumnMetaData)
+internal interface InternalForeignKeyMetaData : ForeignKeyMetaData {
+  fun addColumnTuple(referencingColumn: ColumnMetaData, referencedColumn: ColumnMetaData)
 }

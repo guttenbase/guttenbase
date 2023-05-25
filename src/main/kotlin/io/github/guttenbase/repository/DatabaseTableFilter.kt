@@ -15,16 +15,16 @@ import io.github.guttenbase.meta.TableMetaData
  * @author M. Dahm
  */
 interface DatabaseTableFilter {
-    fun getCatalog(databaseMetaData: DatabaseMetaData): String
-    fun getSchema(databaseMetaData: DatabaseMetaData): String
-    fun getSchemaPattern(databaseMetaData: DatabaseMetaData): String
-    fun getTableNamePattern(databaseMetaData: DatabaseMetaData): String
-    fun getTableTypes(databaseMetaData: DatabaseMetaData): Array<String>
+  fun getCatalog(databaseMetaData: DatabaseMetaData): String
+  fun getSchema(databaseMetaData: DatabaseMetaData): String
+  fun getSchemaPattern(databaseMetaData: DatabaseMetaData): String
+  fun getTableNamePattern(databaseMetaData: DatabaseMetaData): String
+  fun getTableTypes(databaseMetaData: DatabaseMetaData): Array<String>
 
-    /**
-     * Additionally you may add checks to the resulting meta data object
-     *
-     * @return true if the table should be added the database meta data
-     */
-    fun accept(table: TableMetaData): Boolean
+  /**
+   * Additionally you may add checks to the resulting meta data object
+   *
+   * @return true if the table should be added the database meta data
+   */
+  fun accept(table: TableMetaData): Boolean
 }

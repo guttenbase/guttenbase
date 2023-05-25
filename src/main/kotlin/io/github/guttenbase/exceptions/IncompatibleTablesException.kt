@@ -12,7 +12,7 @@ import io.github.guttenbase.connector.GuttenBaseException
  * @author M. Dahm
  */
 class IncompatibleTablesException(reason: String) : GuttenBaseException(reason) {
-    companion object {
-        private const val serialVersionUID = 1L
-    }
+  companion object {
+    private const val serialVersionUID = 1L
+  }
 }

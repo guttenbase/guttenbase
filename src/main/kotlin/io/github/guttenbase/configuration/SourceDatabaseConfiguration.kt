@@ -16,27 +16,27 @@ import java.sql.SQLException
  * @author M. Dahm
  */
 interface SourceDatabaseConfiguration : DatabaseConfiguration {
-    /**
-     * Called before any real action is performed.
-     */
-    @Throws(SQLException::class)
-    fun initializeSourceConnection(connection: Connection, connectorId: String)
+  /**
+   * Called before any real action is performed.
+   */
+  @Throws(SQLException::class)
+  fun initializeSourceConnection(connection: Connection, connectorId: String)
 
-    /**
-     * Called after actions have been performed.
-     */
-    @Throws(SQLException::class)
-    fun finalizeSourceConnection(connection: Connection, connectorId: String)
+  /**
+   * Called after actions have been performed.
+   */
+  @Throws(SQLException::class)
+  fun finalizeSourceConnection(connection: Connection, connectorId: String)
 
-    /**
-     * Called before a SELECT clause is executed.
-     */
-    @Throws(SQLException::class)
-    fun beforeSelect(connection: Connection, connectorId: String, table: TableMetaData)
+  /**
+   * Called before a SELECT clause is executed.
+   */
+  @Throws(SQLException::class)
+  fun beforeSelect(connection: Connection, connectorId: String, table: TableMetaData)
 
-    /**
-     * Called after a SELECT clause is executed.
-     */
-    @Throws(SQLException::class)
-    fun afterSelect(connection: Connection, connectorId: String, table: TableMetaData)
+  /**
+   * Called after a SELECT clause is executed.
+   */
+  @Throws(SQLException::class)
+  fun afterSelect(connection: Connection, connectorId: String, table: TableMetaData)
 }

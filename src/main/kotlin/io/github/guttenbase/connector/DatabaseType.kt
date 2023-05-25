@@ -8,19 +8,19 @@ package io.github.guttenbase.connector
  * @author M. Dahm
  */
 enum class DatabaseType {
-    GENERIC,
-    MOCK,
-    EXPORT_DUMP,
-    IMPORT_DUMP,
-    MYSQL,
-    MARIADB,
-    POSTGRESQL,
-    MSSQL,
-    MS_ACCESS,
-    HSQLDB,
-    H2DB,
-    DERBY,
-    DB2,
-    SYBASE,
-    ORACLE
+  GENERIC,
+  MOCK,
+  EXPORT_DUMP,
+  IMPORT_DUMP,
+  MYSQL,
+  MARIADB,
+  POSTGRESQL,
+  MSSQL,
+  MS_ACCESS,
+  HSQLDB,
+  H2DB,
+  DERBY,
+  DB2,
+  SYBASE,
+  ORACLE
 }

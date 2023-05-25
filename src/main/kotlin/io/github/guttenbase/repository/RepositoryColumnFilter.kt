@@ -12,6 +12,6 @@ import io.github.guttenbase.meta.ColumnMetaData
  *
  * @author M. Dahm
  */
-interface RepositoryColumnFilter {
-    fun accept(column: ColumnMetaData): Boolean
+fun interface RepositoryColumnFilter {
+  fun accept(column: ColumnMetaData): Boolean
 }

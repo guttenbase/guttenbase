@@ -11,9 +11,9 @@ import io.github.guttenbase.meta.ColumnMetaData
  *
  * @author M. Dahm
  */
-interface DatabaseColumnFilter {
-    /**
-     * Perform custom check on column before adding it to table meta data
-     */
-    fun accept(columnMetaData: ColumnMetaData): Boolean
+fun interface DatabaseColumnFilter {
+  /**
+   * Perform custom check on column before adding it to table meta data
+   */
+  fun accept(columnMetaData: ColumnMetaData): Boolean
 }

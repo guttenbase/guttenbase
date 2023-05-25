@@ -20,73 +20,73 @@ import java.io.Serializable
  * @author M. Dahm
  */
 interface ConnectorRepository : Serializable {
-    /**
-     * Add connection info to repository with symbolic ID for data base such as "source db", e.g.
-     */
-    fun addConnectionInfo(connectorId: String, connectionInfo: ConnectorInfo)
+  /**
+   * Add connection info to repository with symbolic ID for data base such as "source db", e.g.
+   */
+  fun addConnectionInfo(connectorId: String, connectionInfo: ConnectorInfo)
 
-    /**
-     * Remove all information about connector
-     */
-    fun removeConnectionInfo(connectorId: String)
+  /**
+   * Remove all information about connector
+   */
+  fun removeConnectionInfo(connectorId: String)
 
-    /**
-     * Get connection info
-     */
-    fun getConnectionInfo(connectorId: String): ConnectorInfo
+  /**
+   * Get connection info
+   */
+  fun getConnectionInfo(connectorId: String): ConnectorInfo
 
-    /**
-     * Get all meta data from data base.
-     */
-    fun getDatabaseMetaData(connectorId: String): DatabaseMetaData
+  /**
+   * Get all meta data from data base.
+   */
+  fun getDatabaseMetaData(connectorId: String): DatabaseMetaData
 
-    /**
-     * Reset table data, i.e. it will be reread from the data base.
-     */
-    fun refreshDatabaseMetaData(connectorId: String)
+  /**
+   * Reset table data, i.e. it will be reread from the data base.
+   */
+  fun refreshDatabaseMetaData(connectorId: String)
 
-    /**
-     * Create connector
-     */
-    fun createConnector(connectorId: String): Connector
+  /**
+   * Create connector
+   */
+  fun createConnector(connectorId: String): Connector
 
-    /**
-     * Get configuration.
-     */
-    fun getSourceDatabaseConfiguration(connectorId: String): SourceDatabaseConfiguration
+  /**
+   * Get configuration.
+   */
+  fun getSourceDatabaseConfiguration(connectorId: String): SourceDatabaseConfiguration
 
-    /**
-     * Get configuration.
-     */
-    fun getTargetDatabaseConfiguration(connectorId: String): TargetDatabaseConfiguration
+  /**
+   * Get configuration.
+   */
+  fun getTargetDatabaseConfiguration(connectorId: String): TargetDatabaseConfiguration
 
-    /**
-     * Add configuration hint for connector.
-     */
-    fun <T> addConnectorHint(connectorId: String, hint: ConnectorHint<T>)
+  /**
+   * Add configuration hint for connector.
+   */
+  fun <T> addConnectorHint(connectorId: String, hint: ConnectorHint<T>)
 
-    /**
-     * Remove configuration hint for connector.
-     */
-    fun <T> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>)
+  /**
+   * Remove configuration hint for connector.
+   */
+  fun <T> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>)
 
-    /**
-     * Get configuration hint for connector.
-     */
-    fun <T> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T>
+  /**
+   * Get configuration hint for connector.
+   */
+  fun <T> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T>
 
-    /**
-     * Get all currently configured connector IDs.
-     */
-    val connectorIds: List<String>
+  /**
+   * Get all currently configured connector IDs.
+   */
+  val connectorIds: List<String>
 
-    /**
-     * Define configuration for given data base type when reading data.
-     */
-    fun addSourceDatabaseConfiguration(databaseType: DatabaseType, sourceDatabaseConfiguration: SourceDatabaseConfiguration)
+  /**
+   * Define configuration for given data base type when reading data.
+   */
+  fun addSourceDatabaseConfiguration(databaseType: DatabaseType, sourceDatabaseConfiguration: SourceDatabaseConfiguration)
 
-    /**
-     * Define configuration for given data base type when writing data.
-     */
-    fun addTargetDatabaseConfiguration(databaseType: DatabaseType, targetDatabaseConfiguration: TargetDatabaseConfiguration)
+  /**
+   * Define configuration for given data base type when writing data.
+   */
+  fun addTargetDatabaseConfiguration(databaseType: DatabaseType, targetDatabaseConfiguration: TargetDatabaseConfiguration)
 }

@@ -14,13 +14,13 @@ import java.sql.Connection
  * @author M. Dahm
  */
 interface DatabaseConfiguration {
-    /**
-     * Called before table is copied
-     */
-    fun beforeTableCopy(connection: Connection, connectorId: String, table: TableMetaData)
+  /**
+   * Called before table is copied
+   */
+  fun beforeTableCopy(connection: Connection, connectorId: String, table: TableMetaData)
 
-    /**
-     * Called after table has been copied
-     */
-    fun afterTableCopy(connection: Connection, connectorId: String, table: TableMetaData)
+  /**
+   * Called after table has been copied
+   */
+  fun afterTableCopy(connection: Connection, connectorId: String, table: TableMetaData)
 }

@@ -12,26 +12,26 @@ import java.sql.SQLException
  * @author M. Dahm
  */
 interface Connector : AutoCloseable {
-    /**
-     * Open connection or return existing connection
-     */
-    @Throws(SQLException::class)
-    fun openConnection(): Connection
+  /**
+   * Open connection or return existing connection
+   */
+  @Throws(SQLException::class)
+  fun openConnection(): Connection
 
-    /**
-     * Close connection if it exists and is open
-     */
-    @Throws(SQLException::class)
-    fun closeConnection()
+  /**
+   * Close connection if it exists and is open
+   */
+  @Throws(SQLException::class)
+  fun closeConnection()
 
-    /**
-     * Return information about database and tables
-     */
-    @Throws(SQLException::class)
-    fun retrieveDatabaseMetaData(): DatabaseMetaData
+  /**
+   * Return information about database and tables
+   */
+  @Throws(SQLException::class)
+  fun retrieveDatabaseMetaData(): DatabaseMetaData
 
-    @Throws(SQLException::class)
-    override fun close() {
-        closeConnection()
-    }
+  @Throws(SQLException::class)
+  override fun close() {
+    closeConnection()
+  }
 }

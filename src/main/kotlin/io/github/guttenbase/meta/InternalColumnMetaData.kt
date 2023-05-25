@@ -12,10 +12,10 @@ import java.util.*
  *
  * @author M. Dahm
  */
-interface InternalColumnMetaData : ColumnMetaData {
-    /**
-     * Make columns globally uniq since the name may not be uniq within the data base.
-     */
-    val columnId: UUID
-    fun setPrimaryKey(primaryKey: Boolean)
+internal interface InternalColumnMetaData : ColumnMetaData {
+  /**
+   * Make columns globally uniq since the name may not be uniq within the data base.
+   */
+  val columnId: UUID
+  override var isPrimaryKey: Boolean
 }

@@ -10,6 +10,6 @@ import io.github.guttenbase.meta.TableMetaData
  *
  * @author M. Dahm
  */
-interface RepositoryTableFilter {
-    fun accept(table: TableMetaData): Boolean
+fun interface RepositoryTableFilter {
+  fun accept(table: TableMetaData): Boolean
 }

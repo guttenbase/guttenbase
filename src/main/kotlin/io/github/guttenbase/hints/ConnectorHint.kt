@@ -9,6 +9,6 @@ package io.github.guttenbase.hints
  * @author M. Dahm
  */
 interface ConnectorHint<T> {
-    val connectorHintType: Class<T>
-    val value: T
+  val connectorHintType: Class<T>
+  val value: T
 }

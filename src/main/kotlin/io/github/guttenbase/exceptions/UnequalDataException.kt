@@ -12,7 +12,7 @@ import io.github.guttenbase.connector.GuttenBaseException
  * @see CheckEqualTableDataTool
  */
 class UnequalDataException(reason: String) : GuttenBaseException(reason) {
-    companion object {
-        private const val serialVersionUID = 1L
-    }
+  companion object {
+    private const val serialVersionUID = 1L
+  }
 }

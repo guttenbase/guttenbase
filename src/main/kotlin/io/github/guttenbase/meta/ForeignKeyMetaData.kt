@@ -13,10 +13,10 @@ import java.io.Serializable
  * @author M. Dahm
  */
 interface ForeignKeyMetaData : Comparable<ForeignKeyMetaData>, Serializable {
-    val foreignKeyName: String
-    val tableMetaData: TableMetaData
-    val referencingColumns: List<ColumnMetaData>
-    val referencedColumns: List<ColumnMetaData>
-    val referencingTableMetaData: TableMetaData
-    val referencedTableMetaData: TableMetaData
+  val foreignKeyName: String
+  val tableMetaData: TableMetaData
+  val referencingColumns: List<ColumnMetaData>
+  val referencedColumns: List<ColumnMetaData>
+  val referencingTableMetaData: TableMetaData
+  val referencedTableMetaData: TableMetaData
 }

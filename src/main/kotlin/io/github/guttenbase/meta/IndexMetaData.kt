@@ -12,10 +12,10 @@ import java.io.Serializable
  * @author M. Dahm
  */
 interface IndexMetaData : Comparable<IndexMetaData>, Serializable {
-    val indexName: String
-    val isAscending: Boolean
-    val isUnique: Boolean
-    val columnMetaData: List<ColumnMetaData>
-    val tableMetaData: TableMetaData
-    val isPrimaryKeyIndex: Boolean
+  val indexName: String
+  val isAscending: Boolean
+  val isUnique: Boolean
+  val columnMetaData: List<ColumnMetaData>
+  val tableMetaData: TableMetaData
+  val isPrimaryKeyIndex: Boolean
 }

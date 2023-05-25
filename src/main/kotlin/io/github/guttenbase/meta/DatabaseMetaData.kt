@@ -13,18 +13,18 @@ import java.sql.DatabaseMetaData
  * @author M. Dahm
  */
 interface DatabaseMetaData : Serializable {
-    val schema: String
-    val schemaPrefix: String
+  val schema: String
+  val schemaPrefix: String
 
-    /**
-     * Return tables list filtered by @see [RepositoryTableFilter]
-     */
-    val tableMetaData: List<TableMetaData>
-    fun getTableMetaData(tableName: String): TableMetaData
+  /**
+   * Return tables list filtered by @see [RepositoryTableFilter]
+   */
+  val tableMetaData: List<TableMetaData>
+  fun getTableMetaData(tableName: String): TableMetaData?
 
-    /**
-     * @return (cached) meta data
-     */
-    val databaseMetaData: DatabaseMetaData
-    val databaseType: DatabaseType
+  /**
+   * @return (cached) meta data
+   */
+  val databaseMetaData: DatabaseMetaData
+  val databaseType: DatabaseType
 }

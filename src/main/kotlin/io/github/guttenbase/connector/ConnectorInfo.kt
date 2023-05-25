@@ -11,28 +11,28 @@ import java.io.Serializable
  * @author M. Dahm
  */
 interface ConnectorInfo : Serializable {
-    /**
-     * @return Data base user
-     */
-    val user: String
+  /**
+   * @return Data base user
+   */
+  val user: String
 
-    /**
-     * @return Data base password
-     */
-    val password: String
+  /**
+   * @return Data base password
+   */
+  val password: String
 
-    /**
-     * @return Data base schema
-     */
-    val schema: String
+  /**
+   * @return Data base schema
+   */
+  val schema: String
 
-    /**
-     * @return Data base type
-     */
-    val databaseType: DatabaseType
+  /**
+   * @return Data base type
+   */
+  val databaseType: DatabaseType
 
-    /**
-     * Create connector
-     */
-    fun createConnector(connectorRepository: ConnectorRepository, connectorId: String): Connector
+  /**
+   * Create connector
+   */
+  fun createConnector(connectorRepository: ConnectorRepository, connectorId: String): Connector
 }

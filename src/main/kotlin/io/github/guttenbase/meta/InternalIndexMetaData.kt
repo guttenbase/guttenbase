@@ -9,5 +9,5 @@ package io.github.guttenbase.meta
  * @author M. Dahm
  */
 interface InternalIndexMetaData : IndexMetaData {
-    fun addColumn(columnMetaData: ColumnMetaData)
+  fun addColumn(columnMetaData: ColumnMetaData)
 }
