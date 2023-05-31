@@ -19,6 +19,7 @@ import kotlin.properties.ReadOnlyProperty
  * @author M. Dahm
  */
 object Util {
+  @JvmStatic
   private val LOG = LoggerFactory.getLogger(Util::class.java)
 
   val ByteArrayClass: Class<*> = ByteArray::class.java
@@ -127,9 +128,7 @@ object Util {
     return result
   }
 
-  fun trim(src: String?): String {
-    return src?.trim { it <= ' ' } ?: ""
-  }
+  fun trim(src: String?) = src?.trim { it <= ' ' } ?: ""
 
   /**
    * Create deep copy of object.

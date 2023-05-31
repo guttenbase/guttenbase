@@ -63,17 +63,17 @@ interface ConnectorRepository : Serializable {
   /**
    * Add configuration hint for connector.
    */
-  fun <T> addConnectorHint(connectorId: String, hint: ConnectorHint<T>)
+  fun <T : Any> addConnectorHint(connectorId: String, hint: ConnectorHint<T>)
 
   /**
    * Remove configuration hint for connector.
    */
-  fun <T> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>)
+  fun <T : Any> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>)
 
   /**
    * Get configuration hint for connector.
    */
-  fun <T> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T>
+  fun <T : Any> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T>
 
   /**
    * Get all currently configured connector IDs.

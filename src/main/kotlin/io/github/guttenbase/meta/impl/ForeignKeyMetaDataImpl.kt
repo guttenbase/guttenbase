@@ -69,6 +69,8 @@ class ForeignKeyMetaDataImpl(
 
   companion object {
     private const val serialVersionUID = 1L
+
+    @JvmStatic
     private val LOG = LoggerFactory.getLogger(ForeignKeyMetaDataImpl::class.java)
   }
 }

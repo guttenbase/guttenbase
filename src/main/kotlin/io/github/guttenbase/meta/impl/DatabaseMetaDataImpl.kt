@@ -4,6 +4,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.utils.Util
+import io.github.guttenbase.utils.Util.immutable
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.sql.DatabaseMetaData
@@ -33,7 +34,7 @@ class DatabaseMetaDataImpl(
 
   override val schemaPrefix: String get() = if (schema.isNotBlank()) "$schema." else ""
 
-  override val tableMetaData: List<TableMetaData> by Util.immutable(_tableMetaDataMap.values)
+  override val tableMetaData: List<TableMetaData> by immutable(_tableMetaDataMap.values)
 
   override fun getTableMetaData(tableName: String): TableMetaData? = _tableMetaDataMap[tableName.uppercase()]
 

@@ -15,10 +15,10 @@ import io.github.guttenbase.meta.TableMetaData
  * @author M. Dahm
  */
 interface DatabaseTableFilter {
-  fun getCatalog(databaseMetaData: DatabaseMetaData): String
-  fun getSchema(databaseMetaData: DatabaseMetaData): String
-  fun getSchemaPattern(databaseMetaData: DatabaseMetaData): String
-  fun getTableNamePattern(databaseMetaData: DatabaseMetaData): String
+  fun getCatalog(databaseMetaData: DatabaseMetaData): String?
+  fun getSchema(databaseMetaData: DatabaseMetaData): String?
+  fun getSchemaPattern(databaseMetaData: DatabaseMetaData): String?
+  fun getTableNamePattern(databaseMetaData: DatabaseMetaData): String?
   fun getTableTypes(databaseMetaData: DatabaseMetaData): Array<String>
 
   /**

@@ -8,7 +8,7 @@ package io.github.guttenbase.hints
  *
  * @author M. Dahm
  */
-interface ConnectorHint<T> {
+interface ConnectorHint<T : Any> {
   val connectorHintType: Class<T>
   val value: T
 }
