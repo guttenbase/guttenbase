@@ -13,15 +13,14 @@ import io.github.guttenbase.mapping.ColumnMapper
  *
  *
  *
- * Hint is used by [CheckEqualTableDataTool] to map columns
- * Hint is used by [de.akquinet.jbosscc.guttenbase.tools.schema.comparison.SchemaComparatorTool] to map columns
- * Hint is used by [AbstractTableCopyTool] to map columns
- * Hint is used by [AbstractStatementCreator] to map columns
+ * Hint is used by [io.github.guttenbase.tools.CheckEqualTableDataTool] to map columns
+ * Hint is used by [SchemaComparatorTool] to map columns
+ * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to map columns
+ * Hint is used by [io.github.guttenbase.statements.AbstractStatementCreator] to map columns
  *
  * @author M. Dahm
  */
-@Suppress("deprecation")
-abstract class ColumnMapperHint : ConnectorHint<ColumnMapper> {
+abstract class  ColumnMapperHint : ConnectorHint<ColumnMapper> {
   override val connectorHintType: Class<ColumnMapper>
     get() = ColumnMapper::class.java
 }

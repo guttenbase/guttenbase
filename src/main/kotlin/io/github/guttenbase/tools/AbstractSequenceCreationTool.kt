@@ -14,8 +14,8 @@ import java.sql.SQLException
  *
  *
  * @author M. Dahm
- * Uses [de.akquinet.jbosscc.guttenbase.hints.TableMapperHint]
- * Uses [de.akquinet.jbosscc.guttenbase.hints.EntityTableCheckerHint] to look for entity classes, i.e. classes that may use
+ * Uses [io.github.guttenbase.hints.TableMapperHint]
+ * Uses [io.github.guttenbase.hints.EntityTableCheckerHint] to look for entity classes, i.e. classes that may use
  * an ID sequence
  */
 @Suppress("MemberVisibilityCanBePrivate")
@@ -35,7 +35,7 @@ abstract class AbstractSequenceCreationTool(protected val connectorRepository: C
         val tableName: String = tableMapper.mapTableName(tableMetaData, tableMetaData.databaseMetaData)
         val sequenceName = getSequenceName(tableName)
 
-        updateClauses.addAll(getCreateSequenceClauses(tableName, getIdColumn(tableMetaData), sequenceName, start, incrementBy)!!)
+        updateClauses.addAll(getCreateSequenceClauses(tableName, getIdColumn(tableMetaData), sequenceName, start, incrementBy))
       }
     }
 

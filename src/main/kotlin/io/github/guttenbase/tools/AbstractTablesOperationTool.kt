@@ -15,7 +15,7 @@ import java.sql.SQLException
  *
  *
  * @author M. Dahm
- * Hint is used by [de.akquinet.jbosscc.guttenbase.hints.TableMapperHint]
+ * Hint is used by [io.github.guttenbase.hints.TableMapperHint]
  */
 abstract class AbstractTablesOperationTool(
   protected val connectorRepository: ConnectorRepository,
@@ -52,7 +52,7 @@ abstract class AbstractTablesOperationTool(
   /**
    * Override this method for specific tests
    */
-  fun isApplicableOnTable(tableMetaData: TableMetaData): Boolean = true
+  open fun isApplicableOnTable(tableMetaData: TableMetaData): Boolean = true
 
   companion object {
     const val TABLE_PLACEHOLDER = "@TABLE@"

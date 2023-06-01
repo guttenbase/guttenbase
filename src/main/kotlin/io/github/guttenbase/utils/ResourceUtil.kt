@@ -36,7 +36,7 @@ class ResourceUtil {
     return ResourceInfo(protocol, File(path), pathToClass)
   }
 
-  class ResourceInfo(val protocol: String, val jarFileOrFolder: File, val pathToClass: String) {
+  data class ResourceInfo(val protocol: String, val jarFileOrFolder: File, val pathToClass: String) {
     val isJarFile: Boolean
       get() = jarFileOrFolder.canRead() && jarFileOrFolder.isFile
 

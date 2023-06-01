@@ -119,7 +119,7 @@ constructor(
         }
       }
 
-      progressIndicator?.finalizeIndicator()
+      progressIndicator.finalizeIndicator()
     }
   }
 
@@ -207,9 +207,9 @@ constructor(
 
     if (statement.execute(sql)) {
       statement.resultSet.use { resultSet ->
-        readMapFromResultSet(statement.connection, resultSet, Command { _: Connection, map: Map<String, Any> ->
+        readMapFromResultSet(statement.connection, resultSet) { _: Connection, map: Map<String, Any> ->
           progressIndicator.info("Query result: $map")
-        })
+        }
       }
     } else {
       val updateCount = statement.updateCount

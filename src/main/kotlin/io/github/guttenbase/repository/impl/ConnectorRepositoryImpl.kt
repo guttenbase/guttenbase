@@ -7,8 +7,12 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.connector.DatabaseType.*
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.defaults.impl.DefaultColumnMapper
+import io.github.guttenbase.export.ExportDumpDatabaseConfiguration
+import io.github.guttenbase.export.ImportDumpDatabaseConfiguration
+import io.github.guttenbase.export.zip.DefaultZipExporterClassResourcesHint
 import io.github.guttenbase.hints.CaseConversionMode
 import io.github.guttenbase.hints.ConnectorHint
+import io.github.guttenbase.hints.impl.*
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalDatabaseMetaData
@@ -16,8 +20,6 @@ import io.github.guttenbase.meta.InternalTableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.RepositoryColumnFilter
 import io.github.guttenbase.repository.RepositoryTableFilter
-import io.github.guttenbase.repository.export.ExportDumpDatabaseConfiguration
-import io.github.guttenbase.repository.export.ImportDumpDatabaseConfiguration
 import io.github.guttenbase.utils.Util
 import java.sql.SQLException
 import java.util.*
@@ -30,7 +32,7 @@ import java.util.*
  *
  *
  * @author M. Dahm
- * Hint is used by [RepositoryTableFilterHint] when returning table metadata
+ * Hint is used by [io.github.guttenbase.hints.RepositoryTableFilterHint] when returning table metadata
  */
 class ConnectorRepositoryImpl : ConnectorRepository {
   private val connectionInfoMap = TreeMap<String, ConnectorInfo>()

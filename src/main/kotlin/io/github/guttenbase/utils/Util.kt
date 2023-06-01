@@ -184,6 +184,7 @@ object Util {
   fun copy(input: InputStream, output: OutputStream) {
     val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
     var n: Int
+
     while (input.read(buffer).also { n = it } > 0) {
       output.write(buffer, 0, n)
     }
@@ -198,30 +199,21 @@ object Util {
     return fillup(hours) + ":" + fillup(minutes) + ":" + fillup(seconds)
   }
 
-  fun deleteDirectory(directory: File?) {
-    assert(directory != null) { "directory != null" }
-    if (directory!!.exists() && directory.isDirectory) {
-      val files = directory.list()
+  fun deleteDirectory(directory: File) {
+    if (directory.exists() && directory.isDirectory) {
+      val files = directory.list()!!
+
       for (fileName in files) {
         val file = File(directory, fileName)
         deleteDirectory(file)
       }
     }
+
     directory.delete()
   }
 
   private fun fillup(time: Long): String {
     return if (time > 9) time.toString() else "0$time"
-  }
-
-  @Throws(IOException::class)
-  fun getStringFromStream(inputStream: InputStream): String {
-    val outputStream = ByteArrayOutputStream()
-    copy(inputStream, outputStream)
-    val result = outputStream.toString()
-    inputStream.close()
-    outputStream.close()
-    return result
   }
 
   val isWindows: Boolean
@@ -234,7 +226,7 @@ object Util {
    * @return uppercased list of columns in SELECT statement
    */
   fun parseSelectedColumns(sql: String): List<String> {
-    val result: MutableList<String> = ArrayList()
+    val result = ArrayList<String>()
     val stringTokenizer = StringTokenizer(sql, " ,\n\r\t")
 
     if (!"SELECT".equals(stringTokenizer.nextToken(), ignoreCase = true)) {

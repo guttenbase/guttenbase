@@ -15,5 +15,5 @@ import io.github.guttenbase.meta.TableMetaData
  * @author M. Dahm
  */
 interface RefreshTargetConnection {
-  fun refreshConnection(noCopiedTables: Int, sourceTableMetaData: TableMetaData): Boolean
+  fun refreshConnection(noCopiedTables: Int, sourceTableMetaData: TableMetaData): Boolean = false
 }
