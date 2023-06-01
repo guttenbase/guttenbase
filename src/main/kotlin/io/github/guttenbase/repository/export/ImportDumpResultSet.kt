@@ -1,12 +1,19 @@
 package io.github.guttenbase.repository.export
 
-import de.akquinet.jbosscc.guttenbase.defaults.impl.DefaultColumnComparator
+import io.github.guttenbase.defaults.impl.DefaultColumnComparator
+import io.github.guttenbase.exceptions.ImportException
+import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import java.io.InputStream
 import java.io.Reader
+import java.math.BigDecimal
 import java.net.URL
 import java.sql.*
 import java.sql.Array
+import java.sql.Date
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * Special [ResultSet] that reads data from the given stream. Only few inherited getter methods have a meaningful
@@ -19,159 +26,156 @@ import java.sql.Array
  * @author M. Dahm
  */
 class ImportDumpResultSet(
-  importer: Importer?,
-  databaseMetaData: DatabaseMetaData?,
-  tableMetaData: TableMetaData?,
+  private val importer: Importer,
+  databaseMetaData: DatabaseMetaData,
+  private val tableMetaData: TableMetaData,
   selectedColumns: List<String>
 ) : ResultSet {
-  private var _rowCount = 0
-  private val _importer: Importer?
-  private var _wasNull = false
-  private val _tableMetaData: TableMetaData?
+  private var rowCount = 0
+
+  private var wasNull = false
+
 
   /**
-   * Since _tableMetaData may contain a limited set of columns, but the dumped data contains all columns, we need to map the
+   * Since tableMetaData may contain a limited set of columns, but the dumped data contains all columns, we need to map the
    * indices.
    */
-  private val _columnIndexMap: MutableMap<Int, Int> = HashMap()
-  private val _currentRow: MutableList<Any> = ArrayList()
-  private val _origTableMetaData: TableMetaData?
+  private val columnIndexMap = HashMap<Int, Int>()
+  private val currentRow = ArrayList<Any?>()
+  private val origTableMetaData: TableMetaData
 
   init {
-    assert(importer != null) { "objectInputStream != null" }
-    assert(tableMetaData != null) { "tableMetaData != null" }
-    _importer = importer
-    _tableMetaData = tableMetaData
-    _origTableMetaData = databaseMetaData.getTableMetaData(tableMetaData.getTableName())
-    assert(_origTableMetaData != null) { "_origTableMetaData != null" }
+    origTableMetaData = databaseMetaData.getTableMetaData(tableMetaData.tableName)!!
     buildColumnIndexMap(selectedColumns)
   }
 
   private fun buildColumnIndexMap(selectedColumns: List<String>) {
-    val columnMetaData: List<ColumnMetaData> = _origTableMetaData.getColumnMetaData()
+    val columnMetaData = origTableMetaData.columnMetaData.sortedWith(DefaultColumnComparator())
 
-    // Use same ordering mechanism as defined by ColumnOrderHint
-    // TODO: We cannot ask the connector repository for the right hint here!
-    // Though it makes no sense, one could define another ColumnOrderHint for the
-    // dump source connector, which will cause unpredictable results then
-    columnMetaData.sort(DefaultColumnComparator())
     for (originalColumnIndex in columnMetaData.indices) {
-      val column: String = columnMetaData[originalColumnIndex].getColumnName().toUpperCase()
+      val column: String = columnMetaData[originalColumnIndex].columnName.uppercase()
       val columnIndex = selectedColumns.indexOf(column)
+
       if (columnIndex >= 0) {
-        _columnIndexMap[columnIndex + 1] = originalColumnIndex + 1
+        columnIndexMap[columnIndex + 1] = originalColumnIndex + 1
       }
     }
   }
 
   override fun next(): Boolean {
-    _currentRow.clear()
-    val hasNext: Boolean = _rowCount++ < _tableMetaData.getTotalRowCount()
+    currentRow.clear()
+
+    val hasNext: Boolean = rowCount++ < tableMetaData.totalRowCount
+
     if (hasNext) // Prefetch current row
     {
-      for (i in 0 until _origTableMetaData.getColumnCount()) {
-        _currentRow.add(readObject()!!)
+      for (i in 0 until origTableMetaData.columnCount) {
+        currentRow.add(readObject()!!)
       }
     }
+
     return hasNext
   }
 
-  override fun getObject(columnIndex: Int): Any {
-    val realIndex = _columnIndexMap[columnIndex]!!
-    val result = _currentRow[realIndex - 1]
-    _wasNull = result == null
+  override fun getObject(columnIndex: Int): Any? {
+    val realIndex = columnIndexMap[columnIndex]!!
+    val result = currentRow[realIndex - 1]
+
+    wasNull = result == null
+
     return result
   }
 
   private fun readObject(): Any? {
     return try {
-      _importer!!.readObject()
+      importer.readObject()
     } catch (e: Exception) {
       throw ImportException("readObject", e)
     }
   }
 
   override fun getBoolean(columnIndex: Int): Boolean {
-    val `object` = getObject(columnIndex) as Boolean
+    val `object` = getObject(columnIndex) as Boolean?
     return `object` != null && `object`
   }
 
   override fun getByte(columnIndex: Int): Byte {
-    val `object` = getObject(columnIndex) as Byte
+    val `object` = getObject(columnIndex) as Byte?
     return `object` ?: 0
   }
 
   override fun getShort(columnIndex: Int): Short {
-    val `object` = getObject(columnIndex) as Short
+    val `object` = getObject(columnIndex) as Short?
     return `object` ?: 0
   }
 
   override fun getInt(columnIndex: Int): Int {
-    val `object` = getObject(columnIndex) as Int
+    val `object` = getObject(columnIndex) as Int?
     return `object` ?: 0
   }
 
   override fun getLong(columnIndex: Int): Long {
-    val `object` = getObject(columnIndex) as Long
+    val `object` = getObject(columnIndex) as Long?
     return `object` ?: 0
   }
 
   override fun getFloat(columnIndex: Int): Float {
-    val `object` = getObject(columnIndex) as Float
-    return `object` ?: 0
+    val `object` = getObject(columnIndex) as Float?
+    return `object` ?: 0.0F
   }
 
   override fun getDouble(columnIndex: Int): Double {
-    val `object` = getObject(columnIndex) as Double
-    return `object` ?: 0
+    val `object` = getObject(columnIndex) as Double?
+    return `object` ?: 0.0
   }
 
-  override fun getBlob(columnIndex: Int): Blob {
-    return getObject(columnIndex) as Blob
+  override fun getBlob(columnIndex: Int): Blob? {
+    return getObject(columnIndex) as Blob?
   }
 
-  override fun getClob(columnIndex: Int): Clob {
-    return getObject(columnIndex) as Clob
+  override fun getClob(columnIndex: Int): Clob? {
+    return getObject(columnIndex) as Clob?
   }
 
-  override fun getSQLXML(columnIndex: Int): SQLXML {
-    return getObject(columnIndex) as SQLXML
+  override fun getSQLXML(columnIndex: Int): SQLXML? {
+    return getObject(columnIndex) as SQLXML?
   }
 
-  override fun getString(columnIndex: Int): String {
-    return getObject(columnIndex) as String
+  override fun getString(columnIndex: Int): String? {
+    return getObject(columnIndex) as String?
   }
 
-  override fun getBigDecimal(columnIndex: Int, scale: Int): BigDecimal {
+  @Deprecated("Deprecated in Java", replaceWith = ReplaceWith(""))
+  override fun getBigDecimal(columnIndex: Int, scale: Int): BigDecimal? {
     return getBigDecimal(columnIndex)
   }
 
-  override fun getBigDecimal(columnIndex: Int): BigDecimal {
-    return getObject(columnIndex) as BigDecimal
+  override fun getBigDecimal(columnIndex: Int): BigDecimal? {
+    return getObject(columnIndex) as BigDecimal?
   }
 
-  override fun getBytes(columnIndex: Int): ByteArray {
-    return getObject(columnIndex) as ByteArray
+  override fun getBytes(columnIndex: Int): ByteArray? {
+    return getObject(columnIndex) as ByteArray?
   }
 
-  override fun getDate(columnIndex: Int): Date {
-    return getObject(columnIndex) as Date
+  override fun getDate(columnIndex: Int): Date? {
+    return getObject(columnIndex) as Date?
   }
 
-  override fun getTime(columnIndex: Int): Time {
-    return getObject(columnIndex) as Time
+  override fun getTime(columnIndex: Int): Time? {
+    return getObject(columnIndex) as Time?
   }
 
-  override fun getTimestamp(columnIndex: Int): Timestamp {
-    return getObject(columnIndex) as Timestamp
+  override fun getTimestamp(columnIndex: Int): Timestamp? {
+    return getObject(columnIndex) as Timestamp?
   }
 
   override fun wasNull(): Boolean {
-    return _wasNull
+    return wasNull
   }
 
   override fun close() {
-    _currentRow.clear()
+    currentRow.clear()
   }
 
   override fun <T> unwrap(iface: Class<T>): T {
@@ -186,6 +190,7 @@ class ImportDumpResultSet(
     throw UnsupportedOperationException()
   }
 
+  @Deprecated("Deprecated in Java", replaceWith = ReplaceWith(""))
   override fun getUnicodeStream(columnIndex: Int): InputStream {
     throw UnsupportedOperationException()
   }
@@ -226,6 +231,7 @@ class ImportDumpResultSet(
     throw UnsupportedOperationException()
   }
 
+  @Deprecated("Deprecated in Java", replaceWith = ReplaceWith(""))
   override fun getBigDecimal(columnLabel: String, scale: Int): BigDecimal {
     throw UnsupportedOperationException()
   }
@@ -250,6 +256,7 @@ class ImportDumpResultSet(
     throw UnsupportedOperationException()
   }
 
+  @Deprecated("Deprecated in Java", replaceWith = ReplaceWith(""))
   override fun getUnicodeStream(columnLabel: String): InputStream {
     throw UnsupportedOperationException()
   }
@@ -327,7 +334,7 @@ class ImportDumpResultSet(
   }
 
   override fun getRow(): Int {
-    return _rowCount + 1
+    return rowCount + 1
   }
 
   override fun absolute(row: Int): Boolean {

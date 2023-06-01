@@ -16,6 +16,8 @@ import io.github.guttenbase.meta.InternalTableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.RepositoryColumnFilter
 import io.github.guttenbase.repository.RepositoryTableFilter
+import io.github.guttenbase.repository.export.ExportDumpDatabaseConfiguration
+import io.github.guttenbase.repository.export.ImportDumpDatabaseConfiguration
 import io.github.guttenbase.utils.Util
 import java.sql.SQLException
 import java.util.*

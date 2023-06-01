@@ -33,26 +33,28 @@ class ImportDumpConnector(
   override fun openConnection(): Connection {
     if (!connectionReady()) {
       try {
-        val importer: Importer = connectorRepository.getConnectorHint(connectorId, ImporterFactory::class.java).value
+        val importer = connectorRepository.getConnectorHint(connectorId, ImporterFactory::class.java).value
           .createImporter()
-        importer.initializeImport(_connectorRepository, _connectorId, importDumpConnectionInfo)
+        importer.initializeImport(connectorRepository, connectorId, importDumpConnectionInfo)
         databaseMetaData = importer.readDatabaseMetaData()
-        _connection = ImportDumpConnection(importer, databaseMetaData)
+        connection = ImportDumpConnection(importer, databaseMetaData)
       } catch (e: Exception) {
         throw ImportException("openConnection", e)
       }
     }
-    return _connection
+
+    return connection
   }
 
   /**
    * {@inheritDoc}
    */
   @Throws(SQLException::class)
-  fun retrieveDatabaseMetaData(): DatabaseMetaData? {
+  override fun retrieveDatabaseMetaData(): DatabaseMetaData {
     // Make sure the information is there
     openConnection()
     closeConnection()
+
     return databaseMetaData
   }
 }

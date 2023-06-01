@@ -51,7 +51,7 @@ class ExportDumpConnection( private val exporter: Exporter) : Connection {
    * Simply forwards call to [Exporter].
    */
   @Throws(ExportException::class)
-  fun finalizeWriteTableData(table: TableMetaData?) {
+  fun finalizeWriteTableData(table: TableMetaData) {
     try {
       exporter.finalizeWriteTableData(table)
     } catch (e: Exception) {
@@ -60,7 +60,7 @@ class ExportDumpConnection( private val exporter: Exporter) : Connection {
   }
 
   @Throws(ExportException::class)
-  fun initializeWriteRowData(table: TableMetaData?) {
+  fun initializeWriteRowData(table: TableMetaData) {
     try {
       exporter.initializeWriteRowData(table)
     } catch (e: Exception) {
@@ -69,7 +69,7 @@ class ExportDumpConnection( private val exporter: Exporter) : Connection {
   }
 
   @Throws(ExportException::class)
-  fun finalizeWriteRowData(table: TableMetaData?) {
+  fun finalizeWriteRowData(table: TableMetaData) {
     try {
       exporter.finalizeWriteRowData(table)
     } catch (e: Exception) {
@@ -136,7 +136,7 @@ class ExportDumpConnection( private val exporter: Exporter) : Connection {
     throw UnsupportedOperationException()
   }
 
-  override fun isWrapperFor(iface: Class<*>?): Boolean {
+  override fun isWrapperFor(iface: Class<*>): Boolean {
     throw UnsupportedOperationException()
   }
 
@@ -281,7 +281,7 @@ class ExportDumpConnection( private val exporter: Exporter) : Connection {
     throw UnsupportedOperationException()
   }
 
-  private fun writeTableHeader(tableMetaData: TableMetaData?) {
+  private fun writeTableHeader(tableMetaData: TableMetaData) {
     try {
       exporter.writeTableHeader(ExportTableHeaderImpl(tableMetaData))
     } catch (e: Exception) {

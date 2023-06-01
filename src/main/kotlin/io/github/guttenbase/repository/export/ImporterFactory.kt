@@ -9,5 +9,5 @@ package io.github.guttenbase.repository.export
  * @author M. Dahm
  */
 interface ImporterFactory {
-  fun createImporter(): Importer?
+  fun createImporter(): Importer
 }
