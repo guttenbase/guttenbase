@@ -18,6 +18,7 @@ import io.github.guttenbase.meta.TableMetaData
 class TableOrderTool {
   fun getOrderedTables(tableMetaData: List<TableMetaData>, topDown: Boolean): List<TableMetaData> {
     val tableNodes = createGraph(tableMetaData)
+
     return orderTables(tableNodes, topDown)
   }
 
