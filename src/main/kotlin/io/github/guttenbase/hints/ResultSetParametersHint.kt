@@ -12,7 +12,7 @@ import io.github.guttenbase.tools.ResultSetParameters
  * @author M. Dahm
  *
  *
- * Hint is used by [AbstractTableCopyTool] to determine number of VALUES clauses in INSERT statement or statements in batch update
+ * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to determine number of VALUES clauses in INSERT statement or statements in batch update
  */
 abstract class ResultSetParametersHint : ConnectorHint<ResultSetParameters> {
   override val connectorHintType: Class<ResultSetParameters>

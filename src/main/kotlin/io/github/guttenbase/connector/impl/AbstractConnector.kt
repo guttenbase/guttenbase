@@ -7,7 +7,6 @@ import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool
-import jdk.incubator.vector.VectorOperators.LOG
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.sql.Connection

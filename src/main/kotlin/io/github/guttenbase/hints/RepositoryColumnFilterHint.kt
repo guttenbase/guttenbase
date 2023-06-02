@@ -4,12 +4,12 @@ import io.github.guttenbase.repository.RepositoryColumnFilter
 
 
 /**
- * This filter is applied when @see [ConnectorRepository.getDatabaseMetaData] is called.
+ * This filter is applied when @see [io.github.guttenbase.repository.ConnectorRepository.getDatabaseMetaData] is called.
  *
  *  2012-2034 akquinet tech@spree
  *
  *
- * Hint is used by [ConnectorRepository.getDatabaseMetaData] when returning table meta data and their respective columns
+ * Hint is used by [io.github.guttenbase.repository.ConnectorRepository.getDatabaseMetaData] when returning table meta data and their respective columns
  *
  * @author M. Dahm
  */

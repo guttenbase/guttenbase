@@ -14,7 +14,7 @@ import io.github.guttenbase.mapping.ColumnMapper
  *
  *
  * Hint is used by [io.github.guttenbase.tools.CheckEqualTableDataTool] to map columns
- * Hint is used by [SchemaComparatorTool] to map columns
+ * Hint is used by [io.github.guttenbase.schema.comparison.SchemaComparatorTool] to map columns
  * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to map columns
  * Hint is used by [io.github.guttenbase.statements.AbstractStatementCreator] to map columns
  *

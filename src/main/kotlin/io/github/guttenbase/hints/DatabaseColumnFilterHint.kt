@@ -3,13 +3,13 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.repository.DatabaseColumnFilter
 
 /**
- * Regard which columns when @see [DatabaseMetaDataInspectorTool] is inquiring the database for columns?
+ * Regard which columns when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for columns?
  *
  *
  *  2012-2034 akquinet tech@spree
  *
  *
- * Hint is used by [DatabaseMetaDataInspectorTool] when reading tables from [DatabaseMetaData]
+ * Hint is used by [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] when reading tables from [io.github.guttenbase.meta.DatabaseMetaData]
  *
  * @author M. Dahm
  */

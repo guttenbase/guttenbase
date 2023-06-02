@@ -9,6 +9,6 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  * @author M. Dahm
  */
-class URLConnector(connectorRepository: ConnectorRepository, connectorId: String, urlConnectionInfo: URLConnectorInfo) :
+open class URLConnector(connectorRepository: ConnectorRepository, connectorId: String, urlConnectionInfo: URLConnectorInfo) :
   AbstractURLConnector(connectorRepository, connectorId, urlConnectionInfo) {
 }

@@ -9,10 +9,9 @@ import java.sql.Blob
 import java.sql.SQLException
 
 /**
- * Map BLOB object to String using given charset. Use in conjunction with [de.akquinet.jbosscc.guttenbase.defaults.impl.DefaultColumnDataMapperProvider]
+ * Map BLOB object to String using given charset. Use in conjunction with [io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider]
  *
  *  2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */

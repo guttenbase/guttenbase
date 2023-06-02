@@ -8,7 +8,6 @@ import io.github.guttenbase.mapping.ColumnOrderComparatorFactory
  * By default order by natural order of column names.
  *
  *
- *
  *  2012-2034 akquinet tech@spree
  *
  *

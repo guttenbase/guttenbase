@@ -13,7 +13,7 @@ import io.github.guttenbase.tools.RefreshTargetConnection
  * @author M. Dahm
  *
  *
- * Hint is used by [AbstractTableCopyTool] to determine table order
+ * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to determine table order
  */
 abstract class RefreshTargetConnectionHint : ConnectorHint<RefreshTargetConnection> {
   override val connectorHintType: Class<RefreshTargetConnection>

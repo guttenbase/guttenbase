@@ -15,7 +15,7 @@ import javax.sql.DataSource
  *
  * @author M. Dahm
  */
-data class DataSourceConnectorInfo(
+open class DataSourceConnectorInfo(
   val dataSource: DataSource,
   override val user: String,
   override val password: String,

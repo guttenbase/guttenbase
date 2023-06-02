@@ -8,7 +8,7 @@ import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
  *  2012-2034 akquinet tech@spree
  *
  *
- * Hint is used by [ScriptExecutorTool]
+ * Hint is used by [io.github.guttenbase.tools.ScriptExecutorTool]
  *
  * @author M. Dahm
  */

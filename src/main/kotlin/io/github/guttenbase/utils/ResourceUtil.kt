@@ -13,7 +13,7 @@ class ResourceUtil {
     var path = resource.path
     val protocol = resource.protocol
 
-    // file:/Users/mdahm/projects/workspace/GuttenBase/target/test-classes/de/akquinet/jbosscc/guttenbase/utils/ResourceUtilTest.class
+    // file:/Users/mdahm/projects/workspace/GuttenBase/target/test-classes/.../utils/ResourceUtilTest.class
     if ("file".equals(protocol, ignoreCase = true)) {
       path = resource.path.substring(0, path.length - pathToClass.length)
     } else if ("jar".equals(protocol, ignoreCase = true)) {

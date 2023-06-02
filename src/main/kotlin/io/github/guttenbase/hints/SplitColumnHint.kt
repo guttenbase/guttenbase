@@ -14,10 +14,10 @@ import io.github.guttenbase.tools.SplitColumn
  *  2012-2034 akquinet tech@spree
  *
  *
- * Hint is used by [SplitByColumnSelectCountStatementCreator]
- * Hint is used by [SplitByColumnSelectMinMaxStatementCreator]
- * Hint is used by [SplitByColumnSelectStatementCreator]
- * Hint is used by [SplitByRangeTableCopyTool]
+ * Hint is used by [io.github.guttenbase.statements.SplitByColumnSelectCountStatementCreator]
+ * Hint is used by [io.github.guttenbase.statements.SplitByColumnSelectMinMaxStatementCreator]
+ * Hint is used by [io.github.guttenbase.statements.SplitByColumnSelectStatementCreator]
+ * Hint is used by [io.github.guttenbase.tools.SplitByRangeTableCopyTool]
  *
  * @author M. Dahm
  */

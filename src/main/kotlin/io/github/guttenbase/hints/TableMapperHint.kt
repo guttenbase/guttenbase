@@ -8,13 +8,12 @@ import io.github.guttenbase.mapping.TableMapper
  *  2012-2034 akquinet tech@spree
  *
  *
- * Hint is used by [CheckEqualTableDataTool] to get according table
- * Hint is used by [SchemaComparatorTool] to get according table
- * Hint is used by [AbstractTableCopyTool] to get according table
+ * Hint is used by [io.github.guttenbase.tools.CheckEqualTableDataTool] to get according table
+ * Hint is used by [io.github.guttenbase.schema.comparison.SchemaComparatorTool] to get according table
+ * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to get according table
  *
  * @author M. Dahm
  */
-@Suppress("deprecation")
 abstract class TableMapperHint : ConnectorHint<TableMapper> {
   override val connectorHintType: Class<TableMapper>
     get() = TableMapper::class.java

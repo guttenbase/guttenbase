@@ -93,8 +93,7 @@ class SchemaScriptCreatorTool(
 
   fun createTable(tableMetaData: TableMetaData): String {
     val tableName = getTableName(tableMetaData)
-    return ("CREATE TABLE $tableName\n(\n" + tableMetaData.columnMetaData.joinToString(separator = ",\n",
-      transform = { "  " + createColumn(it) })) + "\n);"
+    return ("CREATE TABLE $tableName\n" + tableMetaData.columnMetaData.joinToString(newline = true) { "  " + createColumn(it) }) + ";"
   }
 
   private fun getTableName(tableMetaData: TableMetaData): String {
@@ -123,8 +122,8 @@ class SchemaScriptCreatorTool(
     val tableName: String = tableMapper.mapTableName(tableMetaData, targetDatabaseMetaData)
     val pkName = createConstraintName("PK_", tableName, "")
 
-    return "ALTER TABLE $qualifiedTableName ADD CONSTRAINT $pkName PRIMARY KEY (" + primaryKeyColumns.joinToString(
-      separator = ", ", transform = { columnMapper.mapColumnName(it, tableMetaData) }) + ");"
+    return "ALTER TABLE $qualifiedTableName ADD CONSTRAINT $pkName PRIMARY KEY " +
+        primaryKeyColumns.joinToString { columnMapper.mapColumnName(it, tableMetaData) } + ";"
   }
 
   private fun createIndex(indexMetaData: IndexMetaData, counter: Int): String {
@@ -150,10 +149,7 @@ class SchemaScriptCreatorTool(
 
     return ("CREATE" + unique + "INDEX " + indexName + " ON " + tableMapper.fullyQualifiedTableName(
       tableMetaData, targetDatabaseMetaData
-    )) +
-        " (" + indexMetaData.columnMetaData.joinToString(
-      separator = ", ",
-      transform = { columnMapper.mapColumnName(it, tableMetaData) }) + ");"
+    )) + indexMetaData.columnMetaData.joinToString { columnMapper.mapColumnName(it, tableMetaData) } + ";"
   }
 
   fun createForeignKey(foreignKeyMetaData: ForeignKeyMetaData): String {
@@ -162,12 +158,10 @@ class SchemaScriptCreatorTool(
     val tableMetaData: TableMetaData = foreignKeyMetaData.referencingTableMetaData
     val qualifiedTableName: String = tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)
     return (("ALTER TABLE " + qualifiedTableName + " ADD CONSTRAINT " + foreignKeyMetaData.foreignKeyName + " FOREIGN KEY "
-        + foreignKeyMetaData.referencingColumns.joinToString(separator = ", ", prefix = "(", postfix = ")",
-      transform = { getColumnName(it) })
+        + foreignKeyMetaData.referencingColumns.joinToString { getColumnName(it) }
         ) + " REFERENCES "
         + tableMapper.fullyQualifiedTableName(foreignKeyMetaData.referencedTableMetaData, targetDatabaseMetaData)
-        + foreignKeyMetaData.referencedColumns.joinToString(separator = ", ", prefix = "(", postfix = ")",
-      transform = { getColumnName(it) })) + ";"
+        + foreignKeyMetaData.referencedColumns.joinToString{ getColumnName(it) }) + ";"
   }
 
   private fun getColumnName(referencingColumn: ColumnMetaData): String {
@@ -202,6 +196,9 @@ class SchemaScriptCreatorTool(
     return builder.toString()
   }
 
+  fun addTableColumn(columnMetaData: ColumnMetaData) =
+    "ALTER TABLE " + getTableName(columnMetaData.tableMetaData) + " ADD " + createColumn(columnMetaData) + ";"
+
   fun createConstraintName(prefix: String, preferredName: String?, uniqueId: Any): String {
     val name = StringBuilder(preferredName)
     val maxLength = targetMaxNameLength - prefix.length - uniqueId.toString().length
@@ -233,8 +230,14 @@ class SchemaScriptCreatorTool(
     }
   }
 
-  fun createTableColumn(columnMetaData: ColumnMetaData) =
-    "ALTER TABLE " + getTableName(columnMetaData.tableMetaData) + " ADD " + createColumn(columnMetaData) + ";"
+  private fun List<ColumnMetaData>.joinToString(newline: Boolean = false, mapper: (ColumnMetaData) -> String): String {
+    val nl = if (newline) "\n" else ""
+
+    return joinToString(
+      separator = ", $nl", prefix = "($nl", postfix = "$nl)",
+      transform = mapper
+    )
+  }
 
   companion object {
     private val RANDOM = Random()

@@ -34,7 +34,7 @@ import java.util.*
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.RepositoryTableFilterHint] when returning table metadata
  */
-class ConnectorRepositoryImpl : ConnectorRepository {
+open class ConnectorRepositoryImpl : ConnectorRepository {
   private val connectionInfoMap = TreeMap<String, ConnectorInfo>()
   private val sourceDatabaseConfigurationMap = HashMap<DatabaseType, SourceDatabaseConfiguration>()
   private val targetDatabaseConfigurationMap = HashMap<DatabaseType, TargetDatabaseConfiguration>()

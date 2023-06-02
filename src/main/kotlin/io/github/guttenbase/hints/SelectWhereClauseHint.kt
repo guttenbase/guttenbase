@@ -11,8 +11,8 @@ import io.github.guttenbase.tools.SelectWhereClause
  * @author M. Dahm
  *
  *
- * Hint is used by [de.akquinet.jbosscc.guttenbase.tools.AbstractTableCopyTool]
- * Hint is used by [de.akquinet.jbosscc.guttenbase.repository.impl.DatabaseMetaDataInspectorTool]
+ * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool]
+ * Hint is used by [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool]
  */
 abstract class SelectWhereClauseHint : ConnectorHint<SelectWhereClause> {
   override val connectorHintType: Class<SelectWhereClause>

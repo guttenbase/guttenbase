@@ -13,7 +13,7 @@ import java.sql.SQLException
  *
  * @author M. Dahm
  */
-class DataSourceConnector(
+open class DataSourceConnector(
   connectorRepository: ConnectorRepository, connectorId: String,
   dataSourceConnectionInfo: DataSourceConnectorInfo
 ) : AbstractConnector(connectorRepository, connectorId, dataSourceConnectionInfo) {

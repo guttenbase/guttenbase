@@ -11,9 +11,9 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  *  2012-2034 akquinet tech@spree
  *
- * Hint is used by [SchemaComparatorTool] to determine table order
- * Hint is used by [AbstractTableCopyTool] to determine table order
- * Hint is used by [CheckEqualTableDataTool] to determine table order
+ * Hint is used by [io.github.guttenbase.schema.comparison.SchemaComparatorTool] to determine table order
+ * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to determine table order
+ * Hint is used by [io.github.guttenbase.tools.CheckEqualTableDataTool] to determine table order
  *
  * @author M. Dahm
  */

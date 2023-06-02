@@ -10,11 +10,10 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  * @author M. Dahm
  */
-data class URLConnectorInfoImpl(
+open class URLConnectorInfoImpl(
   override val url: String, override val user: String, override val password: String, override val driver: String,
   override val schema: String, override val databaseType: DatabaseType
 ) : URLConnectorInfo {
-
   /**
    * {@inheritDoc}
    */

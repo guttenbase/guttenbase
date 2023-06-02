@@ -8,7 +8,7 @@ import io.github.guttenbase.tools.MaxNumberOfDataItems
  *
  *  2012-2034 akquinet tech@spree
  *
- * Hint is used by [AbstractTableCopyTool] to determine maximum number of data items in INSERT statement
+ * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to determine maximum number of data items in INSERT statement
  *
  * @author M. Dahm
  */

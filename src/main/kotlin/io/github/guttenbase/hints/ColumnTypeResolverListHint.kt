@@ -8,12 +8,12 @@ import io.github.guttenbase.mapping.ColumnTypeResolverList
  *
  *  2012-2034 akquinet tech@spree
  *
- * Hint is used by [CommonColumnTypeResolverTool] to determine mapping strategies between different column types
+ * Hint is used by [io.github.guttenbase.tools.CommonColumnTypeResolverTool] to determine mapping strategies between different column types
  *
  * @author M. Dahm
- * @see ClassNameColumnTypeResolver
+ * @see io.github.guttenbase.repository.impl.ClassNameColumnTypeResolver
  *
- * @see HeuristicColumnTypeResolver
+ * @see io.github.guttenbase.repository.impl.HeuristicColumnTypeResolver
  */
 abstract class ColumnTypeResolverListHint : ConnectorHint<ColumnTypeResolverList> {
   override val connectorHintType: Class<ColumnTypeResolverList>

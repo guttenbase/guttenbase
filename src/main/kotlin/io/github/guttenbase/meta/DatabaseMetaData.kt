@@ -17,7 +17,7 @@ interface DatabaseMetaData : Serializable {
   val schemaPrefix: String
 
   /**
-   * Return tables list filtered by @see [RepositoryTableFilter]
+   * Return tables list filtered by @see [io.github.guttenbase.repository.RepositoryTableFilter]
    */
   val tableMetaData: List<TableMetaData>
   fun getTableMetaData(tableName: String): TableMetaData?
