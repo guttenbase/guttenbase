@@ -21,7 +21,7 @@ import java.sql.SQLException
  * @author M. Dahm
  * Hint is used by [TableOrderHint] to determine order of tables
  */
-class DropTablesTool @JvmOverloads constructor(
+open class DropTablesTool @JvmOverloads constructor(
   val connectorRepository: ConnectorRepository,
   private val dropTablesSuffix: String = ""
 ) {

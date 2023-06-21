@@ -14,6 +14,7 @@ import java.util.*
  * @author M. Dahm
  */
 class ColumnMetaDataImpl(
+  override val tableMetaData: TableMetaData,
   override val columnType: Int,
   override val columnName: String,
   override val columnTypeName: String,
@@ -21,8 +22,7 @@ class ColumnMetaDataImpl(
   override val isNullable: Boolean,
   override val isAutoIncrement: Boolean,
   override val precision: Int,
-  override val scale: Int,
-  override val tableMetaData: TableMetaData
+  override val scale: Int
 ) : InternalColumnMetaData {
   /**
    * {@inheritDoc}

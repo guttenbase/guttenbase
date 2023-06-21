@@ -13,7 +13,7 @@ import io.github.guttenbase.mapping.DefaultColumnTypeMapper
  *
  * @author M. Dahm
  */
-class DefaultColumnTypeMapperHint : ColumnTypeMapperHint() {
+open class DefaultColumnTypeMapperHint : ColumnTypeMapperHint() {
   override val value: ColumnTypeMapper
     get() = DefaultColumnTypeMapper()
 }

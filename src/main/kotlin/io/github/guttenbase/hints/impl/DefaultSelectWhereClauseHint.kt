@@ -13,7 +13,7 @@ import io.github.guttenbase.tools.SelectWhereClause
  *
  * @author M. Dahm
  */
-class DefaultSelectWhereClauseHint : SelectWhereClauseHint() {
+open class DefaultSelectWhereClauseHint : SelectWhereClauseHint() {
  override val value: SelectWhereClause
     get() = SelectWhereClause { "" }
 }

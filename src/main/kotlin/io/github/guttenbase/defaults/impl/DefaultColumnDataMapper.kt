@@ -14,6 +14,6 @@ import io.github.guttenbase.meta.ColumnMetaData
  *
  * @author M. Dahm
  */
-class DefaultColumnDataMapper : ColumnDataMapper {
+open class DefaultColumnDataMapper : ColumnDataMapper {
   override fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?): Any? = value
 }

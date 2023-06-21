@@ -1,4 +1,4 @@
-@file:Suppress("MemberVisibilityCanBePrivate")
+@file:JvmName("Util")
 
 package io.github.guttenbase.utils
 
@@ -18,6 +18,7 @@ import kotlin.properties.ReadOnlyProperty
  *
  * @author M. Dahm
  */
+@Suppress("MemberVisibilityCanBePrivate")
 object Util {
   @JvmStatic
   private val LOG = LoggerFactory.getLogger(Util::class.java)
@@ -35,6 +36,7 @@ object Util {
    * @param resourceName Text file in CLASSPATH
    * @return array of strings
    */
+  @JvmStatic
   fun readLinesFromFile(resourceName: String, encoding: String): List<String> {
     val stream = getResourceAsStream(resourceName)
 
@@ -46,6 +48,7 @@ object Util {
     }
   }
 
+  @JvmStatic
   fun getResourceAsStream(resource: String): InputStream? {
     val stripped = if (resource.startsWith("/")) resource.substring(1) else resource
     val classLoader = Thread.currentThread().contextClassLoader
@@ -107,17 +110,18 @@ object Util {
    * @param inputStream UTF8-encoded stream to read data from
    * @return list of strings
    */
+  @JvmStatic
   fun readLinesFromStream(inputStream: InputStream, encoding: String): List<String> {
     val result = ArrayList<String>()
 
     try {
       val reader = LineNumberReader(InputStreamReader(inputStream, encoding))
-      var line: String
+      var line: String?
 
       while (reader.readLine().also { line = it } != null) {
         line = trim(line)
         if ("" != line) {
-          result.add(line)
+          result.add(line!!)
         }
       }
       inputStream.close()
@@ -128,11 +132,13 @@ object Util {
     return result
   }
 
+  @JvmStatic
   fun trim(src: String?) = src?.trim { it <= ' ' } ?: ""
 
   /**
    * Create deep copy of object.
    */
+  @JvmStatic
   fun <T : Any> copyObject(clazz: Class<T>, sourceObject: T): T {
     return try {
       val byteArray = toByteArray(sourceObject)
@@ -146,7 +152,8 @@ object Util {
    * Serialize into byte array
    */
   @Throws(IOException::class)
-  fun toByteArray(sourceObject: Any): ByteArray {
+  @JvmStatic
+  internal fun toByteArray(sourceObject: Any): ByteArray {
     val outStream = ByteArrayOutputStream()
     val out: ObjectOutput = ObjectOutputStream(outStream)
 
@@ -162,6 +169,7 @@ object Util {
    * @throws Exception
    */
   @Throws(Exception::class)
+  @JvmStatic
   fun <T : Any> fromByteArray(clazz: Class<T>, byteArray: ByteArray): T {
     val bis = ByteArrayInputStream(byteArray)
     val objectInputStream = ObjectInputStream(bis)
@@ -174,12 +182,14 @@ object Util {
    *
    * @throws Exception
    */
+  @JvmStatic
   @Throws(Exception::class)
-  fun <T> fromInputStream(clazz: Class<T>, inputStream: InputStream?): T {
+  internal fun <T> fromInputStream(clazz: Class<T>, inputStream: InputStream?): T {
     val objectInputStream = ObjectInputStream(inputStream)
     return clazz.cast(objectInputStream.readObject())
   }
 
+  @JvmStatic
   @Throws(IOException::class)
   fun copy(input: InputStream, output: OutputStream) {
     val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
@@ -190,15 +200,18 @@ object Util {
     }
   }
 
-  fun formatTime(millis: Long): String {
+  @JvmStatic
+  internal fun formatTime(millis: Long): String {
     var seconds = millis / 1000
     var minutes = seconds / 60
     val hours = minutes / 60
-    minutes = minutes % 60
-    seconds = seconds % 60
+    minutes %= 60
+    seconds %= 60
+
     return fillup(hours) + ":" + fillup(minutes) + ":" + fillup(seconds)
   }
 
+  @JvmStatic
   fun deleteDirectory(directory: File) {
     if (directory.exists() && directory.isDirectory) {
       val files = directory.list()!!
@@ -225,6 +238,7 @@ object Util {
   /**
    * @return uppercased list of columns in SELECT statement
    */
+  @JvmStatic
   fun parseSelectedColumns(sql: String): List<String> {
     val result = ArrayList<String>()
     val stringTokenizer = StringTokenizer(sql, " ,\n\r\t")

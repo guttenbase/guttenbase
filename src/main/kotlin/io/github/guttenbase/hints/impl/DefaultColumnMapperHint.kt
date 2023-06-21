@@ -11,7 +11,7 @@ import io.github.guttenbase.mapping.ColumnMapper
  *
  * @author M. Dahm
  */
-class DefaultColumnMapperHint(private val columnMapper: ColumnMapper) : ColumnMapperHint() {
+open class DefaultColumnMapperHint(private val columnMapper: ColumnMapper) : ColumnMapperHint() {
   override val value: ColumnMapper
     get() = columnMapper
 }

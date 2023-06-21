@@ -7,7 +7,7 @@ import io.github.guttenbase.repository.DatabaseTableFilter
 import io.github.guttenbase.utils.Util
 
 
-class DefaultDatabaseTableFilter : DatabaseTableFilter {
+open class DefaultDatabaseTableFilter : DatabaseTableFilter {
   override fun getCatalog(databaseMetaData: DatabaseMetaData): String? {
     return when (databaseMetaData.databaseType) {
       MARIADB, MYSQL -> databaseMetaData.schema

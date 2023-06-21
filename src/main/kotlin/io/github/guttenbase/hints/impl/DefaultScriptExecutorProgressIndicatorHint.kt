@@ -13,7 +13,7 @@ import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
  *
  * @author M. Dahm
  */
-class DefaultScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
+open class DefaultScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
  override val value: ScriptExecutorProgressIndicator
     get() = LoggingScriptExecutorProgressIndicator()
 }

@@ -12,7 +12,7 @@ import io.github.guttenbase.tools.NumberOfCheckedTableData
  *
  * @author M. Dahm
  */
-class DefaultNumberOfCheckedTableDataHint : NumberOfCheckedTableDataHint() {
+open class DefaultNumberOfCheckedTableDataHint : NumberOfCheckedTableDataHint() {
  override val value: NumberOfCheckedTableData
     get() = object : NumberOfCheckedTableData {
       override val numberOfCheckedTableData: Int

@@ -18,7 +18,7 @@ import io.github.guttenbase.tools.SplitColumn
  *
  * @author M. Dahm
  */
-class DefaultSplitColumn : SplitColumn {
+open class DefaultSplitColumn : SplitColumn {
   override fun getSplitColumn(table: TableMetaData): ColumnMetaData {
     val columnMetaData1 = table.columnMetaData.firstOrNull { it.isPrimaryKey }
     val columnMetaData2 by lazy {

@@ -65,7 +65,7 @@ abstract class AbstractConnector(
     return databaseMetaData
   }
 
-  protected fun connectionReady() = this::connection.isInitialized || connection.isClosed
+  protected fun connectionReady() = this::connection.isInitialized && !connection.isClosed
 
   companion object {
     @JvmStatic

@@ -20,7 +20,6 @@ import io.github.guttenbase.meta.InternalTableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.RepositoryColumnFilter
 import io.github.guttenbase.repository.RepositoryTableFilter
-import io.github.guttenbase.utils.Util
 import java.sql.SQLException
 import java.util.*
 
@@ -42,10 +41,10 @@ open class ConnectorRepositoryImpl : ConnectorRepository {
   /**
    * Cache metadata since some databases are very slow on retrieving it.
    */
-  private val databaseMetaDataMap = HashMap<String, DatabaseMetaData>()
+  private val databaseMetaDataMap = HashMap<String, InternalDatabaseMetaData>()
   private val connectionHintMap = HashMap<String, MutableMap<Class<*>, ConnectorHint<*>>>()
 
-  override val connectorIds: List<String> by Util.immutable(connectionInfoMap.keys)
+  override val connectorIds: List<String> get() = ArrayList(connectionInfoMap.keys)
 
   init {
     initDefaultConfiguration()
@@ -107,16 +106,17 @@ open class ConnectorRepositoryImpl : ConnectorRepository {
    */
   override fun getDatabaseMetaData(connectorId: String): DatabaseMetaData {
     return try {
-      var databaseMetaData = databaseMetaDataMap[connectorId]
+      var databaseMetaData: InternalDatabaseMetaData? = databaseMetaDataMap[connectorId]
 
       if (databaseMetaData == null) {
         val connector = createConnector(connectorId)
 
-        databaseMetaData = connector.retrieveDatabaseMetaData()
-        databaseMetaDataMap[connectorId] = databaseMetaData
+        databaseMetaData = connector.retrieveDatabaseMetaData() as InternalDatabaseMetaData
+
+        databaseMetaDataMap[connectorId] = databaseMetaData.withFilteredTables(connectorId)
       }
 
-      createResultWithFilteredTables(connectorId, databaseMetaData)
+      databaseMetaData
     } catch (e: SQLException) {
       throw GuttenBaseException("getDatabaseMetaData", e)
     }
@@ -180,13 +180,11 @@ open class ConnectorRepositoryImpl : ConnectorRepository {
       ?: throw IllegalStateException("Unhandled target connector data base type: $databaseType")
   }
 
-  private fun createResultWithFilteredTables(connectorId: String, databaseMetaData: DatabaseMetaData): DatabaseMetaData {
-    val resultDatabaseMetaData =
-      Util.copyObject(InternalDatabaseMetaData::class.java, databaseMetaData as InternalDatabaseMetaData)
+  private fun InternalDatabaseMetaData.withFilteredTables(connectorId: String): InternalDatabaseMetaData {
     val tableFilter: RepositoryTableFilter = getConnectorHint(connectorId, RepositoryTableFilter::class.java).value
     val columnFilter: RepositoryColumnFilter = getConnectorHint(connectorId, RepositoryColumnFilter::class.java).value
 
-    for (tableMetaData in resultDatabaseMetaData.tableMetaData) {
+    for (tableMetaData in tableMetaData) {
       if (tableFilter.accept(tableMetaData)) {
         for (columnMetaData in tableMetaData.columnMetaData) {
           if (!columnFilter.accept(columnMetaData)) {
@@ -194,11 +192,11 @@ open class ConnectorRepositoryImpl : ConnectorRepository {
           }
         }
       } else {
-        resultDatabaseMetaData.removeTableMetaData(tableMetaData)
+        removeTableMetaData(tableMetaData)
       }
     }
 
-    return resultDatabaseMetaData
+    return this
   }
 
   private fun initDefaultConfiguration() {

@@ -14,7 +14,7 @@ import io.github.guttenbase.repository.RepositoryTableFilter
  *
  * @author M. Dahm
  */
-class DefaultRepositoryTableFilterHint : RepositoryTableFilterHint() {
+open class DefaultRepositoryTableFilterHint : RepositoryTableFilterHint() {
  override val value: RepositoryTableFilter
     get() = RepositoryTableFilter {  true }
 }

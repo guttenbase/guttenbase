@@ -22,7 +22,7 @@ import java.sql.SQLException
  *
  * @author M. Dahm
  */
-class ReadTableDataTool(
+open class ReadTableDataTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String,
   private val tableMetaData: TableMetaData

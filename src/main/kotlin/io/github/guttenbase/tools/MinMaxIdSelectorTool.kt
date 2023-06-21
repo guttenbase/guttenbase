@@ -16,7 +16,7 @@ import java.sql.SQLException
  *
  * @author M. Dahm
  */
-class MinMaxIdSelectorTool(private val connectorRepository: ConnectorRepository) {
+open class MinMaxIdSelectorTool(private val connectorRepository: ConnectorRepository) {
   var minValue: Long = 0
     private set
   var maxValue: Long = 0

@@ -13,7 +13,7 @@ import io.github.guttenbase.repository.DatabaseColumnFilter
  *
  * @author M. Dahm
  */
-class DefaultDatabaseColumnFilterHint : DatabaseColumnFilterHint() {
+open class DefaultDatabaseColumnFilterHint : DatabaseColumnFilterHint() {
   override val value: DatabaseColumnFilter
     get() = DefaultDatabaseColumnFilter()
 }

@@ -11,7 +11,7 @@ import java.sql.Types
 @Suppress("BooleanLiteralArgument")
 class TableMetaDataTest {
   private val objectUnderTest = TableMetaDataImpl("TEST", DatabaseMetaDataImpl("dbo", HashMap(), DatabaseType.MOCK), "TABLE")
-  private val column = ColumnMetaDataImpl(Types.BIGINT, "ID", "BIGINT", "INTEGER", false, true, 12, 12, objectUnderTest)
+  private val column = ColumnMetaDataImpl(objectUnderTest, Types.BIGINT, "ID", "BIGINT", "INTEGER", false, true, 12, 12)
 
   @Test
   fun `immutable delegation`() {

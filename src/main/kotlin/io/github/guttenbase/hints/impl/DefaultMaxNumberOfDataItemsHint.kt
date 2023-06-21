@@ -14,7 +14,7 @@ import io.github.guttenbase.tools.MaxNumberOfDataItems
  *
  * @author M. Dahm
  */
-class DefaultMaxNumberOfDataItemsHint : MaxNumberOfDataItemsHint() {
+open class DefaultMaxNumberOfDataItemsHint : MaxNumberOfDataItemsHint() {
  override val value: MaxNumberOfDataItems
     get() = MaxNumberOfDataItems { 30000 }
 }

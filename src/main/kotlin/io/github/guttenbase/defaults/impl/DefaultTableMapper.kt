@@ -14,7 +14,7 @@ import io.github.guttenbase.meta.TableMetaData
  *
  * @author M. Dahm
  */
-class DefaultTableMapper @JvmOverloads constructor(private val caseConversionMode: CaseConversionMode = CaseConversionMode.NONE) :
+open class DefaultTableMapper @JvmOverloads constructor(private val caseConversionMode: CaseConversionMode = CaseConversionMode.NONE) :
   TableMapper {
 
   override fun map(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData): TableMetaData? {

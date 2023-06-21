@@ -4,27 +4,30 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ForeignKeyMetaData
 import io.github.guttenbase.meta.InternalForeignKeyMetaData
 import io.github.guttenbase.meta.TableMetaData
-import io.github.guttenbase.utils.Util.immutable
 import org.slf4j.LoggerFactory
 
 /**
  * Information about a foreign key between table columns.
  *
- *
- *
  *  2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
 class ForeignKeyMetaDataImpl(
   override val tableMetaData: TableMetaData,
   override val foreignKeyName: String,
-  referencingColumn: ColumnMetaData,
-  referencedColumn: ColumnMetaData
+  referencingColumns: List<ColumnMetaData>,
+  referencedColumns: List<ColumnMetaData>
 ) : InternalForeignKeyMetaData {
-  private val _referencingColumns: MutableList<ColumnMetaData> = mutableListOf(referencingColumn)
-  private val _referencedColumns: MutableList<ColumnMetaData> = mutableListOf(referencedColumn)
+  private val referencingColumnData = ArrayList(referencingColumns)
+  private val referencedColumnData = ArrayList(referencedColumns)
+
+  constructor(
+    tableMetaData: TableMetaData,
+    foreignKeyName: String,
+    referencingColumn: ColumnMetaData,
+    referencedColumn: ColumnMetaData
+  ) : this(tableMetaData, foreignKeyName, listOf(referencingColumn), listOf(referencedColumn))
 
   override val referencingTableMetaData: TableMetaData
     get() {
@@ -38,20 +41,21 @@ class ForeignKeyMetaDataImpl(
       return referencedColumns[0].tableMetaData
     }
 
-  override val referencedColumns: List<ColumnMetaData> by immutable(_referencedColumns)
-  override val referencingColumns: List<ColumnMetaData> by immutable(_referencingColumns)
+  override val referencingColumns: List<ColumnMetaData> get() = ArrayList(referencingColumnData)
+
+  override val referencedColumns: List<ColumnMetaData> get() = ArrayList(referencedColumnData)
 
   override fun addColumnTuple(referencingColumn: ColumnMetaData, referencedColumn: ColumnMetaData) {
-    if (_referencingColumns.contains(referencingColumn)) {
+    if (referencingColumnData.contains(referencingColumn)) {
       LOG.warn("Referencing column already added: $referencingColumn")
     } else {
-      _referencingColumns.add(referencingColumn)
+      referencingColumnData.add(referencingColumn)
     }
 
-    if (_referencedColumns.contains(referencedColumn)) {
+    if (referencedColumnData.contains(referencedColumn)) {
       LOG.warn("Referenced column already added: $referencedColumn")
     } else {
-      _referencedColumns.add(referencedColumn)
+      referencedColumnData.add(referencedColumn)
     }
   }
 

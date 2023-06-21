@@ -3,7 +3,6 @@ package io.github.guttenbase.tools
 import io.github.guttenbase.configuration.TargetDatabaseConfiguration
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.sql.SQLLexer
-import io.github.guttenbase.tools.ScriptExecutorTool.Command
 import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
 import io.github.guttenbase.utils.Util
 import java.nio.charset.Charset
@@ -19,7 +18,7 @@ import java.util.*
  *  2012-2034 akquinet tech@spree
  *
  */
-class ScriptExecutorTool
+open class ScriptExecutorTool
 @JvmOverloads
 constructor(
   private val connectorRepository: ConnectorRepository,
@@ -130,7 +129,7 @@ constructor(
    * @throws SQLException
    */
   @Throws(SQLException::class)
-  fun executeQuery(connectorId: String, sql: String): List<Map<String, Any>> {
+  fun executeQuery(connectorId: String, sql: String): RESULT_LIST {
     connectorRepository.createConnector(connectorId).use { connector ->
       val connection: Connection = connector.openConnection()
       return executeQuery(connection, sql)
@@ -157,7 +156,7 @@ constructor(
    * @throws SQLException
    */
   @Throws(SQLException::class)
-  fun executeQuery(connection: Connection, sql: String): List<Map<String, Any>> {
+  fun executeQuery(connection: Connection, sql: String): RESULT_LIST {
     val result: MutableList<Map<String, Any>> = ArrayList()
 
     connection.createStatement().use { statement ->
@@ -175,7 +174,7 @@ constructor(
    * @throws SQLException
    */
   @Throws(SQLException::class)
-  fun executeQuery(connection: Connection, sql: String?, action: Command) {
+  fun executeQuery(connection: Connection, sql: String, action: Command) {
     connection.createStatement()
       .use { statement -> statement.executeQuery(sql).use { resultSet -> readMapFromResultSet(connection, resultSet, action) } }
   }
@@ -186,10 +185,10 @@ constructor(
     action.initialize(connection)
 
     while (resultSet.next()) {
-      val map: MutableMap<String, Any> = HashMap()
+      val map = HashMap<String, Any>()
 
       for (i in 1..metaData.columnCount) {
-        val columnName: String = metaData.getColumnName(i).uppercase()
+        val columnName = metaData.getColumnName(i).uppercase()
         val value = resultSet.getObject(i)
 
         map[columnName] = value
@@ -267,3 +266,5 @@ constructor(
     val DEFAULT_ENCODING: String = Charset.defaultCharset().name()
   }
 }
+
+typealias RESULT_LIST =  List<Map<String, Any>>

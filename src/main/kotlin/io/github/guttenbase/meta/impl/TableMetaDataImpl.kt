@@ -1,7 +1,6 @@
 package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.meta.*
-import io.github.guttenbase.utils.Util.immutable
 import java.util.*
 
 /**
@@ -15,8 +14,8 @@ class TableMetaDataImpl(
   override val tableName: String,
   override val databaseMetaData: DatabaseMetaData,
   override val tableType: String
-) :
-  InternalTableMetaData {
+) : InternalTableMetaData {
+
   /**
    * {@inheritDoc}
    */
@@ -30,12 +29,22 @@ class TableMetaDataImpl(
   override val columnCount: Int
     get() = columnMetaData.size
 
-  private val columnMap: MutableMap<String, ColumnMetaData> = LinkedHashMap()
-  private val indexMap: MutableMap<String, IndexMetaData> = LinkedHashMap()
-  private val importedForeignKeyMap: MutableMap<String, ForeignKeyMetaData> = LinkedHashMap()
-  private val exportedForeignKeyMap: MutableMap<String, ForeignKeyMetaData> = LinkedHashMap()
+  private val columnMap = LinkedHashMap<String, ColumnMetaData>()
+  private val indexMap = LinkedHashMap<String, IndexMetaData>()
+  private val importedForeignKeyMap = LinkedHashMap<String, ForeignKeyMetaData>()
+  private val exportedForeignKeyMap = LinkedHashMap<String, ForeignKeyMetaData>()
 
-  override val columnMetaData: List<ColumnMetaData> by immutable(columnMap.values)
+  // Derived values
+  override val columnMetaData: List<ColumnMetaData> get() = ArrayList(columnMap.values)
+
+  override val indexes: List<IndexMetaData> get() = ArrayList(indexMap.values)
+
+  override val exportedForeignKeys: List<ForeignKeyMetaData> get() = ArrayList(exportedForeignKeyMap.values)
+
+  override val importedForeignKeys: List<ForeignKeyMetaData> get() = ArrayList(importedForeignKeyMap.values)
+
+  override val primaryKeyColumns: List<ColumnMetaData>
+    get() = columnMetaData.filter(ColumnMetaData::isPrimaryKey)
 
   /**
    * {@inheritDoc}
@@ -59,12 +68,6 @@ class TableMetaDataImpl(
   override fun getIndexMetaData(indexName: String): IndexMetaData? {
     return indexMap[indexName.uppercase()]
   }
-
-  override val indexes: List<IndexMetaData> by immutable(indexMap.values)
-  override val exportedForeignKeys: List<ForeignKeyMetaData> by immutable(exportedForeignKeyMap.values)
-  override val importedForeignKeys: List<ForeignKeyMetaData> by immutable(importedForeignKeyMap.values)
-  override val primaryKeyColumns: List<ColumnMetaData>
-    get() = columnMetaData.filter(ColumnMetaData::isPrimaryKey)
 
   override fun addIndex(indexMetaData: IndexMetaData) {
     indexMap[indexMetaData.indexName.uppercase()] = indexMetaData

@@ -13,7 +13,7 @@ import io.github.guttenbase.repository.impl.HeuristicColumnTypeResolver
  *
  * @author M. Dahm
  */
-class DefaultColumnTypeResolverListHint : ColumnTypeResolverListHint() {
+open class DefaultColumnTypeResolverListHint : ColumnTypeResolverListHint() {
   override val value: ColumnTypeResolverList
     get() = ColumnTypeResolverList { listOf(HeuristicColumnTypeResolver(), ClassNameColumnTypeResolver()) }
 }

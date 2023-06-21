@@ -51,8 +51,8 @@ class ExportDumpConnector(
    */
   @Throws(SQLException::class)
   override fun retrieveDatabaseMetaData(): DatabaseMetaData {
-    val data: DatabaseMetaData = retrieveSourceDatabaseMetaData()
-    val result: DatabaseMetaData = Util.copyObject(DatabaseMetaData::class.java, data)
+    val data = retrieveSourceDatabaseMetaData()
+    val result = Util.copyObject(DatabaseMetaData::class.java, data)
 
     for (tableMetaData in result.tableMetaData) {
       (tableMetaData as InternalTableMetaData).totalRowCount = 0

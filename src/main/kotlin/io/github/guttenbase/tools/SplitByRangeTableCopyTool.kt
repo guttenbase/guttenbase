@@ -23,7 +23,7 @@ import kotlin.math.min
  *  2012-2034 akquinet tech@spree
  *
  */
-class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) : AbstractTableCopyTool(connectorRepository) {
+open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) : AbstractTableCopyTool(connectorRepository) {
   /**
    * Copy data with multiple VALUES-tuples per batch statement.
    *

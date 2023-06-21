@@ -12,7 +12,7 @@ import io.github.guttenbase.repository.RepositoryColumnFilter
  *
  * @author M. Dahm
  */
-class DefaultRepositoryColumnFilterHint : RepositoryColumnFilterHint() {
+open class DefaultRepositoryColumnFilterHint : RepositoryColumnFilterHint() {
  override val value: RepositoryColumnFilter
     get() = RepositoryColumnFilter { true }
 }

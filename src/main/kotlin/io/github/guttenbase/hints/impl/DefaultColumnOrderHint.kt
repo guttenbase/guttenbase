@@ -13,7 +13,7 @@ import io.github.guttenbase.mapping.ColumnOrderComparatorFactory
  *
  * @author M. Dahm
  */
-class DefaultColumnOrderHint : ColumnOrderHint() {
+open class DefaultColumnOrderHint : ColumnOrderHint() {
   override val value: ColumnOrderComparatorFactory
     get() = ColumnOrderComparatorFactory { DefaultColumnComparator() }
 }

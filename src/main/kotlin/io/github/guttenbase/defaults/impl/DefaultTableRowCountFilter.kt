@@ -6,6 +6,6 @@ import io.github.guttenbase.repository.TableRowCountFilter
 /**
  * By default compute row count for all tables
  */
-class DefaultTableRowCountFilter : TableRowCountFilter {
+open class DefaultTableRowCountFilter : TableRowCountFilter {
   override fun defaultRowCount(tableMetaData: TableMetaData) = 0
 }

@@ -12,7 +12,7 @@ import io.github.guttenbase.tools.RefreshTargetConnection
  *
  * @author M. Dahm
  */
-class DefaultRefreshTargetConnectionHint : RefreshTargetConnectionHint() {
+open class DefaultRefreshTargetConnectionHint : RefreshTargetConnectionHint() {
   override val value: RefreshTargetConnection
     get() = object : RefreshTargetConnection {}
 }

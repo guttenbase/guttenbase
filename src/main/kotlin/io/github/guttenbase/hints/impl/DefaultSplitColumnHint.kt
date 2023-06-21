@@ -17,7 +17,7 @@ import io.github.guttenbase.tools.SplitColumn
  *
  * @author M. Dahm
  */
-class DefaultSplitColumnHint : SplitColumnHint() {
+open class DefaultSplitColumnHint : SplitColumnHint() {
  override val value: SplitColumn
     get() = DefaultSplitColumn()
 }

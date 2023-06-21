@@ -17,7 +17,7 @@ import java.sql.ResultSet
  *
  * @author M. Dahm
  */
-class DefaultResultSetParametersHint : ResultSetParametersHint() {
+open class DefaultResultSetParametersHint : ResultSetParametersHint() {
  override val value: ResultSetParameters
     get() = DefaultResultSetParameters()
 

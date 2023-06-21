@@ -1,6 +1,5 @@
 package io.github.guttenbase.defaults.impl
 
-import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.ColumnMapper.ColumnMapperResult
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
@@ -15,7 +14,7 @@ import java.util.*
  *
  * @author M. Dahm
  */
-class DroppingColumnMapper : DefaultColumnMapper() {
+open class DroppingColumnMapper : DefaultColumnMapper() {
   private val droppedColumns = HashMap<String, MutableList<String>>()
 
   fun addDroppedColumn(targetTableName: String, sourceColumName: String): DroppingColumnMapper {

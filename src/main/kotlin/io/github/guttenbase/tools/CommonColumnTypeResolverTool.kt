@@ -15,12 +15,12 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  *
  *
- * Hint is used by [ColumnDataMapperProviderHint] to determine mapping between different column types
- * Hint is used by [ColumnTypeResolverListHint] to determine mapping strategies between different column types
+ * Hint is used by [io.github.guttenbase.hints.ColumnDataMapperProviderHint] to determine mapping between different column types
+ * Hint is used by [io.github.guttenbase.hints.ColumnTypeResolverListHint] to determine mapping strategies between different column types
  *
  * @author M. Dahm
  */
-class CommonColumnTypeResolverTool(private val connectorRepository: ConnectorRepository) {
+open class CommonColumnTypeResolverTool(private val connectorRepository: ConnectorRepository) {
   /**
    * Returns column type usable for both columns or null if none can be found.
    */

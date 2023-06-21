@@ -11,7 +11,7 @@ import io.github.guttenbase.export.ExportDumpExtraInformationHint
  *
  * @author M. Dahm
  */
-class DefaultExportDumpExtraInformationHint : ExportDumpExtraInformationHint() {
+open class DefaultExportDumpExtraInformationHint : ExportDumpExtraInformationHint() {
  override val value: ExportDumpExtraInformation
     get() = ExportDumpExtraInformation {  _,_,_ -> HashMap() }
 }

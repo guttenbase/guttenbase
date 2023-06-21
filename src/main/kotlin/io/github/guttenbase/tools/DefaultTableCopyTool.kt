@@ -20,7 +20,7 @@ import java.sql.SQLException
  *
  * @author M. Dahm
  */
-class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : AbstractTableCopyTool(connectorRepository) {
+open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : AbstractTableCopyTool(connectorRepository) {
   /**
    * Copy data with multiple VALUES-tuples per batch statement.
    *

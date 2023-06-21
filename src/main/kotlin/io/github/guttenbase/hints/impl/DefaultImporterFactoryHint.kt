@@ -13,7 +13,7 @@ import io.github.guttenbase.export.zip.ZipImporter
  *
  * @author M. Dahm
  */
-class DefaultImporterFactoryHint : ImporterFactoryHint() {
+open class DefaultImporterFactoryHint : ImporterFactoryHint() {
  override val value: ImporterFactory
     get() = ImporterFactory { ZipImporter() }
 }

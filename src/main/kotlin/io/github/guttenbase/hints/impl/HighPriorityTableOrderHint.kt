@@ -11,7 +11,7 @@ import kotlin.Comparator
  *
  * @author M. Dahm
  */
-class HighPriorityTableOrderHint(vararg tableNames: String) : DefaultTableOrderHint() {
+open class HighPriorityTableOrderHint(vararg tableNames: String) : DefaultTableOrderHint() {
   private val tableNames = tableNames.map { it.uppercase() }
 
   override val value: TableOrderComparatorFactory

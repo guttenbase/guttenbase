@@ -12,6 +12,6 @@ import io.github.guttenbase.meta.ColumnMetaData
  *
  * @author M. Dahm
  */
-class DefaultColumnComparator : Comparator<ColumnMetaData> {
-  override fun compare(c1: ColumnMetaData, c2: ColumnMetaData)= c1.compareTo(c2)
+open class DefaultColumnComparator : Comparator<ColumnMetaData> {
+  override fun compare(c1: ColumnMetaData, c2: ColumnMetaData) = c1.compareTo(c2)
 }

@@ -21,7 +21,6 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.statements.SelectStatementCreator
 import org.slf4j.LoggerFactory
-import java.io.Closeable
 import java.sql.*
 import kotlin.math.min
 
@@ -38,7 +37,7 @@ import kotlin.math.min
  * Hint is used by [ColumnOrderHint] to determine column order
  * Hint is used by [TableOrderHint] to determine order of tables
  */
-class CheckEqualTableDataTool(private val connectorRepository: ConnectorRepository) {
+open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRepository) {
   @Throws(SQLException::class)
   fun checkTableData(sourceConnectorId: String, targetConnectorId: String) {
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)

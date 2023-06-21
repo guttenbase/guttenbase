@@ -16,7 +16,6 @@ import io.github.guttenbase.mapping.DefaultColumnTypeMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
-import io.github.guttenbase.meta.InternalTableMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.meta.impl.*
 import io.github.guttenbase.repository.ConnectorRepository
@@ -32,7 +31,7 @@ import java.sql.Types
 
 class SchemaScriptCreatorToolTest {
   private val databaseMetaData = createDatabaseMetaData()
-  private val connectorRepository = createRepository()
+  private val connectorRepository = createRepository(databaseMetaData)
   private val objectUnderTest = SchemaScriptCreatorTool(connectorRepository, SOURCE, TARGET)
 
   @Test
@@ -152,83 +151,83 @@ class SchemaScriptCreatorToolTest {
     assertEquals("CREATE UNIQUE INDEX Name_IDX1 ON schemaName.MY_TABLE1(NAME);", sql)
   }
 
-  private fun createRepository(): ConnectorRepository {
-    val repository: ConnectorRepository = object : ConnectorRepositoryImpl() {
-      override fun getDatabaseMetaData(connectorId: String) = databaseMetaData
-    }
-    repository.addConnectionInfo(SOURCE, MockConnectionInfo())
-    repository.addConnectionInfo(TARGET, MockConnectionInfo())
-    repository.addConnectorHint(TARGET, object : TableMapperHint() {
-      override val value: TableMapper
-        get() = DefaultTableMapper(CaseConversionMode.UPPER)
-    })
-    repository.addConnectorHint(TARGET, object : ColumnMapperHint() {
-      override val value: ColumnMapper
-        get() = DefaultColumnMapper(CaseConversionMode.UPPER, "")
-    })
-
-    return repository
-  }
-
-
-  private fun createDatabaseMetaData(): DatabaseMetaData {
-    val databaseMetaData = DatabaseMetaDataImpl(
-      "schemaName", mapOf(
-        "getMaxColumnNameLength" to 42,
-        "getDatabaseProductName" to "GuttenBaseDB"
-      ), DatabaseType.GENERIC
-    )
-    val table1 = createTable(1, databaseMetaData)
-    val table2 = createTable(2, databaseMetaData)
-    val foreignKeyMeta1 = ForeignKeyMetaDataImpl(
-      table1, "FK_Name",
-      table1.getColumnMetaData("Name")!!, table2.getColumnMetaData("Name")!!
-    )
-    val foreignKeyMeta2 = ForeignKeyMetaDataImpl(
-      table1, "FK_Name",
-      table1.getColumnMetaData("Name")!!, table2.getColumnMetaData("Name")!!
-    )
-
-    table1.addImportedForeignKey(foreignKeyMeta1)
-    table2.addExportedForeignKey(foreignKeyMeta2)
-
-    databaseMetaData.addTableMetaData(table1)
-    databaseMetaData.addTableMetaData(table2)
-
-    return databaseMetaData
-  }
-
-  private fun createTable(
-    index: Int,
-    databaseMetaData: DatabaseMetaData,
-    tableName: String = "My_Table$index"
-  ): InternalTableMetaData {
-    val tableMetaData = TableMetaDataImpl(tableName, databaseMetaData, "TABLE")
-    val primaryKeyColumn = ColumnMetaDataImpl(
-      Types.BIGINT, "Id", "BIGINT", BigInteger::class.java.name,
-      false, true, 0, 0, tableMetaData
-    ).apply { isPrimaryKey = true }
-    val nameColumn = createColumn(tableMetaData)
-    val nameColumnIndex = IndexMetaDataImpl(tableMetaData, "Name_IDX$index", true, true, false)
-
-    nameColumnIndex.addColumn(nameColumn)
-
-    tableMetaData.addColumn(primaryKeyColumn)
-    tableMetaData.addColumn(nameColumn)
-    tableMetaData.addIndex(nameColumnIndex)
-
-    return tableMetaData
-  }
-
-  private fun createColumn(tableMetaData: InternalTableMetaData, columnName: String = "Name"): ColumnMetaDataImpl {
-    return ColumnMetaDataImpl(
-      Types.VARCHAR, columnName, "VARCHAR(100)", String::class.java.name,
-      false, false, 0, 0, tableMetaData
-    )
-  }
-
   companion object {
     const val SOURCE = "source"
     const val TARGET = "target"
+    const val TABLE = "My_Table"
+    const val SCHEMA_NAME = "schemaName"
+
+    fun createColumn(tableMetaData: TableMetaDataImpl, columnName: String = "Name"): ColumnMetaData =
+      ColumnMetaDataImpl(tableMetaData,
+        Types.VARCHAR, columnName, "VARCHAR(100)", String::class.java.name,
+        false, false, 0, 0
+      )
+
+    fun createTable(
+      index: Int,
+      databaseMetaData: DatabaseMetaData,
+      tableName: String = "$TABLE$index"
+    ): TableMetaDataImpl {
+      val tableMetaData = TableMetaDataImpl(tableName, databaseMetaData, "TABLE")
+      val primaryKeyColumn = ColumnMetaDataImpl(tableMetaData,
+        Types.BIGINT, "Id", "BIGINT", BigInteger::class.java.name,
+        false, true, 0, 0
+      ).apply { isPrimaryKey = true }
+      val nameColumn = createColumn(tableMetaData)
+      val nameColumnIndex = IndexMetaDataImpl(tableMetaData, "Name_IDX$index", true, true, false)
+
+      nameColumnIndex.addColumn(nameColumn)
+
+      tableMetaData.addColumn(primaryKeyColumn)
+      tableMetaData.addColumn(nameColumn)
+      tableMetaData.addIndex(nameColumnIndex)
+
+      return tableMetaData
+    }
+
+    fun createDatabaseMetaData(): DatabaseMetaDataImpl {
+      val databaseMetaData = DatabaseMetaDataImpl(
+        SCHEMA_NAME, mapOf(
+          "getMaxColumnNameLength" to 42,
+          "getDatabaseProductName" to "GuttenBaseDB"
+        ), DatabaseType.GENERIC
+      )
+      val table1 = createTable(1, databaseMetaData)
+      val table2 = createTable(2, databaseMetaData)
+      val foreignKeyMeta1 = ForeignKeyMetaDataImpl(
+        table1, "FK_Name",
+        table1.getColumnMetaData("Name")!!, table2.getColumnMetaData("Name")!!
+      )
+      val foreignKeyMeta2 = ForeignKeyMetaDataImpl(
+        table1, "FK_Name",
+        table1.getColumnMetaData("Name")!!, table2.getColumnMetaData("Name")!!
+      )
+
+      table1.addImportedForeignKey(foreignKeyMeta1)
+      table2.addExportedForeignKey(foreignKeyMeta2)
+
+      databaseMetaData.addTableMetaData(table1)
+      databaseMetaData.addTableMetaData(table2)
+
+      return databaseMetaData
+    }
+
+    fun createRepository(databaseMetaData: DatabaseMetaData): ConnectorRepository {
+      val repository: ConnectorRepository = object : ConnectorRepositoryImpl() {
+        override fun getDatabaseMetaData(connectorId: String) = databaseMetaData
+      }
+      repository.addConnectionInfo(SOURCE, MockConnectionInfo())
+      repository.addConnectionInfo(TARGET, MockConnectionInfo())
+      repository.addConnectorHint(TARGET, object : TableMapperHint() {
+        override val value: TableMapper
+          get() = DefaultTableMapper(CaseConversionMode.UPPER)
+      })
+      repository.addConnectorHint(TARGET, object : ColumnMapperHint() {
+        override val value: ColumnMapper
+          get() = DefaultColumnMapper(CaseConversionMode.UPPER, "")
+      })
+
+      return repository
+    }
   }
 }

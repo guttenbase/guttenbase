@@ -32,7 +32,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     val schema: String = connectionInfo.schema
     val schemaPrefix = if ("" == Util.trim(schema)) "" else "$schema."
     val metaData = connection.metaData
-    val properties = DatabaseMetaData::class.java.declaredMethods
+    val properties = java.sql.DatabaseMetaData::class.java.declaredMethods
       .filter { method: Method -> method.parameterCount == 0 && isPrimitive(method.returnType) }
       .mapNotNull { method: Method -> getValue(method, metaData) }.toMap()
     val result = DatabaseMetaDataImpl(schema, properties, connectionInfo.databaseType)
@@ -219,6 +219,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
         val precision: Int = meta.getPrecision(i)
         val scale: Int = meta.getScale(i)
         val column = ColumnMetaDataImpl(
+          tableMetaData,
           columnType,
           columnName,
           columnTypeName,
@@ -226,8 +227,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
           isNullable,
           isAutoIncrement,
           precision,
-          scale,
-          tableMetaData
+          scale
         )
 
         if (columnFilter.accept(column)) {

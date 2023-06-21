@@ -14,7 +14,7 @@ import io.github.guttenbase.tools.NumberOfRowsPerBatch
  *
  * @author M. Dahm
  */
-class DefaultNumberOfRowsPerBatchHint : NumberOfRowsPerBatchHint() {
+open class DefaultNumberOfRowsPerBatchHint : NumberOfRowsPerBatchHint() {
  override val value: NumberOfRowsPerBatch
     get() = NumberOfRowsPerBatch { 2000 }
 }

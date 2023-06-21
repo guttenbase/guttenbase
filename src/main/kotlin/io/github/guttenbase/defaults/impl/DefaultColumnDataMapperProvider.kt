@@ -6,9 +6,9 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 
 /**
- * Default implementation. To add further mapping you should simply extend [DefaultColumnDataMapperProviderHint] and call
+ * Default implementation. To add further mapping you should simply extend [io.github.guttenbase.hints.impl.DefaultColumnDataMapperProviderHint] and call
  * [.addMapping] in the overridden
- * [DefaultColumnDataMapperProviderHint.addMappings] method.
+ * [io.github.guttenbase.hints.impl.DefaultColumnDataMapperProviderHint.addMappings] method.
  *
  *
  *  2012-2034 akquinet tech@spree
@@ -16,7 +16,7 @@ import io.github.guttenbase.meta.ColumnType
  *
  * @author M. Dahm
  */
-class DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
+open class DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
   private val mappings = HashMap<String, MutableList<ColumnDataMapper>>()
 
   /**

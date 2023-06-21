@@ -13,7 +13,7 @@ import io.github.guttenbase.utils.SwingScriptExecutorProgressIndicator
  *
  * @author M. Dahm
  */
-class SwingScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
+open class SwingScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
  override val value: ScriptExecutorProgressIndicator
     get() = SwingScriptExecutorProgressIndicator()
 }

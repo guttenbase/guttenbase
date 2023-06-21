@@ -13,7 +13,7 @@ import io.github.guttenbase.utils.TableCopyProgressIndicator
  *
  * @author M. Dahm
  */
-class SwingTableCopyProgressIndicatorHint : TableCopyProgressIndicatorHint() {
+open class SwingTableCopyProgressIndicatorHint : TableCopyProgressIndicatorHint() {
   override val value: TableCopyProgressIndicator
     get() = SwingTableCopyProgressIndicator()
 }

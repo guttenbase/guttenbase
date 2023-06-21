@@ -29,7 +29,7 @@ open class DefaultColumnDataMapperProviderHint : ColumnDataMapperProviderHint() 
   /**
    * May be overridden to add further mappings
    */
-  protected fun addMappings(columnDataMapperFactory: DefaultColumnDataMapperProvider) {
+  protected open fun addMappings(columnDataMapperFactory: DefaultColumnDataMapperProvider) {
     columnDataMapperFactory.addMapping(ColumnType.CLASS_TIMESTAMP, ColumnType.CLASS_DATE, TimestampToDateColumnDataMapper())
     columnDataMapperFactory.addMapping(
       ColumnType.CLASS_LONG, ColumnType.CLASS_BIGDECIMAL,
