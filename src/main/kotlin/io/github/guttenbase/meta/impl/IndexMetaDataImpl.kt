@@ -4,7 +4,6 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.IndexMetaData
 import io.github.guttenbase.meta.InternalIndexMetaData
 import io.github.guttenbase.meta.TableMetaData
-import io.github.guttenbase.utils.Util
 
 /**
  * Information about index in table.
@@ -22,7 +21,7 @@ class IndexMetaDataImpl(
 ) : InternalIndexMetaData {
   private val _columns: MutableList<ColumnMetaData> = ArrayList()
 
-  override val columnMetaData: List<ColumnMetaData> by Util.immutable(_columns)
+  override val columnMetaData: List<ColumnMetaData> get() = ArrayList(_columns)
 
   override fun addColumn(columnMetaData: ColumnMetaData) {
     _columns.add(columnMetaData)
