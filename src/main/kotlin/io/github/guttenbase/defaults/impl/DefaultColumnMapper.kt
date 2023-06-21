@@ -24,7 +24,7 @@ open class DefaultColumnMapper @JvmOverloads constructor(
   }
 
   override fun map(source: ColumnMetaData, targetTableMetaData: TableMetaData): ColumnMapperResult {
-    val columnMetaData = targetTableMetaData.getColumnMetaData(source.columnTypeName)
+    val columnMetaData = targetTableMetaData.getColumnMetaData(source.columnName)
     val result = if (columnMetaData != null) listOf(columnMetaData) else ArrayList()
 
     return ColumnMapperResult(result)
