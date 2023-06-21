@@ -23,6 +23,8 @@ interface TableMetaData : Comparable<TableMetaData>, Serializable {
    */
   val tableType: String
   val tableName: String
+  val tableCatalog: String
+  val tableSchema: String
 
   /**
    * @return containing data base

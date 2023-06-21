@@ -19,7 +19,7 @@ import java.util.*
  * Get table meta data from connection.
  *
  *
- * (C) 2012 by akquinet tech@spree
+ * (C) 2012-2045 by akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -293,12 +293,14 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
         val tableType = resultSet.getString("TABLE_TYPE")
         LOG.debug("Found: $tableCatalog/$tableSchema/$tableName/$tableType")
 
-        val tableMetaData: InternalTableMetaData = TableMetaDataImpl(tableName, databaseMetaData, tableType)
+        val tableMetaData: InternalTableMetaData = TableMetaDataImpl(tableName, databaseMetaData, tableType, tableCatalog, tableSchema)
+
         if (tableFilter.accept(tableMetaData)) {
           databaseMetaData.addTableMetaData(tableMetaData)
         }
       }
-      LOG.info("Filtered tables: " + databaseMetaData.tableMetaData)
+
+      LOG.info("Accepted tables: " + databaseMetaData.tableMetaData)
     }
   }
 

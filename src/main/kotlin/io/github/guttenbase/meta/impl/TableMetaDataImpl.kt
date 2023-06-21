@@ -13,7 +13,9 @@ import java.util.*
 class TableMetaDataImpl(
   override val tableName: String,
   override val databaseMetaData: DatabaseMetaData,
-  override val tableType: String
+  override val tableType: String,
+  override val tableCatalog: String,
+  override val tableSchema: String
 ) : InternalTableMetaData {
 
   /**

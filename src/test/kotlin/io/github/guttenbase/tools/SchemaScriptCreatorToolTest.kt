@@ -168,7 +168,7 @@ class SchemaScriptCreatorToolTest {
       databaseMetaData: DatabaseMetaData,
       tableName: String = "$TABLE$index"
     ): TableMetaDataImpl {
-      val tableMetaData = TableMetaDataImpl(tableName, databaseMetaData, "TABLE")
+      val tableMetaData = TableMetaDataImpl(tableName, databaseMetaData, "TABLE", "", "")
       val primaryKeyColumn = ColumnMetaDataImpl(tableMetaData,
         Types.BIGINT, "Id", "BIGINT", BigInteger::class.java.name,
         false, true, 0, 0

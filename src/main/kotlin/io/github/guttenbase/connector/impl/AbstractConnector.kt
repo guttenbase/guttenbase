@@ -1,6 +1,5 @@
 package io.github.guttenbase.connector.impl
 
-import io.github.guttenbase.configuration.SourceDatabaseConfiguration
 import io.github.guttenbase.configuration.TargetDatabaseConfiguration
 import io.github.guttenbase.connector.Connector
 import io.github.guttenbase.connector.ConnectorInfo
@@ -54,13 +53,14 @@ abstract class AbstractConnector(
    */
   @Throws(SQLException::class)
   override fun retrieveDatabaseMetaData(): DatabaseMetaData {
-    val tableMetaDataInspector = DatabaseMetaDataInspectorTool(connectorRepository, connectorId)
-    val connection: Connection = openConnection()
-    val sourceDatabaseConfiguration: SourceDatabaseConfiguration =
-      connectorRepository.getSourceDatabaseConfiguration(connectorId)
+    val inspector = DatabaseMetaDataInspectorTool(connectorRepository, connectorId)
+    val connection = openConnection()
+    val sourceDatabaseConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
     sourceDatabaseConfiguration.initializeSourceConnection(connection, connectorId)
-    val databaseMetaData: DatabaseMetaData = tableMetaDataInspector.getDatabaseMetaData(connection)
+
+    val databaseMetaData = inspector.getDatabaseMetaData(connection)
     sourceDatabaseConfiguration.finalizeSourceConnection(connection, connectorId)
+
     closeConnection()
     return databaseMetaData
   }

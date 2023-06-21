@@ -33,6 +33,7 @@ open class DefaultDatabaseTableFilter : DatabaseTableFilter {
   override fun accept(table: TableMetaData): Boolean {
     return when (table.databaseMetaData.databaseType) {
       POSTGRESQL -> !table.tableName.uppercase().startsWith("SQL_")
+      H2DB -> table.tableSchema.uppercase() == "PUBLIC"
       else -> true
     }
   }
