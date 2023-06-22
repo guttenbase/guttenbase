@@ -75,6 +75,8 @@ open class ConnectorRepositoryImpl : ConnectorRepository {
     getConnectionInfo(connectorId)
     val hintMap = connectionHintMap.getOrPut(connectorId) { HashMap() }
     hintMap[hint.connectorHintType] = hint
+
+    refreshDatabaseMetaData(connectorId)
   }
 
   /**
@@ -83,6 +85,8 @@ open class ConnectorRepositoryImpl : ConnectorRepository {
   override fun <T : Any> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>) {
     val hintMap = connectionHintMap[connectorId]
     hintMap?.remove(connectionInfoHintType)
+
+    refreshDatabaseMetaData(connectorId)
   }
 
   /**

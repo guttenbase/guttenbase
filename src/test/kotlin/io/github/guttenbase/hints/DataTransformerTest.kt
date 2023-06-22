@@ -5,6 +5,7 @@ import io.github.guttenbase.hints.impl.DefaultColumnDataMapperProviderHint
 import io.github.guttenbase.mapping.ColumnDataMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
+import io.github.guttenbase.tools.RESULT_LIST
 import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -40,7 +41,7 @@ class DataTransformerTest : AbstractHintTest("/ddl/tables.sql", "/ddl/tables.sql
   }
 
   override fun executeChecks() {
-    val list: List<Map<String, Any>> = ScriptExecutorTool(connectorRepository).executeQuery(
+    val list: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
       TARGET, "SELECT DISTINCT ID, USERNAME, NAME, PASSWORD FROM FOO_USER ORDER BY ID"
     )
     assertEquals(5, list.size)

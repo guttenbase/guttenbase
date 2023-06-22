@@ -6,6 +6,7 @@ import java.sql.*
 import java.util.*
 import java.util.concurrent.Executor
 import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.repository.JdbcDatabaseMetaData
 
 /**
  * Special "[Connection]" that supports reading data from a stream.
@@ -98,7 +99,7 @@ class ImportDumpConnection(private val importer: Importer, private val databaseM
     throw UnsupportedOperationException()
   }
 
-  override fun getMetaData(): java.sql.DatabaseMetaData {
+  override fun getMetaData(): JdbcDatabaseMetaData {
     throw UnsupportedOperationException()
   }
 

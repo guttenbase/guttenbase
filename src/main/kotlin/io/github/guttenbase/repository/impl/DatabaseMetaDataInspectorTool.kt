@@ -4,10 +4,7 @@ import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.impl.*
-import io.github.guttenbase.repository.ConnectorRepository
-import io.github.guttenbase.repository.DatabaseColumnFilter
-import io.github.guttenbase.repository.DatabaseTableFilter
-import io.github.guttenbase.repository.TableRowCountFilter
+import io.github.guttenbase.repository.*
 import io.github.guttenbase.tools.SelectWhereClause
 import io.github.guttenbase.utils.Util
 import org.slf4j.LoggerFactory
@@ -32,7 +29,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     val schema: String = connectionInfo.schema
     val schemaPrefix = if ("" == Util.trim(schema)) "" else "$schema."
     val metaData = connection.metaData
-    val properties = java.sql.DatabaseMetaData::class.java.declaredMethods
+    val properties = JdbcDatabaseMetaData::class.java.declaredMethods
       .filter { method: Method -> method.parameterCount == 0 && isPrimitive(method.returnType) }
       .mapNotNull { method: Method -> getValue(method, metaData) }.toMap()
     val result = DatabaseMetaDataImpl(schema, properties, connectionInfo.databaseType)
@@ -46,7 +43,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
 
   @Throws(SQLException::class)
   private fun updateTableMetaData(
-    connection: Connection, metaData: java.sql.DatabaseMetaData,
+    connection: Connection, metaData: JdbcDatabaseMetaData,
     databaseMetaData: DatabaseMetaData, schemaPrefix: String
   ) {
     connection.createStatement().use { statement ->
@@ -73,7 +70,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
 
   @Throws(SQLException::class)
   private fun updateColumnsWithForeignKeyInformation(
-    metaData: java.sql.DatabaseMetaData,
+    metaData: JdbcDatabaseMetaData,
     databaseMetaData: DatabaseMetaData,
     table: TableMetaData
   ) {
@@ -125,7 +122,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
 
   @Throws(SQLException::class)
   private fun updateTableWithIndexInformation(
-    metaData: java.sql.DatabaseMetaData, databaseMetaData: DatabaseMetaData,
+    metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData,
     table: InternalTableMetaData
   ) {
     LOG.debug("Retrieving index information for " + table.tableName)
@@ -168,7 +165,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
 
   @Throws(SQLException::class)
   private fun updateColumnsWithPrimaryKeyInformation(
-    metaData: java.sql.DatabaseMetaData,
+    metaData: JdbcDatabaseMetaData,
     databaseMetaData: DatabaseMetaData,
     table: TableMetaData
   ) {
@@ -275,25 +272,27 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
   }
 
   @Throws(SQLException::class)
-  private fun loadTables(databaseMetaData: InternalDatabaseMetaData, metaData: java.sql.DatabaseMetaData) {
+  private fun loadTables(databaseMetaData: InternalDatabaseMetaData, metaData: JdbcDatabaseMetaData) {
     LOG.debug("Searching tables in schema " + databaseMetaData.schema)
-    val tableFilter: DatabaseTableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
-      .value
+
+    val tableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java).value
 
     val resultSet = metaData.getTables(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchemaPattern(databaseMetaData),
       tableFilter.getTableNamePattern(databaseMetaData), tableFilter.getTableTypes(databaseMetaData)
     )
+
     resultSet.use {
       while (resultSet.next()) {
         val tableCatalog = resultSet.getString("TABLE_CAT")
         val tableSchema = resultSet.getString("TABLE_SCHEM")
         val tableName = resultSet.getString("TABLE_NAME")
         val tableType = resultSet.getString("TABLE_TYPE")
+
         LOG.debug("Found: $tableCatalog/$tableSchema/$tableName/$tableType")
 
-        val tableMetaData: InternalTableMetaData = TableMetaDataImpl(tableName, databaseMetaData, tableType, tableCatalog, tableSchema)
+        val tableMetaData = TableMetaDataImpl(tableName, databaseMetaData, tableType, tableCatalog, tableSchema)
 
         if (tableFilter.accept(tableMetaData)) {
           databaseMetaData.addTableMetaData(tableMetaData)
@@ -312,7 +311,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     private const val SELECT_COUNT_STATEMENT = "SELECT COUNT(*) FROM $TABLE_PLACEHOLDER"
     private const val SELECT_NOTHING_STATEMENT = "SELECT * FROM $TABLE_PLACEHOLDER WHERE 1 > 2"
 
-    private fun getValue(method: Method, data: java.sql.DatabaseMetaData): Pair<String, Any>? {
+    private fun getValue(method: Method, data: JdbcDatabaseMetaData): Pair<String, Any>? {
       val key = method.name
 
       try {

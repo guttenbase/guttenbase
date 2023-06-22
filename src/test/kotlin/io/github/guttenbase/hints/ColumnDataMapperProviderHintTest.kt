@@ -3,6 +3,7 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider
 import io.github.guttenbase.hints.impl.DefaultColumnDataMapperProviderHint
 import io.github.guttenbase.meta.ColumnType
+import io.github.guttenbase.tools.RESULT_LIST
 import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -32,8 +33,9 @@ class ColumnDataMapperProviderHintTest : AbstractHintTest("/ddl/tables.sql", "/d
   }
 
   override fun executeChecks() {
-    val list: List<Map<String, Any>> = ScriptExecutorTool(connectorRepository).executeQuery(
-      TARGET,      "SELECT DISTINCT ID FROM FOO_USER ORDER BY ID"    )
+    val list: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
+      TARGET, "SELECT DISTINCT ID FROM FOO_USER ORDER BY ID"
+    )
     assertEquals(5, list.size)
     val id = list[0]["ID"]
     assertNotNull(id)

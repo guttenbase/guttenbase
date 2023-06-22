@@ -3,6 +3,7 @@ package io.github.guttenbase.configuration
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.tools.RESULT_LIST
 import io.github.guttenbase.tools.ScriptExecutorTool
 import org.slf4j.LoggerFactory
 import java.sql.Connection
@@ -53,14 +54,11 @@ class OracleTargetDatabaseConfiguration(connectorRepository: ConnectorRepository
       val schema: String = connectorRepository.getConnectionInfo(connectorId).schema
 
       /* I want to disable all constraints in tables that reference the tables that I will update. */
-      val foreignKeyNames: List<Map<String, Any>> = ScriptExecutorTool(connectorRepository).executeQuery(
+      val foreignKeyNames: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
         connectorId,
-        "SELECT DISTINCT AC.OWNER, AC.TABLE_NAME, AC.CONSTRAINT_NAME FROM ALL_CONSTRAINTS AC, ALL_CONS_COLUMNS ACC "
-            + "WHERE AC.CONSTRAINT_TYPE = 'R' " //
-            + "AND ACC.TABLE_NAME IN (" + tablesList + ") " //
-            + "AND ACC.OWNER = '" + schema + "' " //
-            + "AND ACC.CONSTRAINT_NAME = AC.R_CONSTRAINT_NAME " //
-            + "AND ACC.OWNER = AC.R_OWNER"
+        """SELECT DISTINCT AC.OWNER, AC.TABLE_NAME, AC.CONSTRAINT_NAME FROM ALL_CONSTRAINTS AC, ALL_CONS_COLUMNS ACC 
+          |WHERE AC.CONSTRAINT_TYPE = 'R' AND ACC.TABLE_NAME IN ($tablesList) AND ACC.OWNER = '$schema' 
+          |AND ACC.CONSTRAINT_NAME = AC.R_CONSTRAINT_NAME AND ACC.OWNER = AC.R_OWNER""".trimMargin()
       )
 
       // memorize any problems that occur during constraint handling

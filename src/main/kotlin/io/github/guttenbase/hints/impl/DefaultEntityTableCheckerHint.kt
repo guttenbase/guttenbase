@@ -15,7 +15,7 @@ open class DefaultEntityTableCheckerHint : EntityTableCheckerHint() {
   override val value: EntityTableChecker
     get() = EntityTableChecker { tableMetaData ->
       for (columnMetaData in tableMetaData.columnMetaData) {
-        val columnName: String = columnMetaData.columnTypeName.uppercase()
+        val columnName: String = columnMetaData.columnName.uppercase()
 
         if (columnMetaData.isPrimaryKey && (columnName == "ID" || columnName == "IDENT")) {
           return@EntityTableChecker true

@@ -90,3 +90,5 @@ interface ConnectorRepository : Serializable {
    */
   fun addTargetDatabaseConfiguration(databaseType: DatabaseType, targetDatabaseConfiguration: TargetDatabaseConfiguration)
 }
+
+typealias JdbcDatabaseMetaData = java.sql.DatabaseMetaData

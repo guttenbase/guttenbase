@@ -1,8 +1,8 @@
 package io.github.guttenbase.meta
 
 import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.io.Serializable
-import java.sql.DatabaseMetaData
 
 /**
  * Information about data base such as schema name.
@@ -25,6 +25,6 @@ interface DatabaseMetaData : Serializable {
   /**
    * @return (cached) meta data
    */
-  val databaseMetaData: DatabaseMetaData
+  val databaseMetaData: JdbcDatabaseMetaData
   val databaseType: DatabaseType
 }

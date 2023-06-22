@@ -25,12 +25,15 @@ class RepositoryTableFilterHintTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testFilter() {
-    assertEquals( 6, connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData.size, "Before")
+    val tableMetaData1 = connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData
+    assertEquals( 6, tableMetaData1.size, "Before")
+
     connectorRepository.addConnectorHint(SOURCE, object : RepositoryTableFilterHint() {
       override val value: RepositoryTableFilter
         get() = RepositoryTableFilter { it.tableName.uppercase().contains("USER") }
     })
 
-    assertEquals( 3, connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData.size,"After")
+    val tableMetaData2 = connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData
+    assertEquals( 3, tableMetaData2.size,"After")
   }
 }

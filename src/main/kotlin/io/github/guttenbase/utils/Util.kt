@@ -8,7 +8,6 @@ import java.io.*
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.*
-import kotlin.properties.ReadOnlyProperty
 
 /**
  * Collection of utility methods.
@@ -26,9 +25,6 @@ object Util {
   val ByteArrayClass: Class<*> = ByteArray::class.java
 
   const val DEFAULT_BUFFER_SIZE = 1024 * 4
-
-  internal fun <T : Any> immutable(values: Collection<T>) =
-    ReadOnlyProperty<Any, List<T>> { _, _ -> ArrayList(values) }
 
   /**
    * Read all non-empty lines for File and remove and trim them.

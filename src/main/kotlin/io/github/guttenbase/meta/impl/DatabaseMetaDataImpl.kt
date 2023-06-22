@@ -5,7 +5,7 @@ import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
-import java.sql.DatabaseMetaData
+import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.util.*
 
 /**
@@ -23,7 +23,7 @@ class DatabaseMetaDataImpl(
   override val schema: String = schema.trim { it <= ' ' }
   private val tableMetaDataMap: MutableMap<String, TableMetaData> = LinkedHashMap<String, TableMetaData>()
 
-  override val databaseMetaData: DatabaseMetaData get() = createMetaDataProxy(databaseProperties)
+  override val databaseMetaData: JdbcDatabaseMetaData get() = createMetaDataProxy(databaseProperties)
 
   override val schemaPrefix: String get() = if (schema.isNotBlank()) "$schema." else ""
 
@@ -46,10 +46,10 @@ class DatabaseMetaDataImpl(
     return databaseType == that.databaseType && schema.equals(that.schema, ignoreCase = true)
   }
 
-  private fun createMetaDataProxy(properties: Map<String, Any>): DatabaseMetaData {
+  private fun createMetaDataProxy(properties: Map<String, Any>): JdbcDatabaseMetaData {
     return Proxy.newProxyInstance(
-      javaClass.classLoader, arrayOf<Class<*>>(DatabaseMetaData::class.java)
-    ) { _: Any, method: Method, _: Array<Any?>? -> properties[method.name] } as DatabaseMetaData
+      javaClass.classLoader, arrayOf<Class<*>>(JdbcDatabaseMetaData::class.java)
+    ) { _: Any, method: Method, _: Array<Any?>? -> properties[method.name] } as JdbcDatabaseMetaData
   }
 
   companion object {

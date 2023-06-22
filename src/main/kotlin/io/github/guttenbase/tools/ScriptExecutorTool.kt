@@ -157,11 +157,11 @@ constructor(
    */
   @Throws(SQLException::class)
   fun executeQuery(connection: Connection, sql: String): RESULT_LIST {
-    val result: MutableList<Map<String, Any>> = ArrayList()
+    val result: MutableList<RESULT_MAP> = ArrayList()
 
     connection.createStatement().use { statement ->
       statement.executeQuery(sql).use { resultSet ->
-        readMapFromResultSet(connection, resultSet) { _: Connection, data: Map<String, Any> -> result.add(data) }
+        readMapFromResultSet(connection, resultSet) { _: Connection, data: RESULT_MAP -> result.add(data) }
       }
     }
 
@@ -185,7 +185,7 @@ constructor(
     action.initialize(connection)
 
     while (resultSet.next()) {
-      val map = HashMap<String, Any>()
+      val map = HashMap<String, Any?>()
 
       for (i in 1..metaData.columnCount) {
         val columnName = metaData.getColumnName(i).uppercase()
@@ -206,7 +206,7 @@ constructor(
 
     if (statement.execute(sql)) {
       statement.resultSet.use { resultSet ->
-        readMapFromResultSet(statement.connection, resultSet) { _: Connection, map: Map<String, Any> ->
+        readMapFromResultSet(statement.connection, resultSet) { _: Connection, map: RESULT_MAP ->
           progressIndicator.info("Query result: $map")
         }
       }
@@ -245,7 +245,7 @@ constructor(
      * @throws SQLException
      */
     @Throws(SQLException::class)
-    fun execute(connection: Connection, data: Map<String, Any>)
+    fun execute(connection: Connection, data: RESULT_MAP)
   }
 
   abstract class StatementCommand protected constructor(private val sql: String) : Command {
@@ -267,4 +267,5 @@ constructor(
   }
 }
 
-typealias RESULT_LIST =  List<Map<String, Any>>
+typealias RESULT_MAP =  Map<String, Any?>
+typealias RESULT_LIST =  List<RESULT_MAP>

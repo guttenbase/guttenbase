@@ -10,6 +10,7 @@ import io.github.guttenbase.mapping.ColumnTypeMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import io.github.guttenbase.schema.comparison.DuplicateIndexIssue
 import io.github.guttenbase.schema.comparison.SchemaComparatorTool
 import io.github.guttenbase.schema.comparison.SchemaCompatibilityIssueType
@@ -222,7 +223,7 @@ class SchemaScriptCreatorTool(
       return if (nameLength <= 0) 64 else nameLength
     }
 
-  private fun getMaxColumnNameLength(metaData: java.sql.DatabaseMetaData): Int {
+  private fun getMaxColumnNameLength(metaData: JdbcDatabaseMetaData): Int {
     return try {
       metaData.maxColumnNameLength
     } catch (e: SQLException) {

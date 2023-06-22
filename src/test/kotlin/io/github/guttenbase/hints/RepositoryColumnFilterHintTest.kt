@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test
  */
 class RepositoryColumnFilterHintTest : AbstractGuttenBaseTest() {
   @BeforeEach
-
   fun setupTables() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables.sql")
@@ -27,12 +26,15 @@ class RepositoryColumnFilterHintTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testFilter() {
-    assertEquals(6, connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")?.columnCount, "Before")
+    val tableMetaData1 = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")!!
+
+    assertEquals(6, tableMetaData1.columnCount, "Before")
     connectorRepository.addConnectorHint(SOURCE, object : RepositoryColumnFilterHint() {
       override val value: RepositoryColumnFilter
         get() = RepositoryColumnFilter { column -> !column.columnName.equals("password", ignoreCase = true) }
     })
 
-    assertEquals(5, connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")?.columnCount, "After")
+    val tableMetaData2 = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")!!
+    assertEquals(5, tableMetaData2.columnCount, "After")
   }
 }

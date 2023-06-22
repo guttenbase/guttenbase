@@ -11,22 +11,24 @@ import org.junit.jupiter.api.Test
 
 class EntityTableCheckerHintTest : AbstractGuttenBaseTest() {
   @BeforeEach
-  
   fun setup() {
     connectorRepository.addConnectionInfo(CONNECTOR_ID, TestDerbyConnectionInfo())
     ScriptExecutorTool(connectorRepository).executeFileScript(CONNECTOR_ID, resourceName = "/ddl/tables.sql")
   }
 
   @Test
-  
   fun testMainTable() {
-    val objectUnderTest =      connectorRepository.getConnectorHint(CONNECTOR_ID, EntityTableChecker::class.java).value
+    val objectUnderTest = connectorRepository.getConnectorHint(CONNECTOR_ID, EntityTableChecker::class.java).value
     assertTrue(
       objectUnderTest.isEntityTable(
         connectorRepository.getDatabaseMetaData(CONNECTOR_ID).getTableMetaData("FOO_COMPANY")!!
       )
     )
-    assertTrue(objectUnderTest.isEntityTable(connectorRepository.getDatabaseMetaData(CONNECTOR_ID).getTableMetaData("FOO_USER")!!))
+    assertTrue(
+      objectUnderTest.isEntityTable(
+        connectorRepository.getDatabaseMetaData(CONNECTOR_ID).getTableMetaData("FOO_USER")!!
+      )
+    )
     assertFalse(
       objectUnderTest.isEntityTable(
         connectorRepository.getDatabaseMetaData(CONNECTOR_ID).getTableMetaData("FOO_USER_COMPANY")!!

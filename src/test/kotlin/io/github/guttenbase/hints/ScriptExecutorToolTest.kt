@@ -2,6 +2,7 @@ package io.github.guttenbase.hints
 
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
+import io.github.guttenbase.tools.RESULT_MAP
 import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -39,7 +40,7 @@ class ScriptExecutorToolTest : AbstractGuttenBaseTest() {
     objectUnderTest.executeQuery(
       TARGET, "SELECT * FROM FOO_USER",
       object : ScriptExecutorTool.StatementCommand("UPDATE FOO_USER SET PERSONAL_NUMBER = ?  WHERE ID = ?") {
-        override fun execute(connection: Connection, data: Map<String, Any>) {
+        override fun execute(connection: Connection, data: RESULT_MAP) {
           if (data["PERSONAL_NUMBER"] == null) {
             val id = data["ID"] as Long
 
