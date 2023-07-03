@@ -1,5 +1,8 @@
-GuttenBase - Copying done right...
-==================================
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.guttenbase/guttenbase/badge.svg)](https://central.sonatype.com/search?q=guttenbase)
+<meta name="google-site-verification" content="auOvsU7wt1p_7X07rHySknnRdCmwldQRpABsB-zar_Y" />
+
+![Banner](src/site/images/logo.png)
+# GuttenBase - Copying done right...
 
 There are many tools to visualize or analyze databases. You will also find lots of programs programs to copy databases between different systems.
 However, we found that these tools are not flexible enough and do not fulfill all our needs. They fail, e.g., because they can not map the various
@@ -15,8 +18,7 @@ Another problem we address is the fact that databases are often accessible from 
 with a local database clone on our computer. And we don't want to install Oracle or DB2 for that, but use Open Source products such as Postgresql or MySQL.
 
 
-Quick Example
--------------
+# Quick Example
 
 The following code example first checks whether the source and destination are compatible.
 Then the values from the source database are written to the target database. 
@@ -32,8 +34,7 @@ In many cases, that's it!
 	new DefaultTableCopyTool(connectorRepository).copyTables("MySql", "Postgresql");
 	new CheckEqualTableDataTool(connectorRepository).checkTableData("MySql", "Postgresql");
 
-Features
---------
+# Features
 
 - Dump a database into a ZIP/JAR file, transfer the file somewhere else via SSH/FTP/... and extract it locally
 - GuttenBase supports many data base systems to automatically map different column types
