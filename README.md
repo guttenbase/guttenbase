@@ -47,20 +47,22 @@ In many cases, that's it!
     - split columns into multiple columns
     - ...
 - Transform data during the migration
-- Configure the copying process for maximum speed
-- Create mass data for testing by copying the source DB multiple times
-- Meta model of data base for analysis
+- Optimize the copying process for maximum speed using vendor-specific statements
+- Create mass data for testing purposes by copying the source DB multiple times
+- Use meta model of data base for analysis
 - Create tables from imported schema automatically
-- Supports builder pattern to create schema definitions
+- Create schema definitions programatically
 - Highly configurable via custom configuration "hints"
+- Convert column data on the fly
+- Copy just a subset of all data
 
 # Documentation
 
 For documentation and more examples please refer to the [site documentation](src/site/index.md).
 
-# Getting started
+## Getting started
 
-Add the following dependencies to your pom.xml file to get started using **needle4k**:
+Add the following dependencies to your pom.xml file to get started using **guttenbase**:
 
 ```xml
 <dependency>
