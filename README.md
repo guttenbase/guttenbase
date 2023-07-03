@@ -21,7 +21,7 @@ we would like to work independentlywith a local database clone on our computer. 
 that, but use Open Source products
 such as Postgresql or MySQL.
 
-# Quick Example
+## Quick Example
 
 The following code example first checks whether the source and destination are compatible.
 Then the values from the source database are written to the target database.

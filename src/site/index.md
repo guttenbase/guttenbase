@@ -1,10 +1,10 @@
 # Documentation
 
-![needle4k](images/overview.jpg)
+![guttenbase](images/overview.jpg | width=100)
 
-**guttenbase is a lightweight framework for copying and migrating databases, either completely or partially.**
+**Guttenbase is a lightweight framework for copying and migrating databases, either completely or partially.**
 
-guttenbase was created with developers in mind and makes it easy create database clones — even when source and target database systems are different.
+Guttenbase was created with developers in mind and makes it easy create database clones — even when source and target database systems are different.
 
 # Content
 
