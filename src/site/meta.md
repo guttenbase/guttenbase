@@ -29,10 +29,10 @@ GuttenBase supports the builder design pattern to build your own data base schem
 ## Code example
 
 ```java
-    final TableMetaDataBuilder tableMetaDataBuilder = new TableMetaDataBuilder(_databaseMetaDataBuilder).setTableName(tableMapper
-        .mapTableName(sourceTableMetaData));
+final TableMetaDataBuilder tableMetaDataBuilder = new TableMetaDataBuilder(_databaseMetaDataBuilder).setTableName(tableMapper
+    .mapTableName(sourceTableMetaData));
 ...
-    tableMetaDataBuilder.addColumn(nameColumnBuilder).addIndex(new IndexMetaDataBuilder(tableMetaDataBuilder).
-    setAscending(true).setIndexName("NAME_IDX").
-    setUnique(true).addColumn(nameColumnBuilder));
-```java
+tableMetaDataBuilder.addColumn(nameColumnBuilder).addIndex(new IndexMetaDataBuilder(tableMetaDataBuilder).
+setAscending(true).setIndexName("NAME_IDX").
+setUnique(true).addColumn(nameColumnBuilder));
+```
