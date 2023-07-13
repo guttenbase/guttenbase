@@ -147,80 +147,75 @@ These default versions may be overridden by your implementation subsequently.
 
 As already mentioned there is always a default implementation added to a connector by the repository which may be overridden subsequently.
 
-## Hint examples
+# Hint examples
 
 Below you find practical examples of how to implement the hints. You should also take a look at the JUnit tests in the source distribution.
 They will provide a lot of information about how to work with guttenbase.
 
-### ColumnDataMapperProviderHint
+## ColumnDataMapperProviderHint
 
 Used for automatic mapping between database specific types. Each database system has its own list of custom data types Different
 database systems support different data types, that's why you often need to use the data type mapping between source and target database
 in migration process. The following examples show how to use the hint. First, you need to specify the default/additional mapping in the
-
-
 method addMapping(). Then, you have to register the data mapper. The rest will be done automatically.
 
-```
-_connectorRepository.addConnectorHint(TARGET, new
-DefaultColumnDataMapperProviderHint() {
-@Override
-protected void addMappings(final DefaultColumnDataMapperProvider
-columnDataMapperFactory) {
-super.addMappings(columnDataMapperFactory);
-columnDataMapperFactory.addMapping(ColumnType.CLASS_LONG,
-ColumnType.CLASS_STRING, ...);
-columnDataMapperFactory.addMapping(ColumnType.CLASS_BIGDECIMAL,
-ColumnType.CLASS_STRING, ...);
-}
+```java
+connectorRepository.addConnectorHint(TARGET, new DefaultColumnDataMapperProviderHint() {
+    @Override
+    protected void addMappings(final DefaultColumnDataMapperProvider columnDataMapperFactory) {
+      super.addMappings(columnDataMapperFactory);
+      columnDataMapperFactory.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_STRING, ...);
+      columnDataMapperFactory.addMapping(ColumnType.CLASS_BIGDECIMAL, ColumnType.CLASS_STRING, ...);
+    }
 });
 ```
-### ColumnMapperHint
+
+## ColumnMapperHint
 
 Used to override the column name in target database. During the migration process, you may want to rename the columns. In this case you
 should use the ColumnMapperHint. The following example shows how to use the hint and how to rename the columns. First, you need to
 register the column mapper.
 
-```
+```java
 connectorRepository.addConnectorHint(TARGET, new ColumnMapperHint() {
-@Override
-public ColumnMapper getValue() {
-return new CustomColumnRenameName()
-.addReplacement("name", "id_name")
-.addReplacement("username", "id_username");
-}
+    @Override
+    public ColumnMapper getValue() {
+        return new CustomColumnRenameName()
+        .addReplacement("name", "id_name")
+        .addReplacement("username", "id_username");
+    }
 }
 ```
-### ColumnOrderHint
+## ColumnOrderHint
 
 Determine the order of colums. Before you start the migration process, you can customize the order or sort columns in database. The
 following (unrealistic) example show how to sort the columns by the column name's has code.
 
-```
+```java
 connectorRepository.addConnectorHint(SOURCE, new ColumnOrderHint() {
-@Override
-public ColumnOrderComparatorFactory getValue() {
-return () -> Comparator.comparingInt(Object::hashCode);
-}
+    @Override
+    public ColumnOrderComparatorFactory getValue() {
+        return () -> Comparator.comparingInt(Object::hashCode);
+    }
 }
 ```
+
 ## ColumnTypeMapperHint
 
 Different databases use different data types. That's why the column data types are not compatible sometimes. In this case, use
 ColumnTypeMapperHint.
 
-
-```
-_connectorRepository.addConnectorHint(TARGET, new ColumnTypeMapperHint()
+```java
+connectorRepository.addConnectorHint(TARGET, new ColumnTypeMapperHint()
 {
-@Override
-public ColumnTypeMapper getValue() {
-return new DefaultColumnTypeMapper()
-.addMapping(DatabaseType.GENERIC, DatabaseType.GENERIC, "BIGINT",
-"INTEGER");
-}
+    @Override
+    public ColumnTypeMapper getValue() {
+      return new DefaultColumnTypeMapper()
+          .addMapping(DatabaseType.GENERIC, DatabaseType.GENERIC, "BIGINT", "INTEGER");
+    }
 });
 ```
+
 ## ColumnTypeResolverListHint
 
 Determine the mapping strategies. To specify multiple mapping strategies for different column types, use ColumnTypeResolverListHint. This
@@ -228,256 +223,237 @@ hint allows you to perform some heuristic checks on given column type. The examp
 type is appropriate in this case. For example: if the declared type of the column contains any of the strings "CHAR" or "TEXT" then the
 column type is identified as a string.
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-ColumnTypeResolverListHint() {
-@Override
-public ColumnTypeResolverList getValue() {
-return () -> Arrays.asList(new HeuristicColumnTypeResolver(), new
-ClassNameColumnTypeResolver());
-}
+```java
+connectorRepository.addConnectorHint(SOURCE, new ColumnTypeResolverListHint() {
+    @Override
+    public ColumnTypeResolverList getValue() {
+        return () -> Arrays.asList(new HeuristicColumnTypeResolver(), new ClassNameColumnTypeResolver());
+    }
 }
 ```
+
 ## DatabaseColumnFilterHint
 
 You can filter the columns in your database and define which columns should be migrated/copied to new database. The following example
 shows how to use the hint and how to filter columns: the hint selects all the columns from the table "foo_user" except the one called
 "password". Only that data will be copied to target database.
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-DatabaseColumnFilterHint() {
-@Override
-public DatabaseColumnFilter getValue() {
-return columnMetaData ->
-!columnMetaData.getTableMetaData().getTableName().equals("FOO_USER")
-|| !columnMetaData.getColumnName().equals("PASSWORD");
+```java
+connectorRepository.addConnectorHint(SOURCE, new DatabaseColumnFilterHint() {
+    @Override
+    public DatabaseColumnFilter getValue() {
+        return columnMetaData ->
+          !columnMetaData.getTableMetaData().getTableName().equals("FOO_USER")
+          || !columnMetaData.getColumnName().equals("PASSWORD");
+    }
 }
-}
 ```
-### DatabaseTableFilterHint
+
+## DatabaseTableFilterHint
 
 You can filter the tables in your database and define which tables would be migrated/copied to new database. In this example, the hint
 selects all tables with a name containing String "USER". Only these tables will be copied to target database.
 
+```java
+connectorRepository.addConnectorHint(SOURCE, new DatabaseTableFilterHint() {
+    @Override
+    public DatabaseTableFilter getValue(){
+      return new DefaultDatabaseTableFilter() {
+        @Override
+        public boolean accept(final TableMetaData table) throws SQLException
+        {
+          return table.getTableName().toUpperCase().contains("USER");
+        }
+    };
+  }
+}
+```
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-DatabaseTableFilterHint() {
-@Override
-public DatabaseTableFilter getValue(){
-return new DefaultDatabaseTableFilter() {
-@Override
-public boolean accept(final TableMetaData table) throws SQLException
-{
-return table.getTableName().toUpperCase().contains("USER");
-}
-};
-}
-}
-```
-### EntityTableCheckerHint
+## EntityTableCheckerHint
 
 By default this hint checks if the given table has a primary key column named "ID". This information may be usefuly during migration.
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-EntityTableCheckerHint() {
-@Override
-public EntityTableChecker getValue() {
-return tableMetaData -> {
-for (final ColumnMetaData columnMetaData :
-tableMetaData.getColumnMetaData()) {
-final String columnName =
-columnMetaData.getColumnName().toUpperCase();
-if (columnMetaData.isPrimaryKey() && (columnName.equals("ID") ||
-columnName.equals("IDENT"))) {
-return true;
-}
-}
-return false;
-};
-}
+```java
+connectorRepository.addConnectorHint(SOURCE, new EntityTableCheckerHint() {
+    @Override
+    public EntityTableChecker getValue() {
+        return tableMetaData -> {
+            for (final ColumnMetaData columnMetaData :tableMetaData.getColumnMetaData()) {
+                final String columnName = columnMetaData.getColumnName().toUpperCase();
+                if (columnMetaData.isPrimaryKey() && (columnName.equals("ID") || columnName.equals("IDENT"))) {
+                  return true;
+                }
+            }
+            return false;
+      };
+  }
 }
 ```
-## ExportDumpExtraInformationHint
+# ExportDumpExtraInformationHint
 
 As a special feature guttenbase allows to export data into a ZIP/JAR file. The ExportDumpExtraInformationHint gives you the possibility to
 add additional custom information to the dumped data. In this example, you can add the information (as key value pair objects) to the
 dumped data in HashMap form.
 
-
-```
+```java
 public static final String KEY = "SEQUENCE_NUMBER";
 public static final long VALUE = 4711L;
 ...
-connectorRepository.addConnectorHint(EXPORT, new
-ExportDumpExtraInformationHint(){
-@Override
-public ExportDumpExtraInformation getValue() {
-return (connectorRepository, connectorId, exportDumpConnectionInfo)
--> {
-final Map<String, Serializable> result = new HashMap<>();
-result.put(KEY, VALUE);
-return result;
-};
+connectorRepository.addConnectorHint(EXPORT, new ExportDumpExtraInformationHint() {
+    @Override
+    public ExportDumpExtraInformation getValue() {
+    return (connectorRepository, connectorId, exportDumpConnectionInfo) -> {
+        final Map<String, Serializable> result = new HashMap<>();
+        result.put(KEY, VALUE);
+        return result;
+    };
 }
 ```
-### ExporterFactoryHint
 
-You can export a database, namely schema information and table data to some custom format. In this example, the schema information and
+## ExporterFactoryHint
+
+You may export a database, namely schema information and table data to some custom format. In this example, the schema information and
 data are being exported to gzipped file with serialized data. You can customize the hint to your preferences.
 
 ```
 connectorRepository.addConnectorHint(EXPORT, new ExporterFactoryHint() {
-@Override
-public ExporterFactory getValue() {
-return PlainGzipExporter::new;
-}
+    @Override
+    public ExporterFactory getValue() {
+        return PlainGzipExporter::new;
+    }
 }
 ```
+
 ## ImportDumpExtraInformationHint
 
 Of course you may also import the data from a ZIP file into some real data base.The ImportDumpExtraInformationHint gives you a possibility
 to retrieve additional information from the dumped data. In this example, we store the extra information from the dumped data to a field.
 
-```
-private Map<String, Serializable> _extraInformation;
-connectorRepository.addConnectorHint(IMPORT, new
-ImportDumpExtraInformationHint() {
-@Override
-public ImportDumpExtraInformation getValue() {
-return extraInformation -> _extraInformation = extraInformation;
+```java
+private Map<String, Serializable> extraInformation;
+connectorRepository.addConnectorHint(IMPORT, new ImportDumpExtraInformationHint() {
+    @Override
+    public ImportDumpExtraInformation getValue() {
+        return e -> extraInformation = e;
+    }
 }
-}
 ```
+
 ## ImporterFactoryHint
 
-You can import a database from a file, particularly schema information and table data from some custom format.
+You may import a database from a file, particularly schema information and table data from some custom format.
 
-
-```
+```java
 connectorRepository.addConnectorHint(IMPORT, new ImporterFactoryHint() {
-@Override
-public ImporterFactory getValue() {
-return PlainGzipImporter::new;
-}
+    @Override
+    public ImporterFactory getValue() {
+        return PlainGzipImporter::new;
+    }
 }
 ```
-### MaxNumberOfDataItemsHint
+## MaxNumberOfDataItemsHint
 
 During the migration process you need to specify the maximum number of data items that can be inserted via a single INSERT statement.
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-MaxNumberOfDataItemsHint() {
-@Override
-public MaxNumberOfDataItems getValue() {
-return targetTableMetaData -> 30000;
+```java
+connectorRepository.addConnectorHint(SOURCE, new MaxNumberOfDataItemsHint() {
+    @Override
+    public MaxNumberOfDataItems getValue() {
+        return targetTableMetaData -> 30000;
+    }
 }
-}
 ```
+
 ## NumberOfCheckedTableDataHint
 
 This hint is used by the CheckEqualTableDataTool to specify how many rows of the copied tables shall be regarded to ensure that the data
 has been transferred correctly.
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-NumberOfCheckedTableDataHint() {
-@Override
-public NumberOfCheckedTableData getValue() {
-return () -> 100;
+```java
+connectorRepository.addConnectorHint(SOURCE, new NumberOfCheckedTableDataHint() {
+    @Override
+    public NumberOfCheckedTableData getValue() {
+        return () -> 100;
+    }
 }
-}
 ```
-### NumberOfRowsPerBatchHint
+
+## NumberOfRowsPerBatchHint
 
 You may specify how many rows will be inserted in single transaction. This is an important performance issue. The value also must not be
 too high so data buffers are not exceeded. In this example, the value of rows per batch is set to 1000. Using multiple VALUES clauses in a
 single statement is much faster than using separate single-row insert statements, but not all databases support this.
 
-
-```
-connectorRepository.addConnectorHint(TARGET, new
-NumberOfRowsPerBatchHint() {
-@Override
-public NumberOfRowsPerBatch getValue() {
-return new NumberOfRowsPerBatch() {
-@Override
-public int getNumberOfRowsPerBatch(TableMetaData
-targetTableMetaData) {
-return 1000;
-}
-@Override
-public boolean useMultipleValuesClauses(TableMetaData
-targetTableMetaData) {
-return false;
-}
-};
-}
+```java
+connectorRepository.addConnectorHint(TARGET, new NumberOfRowsPerBatchHint() {
+    @Override
+    public NumberOfRowsPerBatch getValue() {
+        return new NumberOfRowsPerBatch() {
+            @Override
+            public int getNumberOfRowsPerBatch(TableMetaData targetTableMetaData) {
+                return 1000;
+            }
+        
+        @Override
+        public boolean useMultipleValuesClauses(TableMetaData targetTableMetaData) {
+            return false;
+        }
+     };
+    }
 }
 ```
-### RefreshTargetConnectionHint
+## RefreshTargetConnectionHint
 
 Some JDBC drivers seem to accumulate data over time, even after a connection is commited() and all statements, result sets, etc. are
 closed. This will cause an OutOfMemoryError eventually. To avoid this the connection can be closed and re-established periodically
 using RefreshTargetConnectionHint.
 
-```
-connectorRepository.addConnectorHint(CONNECTOR_TARGET, new
-RefreshTargetConnectionHint() {
-@Override
-public RefreshTargetConnection getValue() {
-return (noCopiedTables, sourceTableMetaData) -> noCopiedTables % 2
-== 0;
-}
+```java
+connectorRepository.addConnectorHint(CONNECTOR_TARGET, new RefreshTargetConnectionHint() {
+    @Override
+    public RefreshTargetConnection getValue() {
+      return (noCopiedTables, sourceTableMetaData) -> noCopiedTables % 2 == 0;
+    }
 }
 ```
-### RepositoryColumnFilterHint
 
-You can filter the columns in your database, when inquiring connector repository. In this example, the hint selects all of the columns, except
+## RepositoryColumnFilterHint
+
+You may filter the columns in your database, when inquiring connector repository. In this example, the hint selects all of the columns, except
 one column with a name "password".
 
-
-```
-connectorRepository.addConnectorHint(SOURCE, new
-RepositoryColumnFilterHint() {
-@Override
-public RepositoryColumnFilter getValue(){
-return column ->
-!column.getColumnName().equalsIgnoreCase("password");
-}
+```java
+connectorRepository.addConnectorHint(SOURCE, new RepositoryColumnFilterHint() {
+    @Override
+    public RepositoryColumnFilter getValue() {
+      return column -> !column.getColumnName().equalsIgnoreCase("password");
+    }
 }
 ```
 ## RepositoryTableFilterHint
 
-You can filter the tables in your database, when inquiring connector repository. In this example, the hint selects a table which has a name
+You may filter the tables in your database, when inquiring connector repository. In this example, the hint selects a table which has a name
 containing String "USER". Only these tables will be copied to target database.
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-RepositoryTableFilterHint() {
-@Override
-public RepositoryTableFilter getValue() {
-return table -> table.getTableName().toUpperCase().contains("USER");
-}
+```java
+connectorRepository.addConnectorHint(SOURCE, new RepositoryTableFilterHint() {
+    @Override
+    public RepositoryTableFilter getValue() {
+        return table -> table.getTableName().toUpperCase().contains("USER");
+    }
 }
 ```
 ### ResultSetParametersHint
 
 Using this hint you may set some parameter, namely the fetch size, result set type and concurrency tye for result set. By default the fetch
-size is set to the value 2000, the result set type is ResultSet.TYPE_FORWARD_ONLY and concurrency type is
-ResultSet.CONCUR_READ_ONLY.
+size is set to the value 2000, the result set type is ResultSet.TYPE_FORWARD_ONLY and concurrency type is ResultSet.CONCUR_READ_ONLY.
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-ResultSetParametersHint() {
-@Override
-public ResultSetParameters getValue() {
-return new
-DefaultResultSetParametersHint.DefaultResultSetParameters();
-}
+```java
+connectorRepository.addConnectorHint(SOURCE, new ResultSetParametersHint() {
+    @Override
+    public ResultSetParameters getValue() {
+      return new DefaultResultSetParametersHint.DefaultResultSetParameters();
+    }
 }
 ```
 ## ScriptExecutorProgressIndicatorHint
@@ -485,123 +461,121 @@ DefaultResultSetParametersHint.DefaultResultSetParameters();
 You can log the migration process, particularly start, end, execution of a SQL statement, etc. In this example, the simple implementation will
 just log to console.
 
+```java
+connectorRepository.addConnectorHint(SOURCE, new ScriptExecutorProgressIndicatorHint() {
+    @Override
+    public ScriptExecutorProgressIndicator getValue() {
+      return new LoggingScriptExecutorProgressIndicator();
+    }
+}
+```
 
-```
-connectorRepository.addConnectorHint(SOURCE, new
-ScriptExecutorProgressIndicatorHint() {
-@Override
-public ScriptExecutorProgressIndicator getValue() {
-return new LoggingScriptExecutorProgressIndicator();
-}
-}
-```
-### SelectWhereClauseHint
+## SelectWhereClauseHint
 
 Using this hint you may configure the WHERE clause of the SELECT statement used to read data from the source table, e.g. to apply custom
 filters.
 
-```
+```java
 connectorRepository.addConnectorHint(SOURCE, new SelectWhereClauseHint()
 {
-@Override
-public SelectWhereClause getValue() {
-return tableMetaData -> {
-switch (tableMetaData.getTableName()) {
-case "FOO_USER":
-return "WHERE ID <= 3";
-case "FOO_USER_COMPANY":
-case "FOO_USER_ROLES":
-return "WHERE USER_ID <= 3";
-default:
-return "";
-}
-};
-}
+    @Override
+    public SelectWhereClause getValue() {
+        return tableMetaData -> {
+            switch (tableMetaData.getTableName()) {
+                case "FOO_USER":
+                    return "WHERE ID <= 3";
+                case "FOO_USER_COMPANY":
+                case "FOO_USER_ROLES":
+                    return "WHERE USER_ID <= 3";
+                default:
+                    return "";
+            }
+        };
+    }
 }
 ```
-### SplitColumnHint
+
+## SplitColumnHint
 
 Sometimes the amount of data read by the SELECT statement exceeds any buffer. In these cases we need to split the data by some given
 numeric unique value, usually the primary key.
 I.e., the data is read in chunks where these chunks are split using the ID column.
 
-```
+```java
 connectorRepository.addConnectorHint(SOURCE, new SplitColumnHint() {
-@Override
-public SplitColumn getValue() {
-return new DefaultSplitColumn();
-}
+    @Override
+    public SplitColumn getValue() {
+      return new DefaultSplitColumn();
+    }
 }
 ```
 ## TableCopyProgressIndicatorHint
 
+You may log the migration process, particularly copying of tables In this example, the simple implementation will just log to console.
 
-You can log the migration process, particularly copying of tables In this example, the simple implementation will just log to console.
-
-```
-connectorRepository.addConnectorHint(SOURCE, new
-TableCopyProgressIndicatorHint() {
-@Override
-public TableCopyProgressIndicator getValue() {
-return new LoggingTableCopyProgressIndicator();
-}
+```java
+connectorRepository.addConnectorHint(SOURCE, new TableCopyProgressIndicatorHint() {
+    @Override
+    public TableCopyProgressIndicator getValue() {
+        return new LoggingTableCopyProgressIndicator();
+    }
 }
 ```
-### TableMapperHint
+
+## TableMapperHint
 
 Configure the table name in target database. During the migration process, you may want to rename the tables. The following example
 shows how to use the hint and how to rename the tables. First, you need to register the table mapper. Then you can rename the table by
 name: change "offices" to "tab_offices", "orders" to "tab_orders".
 
-```
+```java
 connectorRepository.addConnectorHint(TARGET, new TableMapperHint() {
-@Override
-public TableMapper getValue() {
-return new CustomTableRenameName()
-.addReplacement("offices", "tab_offices")
-.addReplacement("orders", "tab_orders");
-}
+  @Override
+  public TableMapper getValue() {
+    return new CustomTableRenameName()
+      .addReplacement("offices", "tab_offices")
+      .addReplacement("orders", "tab_orders");
+    }
 }
 ```
+
 ## TableOrderHint
 
-You can customize the order of tables during migration. By default the comparor would order a collection of tables by their natural ordering of
+You may customize the order of tables during migration. By default the comparor would order a collection of tables by their natural ordering of
 table names.
 
-```
+```java
 connectorRepository.addConnectorHint(SOURCE, new TableOrderHint() {
-@Override
-public TableOrderComparatorFactory getValue() {
-return () -> Comparator.comparingInt(System::identityHashCode);
-}
+    @Override
+    public TableOrderComparatorFactory getValue() {
+      return () -> Comparator.comparingInt(System::identityHashCode);
+    }
 }
 ```
+
 ## ZipExporterClassResourcesHint
 
 You can export a database to a special ZIP/JAR file. This hint allows you to create a self-contained executable JAR that will startup with a
 Main class customizable by the framework user. If necessary you can add custom classes and resources to the resulting JAR. You can
 also specify a startup class for the resulting JAR File. The following example shows how to register and use the hint.
 
-
-connectorRepository.addConnectorHint(EXPORT, new
-ZipExporterClassResourcesHint() {
-@Override
-public ZipExporterClassResources getValue() {
-return new DefaultZipExporterClassResources() {
-@Override
-public Class<?> getStartupClass() {
-return MyStartup.class;
+```java
+connectorRepository.addConnectorHint(EXPORT, new ZipExporterClassResourcesHint() {
+    @Override
+    public ZipExporterClassResources getValue() {
+      return new DefaultZipExporterClassResources() {
+        @Override
+        public Class<?> getStartupClass() {
+          return MyStartup.class;
+        }
+    
+        @Override
+        public Map<String, URL> getUrlResources() {
+            final Map<String, URL> result = new HashMap<>();
+            result.put("GIF", this.getClass().getResource("/data/test.gif"));
+            return result;
+       }
+    };
+  }
 }
-
-@Override
-public Map<String, URL> getUrlResources() {
-final Map<String, URL> result = new HashMap<>();
-result.put("GIF",
-this.getClass().getResource("/data/test.gif"));
-return result;
-}
-};
-}
-}
-
-
+```
