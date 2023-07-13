@@ -314,8 +314,8 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
 
   private fun createMysqlToMssqlMapping() {
     addMapping(MYSQL, MSSQL, "LONGTEXT", "NVARCHAR", "(4000)")
+    addMapping(MYSQL, MSSQL, "TIMESTAMP", "DATETIME")
     addMapping(MYSQL, MSSQL, "LONGBLOB", "VARBINARY")
-    addMapping(MYSQL, MSSQL, "VARCHAR", "NVARCHAR", "(4000)")
     addMapping(MYSQL, MSSQL, "DECIMAL", "DECIMAL", "(38)")
   }
 
