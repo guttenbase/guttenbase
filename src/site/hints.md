@@ -1,6 +1,6 @@
 # Hints
 
-The way tools operate is configured by hints. There is [quite a number of hints](https://javadoc.io/doc/de.akquinet.jbosscc.guttenbase/GuttenBase/latest/de/akquinet/jbosscc/guttenbase/hints/package-summary.html) you can use:
+The way tools operate is configured by hints. There is [quite a number of hints](https://javadoc.io/doc/io.github.guttenbase/guttenbase/latest/io/github/guttenbase/guttenbase/hints/package-summary.html) you can use:
 
 * ColumnDataMapperProviderHint: Used to find mappings for column data. E.g., when converting a number to a String or casting a LONG to a BIGINT.
 * ColumnMapperHint: Select target column(s) for given source column. Usually, there will a 1:1 relationship. However, there may be situations where you want to duplicate or transform data into multiple columns.

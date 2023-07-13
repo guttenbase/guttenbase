@@ -58,7 +58,7 @@ In many cases, that's it!
 
 # Documentation
 
-For documentation and more examples please refer to the [site documentation](src/site/index.md) and [API-Docs](https://javadoc.io/doc/de.akquinet.jbosscc.guttenbase/GuttenBase/latest/index.html).
+For documentation and more examples please refer to the [site documentation](src/site/index.md) and [API-Docs](https://javadoc.io/doc/io.github.guttenbase/guttenbase/latest/io/github/guttenbase/guttenbase/latest/index.html).
 
 ## Getting started
 
