@@ -159,7 +159,8 @@ class SchemaScriptCreatorToolTest {
 
     @JvmStatic
     fun createColumn(tableMetaData: TableMetaDataImpl, columnName: String = "Name"): ColumnMetaData =
-      ColumnMetaDataImpl(tableMetaData,
+      ColumnMetaDataImpl(
+        tableMetaData,
         Types.VARCHAR, columnName, "VARCHAR(100)", String::class.java.name,
         false, false, 0, 0
       )
@@ -170,8 +171,9 @@ class SchemaScriptCreatorToolTest {
       databaseMetaData: DatabaseMetaData,
       tableName: String = "$TABLE$index"
     ): TableMetaDataImpl {
-      val tableMetaData = TableMetaDataImpl(tableName, databaseMetaData, "TABLE", "", "")
-      val primaryKeyColumn = ColumnMetaDataImpl(tableMetaData,
+      val tableMetaData = TableMetaDataImpl(databaseMetaData, tableName, "TABLE", "", "")
+      val primaryKeyColumn = ColumnMetaDataImpl(
+        tableMetaData,
         Types.BIGINT, "Id", "BIGINT", BigInteger::class.java.name,
         false, true, 0, 0
       ).apply { isPrimaryKey = true }
@@ -209,8 +211,8 @@ class SchemaScriptCreatorToolTest {
       table1.addImportedForeignKey(foreignKeyMeta1)
       table2.addExportedForeignKey(foreignKeyMeta2)
 
-      databaseMetaData.addTableMetaData(table1)
-      databaseMetaData.addTableMetaData(table2)
+      databaseMetaData.addTable(table1)
+      databaseMetaData.addTable(table2)
 
       return databaseMetaData
     }

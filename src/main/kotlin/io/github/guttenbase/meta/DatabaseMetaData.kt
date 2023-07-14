@@ -16,6 +16,8 @@ interface DatabaseMetaData : Serializable {
   val schema: String
   val schemaPrefix: String
 
+  val databaseProperties: Map<String, Any>
+
   /**
    * Return tables list filtered by @see [io.github.guttenbase.repository.RepositoryTableFilter]
    */

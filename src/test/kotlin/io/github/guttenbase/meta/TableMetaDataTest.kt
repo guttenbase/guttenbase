@@ -11,7 +11,7 @@ import java.sql.Types
 @Suppress("BooleanLiteralArgument")
 class TableMetaDataTest {
   private val objectUnderTest =
-    TableMetaDataImpl("TEST", DatabaseMetaDataImpl("dbo", HashMap(), DatabaseType.MOCK), "TABLE", "", "")
+    TableMetaDataImpl(DatabaseMetaDataImpl("dbo", HashMap(), DatabaseType.MOCK), "TEST", "TABLE", "", "")
   private val column = ColumnMetaDataImpl(objectUnderTest, Types.BIGINT, "ID", "BIGINT", "INTEGER", false, true, 12, 12)
 
   @Test

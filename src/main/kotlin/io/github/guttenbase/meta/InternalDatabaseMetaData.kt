@@ -11,6 +11,6 @@ package io.github.guttenbase.meta
  * @author M. Dahm
  */
 internal interface InternalDatabaseMetaData : DatabaseMetaData {
-  fun addTableMetaData(tableMetaData: TableMetaData)
-  fun removeTableMetaData(tableMetaData: TableMetaData)
+  fun addTable(tableMetaData: TableMetaData)
+  fun removeTable(tableMetaData: TableMetaData)
 }

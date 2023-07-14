@@ -196,7 +196,7 @@ open class ConnectorRepositoryImpl : ConnectorRepository {
           }
         }
       } else {
-        removeTableMetaData(tableMetaData)
+        removeTable(tableMetaData)
       }
     }
 

@@ -1,11 +1,12 @@
 package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
-import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.util.*
 
 /**
@@ -15,12 +16,20 @@ import java.util.*
  *
  * @author M. Dahm
  */
+@Suppress("unused")
 class DatabaseMetaDataImpl(
   schema: String,
-  private val databaseProperties: Map<String, Any>,
+  override val databaseProperties: Map<String, Any>,
   override val databaseType: DatabaseType
 ) : InternalDatabaseMetaData {
+  constructor(databaseMetaData: DatabaseMetaData) : this(
+    databaseMetaData.schema,
+    LinkedHashMap(databaseMetaData.databaseProperties),
+    databaseMetaData.databaseType
+  )
+
   override val schema: String = schema.trim { it <= ' ' }
+
   private val tableMetaDataMap: MutableMap<String, TableMetaData> = LinkedHashMap<String, TableMetaData>()
 
   override val databaseMetaData: JdbcDatabaseMetaData get() = createMetaDataProxy(databaseProperties)
@@ -31,18 +40,18 @@ class DatabaseMetaDataImpl(
 
   override fun getTableMetaData(tableName: String): TableMetaData? = tableMetaDataMap[tableName.uppercase()]
 
-  override fun addTableMetaData(tableMetaData: TableMetaData) {
+  override fun addTable(tableMetaData: TableMetaData) {
     tableMetaDataMap[tableMetaData.tableName.uppercase()] = tableMetaData
   }
 
-  override fun removeTableMetaData(tableMetaData: TableMetaData) {
+  override fun removeTable(tableMetaData: TableMetaData) {
     tableMetaDataMap.remove(tableMetaData.tableName.uppercase())
   }
 
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
 
   override fun equals(other: Any?): Boolean {
-    val that = other as io.github.guttenbase.meta.DatabaseMetaData
+    val that = other as DatabaseMetaData
     return databaseType == that.databaseType && schema.equals(that.schema, ignoreCase = true)
   }
 

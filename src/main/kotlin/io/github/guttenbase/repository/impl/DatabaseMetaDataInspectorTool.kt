@@ -292,10 +292,10 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
 
         LOG.debug("Found: $tableCatalog/$tableSchema/$tableName/$tableType")
 
-        val tableMetaData = TableMetaDataImpl(tableName, databaseMetaData, tableType, tableCatalog, tableSchema)
+        val tableMetaData = TableMetaDataImpl(databaseMetaData, tableName, tableType, tableCatalog, tableSchema)
 
         if (tableFilter.accept(tableMetaData)) {
-          databaseMetaData.addTableMetaData(tableMetaData)
+          databaseMetaData.addTable(tableMetaData)
         }
       }
 
