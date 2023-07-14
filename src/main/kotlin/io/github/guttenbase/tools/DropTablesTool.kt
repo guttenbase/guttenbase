@@ -21,6 +21,7 @@ import java.sql.SQLException
  * @author M. Dahm
  * Hint is used by [TableOrderHint] to determine order of tables
  */
+@Suppress("MemberVisibilityCanBePrivate")
 open class DropTablesTool @JvmOverloads constructor(
   val connectorRepository: ConnectorRepository,
   private val dropTablesSuffix: String = ""
@@ -87,9 +88,9 @@ open class DropTablesTool @JvmOverloads constructor(
     return statements
   }
 
-  fun createDropTableStatements(connectorId: String)=createTableStatements(connectorId, "DROP TABLE", dropTablesSuffix)
+  fun createDropTableStatements(connectorId: String) = createTableStatements(connectorId, "DROP TABLE", dropTablesSuffix)
 
-  fun createDeleteTableStatements(connectorId: String)=createTableStatements(connectorId, "DELETE FROM", "")
+  fun createDeleteTableStatements(connectorId: String) = createTableStatements(connectorId, "DELETE FROM", "")
 
   @Throws(SQLException::class)
   fun dropTables(targetId: String) {
@@ -112,7 +113,7 @@ open class DropTablesTool @JvmOverloads constructor(
   }
 
   private fun createTableStatements(connectorId: String, clausePrefix: String, clauseSuffix: String): List<String> {
-    val tableMetaData = TableOrderTool().getOrderedTables(      getSortedTables(connectorRepository, connectorId), false    )
+    val tableMetaData = TableOrderTool().getOrderedTables(getSortedTables(connectorRepository, connectorId), false)
     val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
     val suffix = if ("" == Util.trim(clauseSuffix)) "" else " $clauseSuffix"
 

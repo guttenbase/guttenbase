@@ -281,7 +281,8 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     val resultSet = metaData.getTables(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchemaPattern(databaseMetaData),
-      tableFilter.getTableNamePattern(databaseMetaData), tableFilter.getTableTypes(databaseMetaData)
+      tableFilter.getTableNamePattern(databaseMetaData),
+      tableFilter.getTableTypes(databaseMetaData)
     )
 
     resultSet.use {

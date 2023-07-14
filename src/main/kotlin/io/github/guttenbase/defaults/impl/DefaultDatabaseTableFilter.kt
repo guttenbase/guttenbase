@@ -8,33 +8,26 @@ import io.github.guttenbase.utils.Util
 
 
 open class DefaultDatabaseTableFilter : DatabaseTableFilter {
-  override fun getCatalog(databaseMetaData: DatabaseMetaData): String? {
-    return when (databaseMetaData.databaseType) {
-      MARIADB, MYSQL -> databaseMetaData.schema
-      else -> null
-    }
+  override fun getCatalog(databaseMetaData: DatabaseMetaData) = when (databaseMetaData.databaseType) {
+    MARIADB, MYSQL -> databaseMetaData.schema
+    else -> null
   }
 
-  override fun getSchema(databaseMetaData: DatabaseMetaData): String? {
-    return if ("" == Util.trim(databaseMetaData.schema)) null else databaseMetaData.schemaPrefix
-  }
+  override fun getSchema(databaseMetaData: DatabaseMetaData) =
+    if ("" == Util.trim(databaseMetaData.schema)) null else databaseMetaData.schema
 
-  override fun getSchemaPattern(databaseMetaData: DatabaseMetaData): String? {
-    return when (databaseMetaData.databaseType) {
-      MARIADB, MYSQL -> null
-      else -> getSchema(databaseMetaData)
-    }
+  override fun getSchemaPattern(databaseMetaData: DatabaseMetaData) = when (databaseMetaData.databaseType) {
+    MARIADB, MYSQL -> null
+    else -> getSchema(databaseMetaData)
   }
 
   override fun getTableNamePattern(databaseMetaData: DatabaseMetaData) = "%"
 
   override fun getTableTypes(databaseMetaData: DatabaseMetaData) = arrayOf("TABLE")
 
-  override fun accept(table: TableMetaData): Boolean {
-    return when (table.databaseMetaData.databaseType) {
-      POSTGRESQL -> !table.tableName.uppercase().startsWith("SQL_")
-      H2DB -> table.tableSchema?.uppercase() == "PUBLIC"
-      else -> true
-    }
+  override fun accept(table: TableMetaData) = when (table.databaseMetaData.databaseType) {
+    POSTGRESQL -> !table.tableName.uppercase().startsWith("SQL_")
+    H2DB -> table.tableSchema?.uppercase() == "PUBLIC"
+    else -> true
   }
 }
