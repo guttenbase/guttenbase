@@ -3,19 +3,18 @@ package io.github.guttenbase.sql
 /**
  * Primitive implementation of SQL parser in order to check validity of script.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
+@Suppress("SameParameterValue", "KotlinConstantConditions")
 class SQLLexer @JvmOverloads constructor(lines: List<String>, private val delimiter: Char = ';') {
-  private val sql = lines.joinToString(separator = "\n", transform = { s -> s.trim() })
+  private val sql = lines.joinToString(separator = "\n", transform = { it.trim() })
   private var currentIndex = 0
   private var withinString = false
 
   fun parse(): List<String> {
-    val result=ArrayList<String>()
+    val result = ArrayList<String>()
     val builder = StringBuilder()
 
     while (hasNext()) {
@@ -59,11 +58,13 @@ class SQLLexer @JvmOverloads constructor(lines: List<String>, private val delimi
         }
       }
     }
+
     return result
   }
 
   private fun seekToken(tokenType: SQLTokenType) {
     var nextToken: SQLTokenType
+
     do {
       read()
       nextToken = nextToken()
@@ -106,14 +107,12 @@ class SQLLexer @JvmOverloads constructor(lines: List<String>, private val delimi
     currentIndex -= count
   }
 
-  private operator fun hasNext(): Boolean {
-    return currentIndex < sql.length
-  }
+  private fun hasNext() = currentIndex < sql.length
 
   private fun read(): Int {
     val index = currentIndex++
 
-    return if (!hasNext()) {
+    return if (index >= sql.length) {
       EOF
     } else {
       sql[index].code

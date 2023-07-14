@@ -71,9 +71,8 @@ constructor(
     lines: List<String>
   ) {
     if (lines.isNotEmpty()) {
-      val targetDatabaseConfiguration: TargetDatabaseConfiguration =
-        connectorRepository.getTargetDatabaseConfiguration(connectorId)
-      val sqlStatements: List<String> = SQLLexer(lines, delimiter).parse()
+      val targetDatabaseConfiguration = connectorRepository.getTargetDatabaseConfiguration(connectorId)
+      val sqlStatements = SQLLexer(lines, delimiter).parse()
 
       progressIndicator =
         connectorRepository.getConnectorHint(connectorId, ScriptExecutorProgressIndicator::class.java).value
@@ -267,5 +266,5 @@ constructor(
   }
 }
 
-typealias RESULT_MAP =  Map<String, Any?>
-typealias RESULT_LIST =  List<RESULT_MAP>
+typealias RESULT_MAP = Map<String, Any?>
+typealias RESULT_LIST = List<RESULT_MAP>

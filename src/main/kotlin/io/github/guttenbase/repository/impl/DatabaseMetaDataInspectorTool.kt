@@ -291,10 +291,8 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
          */
         val tableCatalog: String? = resultSet.getString("TABLE_CAT")
         val tableSchema: String? = resultSet.getString("TABLE_SCHEM")
-        val tableName: String = resultSet.getString("TABLE_NAME")
-          ?: throw GuttenBaseException("TABLE_NAME must not be null in meta data result set")
-        val tableType: String = resultSet.getString("TABLE_TYPE")
-          ?: throw GuttenBaseException("TABLE_TYPE must not be null in meta data result set")
+        val tableName: String = resultSet.getString("TABLE_NAME") ?: throw GuttenBaseException("TABLE_NAME must not be null")
+        val tableType: String = resultSet.getString("TABLE_TYPE") ?: throw GuttenBaseException("TABLE_TYPE must not be null")
 
         LOG.debug("Found: $tableCatalog/$tableSchema/$tableName/$tableType")
 
