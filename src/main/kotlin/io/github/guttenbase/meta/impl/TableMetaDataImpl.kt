@@ -15,8 +15,8 @@ class TableMetaDataImpl(
   override val databaseMetaData: DatabaseMetaData,
   override val tableName: String,
   override val tableType: String,
-  override val tableCatalog: String,
-  override val tableSchema: String
+  override val tableCatalog: String?,
+  override val tableSchema: String?
 ) : InternalTableMetaData {
   constructor(databaseMetaData: DatabaseMetaData, tableMetaData: TableMetaData) : this(
     databaseMetaData, tableMetaData.tableName, tableMetaData.tableType, tableMetaData.tableCatalog, tableMetaData.tableSchema

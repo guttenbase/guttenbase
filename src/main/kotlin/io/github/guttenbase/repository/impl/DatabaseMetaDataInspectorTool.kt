@@ -1,6 +1,7 @@
 package io.github.guttenbase.repository.impl
 
 import io.github.guttenbase.connector.ConnectorInfo
+import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.impl.*
@@ -85,11 +86,11 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
 
     resultSet.use {
       while (resultSet.next()) {
-        val pkTableName = resultSet.getString("PKTABLE_NAME")
-        val pkColumnName = resultSet.getString("PKCOLUMN_NAME")
-        val fkTableName = resultSet.getString("FKTABLE_NAME")
-        val fkColumnName = resultSet.getString("FKCOLUMN_NAME")
-        val fkName = resultSet.getString("FK_NAME")
+        val pkTableName = resultSet.getString("PKTABLE_NAME") ?: throw GuttenBaseException("PKTABLE_NAME must not be null")
+        val pkColumnName = resultSet.getString("PKCOLUMN_NAME") ?: throw GuttenBaseException("PKCOLUMN_NAME must not be null")
+        val fkTableName = resultSet.getString("FKTABLE_NAME") ?: throw GuttenBaseException("FKTABLE_NAME must not be null")
+        val fkColumnName = resultSet.getString("FKCOLUMN_NAME") ?: throw GuttenBaseException("FKCOLUMN_NAME must not be null")
+        val fkName: String = resultSet.getString("FK_NAME") ?: "FK_UNKNOWN_$fkColumnName"
         val pkTableMetaData: InternalTableMetaData? = databaseMetaData.getTableMetaData(pkTableName) as InternalTableMetaData?
         val fkTableMetaData: InternalTableMetaData? = databaseMetaData.getTableMetaData(fkTableName) as InternalTableMetaData?
 
@@ -137,9 +138,9 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     resultSet.use {
       while (resultSet.next()) {
         val nonUnique = resultSet.getBoolean("NON_UNIQUE")
-        val indexName = resultSet.getString("INDEX_NAME")
         val columnName = resultSet.getString("COLUMN_NAME")
-        val ascOrDesc = resultSet.getString("ASC_OR_DESC")
+        val indexName = resultSet.getString("INDEX_NAME") ?: "IDX_UNKNOWN_$columnName"
+        val ascOrDesc: String? = resultSet.getString("ASC_OR_DESC")
 
         if (columnName != null) {
           val column = table.getColumnMetaData(columnName)
@@ -179,7 +180,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     resultSet.use {
       while (resultSet.next()) {
         val pkName = resultSet.getString("PK_NAME")
-        val columnName = resultSet.getString("COLUMN_NAME")
+        val columnName = resultSet.getString("COLUMN_NAME") ?: throw GuttenBaseException("COLUMN_NAME must not be null")
 
         if (pkName != null) {
           val columnMetaData: InternalColumnMetaData = table.getColumnMetaData(columnName) as InternalColumnMetaData?
@@ -285,10 +286,14 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
 
     resultSet.use {
       while (resultSet.next()) {
-        val tableCatalog = resultSet.getString("TABLE_CAT")
-        val tableSchema = resultSet.getString("TABLE_SCHEM")
-        val tableName = resultSet.getString("TABLE_NAME")
-        val tableType = resultSet.getString("TABLE_TYPE")
+        /** @see [java.sql.DatabaseMetaData.getTables]
+         */
+        val tableCatalog: String? = resultSet.getString("TABLE_CAT")
+        val tableSchema: String? = resultSet.getString("TABLE_SCHEM")
+        val tableName: String = resultSet.getString("TABLE_NAME")
+          ?: throw GuttenBaseException("TABLE_NAME must not be null in meta data result set")
+        val tableType: String = resultSet.getString("TABLE_TYPE")
+          ?: throw GuttenBaseException("TABLE_TYPE must not be null in meta data result set")
 
         LOG.debug("Found: $tableCatalog/$tableSchema/$tableName/$tableType")
 
