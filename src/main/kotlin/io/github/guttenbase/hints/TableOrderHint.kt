@@ -24,6 +24,7 @@ abstract class TableOrderHint : ConnectorHint<TableOrderComparatorFactory> {
     /**
      * Helper method
      */
+    @JvmStatic
     fun getSortedTables(connectorRepository: ConnectorRepository, connectorId: String): List<TableMetaData> {
       val databaseMetaData: DatabaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
       val comparator: Comparator<TableMetaData> = connectorRepository

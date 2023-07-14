@@ -157,12 +157,14 @@ class SchemaScriptCreatorToolTest {
     const val TABLE = "My_Table"
     const val SCHEMA_NAME = "schemaName"
 
+    @JvmStatic
     fun createColumn(tableMetaData: TableMetaDataImpl, columnName: String = "Name"): ColumnMetaData =
       ColumnMetaDataImpl(tableMetaData,
         Types.VARCHAR, columnName, "VARCHAR(100)", String::class.java.name,
         false, false, 0, 0
       )
 
+    @JvmStatic
     fun createTable(
       index: Int,
       databaseMetaData: DatabaseMetaData,
@@ -185,6 +187,7 @@ class SchemaScriptCreatorToolTest {
       return tableMetaData
     }
 
+    @JvmStatic
     fun createDatabaseMetaData(): DatabaseMetaDataImpl {
       val databaseMetaData = DatabaseMetaDataImpl(
         SCHEMA_NAME, mapOf(
@@ -212,6 +215,7 @@ class SchemaScriptCreatorToolTest {
       return databaseMetaData
     }
 
+    @JvmStatic
     fun createRepository(databaseMetaData: DatabaseMetaData): ConnectorRepository {
       val repository: ConnectorRepository = object : ConnectorRepositoryImpl() {
         override fun getDatabaseMetaData(connectorId: String) = databaseMetaData

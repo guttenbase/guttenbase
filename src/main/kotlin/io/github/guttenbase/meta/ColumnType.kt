@@ -243,7 +243,7 @@ enum class ColumnType(vararg classes: Class<*>) {
 
   companion object {
     private val COLUMN_TYPES: Map<Class<*>, ColumnType> by lazy {
-      values().map { ct -> ct.columnClasses.map { it to ct } }.flatten().toMap()
+      entries.map { ct -> ct.columnClasses.map { it to ct } }.flatten().toMap()
     }
 
     /**
