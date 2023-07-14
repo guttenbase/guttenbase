@@ -8,7 +8,7 @@ import io.github.guttenbase.meta.TableMetaData
  * look at columnName starts with some value and replace them
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

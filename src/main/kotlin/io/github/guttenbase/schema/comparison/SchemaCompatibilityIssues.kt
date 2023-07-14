@@ -2,6 +2,11 @@ package io.github.guttenbase.schema.comparison
 
 import java.util.logging.Level
 
+/**
+ * &copy; 2012-2034 akquinet tech@spree
+ *
+ * @author M. Dahm
+ */
 class SchemaCompatibilityIssues {
   val compatibilityIssues = ArrayList<SchemaCompatibilityIssue>()
 

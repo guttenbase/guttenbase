@@ -8,7 +8,7 @@ import io.github.guttenbase.mapping.DefaultColumnTypeMapper
  * By default use customized mapping since database column types are sometimes different.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

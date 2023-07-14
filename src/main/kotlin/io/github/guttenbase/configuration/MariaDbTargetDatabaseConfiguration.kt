@@ -9,12 +9,12 @@ import java.sql.SQLException
  * Implementation for MARIADB data base.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class MariaDbTargetDatabaseConfiguration
+open class MariaDbTargetDatabaseConfiguration
 /**
  * @param connectorRepository
  * @param disableUniqueChecks disable unique checks, too. Not just foreign key constraints.

@@ -7,7 +7,7 @@ import io.github.guttenbase.meta.TableMetaData
  * Select target table for given source table.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

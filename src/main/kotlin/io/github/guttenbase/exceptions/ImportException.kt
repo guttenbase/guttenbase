@@ -5,13 +5,14 @@ import io.github.guttenbase.connector.GuttenBaseException
 
 /**
  * "Fake" [java.sql.SQLException] in order to encapsulate [java.io.IOException] thrown during dumping or restoring data bases using
- * [ImportDumpConnector]
+ * [io.github.guttenbase.export.ImportDumpConnector]
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
+@Suppress("unused")
 class ImportException : GuttenBaseException {
   constructor(reason: String, e: Exception) : super(reason, e)
   constructor(reason: String) : super(reason)

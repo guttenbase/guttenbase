@@ -10,7 +10,7 @@ import io.github.guttenbase.meta.TableMetaData
  * By default, return column with same name ignoring case. You may however configure case and escaping the column names explicitely.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

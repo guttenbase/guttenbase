@@ -21,7 +21,7 @@ import java.util.zip.ZipOutputStream
  * inspected with a ZIP tool. The structure of the ZIP is based on the structure of a data base.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

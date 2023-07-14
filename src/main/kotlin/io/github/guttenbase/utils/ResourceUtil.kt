@@ -5,6 +5,11 @@ import java.io.File
 import java.io.IOException
 import java.net.URLDecoder
 
+/**
+ * &copy; 2012-2034 akquinet tech@spree
+ *
+ * @author M. Dahm
+ */
 class ResourceUtil {
   @Throws(IOException::class)
   fun getResourceInfo(clazz: Class<*>): ResourceInfo {

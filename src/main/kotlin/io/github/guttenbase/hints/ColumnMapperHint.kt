@@ -9,7 +9,7 @@ import io.github.guttenbase.mapping.ColumnMapper
  *
  * Alternatively the list may also be empty.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  *

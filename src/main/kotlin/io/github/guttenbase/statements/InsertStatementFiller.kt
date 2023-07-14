@@ -25,7 +25,7 @@ import java.sql.SQLException
  * Fill previously created INSERT statement with data from source connector.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

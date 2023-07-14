@@ -14,7 +14,7 @@ import kotlin.collections.HashSet
 /**
  * Helper class to add resources to ZIP file.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */

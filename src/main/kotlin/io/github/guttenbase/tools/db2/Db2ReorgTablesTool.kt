@@ -8,10 +8,10 @@ import io.github.guttenbase.tools.AbstractTablesOperationTool
  * Will execute REORG TABLE table;
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class Db2ReorgTablesTool(connectorRepository: ConnectorRepository) :
+open class Db2ReorgTablesTool(connectorRepository: ConnectorRepository) :
   AbstractTablesOperationTool(connectorRepository, "CALL SYSPROC.ADMIN_CMD('REORG TABLE $TABLE_PLACEHOLDER');")

@@ -10,7 +10,7 @@ import kotlin.Throws
  * Write ZIP file entry containing information about data base such as schema or version.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

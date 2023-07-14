@@ -9,7 +9,7 @@ import io.github.guttenbase.hints.ConnectorHint
  *
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * Hint is used by [ZipImporter] to add custom informations to the dump

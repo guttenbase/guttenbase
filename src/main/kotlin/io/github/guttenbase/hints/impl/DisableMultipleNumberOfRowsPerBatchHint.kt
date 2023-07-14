@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.NumberOfRowsPerBatch
 
 /**
  * Disable multiple value clause feature
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

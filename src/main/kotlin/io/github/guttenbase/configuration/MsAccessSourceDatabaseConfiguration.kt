@@ -9,10 +9,10 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  * http://ucanaccess.sourceforge.net/site.html
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class MsAccessSourceDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class MsAccessSourceDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   DefaultSourceDatabaseConfiguration(connectorRepository)

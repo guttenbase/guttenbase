@@ -28,11 +28,11 @@ import kotlin.math.min
  * Check two schemas for equal data where the tool takes a configurable number of sample data from each table.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
- * Hint is used by [NumberOfCheckedTableDataHint] How many rows of tables shall be regarded when checking that data has been
+ * Hint is used by [io.github.guttenbase.hints.NumberOfCheckedTableDataHint] How many rows of tables shall be regarded when checking that data has been
  * transferred correctly.
  * Hint is used by [ColumnOrderHint] to determine column order
  * Hint is used by [TableOrderHint] to determine order of tables

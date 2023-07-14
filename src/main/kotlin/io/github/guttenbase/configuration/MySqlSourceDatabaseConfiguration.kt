@@ -7,10 +7,10 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class MySqlSourceDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class MySqlSourceDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   DefaultSourceDatabaseConfiguration(connectorRepository)

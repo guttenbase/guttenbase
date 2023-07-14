@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Default uses same data type as source
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  */
 @Suppress("MemberVisibilityCanBePrivate")

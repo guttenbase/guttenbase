@@ -5,11 +5,11 @@ import io.github.guttenbase.connector.GuttenBaseException
 /**
  * Thrown when table data is checked for equality.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
- * @see CheckEqualTableDataTool
+ * @see io.github.guttenbase.tools.CheckEqualTableDataTool
  */
 class UnequalDataException(reason: String) : GuttenBaseException(reason) {
   companion object {

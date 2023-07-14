@@ -9,7 +9,7 @@ import java.util.*
  * Utility mapper fro dropping columns of tables.
  *
  *
- *  2013 akquinet tech@spree
+ *  &copy; 2013 akquinet tech@spree
  *
  *
  * @author M. Dahm

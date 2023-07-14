@@ -11,10 +11,10 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class MsAccessTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class MsAccessTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   DefaultTargetDatabaseConfiguration(connectorRepository)

@@ -4,12 +4,12 @@ import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 
 /**
- * Regard which tables when @see [DatabaseMetaDataInspectorTool] is inquiring the database for tables. The methods refer to
+ * Regard which tables when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for tables. The methods refer to
  * the parameters passed to JDBC data base meta data methods such as
  * [DatabaseMetaData.getTableMetaData]
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

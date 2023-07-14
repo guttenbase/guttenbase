@@ -4,7 +4,7 @@ package io.github.guttenbase.sql
  * Primitive implementation of SQL parser in order to check validity of script.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

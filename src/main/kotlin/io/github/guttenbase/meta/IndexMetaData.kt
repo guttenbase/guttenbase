@@ -6,7 +6,7 @@ import java.io.Serializable
  * Information about index in table.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

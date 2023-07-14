@@ -12,7 +12,7 @@ import io.github.guttenbase.repository.JdbcDatabaseMetaData
  * Special "[Connection]" that supports reading data from a stream.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

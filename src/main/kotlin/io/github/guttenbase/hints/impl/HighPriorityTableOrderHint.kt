@@ -7,12 +7,15 @@ import kotlin.Comparator
 /**
  * Order by natural order of table names with some high priority exceptions ranked first
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
-open class HighPriorityTableOrderHint(vararg tableNames: String) : DefaultTableOrderHint() {
+@Suppress("unused")
+open class HighPriorityTableOrderHint(tableNames: Collection<String>) : DefaultTableOrderHint() {
   private val tableNames = tableNames.map { it.uppercase() }
+
+  constructor(vararg names: String): this(names.toList())
 
   override val value: TableOrderComparatorFactory
     get() = TableOrderComparatorFactory {

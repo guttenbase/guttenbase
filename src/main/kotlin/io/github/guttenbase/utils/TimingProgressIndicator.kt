@@ -3,8 +3,7 @@ package io.github.guttenbase.utils
 /**
  * Record timings.
  *
- *
- *  2013-2020 akquinet tech@spree
+ *  &copy; 2013-2020 akquinet tech@spree
  *
  *
  * @author M. Dahm

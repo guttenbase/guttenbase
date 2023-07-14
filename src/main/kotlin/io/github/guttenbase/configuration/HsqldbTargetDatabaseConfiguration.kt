@@ -9,12 +9,12 @@ import java.sql.SQLException
 /**
  * Implementation for HSQLDB data base.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class HsqldbTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class HsqldbTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   DefaultTargetDatabaseConfiguration(connectorRepository) {
   /**
    * {@inheritDoc}

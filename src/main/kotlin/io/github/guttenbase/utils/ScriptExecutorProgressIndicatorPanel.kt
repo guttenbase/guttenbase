@@ -5,6 +5,11 @@ import javax.swing.*
 import javax.swing.border.EtchedBorder
 import javax.swing.border.TitledBorder
 
+/**
+ * &copy; 2012-2034 akquinet tech@spree
+ *
+ * @author M. Dahm
+ */
 class ScriptExecutorProgressIndicatorPanel : JPanel() {
   val totalTime: JTextField
   val scriptTime: JTextField

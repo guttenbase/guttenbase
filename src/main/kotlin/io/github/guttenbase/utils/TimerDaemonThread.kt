@@ -2,6 +2,11 @@ package io.github.guttenbase.utils
 
 import javax.swing.JDialog
 
+/**
+ * &copy; 2012-2034 akquinet tech@spree
+ *
+ * @author M. Dahm
+ */
 class TimerDaemonThread(private val dialog: JDialog, vararg progressIndicators: ProgressIndicator) : Thread("GB-Timer-Daemon") {
   private val progressIndicators = listOf(*progressIndicators)
   var isActive = true

@@ -5,7 +5,7 @@ import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
 /**
  * Select implementation of progress indicator. May be simple logger or fancy UI.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.tools.ScriptExecutorTool]

@@ -11,7 +11,7 @@ import java.util.*
 /**
  * Information about a data base/schema.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */

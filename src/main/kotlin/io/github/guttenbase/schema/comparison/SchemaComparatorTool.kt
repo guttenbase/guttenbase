@@ -12,7 +12,7 @@ import io.github.guttenbase.tools.CommonColumnTypeResolverTool
  * Will check two schemas for compatibility and report found issues.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

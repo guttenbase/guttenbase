@@ -5,7 +5,7 @@ import java.io.Serializable
 /**
  * Give the user a possibility to retrieve extra informations from the dumped data.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */

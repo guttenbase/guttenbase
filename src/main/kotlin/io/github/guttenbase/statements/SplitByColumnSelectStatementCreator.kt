@@ -9,9 +9,9 @@ import io.github.guttenbase.tools.SplitColumn
  * Sometimes the amount of data exceeds any buffer. In these cases we need to split the data by some given range, usually the primary key.
  * I.e., the data is read in chunks where these chunks are split using the ID column range of values.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
- * Hint is used by [SplitColumnHint]
+ * Hint is used by [io.github.guttenbase.hints.SplitColumnHint]
  *
  * @author M. Dahm
  */

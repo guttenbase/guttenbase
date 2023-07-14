@@ -5,7 +5,7 @@ import io.github.guttenbase.meta.TableMetaData
 /**
  * Determine order of tables during copying/comparison.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  */
 fun interface TableOrderComparatorFactory {

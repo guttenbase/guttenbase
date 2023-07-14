@@ -7,7 +7,7 @@ import java.sql.Timestamp
 /**
  * Map Timestamp to Date as some databases use a DATETIME column others a simple DATE.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */

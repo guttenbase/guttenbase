@@ -10,13 +10,12 @@ import java.sql.SQLException
  * Will execute given SQL scriptlet on all tables or single table of given connector. The table name can be referenced with @TABLE@
  * placeholder.
  *
- *
- *  2012-2034 akquinet tech@spree
- *
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.TableMapperHint]
  */
+@Suppress("unused")
 abstract class AbstractTablesOperationTool(
   protected val connectorRepository: ConnectorRepository,
   protected val template: String
@@ -24,7 +23,8 @@ abstract class AbstractTablesOperationTool(
   protected val scriptExecutor = ScriptExecutorTool(connectorRepository)
 
   @Throws(SQLException::class)
-  fun executeOnAllTables(connectorId: String, updateSchema: Boolean, prepareTargetConnection: Boolean) {
+  @JvmOverloads
+  fun executeOnAllTables(connectorId: String, updateSchema: Boolean = true, prepareTargetConnection: Boolean = true) {
     val tables = TableOrderHint.getSortedTables(connectorRepository, connectorId)
     val statements = tables.filter { isApplicableOnTable(it) }.map { createSql(connectorId, it) }
 
@@ -32,9 +32,12 @@ abstract class AbstractTablesOperationTool(
   }
 
   @Throws(SQLException::class)
+  @JvmOverloads
   fun executeOnTable(
-    connectorId: String, updateSchema: Boolean, prepareTargetConnection: Boolean,
-    tableMetaData: TableMetaData
+    connectorId: String,
+    tableMetaData: TableMetaData,
+    updateSchema: Boolean = true,
+    prepareTargetConnection: Boolean = true
   ) {
     if (isApplicableOnTable(tableMetaData)) {
       val sql = createSql(connectorId, tableMetaData)

@@ -6,7 +6,7 @@ import io.github.guttenbase.export.ExportDumpExtraInformationHint
 /**
  * By default do nothing.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

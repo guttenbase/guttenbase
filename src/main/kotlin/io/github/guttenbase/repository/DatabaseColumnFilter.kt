@@ -3,10 +3,10 @@ package io.github.guttenbase.repository
 import io.github.guttenbase.meta.ColumnMetaData
 
 /**
- * Regard which columns when @see [DatabaseMetaDataInspectorTool] is inquiring the database for columns
+ * Regard which columns when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for columns
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

@@ -11,7 +11,7 @@ import io.github.guttenbase.tools.SplitColumn
  * With this hint one may configure the column to be used for splitting.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.statements.SplitByColumnSelectCountStatementCreator]

@@ -8,7 +8,7 @@ import io.github.guttenbase.repository.ConnectorRepository
 /**
  * Determine order of columns in SELECT statement. This will of course also influence the ordering of the resulting INSERT statement.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.statements.AbstractStatementCreator] to determine column order

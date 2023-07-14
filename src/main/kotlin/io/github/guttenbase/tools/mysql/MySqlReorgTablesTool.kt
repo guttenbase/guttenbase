@@ -8,9 +8,9 @@ import io.github.guttenbase.tools.AbstractTablesOperationTool
  * Will execute OPTIMIZE TABLE table;
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
-class MySqlReorgTablesTool(connectorRepository: ConnectorRepository) :
+open class MySqlReorgTablesTool(connectorRepository: ConnectorRepository) :
   AbstractTablesOperationTool(connectorRepository, "OPTIMIZE TABLE $TABLE_PLACEHOLDER;")

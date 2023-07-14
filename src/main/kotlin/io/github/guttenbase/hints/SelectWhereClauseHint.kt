@@ -6,7 +6,7 @@ import io.github.guttenbase.tools.SelectWhereClause
 /**
  * Optionally configure the SELECT statement created to read data from source tables with a WHERE clause.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  *

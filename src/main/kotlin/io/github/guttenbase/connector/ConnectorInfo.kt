@@ -4,9 +4,9 @@ import io.github.guttenbase.repository.ConnectorRepository
 import java.io.Serializable
 
 /**
- * Information about connectors, in particular, parameters needed to establish a [Connection] to the data base.
+ * Information about connectors, in particular, parameters needed to establish a [java.sql.Connection] to the data base.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */

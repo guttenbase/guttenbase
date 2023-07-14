@@ -1,17 +1,15 @@
 package io.github.guttenbase.statements
 
 import io.github.guttenbase.connector.DatabaseType
-import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Types
-
 
 /**
  * Create SELECT statement for copying data.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

@@ -16,7 +16,7 @@ import java.util.*
  * Custom implementation of [PreparedStatement] dumping data to the given output stream. Only few inherited setter methods
  * have a meaningful implementation, most methods will throw a [UnsupportedOperationException].
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

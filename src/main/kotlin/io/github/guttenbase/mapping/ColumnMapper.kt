@@ -7,7 +7,7 @@ import io.github.guttenbase.meta.TableMetaData
  * Select target column(s) for given source column. Usually, this will a 1:1 relationship. However, there may be situations where
  * you want to duplicate or transform data into multiple columns. You also may want to drop columns from the source database.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -23,7 +23,7 @@ interface ColumnMapper {
    */
   fun mapColumnName(source: ColumnMetaData, targetTableMetaData: TableMetaData): String
 
-  data class ColumnMapperResult(
+  data class ColumnMapperResult @JvmOverloads constructor(
     val columns: List<ColumnMetaData>,
 
     /**

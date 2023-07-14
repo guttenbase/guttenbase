@@ -7,7 +7,7 @@ import java.util.zip.ZipOutputStream
 /**
  * Base implementation the gathers all properties and stores them into a file in the ZIP.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */

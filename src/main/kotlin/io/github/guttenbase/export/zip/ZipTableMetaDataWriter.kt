@@ -8,7 +8,7 @@ import kotlin.Throws
 /**
  * Write ZIP file entry containing information about a table such as name and row count.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

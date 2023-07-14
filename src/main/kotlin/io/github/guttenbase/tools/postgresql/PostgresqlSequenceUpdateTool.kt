@@ -11,11 +11,11 @@ import io.github.guttenbase.tools.AbstractSequenceUpdateTool
  * By default the sequence is updated to SELECT(MAX(ID) + 1) FROM table
  *
  *
- *  2012-2020 akquinet tech@spree
+ *  &copy; 2012-2020 akquinet tech@spree
  *
  * @author M. Dahm
  */
-class PostgresqlSequenceUpdateTool(connectorRepository: ConnectorRepository) : AbstractSequenceUpdateTool(connectorRepository) {
+open class PostgresqlSequenceUpdateTool(connectorRepository: ConnectorRepository) : AbstractSequenceUpdateTool(connectorRepository) {
   override fun getSequenceName(tableName: String) = tableName + "_id_seq"
 
   override fun getUpdateSequenceClause(sequenceName: String, sequenceValue: Long) =

@@ -27,7 +27,7 @@ import java.util.*
  * The main repository containing all configured connectors.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

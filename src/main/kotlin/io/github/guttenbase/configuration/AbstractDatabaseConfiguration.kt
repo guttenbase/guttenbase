@@ -9,10 +9,7 @@ import java.sql.SQLException
 /**
  * Abstract base implementation of data base configuration.
  *
- *
- *
- *  2012-2034 akquinet tech@spree
- *
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */

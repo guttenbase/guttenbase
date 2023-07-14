@@ -14,7 +14,7 @@ import java.util.zip.GZIPOutputStream
 /**
  * Export schema information and data into gzipped [ObjectOutputStream] file with serialized data.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

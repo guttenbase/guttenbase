@@ -9,7 +9,7 @@ import io.github.guttenbase.repository.ConnectorRepository
  * Determine order of tables during copying/comparison.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * Hint is used by [io.github.guttenbase.schema.comparison.SchemaComparatorTool] to determine table order
  * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to determine table order

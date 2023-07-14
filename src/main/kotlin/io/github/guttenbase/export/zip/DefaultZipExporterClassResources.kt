@@ -7,11 +7,11 @@ import java.net.URL
 /**
  * Default implementation.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
-class DefaultZipExporterClassResources : ZipExporterClassResources {
+open class DefaultZipExporterClassResources : ZipExporterClassResources {
   override val startupClass: Class<*>
     get() = ZipStartup::class.java
 

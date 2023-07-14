@@ -8,7 +8,7 @@ import java.net.URL
 /**
  * Connection info for importing data from a file.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

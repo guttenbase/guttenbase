@@ -6,17 +6,21 @@ import java.util.*
 /**
  * Information about a table.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
+@Suppress("unused")
 class TableMetaDataImpl(
-  override val tableName: String,
   override val databaseMetaData: DatabaseMetaData,
+  override val tableName: String,
   override val tableType: String,
   override val tableCatalog: String,
   override val tableSchema: String
 ) : InternalTableMetaData {
+  constructor(databaseMetaData: DatabaseMetaData, tableMetaData: TableMetaData) : this(
+    databaseMetaData, tableMetaData.tableName, tableMetaData.tableType, tableMetaData.tableCatalog, tableMetaData.tableSchema
+  )
 
   /**
    * {@inheritDoc}

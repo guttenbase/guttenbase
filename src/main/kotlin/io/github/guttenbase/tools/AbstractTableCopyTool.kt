@@ -14,12 +14,12 @@ import java.sql.SQLException
 /**
  * Copy all tables from one connection to the other.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
- * Hint is used by [NumberOfRowsPerBatchHint] to determine number of VALUES clauses in INSERT statement
- * Hint is used by [MaxNumberOfDataItemsHint] to determine maximum number of data items in INSERT statement
+ * Hint is used by [io.github.guttenbase.hints.NumberOfRowsPerBatchHint] to determine number of VALUES clauses in INSERT statement
+ * Hint is used by [io.github.guttenbase.hints.MaxNumberOfDataItemsHint] to determine maximum number of data items in INSERT statement
  * Hint is used by [TableOrderHint] to determine order of tables
  */
 abstract class AbstractTableCopyTool(protected val connectorRepository: ConnectorRepository) {

@@ -8,10 +8,10 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class GenericSourceDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class GenericSourceDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   DefaultSourceDatabaseConfiguration(connectorRepository)

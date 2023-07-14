@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 /**
  * Contains some helper methods for implementing classes.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.ColumnMapperHint] to map column names
@@ -30,7 +30,7 @@ abstract class AbstractStatementCreator(
   protected open fun createWhereClause(tableMetaData: TableMetaData): String = ""
 
   /**
-   * Get the list of target columns with appropriate mappings as defined by [ColumnMapperHint]
+   * Get the list of target columns with appropriate mappings as defined by [io.github.guttenbase.hints.ColumnMapperHint]
    */
   fun getMappedTargetColumns(
     sourceTableMetaData: TableMetaData,

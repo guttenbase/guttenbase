@@ -7,7 +7,7 @@ import io.github.guttenbase.meta.TableMetaData
  * Check if the given table is a "main" table in the sense that it represents an entity. In terms of JPA: the corresponding Java class is
  * annotated with @Entity.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

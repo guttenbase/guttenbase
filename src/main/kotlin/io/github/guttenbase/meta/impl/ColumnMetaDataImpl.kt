@@ -8,7 +8,7 @@ import java.util.*
 /**
  * Information about a table column.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
@@ -24,6 +24,18 @@ class ColumnMetaDataImpl(
   override val precision: Int,
   override val scale: Int
 ) : InternalColumnMetaData {
+  constructor(tableMetaData: TableMetaData, columnMetaData: ColumnMetaData) : this(
+    tableMetaData,
+    columnMetaData.columnType,
+    columnMetaData.columnName,
+    columnMetaData.columnTypeName,
+    columnMetaData.columnClassName,
+    columnMetaData.isNullable,
+    columnMetaData.isAutoIncrement,
+    columnMetaData.precision,
+    columnMetaData.scale
+  )
+
   /**
    * {@inheritDoc}
    */

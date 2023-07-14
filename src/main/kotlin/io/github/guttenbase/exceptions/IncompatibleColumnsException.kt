@@ -5,17 +5,15 @@ import io.github.guttenbase.connector.GuttenBaseException
 /**
  * Thrown when tables have mismatching columns.
  *
- *
- *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
- * @see InsertStatementFiller
+ * @see io.github.guttenbase.statements.InsertStatementFiller
  *
- * @see SchemaComparatorTool
+ * @see io.github.guttenbase.schema.comparison.SchemaComparatorTool
  *
- * @see CheckEqualTableDataTool
+ * @see io.github.guttenbase.tools.CheckEqualTableDataTool
  */
 class IncompatibleColumnsException(reason: String) : GuttenBaseException(reason) {
   companion object {

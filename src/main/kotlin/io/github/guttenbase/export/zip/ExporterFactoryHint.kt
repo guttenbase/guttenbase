@@ -8,7 +8,7 @@ import io.github.guttenbase.hints.ConnectorHint
  * Create @see [io.github.guttenbase.export.Exporter] for dumping database using @see [io.github.guttenbase.export.ExportDumpConnector].
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.export.ExportDumpConnector] to determine exporter implementation

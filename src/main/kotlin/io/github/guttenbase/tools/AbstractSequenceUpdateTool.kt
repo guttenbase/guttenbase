@@ -9,17 +9,13 @@ import java.sql.SQLException
 /**
  * Update auto-increment sequences for table IDs.
  *
- *
  * By default the sequence is updated to SELECT(MAX(ID) + 1) FROM table
  *
- *
- *
- *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
- * Uses [EntityTableCheckerHint] to look for entity classes, i.e. classes that may use an ID sequence
+ * Uses [io.github.guttenbase.hints.EntityTableCheckerHint] to look for entity classes, i.e. classes that may use an ID sequence
  */
 abstract class AbstractSequenceUpdateTool(protected val connectorRepository: ConnectorRepository) {
   protected val scriptExecutor = ScriptExecutorTool(connectorRepository)

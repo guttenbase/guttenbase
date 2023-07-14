@@ -7,7 +7,7 @@ import java.sql.SQLException
 /**
  * Create Custom DDL from existing schema
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  */
 class CopySchemaTool(private val connectorRepository: ConnectorRepository) {

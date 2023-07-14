@@ -10,13 +10,13 @@ import java.sql.SQLException
 /**
  * Implementation for MS Server SQL data base.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.TableMapperHint]
  */
-class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   DefaultTargetDatabaseConfiguration(connectorRepository) {
   /**
    * {@inheritDoc}

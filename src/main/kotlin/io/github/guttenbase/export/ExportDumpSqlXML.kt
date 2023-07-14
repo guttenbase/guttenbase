@@ -13,7 +13,7 @@ import javax.xml.transform.Source
  * but read them in chunks and write the data to the output stream in a loop.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

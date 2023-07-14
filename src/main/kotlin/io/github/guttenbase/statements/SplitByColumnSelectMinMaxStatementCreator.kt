@@ -11,7 +11,7 @@ import io.github.guttenbase.tools.SplitColumn
  *
  * Read minimum and maximum value of that column.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * Hint is used by [io.github.guttenbase.hints.SplitColumnHint]
  *

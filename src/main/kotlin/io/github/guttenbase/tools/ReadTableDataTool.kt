@@ -17,7 +17,7 @@ import java.sql.SQLException
  * Read data from given table and put into a List of maps where each map contains the columns and values of a single line from
  * the table.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

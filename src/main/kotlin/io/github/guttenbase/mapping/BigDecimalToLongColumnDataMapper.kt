@@ -7,7 +7,7 @@ import java.math.BigDecimal
  * Map BigDecimal to Long/Bigint
  *
  *
- *  2013 akquinet tech@spree
+ *  &copy; 2013 akquinet tech@spree
  *
  *
  * @author M. Dahm

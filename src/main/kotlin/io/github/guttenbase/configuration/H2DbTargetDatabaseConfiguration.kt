@@ -7,12 +7,12 @@ import java.sql.SQLException
 /**
  * Implementation for H2DB data base.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class H2DbTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class H2DbTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   DefaultTargetDatabaseConfiguration(connectorRepository) {
   /**
    * {@inheritDoc}

@@ -2,6 +2,11 @@ package io.github.guttenbase.utils
 
 import org.slf4j.LoggerFactory
 
+/**
+ * &copy; 2012-2034 akquinet tech@spree
+ *
+ * @author M. Dahm
+ */
 class LoggingScriptExecutorProgressIndicator : ScriptExecutorProgressIndicator {
   private val timingDelegate = TimingProgressIndicator()
 

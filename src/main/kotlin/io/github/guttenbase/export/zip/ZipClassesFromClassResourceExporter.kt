@@ -19,7 +19,7 @@ import java.util.zip.ZipOutputStream
  *
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

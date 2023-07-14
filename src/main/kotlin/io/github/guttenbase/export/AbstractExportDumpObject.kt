@@ -10,7 +10,7 @@ import java.io.*
  * in a loop.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -66,9 +66,9 @@ abstract class AbstractExportDumpObject(@field:Transient private val inputStream
     fileOutputStream.close()
   }
 
-  fun length() = tempFile.length()
+  open fun length() = tempFile.length()
 
-  fun getBytes(pos: Long, length: Int): ByteArray {
+  open fun getBytes(pos: Long, length: Int): ByteArray {
     return try {
       val inputStream = getBinaryStream(pos, length.toLong())
       val bytes = ByteArray(length)
@@ -81,10 +81,9 @@ abstract class AbstractExportDumpObject(@field:Transient private val inputStream
     }
   }
 
-  fun getBinaryStream() = getBinaryStream(0, length())
+  open fun getBinaryStream() = getBinaryStream(0, length())
 
-  @Suppress("UNUSED_PARAMETER")
-  fun getBinaryStream(pos: Long, length: Long): InputStream {
+  open fun getBinaryStream(pos: Long, length: Long): InputStream {
     return try {
       fileInputStream = FileInputStream(tempFile)
       fileInputStream.skip(pos)

@@ -15,7 +15,7 @@ import java.util.*
  * Execute updates on schema
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

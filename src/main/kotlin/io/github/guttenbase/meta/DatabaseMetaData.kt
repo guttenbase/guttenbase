@@ -7,7 +7,7 @@ import java.io.Serializable
 /**
  * Information about data base such as schema name.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

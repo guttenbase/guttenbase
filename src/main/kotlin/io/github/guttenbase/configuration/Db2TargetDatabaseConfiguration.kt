@@ -17,10 +17,10 @@ import kotlin.collections.LinkedHashMap
  * @see [http://stackoverflow.com/questions/421518/is-there-a-way-to-enable-disable-constraints-in-db2-v7](http://stackoverflow.com/questions/421518/is-there-a-way-to-enable-disable-constraints-in-db2-v7)
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  */
-class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   DefaultTargetDatabaseConfiguration(connectorRepository) {
   private val constraintsOfTable: MutableMap<String, MutableList<String>> = LinkedHashMap()
   private var schemaName: String = ""

@@ -13,7 +13,7 @@ import io.github.guttenbase.tools.NumberOfRowsPerBatch
  * The value also must not be too high so that data buffers are not exceeded.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to determine number of VALUES clauses in INSERT statement or statements in batch update
  *

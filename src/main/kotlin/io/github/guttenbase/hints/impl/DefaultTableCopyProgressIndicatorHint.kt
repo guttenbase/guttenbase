@@ -9,7 +9,7 @@ import io.github.guttenbase.utils.TableCopyProgressIndicator
  * By default return logging implementation.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

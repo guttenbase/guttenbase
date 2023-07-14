@@ -10,7 +10,7 @@ import java.sql.Connection
 /**
  * Check that "life-cycle" methods are called correctly
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

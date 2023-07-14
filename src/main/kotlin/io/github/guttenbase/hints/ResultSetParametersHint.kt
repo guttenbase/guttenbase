@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.ResultSetParameters
  *
  * Set fetch size, result set type and concurrency tye for result set,
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  *

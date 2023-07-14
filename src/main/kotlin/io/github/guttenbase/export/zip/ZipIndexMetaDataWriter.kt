@@ -11,7 +11,7 @@ import kotlin.Throws
  * Write ZIP file entry containing information about a table column index such as name and columns.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

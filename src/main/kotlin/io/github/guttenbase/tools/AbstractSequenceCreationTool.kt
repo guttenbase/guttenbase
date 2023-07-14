@@ -10,7 +10,7 @@ import java.sql.SQLException
  * Create auto-increment sequences for table IDs.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
@@ -18,7 +18,7 @@ import java.sql.SQLException
  * Uses [io.github.guttenbase.hints.EntityTableCheckerHint] to look for entity classes, i.e. classes that may use
  * an ID sequence
  */
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 abstract class AbstractSequenceCreationTool(protected val connectorRepository: ConnectorRepository) {
   protected val scriptExecutor = ScriptExecutorTool(connectorRepository)
 

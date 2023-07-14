@@ -3,7 +3,6 @@ package io.github.guttenbase.connector.impl
 import io.github.guttenbase.repository.ConnectorRepository
 import org.slf4j.LoggerFactory
 import java.sql.Connection
-import java.sql.DriverManager
 import java.sql.DriverManager.getConnection
 import java.sql.SQLException
 
@@ -13,7 +12,7 @@ import java.sql.SQLException
  *
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

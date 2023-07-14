@@ -9,11 +9,11 @@ import io.github.guttenbase.tools.AbstractSequenceCreationTool
  * Create an autoincrement ID sequence for tables.
  *
  *
- *  2012-2020 akquinet tech@spree
+ *  &copy; 2012-2020 akquinet tech@spree
  *
  * @author M. Dahm
  */
-class PostgresqlSequenceCreationTool(connectorRepository: ConnectorRepository) :
+open class PostgresqlSequenceCreationTool(connectorRepository: ConnectorRepository) :
   AbstractSequenceCreationTool(connectorRepository) {
   override fun getIdColumn(tableMetaData: TableMetaData) = "ID"
 

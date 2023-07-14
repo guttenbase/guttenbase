@@ -5,7 +5,7 @@ import io.github.guttenbase.mapping.ColumnDataMapperProvider
 /**
  * Used to find mappings for column data. E.g., when converting a number to a String or casting a LONG to a BIGINT.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  * Hint is used by [io.github.guttenbase.tools.CommonColumnTypeResolverTool] to determine mapping between different column types
  *

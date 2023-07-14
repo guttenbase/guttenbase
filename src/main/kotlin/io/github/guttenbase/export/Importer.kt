@@ -8,7 +8,7 @@ import io.github.guttenbase.repository.ConnectorRepository
 /**
  * Import schema information and table data from some custom format.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

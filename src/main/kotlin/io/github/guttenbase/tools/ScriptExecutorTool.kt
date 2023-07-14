@@ -15,7 +15,7 @@ import java.util.*
  * @author M. Dahm
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  */
 open class ScriptExecutorTool

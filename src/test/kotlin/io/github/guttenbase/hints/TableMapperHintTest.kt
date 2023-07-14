@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach
  * Test a schema migration where tables have been renamed, because the source tables contain umlauts which are not always supported...
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

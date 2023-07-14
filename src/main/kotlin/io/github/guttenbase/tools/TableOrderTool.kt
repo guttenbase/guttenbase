@@ -10,7 +10,7 @@ import io.github.guttenbase.meta.TableMetaData
  * If there are cycles in the dependencies, we choose the node with the fewest incoming/outgoing edges.
  *
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm

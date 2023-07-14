@@ -22,17 +22,22 @@ assertNotNull(idColumn);
 assertEquals("BIGINT", idColumn.getColumnTypeName());
 ```
 
-# Builder pattern
+# Schema creation
 
-GuttenBase supports the builder design pattern to build your own data base schema definitions.
+GuttenBase supports the capability to build your own data base schema definitions.
 
 ## Code example
 
 ```java
-final TableMetaDataBuilder tableMetaDataBuilder = new TableMetaDataBuilder(_databaseMetaDataBuilder).setTableName(tableMapper
-    .mapTableName(sourceTableMetaData));
 ...
-tableMetaDataBuilder.addColumn(nameColumnBuilder).addIndex(new IndexMetaDataBuilder(tableMetaDataBuilder).
-setAscending(true).setIndexName("NAME_IDX").
-setUnique(true).addColumn(nameColumnBuilder));
+final var tableMetaDataBuilder = new TableMetaDataBuilder(databaseMetaDataBuilder);
+tableMetaDataBuilder.setTableName(tableMapper.mapTableName(sourceTableMetaData));
+...
+final var nameColumnBuilder = new ColumnMetaDataImpl(tableMetaDataBuilder, sourceColumnMetaData);   
+tableMetaDataBuilder.addColumn(nameColumnBuilder);
+
+final var indexBuilder =  new IndexMetaDataImpl(tableMetaDataBuilder, "NAME_IDX", true, true, false);
+indexBuilder.addColumn(nameColumnBuilder)
+    
+tableMetaDataBuilder.addIndex(indexBuilder);
 ```

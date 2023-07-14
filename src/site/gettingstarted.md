@@ -11,9 +11,11 @@ Currently supported Databases:
 * Microsoft SQL Server
 * MS-Access
 * MySQL
+* MariaDB
 * PostgreSQL
 * HSQLDB
-* H2 Derby
+* H2
+* Derby
 * Oracle
 * IBM DB2
 * Sybase

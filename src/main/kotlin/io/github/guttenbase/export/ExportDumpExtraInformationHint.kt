@@ -6,7 +6,7 @@ import io.github.guttenbase.hints.ConnectorHint
 /**
  * When exporting to e JAR/ZIP file we give the user a possibility to add extra informations to the dumped data.
  *
- *  2012-2034 akquinet tech@spree
+ *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.export.zip.ZipExporter] to add custom informations to the dump
