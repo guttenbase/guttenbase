@@ -50,10 +50,8 @@ class SchemaScriptCreatorTool(
     return createPrimaryKeyStatements(tables)
   }
 
-  fun createPrimaryKeyStatements(tables: List<TableMetaData>): List<String> = tables.map {
-    it.primaryKeyColumns.map { column -> createPrimaryKeyStatement(column.tableMetaData, column.tableMetaData.primaryKeyColumns) }
-  }.flatten()
-
+  fun createPrimaryKeyStatements(tables: List<TableMetaData>): List<String> =
+    tables.filter { it.primaryKeyColumns.isNotEmpty() }.map { createPrimaryKeyStatement(it, it.primaryKeyColumns) }
 
   fun createIndexStatements(): List<String> {
     val tables: List<TableMetaData> = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
@@ -162,7 +160,7 @@ class SchemaScriptCreatorTool(
         + foreignKeyMetaData.referencingColumns.joinToString { getColumnName(it) }
         ) + " REFERENCES "
         + tableMapper.fullyQualifiedTableName(foreignKeyMetaData.referencedTableMetaData, targetDatabaseMetaData)
-        + foreignKeyMetaData.referencedColumns.joinToString{ getColumnName(it) }) + ";"
+        + foreignKeyMetaData.referencedColumns.joinToString { getColumnName(it) }) + ";"
   }
 
   private fun getColumnName(referencingColumn: ColumnMetaData): String {
