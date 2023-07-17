@@ -1,5 +1,13 @@
 # Frequently Asked Questions (FAQ)
 
+## Q: I have a problematic table and want to copy this one first to debug the migration
+
+You may sort the order tables are copied. The simplest way is to add
+
+```java
+    connectorRepository.addConnectorHint(SOURCE, new HighPriorityTableOrderHint(List.of("weird_table")));
+```
+
 ## Q: Why do I get a "java.sql.SQLIntegrityConstraintViolationException: ORA-01400: cannot insert NULL" when copying to an Oracle DB?
 A: Oracle chose for some reason to treat empty strings as NULL (See discussion in stackoverflow).
 

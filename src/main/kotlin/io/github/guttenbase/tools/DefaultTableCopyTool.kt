@@ -8,7 +8,6 @@ import io.github.guttenbase.statements.InsertStatementCreator
 import io.github.guttenbase.statements.InsertStatementFiller
 import io.github.guttenbase.statements.SelectStatementCreator
 import java.sql.Connection
-import java.sql.PreparedStatement
 import java.sql.SQLException
 
 /**
@@ -34,8 +33,8 @@ open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : Abst
     targetDatabaseConfiguration: TargetDatabaseConfiguration, targetTableMetaData: TableMetaData,
     targetTableName: String, numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
   ) {
-    val sourceRowCount: Int = sourceTableMetaData.filteredRowCount
-    val selectStatement: PreparedStatement = SelectStatementCreator(connectorRepository, sourceConnectorId)
+    val sourceRowCount = sourceTableMetaData.filteredRowCount
+    val selectStatement = SelectStatementCreator(connectorRepository, sourceConnectorId)
       .createSelectStatement(sourceConnection, sourceTableName, sourceTableMetaData)
 
     sourceDatabaseConfiguration.beforeSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
@@ -49,7 +48,7 @@ open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : Abst
 
     targetDatabaseConfiguration.beforeInsert(targetConnection, targetConnectorId, targetTableMetaData)
 
-    val batchInsertStatement: PreparedStatement = insertStatementCreator.createInsertStatement(
+    val batchInsertStatement = insertStatementCreator.createInsertStatement(
       sourceConnectorId,
       sourceTableMetaData, targetTableName, targetTableMetaData, targetConnection, numberOfRowsPerBatch,
       useMultipleValuesClauses
@@ -74,12 +73,10 @@ open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : Abst
       progressIndicator.endExecution((i + 1) * numberOfRowsPerBatch)
     }
 
-    if (numberOfBatches > 0) {
-      batchInsertStatement.close()
-    }
+    batchInsertStatement.close()
 
     if (remainder > 0) {
-      val finalInsert: PreparedStatement = insertStatementCreator.createInsertStatement(
+      val finalInsert = insertStatementCreator.createInsertStatement(
         sourceConnectorId,
         sourceTableMetaData,
         targetTableName,

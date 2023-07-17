@@ -303,7 +303,7 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
         }
       }
 
-      LOG.info("Accepted tables: " + databaseMetaData.tableMetaData)
+      LOG.info("${databaseMetaData.tableMetaData.size} accepted tables: ${databaseMetaData.tableMetaData}")
     }
   }
 

@@ -68,6 +68,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
 
         if (mapping.columns.isEmpty()) {
           if (mapping.isEmptyColumnListOk) {
+            LOG.warn("Dropping column $sourceColumnMetaData")
             // Unused result, but we may have to skip the next data item from an underlying stream implementation
             rs.getObject(columnIndex)
 

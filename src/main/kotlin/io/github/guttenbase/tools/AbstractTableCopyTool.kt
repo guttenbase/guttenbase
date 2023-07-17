@@ -94,6 +94,7 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
       sourceDatabaseConfiguration.afterTableCopy(sourceConnection, sourceConnectorId, sourceTableMetaData)
       targetDatabaseConfiguration.afterTableCopy(targetConnection, targetConnectorId, targetTableMetaData)
       progressIndicator.endProcess()
+
       if (refreshTargetConnection.refreshConnection(noCopiedTables++, sourceTableMetaData)) {
         progressIndicator.info("Refreshing target connection.")
         targetDatabaseConfiguration.finalizeTargetConnection(targetConnection, targetConnectorId)
@@ -102,6 +103,7 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
         targetDatabaseConfiguration.initializeTargetConnection(targetConnection, targetConnectorId)
       }
     }
+
     sourceDatabaseConfiguration.finalizeSourceConnection(sourceConnection, sourceConnectorId)
     targetDatabaseConfiguration.finalizeTargetConnection(targetConnection, targetConnectorId)
     sourceConnector.closeConnection()
