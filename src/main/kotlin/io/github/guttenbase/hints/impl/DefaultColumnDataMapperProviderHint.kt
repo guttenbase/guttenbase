@@ -9,9 +9,8 @@ import io.github.guttenbase.mapping.TimestampToDateColumnDataMapper
 import io.github.guttenbase.meta.ColumnType
 
 /**
- * Default implementation. You may inherit from this class and override [.addMappings] to
+ * Default implementation. You may inherit from this class and override [DefaultColumnDataMapperProviderHint.addMappings] to
  * add further mappings.
- *
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
@@ -31,15 +30,9 @@ open class DefaultColumnDataMapperProviderHint : ColumnDataMapperProviderHint() 
    */
   protected open fun addMappings(columnDataMapperFactory: DefaultColumnDataMapperProvider) {
     columnDataMapperFactory.addMapping(ColumnType.CLASS_TIMESTAMP, ColumnType.CLASS_DATE, TimestampToDateColumnDataMapper())
-    columnDataMapperFactory.addMapping(
-      ColumnType.CLASS_LONG, ColumnType.CLASS_BIGDECIMAL,
-      LongToBigDecimalColumnDataMapper()
-    )
-    columnDataMapperFactory
-      .addMapping(ColumnType.CLASS_BIGDECIMAL, ColumnType.CLASS_LONG, BigDecimalToLongColumnDataMapper())
-    columnDataMapperFactory.addMapping(
-      ColumnType.CLASS_INTEGER, ColumnType.CLASS_BIGDECIMAL,
-      LongToBigDecimalColumnDataMapper()
-    )
+    columnDataMapperFactory.addMapping(ColumnType.CLASS_TIMESTAMP, ColumnType.CLASS_DATETIME, TimestampToDateColumnDataMapper())
+    columnDataMapperFactory.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_BIGDECIMAL, LongToBigDecimalColumnDataMapper())
+    columnDataMapperFactory.addMapping(ColumnType.CLASS_BIGDECIMAL, ColumnType.CLASS_LONG, BigDecimalToLongColumnDataMapper())
+    columnDataMapperFactory.addMapping(ColumnType.CLASS_INTEGER, ColumnType.CLASS_BIGDECIMAL, LongToBigDecimalColumnDataMapper())
   }
 }

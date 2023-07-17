@@ -29,7 +29,7 @@ open class CommonColumnTypeResolverTool(private val connectorRepository: Connect
     targetConnectorId: String,
     targetColumnMetaData: ColumnMetaData
   ): ColumnTypeMapping? {
-    val columnTypeResolvers: List<ColumnTypeResolver> = connectorRepository
+    val columnTypeResolvers = connectorRepository
       .getConnectorHint(targetConnectorId, ColumnTypeResolverList::class.java).value.getColumnTypeResolvers()
 
     return columnTypeResolvers.asSequence().map { findMapping(it, sourceColumnMetaData, targetColumnMetaData, targetConnectorId) }
@@ -48,8 +48,8 @@ open class CommonColumnTypeResolverTool(private val connectorRepository: Connect
     columnTypeResolver: ColumnTypeResolver, sourceColumnMetaData: ColumnMetaData,
     targetColumnMetaData: ColumnMetaData, targetConnectorId: String
   ): ColumnTypeMapping? {
-    val sourceColumnType: ColumnType = columnTypeResolver.getColumnType(sourceColumnMetaData)
-    val targetColumnType: ColumnType = columnTypeResolver.getColumnType(targetColumnMetaData)
+    val sourceColumnType = columnTypeResolver.getColumnType(sourceColumnMetaData)
+    val targetColumnType = columnTypeResolver.getColumnType(targetColumnMetaData)
 
     if (ColumnType.CLASS_UNKNOWN != sourceColumnType && ColumnType.CLASS_UNKNOWN != targetColumnType) {
       val columnDataMapperFactory = connectorRepository.getConnectorHint(
