@@ -1,7 +1,6 @@
 package io.github.guttenbase.statements
 
 import io.github.guttenbase.configuration.TargetDatabaseConfiguration
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.MissingDataException
 import io.github.guttenbase.hints.ColumnOrderHint
@@ -45,7 +44,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     val sourceColumns = getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
     val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
     val filter = connectorRepository.getConnectorHint(targetConnectorId, TableRowDataFilter::class.java).value
-    val targetDatabaseType: DatabaseType = targetTableMetaData.databaseMetaData.databaseType
+    val targetDatabaseType = targetTableMetaData.databaseMetaData.databaseType
     var targetColumnIndex = 1
     var dataItemsCount = 0
 
@@ -64,21 +63,29 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
       targetDatabaseConfiguration.beforeNewRow(targetConnection, targetConnectorId, targetTableMetaData)
 
       for (columnIndex in 1..sourceColumns.size) {
-        val sourceColumnMetaData: ColumnMetaData = sourceColumns[columnIndex - 1]
+        val sourceColumnMetaData = sourceColumns[columnIndex - 1]
         val mapping = columnMapper.map(sourceColumnMetaData, targetTableMetaData)
 
         if (mapping.columns.isEmpty()) {
           if (mapping.isEmptyColumnListOk) {
             // Unused result, but we may have to skip the next data item from an underlying stream implementation
             rs.getObject(columnIndex)
+
+            if(!sourceColumnMetaData.isNullable) {
+              LOG.warn("""
+                $sourceColumnMetaData does not allow null values, but value is ignored for target table.
+                Make sure that the column is omitted during target table creation, too, or has a default value set.
+                """.trimIndent())
+            }
           } else {
             throw IncompatibleColumnsException(
               "Cannot map column $targetTableMetaData:$sourceColumnMetaData: Target column list empty"
             )
           }
         }
+
         for (targetColumnMetaData in mapping.columns) {
-          val columnTypeMapping: ColumnTypeMapping = findMapping(
+          val columnTypeMapping = findMapping(
             targetConnectorId, commonColumnTypeResolver,
             sourceColumnMetaData, targetColumnMetaData
           )

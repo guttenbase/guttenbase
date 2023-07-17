@@ -6,11 +6,9 @@ import io.github.guttenbase.meta.TableMetaData
 import java.util.*
 
 /**
- * Utility mapper fro dropping columns of tables.
- *
+ * Utility mapper that allows to drop columns in target tables.
  *
  *  &copy; 2013 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
