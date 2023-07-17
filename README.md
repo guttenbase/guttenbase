@@ -29,13 +29,15 @@ Finally, we perform (empirical) checks whether the data has been transmitted cor
 
 In many cases, that's it!
 
-	final ConnectorRepository connectorRepository = new ConnectorRepositoryImpl();
-	connectorRepository.addConnectionInfo("MySql", new AevMySqlConnectionInfo());
-	connectorRepository.addConnectionInfo("Postgresql", new AevPostgresqlConnectionInfo());
- 
-	new CheckSchemaCompatibilityTool(connectorRepository).checkTableConfiguration("MySql", "Postgresql");
-	new DefaultTableCopyTool(connectorRepository).copyTables("MySql", "Postgresql");
-	new CheckEqualTableDataTool(connectorRepository).checkTableData("MySql", "Postgresql");
+```java
+  final ConnectorRepository connectorRepository = new ConnectorRepositoryImpl();
+  connectorRepository.addConnectionInfo("MySql", new AevMySqlConnectionInfo());
+  connectorRepository.addConnectionInfo("Postgresql", new AevPostgresqlConnectionInfo());
+
+  new CheckSchemaCompatibilityTool(connectorRepository).checkTableConfiguration("MySql", "Postgresql");
+  new DefaultTableCopyTool(connectorRepository).copyTables("MySql", "Postgresql");
+  new CheckEqualTableDataTool(connectorRepository).checkTableData("MySql", "Postgresql");
+```
 
 # Core features
 
