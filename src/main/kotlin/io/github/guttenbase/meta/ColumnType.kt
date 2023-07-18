@@ -4,6 +4,8 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.exceptions.UnhandledColumnTypeException
 import io.github.guttenbase.utils.Util
+import io.github.guttenbase.utils.Util.toDate
+import io.github.guttenbase.utils.Util.toSQLDate
 import java.io.Closeable
 import java.io.IOException
 import java.io.InputStream
@@ -132,20 +134,20 @@ enum class ColumnType(vararg classes: Class<*>) {
   @Throws(SQLException::class)
   fun setValue(
     insertStatement: PreparedStatement, columnIndex: Int, data: Any?,
-    databaseType: DatabaseType, sqlType: Int
+    databaseMetaData: DatabaseMetaData, sqlType: Int
   ): Closeable? {
     return if (data == null) {
       insertStatement.setNull(columnIndex, sqlType)
       null
     } else {
-      setStatementValue(insertStatement, columnIndex, data, databaseType)
+      setStatementValue(insertStatement, columnIndex, data, databaseMetaData)
     }
   }
 
   @Throws(SQLException::class)
   private fun setStatementValue(
     insertStatement: PreparedStatement, columnIndex: Int, data: Any,
-    databaseType: DatabaseType
+    databaseMetaData: DatabaseMetaData
   ): Closeable? {
     var result: Closeable? = null
 
@@ -154,7 +156,7 @@ enum class ColumnType(vararg classes: Class<*>) {
       CLASS_INTEGER -> insertStatement.setInt(columnIndex, (data as Int))
       CLASS_LONG -> insertStatement.setLong(columnIndex, (data as Long))
       CLASS_DOUBLE -> insertStatement.setDouble(columnIndex, (data as Double))
-      CLASS_BLOB -> if (driverSupportsStream(databaseType)) {
+      CLASS_BLOB -> if (driverSupportsStream(databaseMetaData.databaseType)) {
         val inputStream = (data as Blob).binaryStream
         result = inputStream
         insertStatement.setBlob(columnIndex, inputStream)
@@ -164,7 +166,7 @@ enum class ColumnType(vararg classes: Class<*>) {
         insertStatement.setBlob(columnIndex, blob)
       }
 
-      CLASS_CLOB -> if (driverSupportsStream(databaseType)) {
+      CLASS_CLOB -> if (driverSupportsStream(databaseMetaData.databaseType)) {
         val characterStream = (data as Clob).characterStream
         result = characterStream
         insertStatement.setClob(columnIndex, characterStream)
@@ -174,7 +176,7 @@ enum class ColumnType(vararg classes: Class<*>) {
         insertStatement.setClob(columnIndex, clob)
       }
 
-      CLASS_SQLXML -> if (driverSupportsStream(databaseType)) {
+      CLASS_SQLXML -> if (driverSupportsStream(databaseMetaData.databaseType)) {
         val inputStream: InputStream = (data as SQLXML).binaryStream
         result = inputStream
         insertStatement.setBlob(columnIndex, inputStream)
@@ -191,7 +193,14 @@ enum class ColumnType(vararg classes: Class<*>) {
       CLASS_FLOAT -> insertStatement.setFloat(columnIndex, (data as Float))
       CLASS_SHORT -> insertStatement.setShort(columnIndex, (data as Short))
       CLASS_TIME -> insertStatement.setTime(columnIndex, data as Time)
-      CLASS_DATETIME -> insertStatement.setObject(columnIndex, data)
+      CLASS_DATETIME -> if (driverSupportsJavaTimeAPI(databaseMetaData)) {
+        // Let the driver choose what it is
+        insertStatement.setObject(columnIndex, data)
+      } else {
+        // For older drivers not supporting LocalDateTime directly
+        insertStatement.setDate(columnIndex, data.toDate().toSQLDate())
+      }
+
       CLASS_OBJECT -> insertStatement.setObject(columnIndex, data)
       CLASS_BYTE -> insertStatement.setByte(columnIndex, data as Byte)
       CLASS_BYTES -> insertStatement.setBytes(columnIndex, data as ByteArray)
@@ -201,9 +210,14 @@ enum class ColumnType(vararg classes: Class<*>) {
     return result
   }
 
-  private fun driverSupportsStream(databaseType: DatabaseType): Boolean {
-    return !(DatabaseType.POSTGRESQL == databaseType || DatabaseType.DB2 == databaseType || DatabaseType.MSSQL == databaseType)
+  private fun driverSupportsJavaTimeAPI(databaseMetaData: DatabaseMetaData) = when {
+    // We know that this driver is too old
+    databaseMetaData.databaseMetaData.driverName.startsWith("jTDS Type 4 JDBC Driver") -> false
+    else -> true
   }
+
+  private fun driverSupportsStream(databaseType: DatabaseType) =
+    !(DatabaseType.POSTGRESQL == databaseType || DatabaseType.DB2 == databaseType || DatabaseType.MSSQL == databaseType)
 
   val isNumber: Boolean
     get() = Number::class.java.isAssignableFrom(columnClasses[0])

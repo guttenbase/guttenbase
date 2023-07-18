@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory
 import java.io.*
 import java.net.URL
 import java.net.URLClassLoader
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 
 /**
@@ -25,6 +28,17 @@ object Util {
   val ByteArrayClass: Class<*> = ByteArray::class.java
 
   const val DEFAULT_BUFFER_SIZE = 1024 * 4
+
+  fun Any.toDate(): Date = when (this) {
+    is Date -> this
+    is LocalDateTime -> this.toDate()
+    is LocalDate -> this.toDate()
+    else -> throw IllegalStateException("$this:${this.javaClass} is not convertable to Date")
+  }
+
+  fun LocalDate.toDate(): Date = Date.from(atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
+  fun LocalDateTime.toDate(): Date = Date.from(atZone(ZoneId.systemDefault()).toInstant())
+  fun Date.toSQLDate() = java.sql.Date(time)
 
   /**
    * Read all non-empty lines for File and remove and trim them.

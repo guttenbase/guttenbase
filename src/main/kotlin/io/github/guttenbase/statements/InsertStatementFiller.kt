@@ -44,7 +44,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     val sourceColumns = getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
     val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
     val filter = connectorRepository.getConnectorHint(targetConnectorId, TableRowDataFilter::class.java).value
-    val targetDatabaseType = targetTableMetaData.databaseMetaData.databaseType
+    val targetDatabase = targetTableMetaData.databaseMetaData
     var targetColumnIndex = 1
     var dataItemsCount = 0
 
@@ -94,8 +94,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
           val sourceValue = columnTypeMapping.sourceColumnType.getValue(rs, columnIndex)
           val targetValue = columnTypeMapping.columnDataMapper.map(sourceColumnMetaData, targetColumnMetaData, sourceValue)
           val optionalCloseableObject = columnTypeMapping.targetColumnType.setValue(
-            insertStatement, targetColumnIndex++, targetValue, targetDatabaseType,
-            targetColumnMetaData.columnType
+            insertStatement, targetColumnIndex++, targetValue, targetDatabase, targetColumnMetaData.columnType
           )
 
           sourceValues[sourceColumnMetaData] = sourceValue
