@@ -41,19 +41,20 @@ Additionally, you will have to add dependencies of the JDBC drivers you intend t
 
 ```xml
 <dependency>
-<groupId>mysql</groupId>
-<artifactId>mysql-connector-java</artifactId>
-<version>5.1.37</version>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.37</version>
 </dependency>
 ```
 
 ```xml
 <dependency>
-<groupId>postgresql</groupId>
-<artifactId>postgresql</artifactId>
-<version>9.1-902.jdbc4</version>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <version>42.5.1</version>
 </dependency>
 ```
+
 ## Step 2 - Create Connections to the source and target Database servers
 
 You will have to create so called _connection infos_ first that describe your source and target database, respectively. This are just simple
