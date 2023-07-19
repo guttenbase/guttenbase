@@ -64,7 +64,7 @@ wrappers for the JDBC connection parameters.
 public class MySQLConnectionsInfo extends URLConnectorInfoImpl {
     public MySQLConnectionsInfo() {
       super("jdbc:mysql://localhost:3306/testdb", "user", "password", "com.mysql.jdbc.Driver", "aev", DatabaseType.MYSQL);
-}
+    }
 }
 ```
 You then may start to configure the guttenbase repository right away.
