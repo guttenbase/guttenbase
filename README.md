@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.guttenbase/guttenbase/badge.svg)](https://central.sonatype.com/search?q=guttenbase)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.guttenbase/guttenbase/badge.svg)](https://central.sonatype.com/search?q=guttenbase&namespace=io.github.guttenbase&name=guttenbase&sort=name)
 <meta name="google-site-verification" content="auOvsU7wt1p_7X07rHySknnRdCmwldQRpABsB-zar_Y" />
 
 # ![Banner](src/site/images/logo.png) GuttenBase - Copying done right...
