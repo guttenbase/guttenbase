@@ -7,12 +7,11 @@ import java.sql.SQLException
 /**
  * Will execute OPTIMIZE TABLE table;
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
+@Suppress("unused")
 class MSSqlReorgTablesTool(connectorRepository: ConnectorRepository) : AbstractTablesOperationTool(
   connectorRepository, "ALTER INDEX ALL ON " + TABLE_PLACEHOLDER +
       " REBUILD WITH (FILLFACTOR = 80, SORT_IN_TEMPDB = ON, STATISTICS_NORECOMPUTE = ON"
