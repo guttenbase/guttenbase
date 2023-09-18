@@ -10,6 +10,7 @@ import java.sql.SQLException
  *  &copy; 2012-2034 akquinet tech@spree
  *
  */
+@Suppress("MemberVisibilityCanBePrivate")
 class CopySchemaTool(private val connectorRepository: ConnectorRepository) {
   fun createDDLScript(sourceConnectorId: String, targetConnectorId: String): List<String> {
     val schemaScriptCreatorTool = SchemaScriptCreatorTool(
