@@ -22,5 +22,6 @@ enum class DatabaseType {
   DERBY,
   DB2,
   SYBASE,
-  ORACLE
+  ORACLE,
+  ORACLE_12
 }

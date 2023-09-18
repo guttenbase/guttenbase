@@ -8,11 +8,8 @@ import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.IncompatibleTablesException
 import io.github.guttenbase.hints.CaseConversionMode
 import io.github.guttenbase.hints.ColumnMapperHint
-import io.github.guttenbase.hints.ColumnTypeMapperHint
 import io.github.guttenbase.hints.TableMapperHint
 import io.github.guttenbase.mapping.ColumnMapper
-import io.github.guttenbase.mapping.ColumnTypeMapper
-import io.github.guttenbase.mapping.DefaultColumnTypeMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
@@ -86,31 +83,12 @@ class SchemaScriptCreatorToolTest {
 
   @Test
   fun testSchemaColumnTypeMapper() {
-    connectorRepository.addConnectorHint(TARGET, object : ColumnTypeMapperHint() {
-      override val value: ColumnTypeMapper
-        get() = object : DefaultColumnTypeMapper() {
-          override fun mapColumnType(
-            columnMetaData: ColumnMetaData,
-            sourceDatabaseType: DatabaseType,
-            targetDatabaseType: DatabaseType
-          ): String {
-            val columnType = super.mapColumnType(columnMetaData, sourceDatabaseType, targetDatabaseType)
-
-            return if (columnMetaData.columnName.equals("ID", ignoreCase = true)) {
-              "$columnType auto_increment"
-            } else {
-              columnType
-            }
-          }
-        }.addMapping(DatabaseType.GENERIC, DatabaseType.GENERIC, "BIGINT", "INTEGER")
-    })
-
     val tableStatements = objectUnderTest.createTableStatements()
     assertEquals(2, tableStatements.size)
     val createStatement = tableStatements[0]
 
     assertThat(createStatement).startsWith("CREATE TABLE schemaName.MY_TABLE")
-    assertThat(createStatement).contains("ID INTEGER NOT NULL auto_increment")
+    assertThat(createStatement).contains("ID BIGINT NOT NULL IDENTITY") // taken as default auto increment clause
     assertThat(createStatement).contains("NAME VARCHAR(100) NOT NULL")
   }
 

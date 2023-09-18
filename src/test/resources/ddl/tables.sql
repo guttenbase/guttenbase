@@ -1,6 +1,6 @@
 CREATE TABLE FOO_USER
 (
-    ID              bigint PRIMARY KEY,
+    ID              bigint PRIMARY KEY IDENTITY,
     PERSONAL_NUMBER SMALLINT,
     USERNAME        varchar(100) NOT NULL,
     NAME            varchar(100) NOT NULL,
@@ -24,14 +24,14 @@ CREATE TABLE FOO_USER_ROLES
 
 CREATE TABLE FOO_COMPANY
 (
-    ID bigint PRIMARY KEY,
+    ID bigint PRIMARY KEY IDENTITY,
     SUPPLIER char(1),
     NAME varchar(100) NOT NULL
 );
 
 CREATE TABLE FOO_ROLE
 (
-    ID bigint PRIMARY KEY,
+    ID bigint PRIMARY KEY IDENTITY,
     FIXED_ROLE char(1),
     ROLE_NAME varchar(100) NOT NULL
 );
