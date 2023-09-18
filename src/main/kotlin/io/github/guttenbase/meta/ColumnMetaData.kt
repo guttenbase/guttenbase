@@ -10,6 +10,9 @@ import java.io.Serializable
  * @author M. Dahm
  */
 interface ColumnMetaData : Comparable<ColumnMetaData>, Serializable {
+  /**
+   * Column type as defined in [java.sql.Types]
+   */
   val columnType: Int
   val columnName: String
   val columnTypeName: String
