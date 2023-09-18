@@ -17,6 +17,7 @@ import java.sql.SQLException
  * @author M. Dahm
  * Uses [io.github.guttenbase.hints.EntityTableCheckerHint] to look for entity classes, i.e. classes that may use an ID sequence
  */
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class AbstractSequenceUpdateTool(protected val connectorRepository: ConnectorRepository) {
   protected val scriptExecutor = ScriptExecutorTool(connectorRepository)
   protected val minMaxIdSelector = MinMaxIdSelectorTool(connectorRepository)
@@ -24,8 +25,8 @@ abstract class AbstractSequenceUpdateTool(protected val connectorRepository: Con
   @Throws(SQLException::class)
   fun updateSequences(connectorId: String) {
     val tableMetaDatas: List<TableMetaData> = TableOrderHint.getSortedTables(connectorRepository, connectorId)
-    val entityTableChecker=connectorRepository.getConnectorHint(connectorId, EntityTableChecker::class.java).value
-    val tableMapper= connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val entityTableChecker = connectorRepository.getConnectorHint(connectorId, EntityTableChecker::class.java).value
+    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
     val updateClauses: MutableList<String> = ArrayList()
 
     for (tableMetaData in tableMetaDatas) {
