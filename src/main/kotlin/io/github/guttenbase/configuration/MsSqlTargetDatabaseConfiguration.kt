@@ -42,7 +42,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
    * {@inheritDoc}
    */
   @Throws(SQLException::class)
-  override fun beforeInsert(connection: Connection, connectorId: String, table: TableMetaData) {
+  override fun beforeTableCopy(connection: Connection, connectorId: String, table: TableMetaData) {
     setIdentityInsert(connection, connectorId, true, table)
   }
 
@@ -50,7 +50,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
    * {@inheritDoc}
    */
   @Throws(SQLException::class)
-  override fun afterInsert(connection: Connection, connectorId: String, table: TableMetaData) {
+  override fun afterTableCopy(connection: Connection, connectorId: String, table: TableMetaData) {
     setIdentityInsert(connection, connectorId, false, table)
   }
 
@@ -73,11 +73,13 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     connection: Connection, connectorId: String, tableMetaDatas: List<TableMetaData>,
     enable: Boolean
   ) {
-    val tableMapper: TableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
 
     for (tableMetaData in tableMetaDatas) {
-      val tableName: String = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
-      executeSQL(connection, "ALTER TABLE " + tableName + if (enable) " CHECK CONSTRAINT ALL" else " NOCHECK CONSTRAINT ALL")
+      val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+      val flag = if (enable) " CHECK CONSTRAINT ALL" else " NOCHECK CONSTRAINT ALL"
+
+      executeSQL(connection, "ALTER TABLE $tableName$flag")
     }
   }
 
@@ -90,15 +92,17 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     val tableName: String = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
 
     if (hasIdentityColumn(tableMetaData)) {
-      executeSQL(connection, "SET IDENTITY_INSERT " + tableName + " " + if (enable) "ON" else "OFF")
+      val flag = if (enable) "ON" else "OFF"
+
+      executeSQL(connection, "SET IDENTITY_INSERT $tableName $flag")
     }
   }
 
-  private fun hasIdentityColumn(tableMetaData: TableMetaData) = tableMetaData.columnMetaData.any { isIdentityColumn(it) }
+  private fun hasIdentityColumn(tableMetaData: TableMetaData) =
+    tableMetaData.columnMetaData.any { isIdentityColumn(it) }
 
-  private fun isIdentityColumn(columnMetaData: ColumnMetaData): Boolean {
-    return columnMetaData.columnTypeName.uppercase()
-      .contains("IDENTITY") || columnMetaData.isPrimaryKey && columnMetaData.isAutoIncrement
-        && columnMetaData.tableMetaData.primaryKeyColumns.size == 1
-  }
+  private fun isIdentityColumn(columnMetaData: ColumnMetaData) =
+    columnMetaData.columnTypeName.uppercase().contains("IDENTITY")
+        || (columnMetaData.isPrimaryKey && columnMetaData.isAutoIncrement
+        && columnMetaData.tableMetaData.primaryKeyColumns.size == 1)
 }
