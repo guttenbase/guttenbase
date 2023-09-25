@@ -13,6 +13,7 @@ import java.sql.SQLException
  *
  * @author M. Dahm
  */
+@Suppress("SqlSourceToSinkFlow")
 abstract class AbstractDatabaseConfiguration(protected val connectorRepository: ConnectorRepository) : DatabaseConfiguration {
   /**
    * Execute single statement.
