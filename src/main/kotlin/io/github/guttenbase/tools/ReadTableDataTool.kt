@@ -19,26 +19,31 @@ import java.sql.SQLException
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
 open class ReadTableDataTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String,
   private val tableMetaData: TableMetaData
-) {
+) :AutoCloseable {
+  constructor(connectorRepository: ConnectorRepository, connectorId: String, tableName: String) : this(
+    connectorRepository, connectorId,
+    connectorRepository.getDatabaseMetaData(connectorId).getTableMetaData(tableName)
+      ?: throw IllegalStateException("Table $tableName not found")
+  )
+
   private var connector: Connector? = null
   private var resultSet: ResultSet? = null
 
   @Throws(SQLException::class)
-  fun start() {
+  fun start(): ReadTableDataTool {
     if (connector == null) {
       val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
       connector = connectorRepository.createConnector(connectorId)
 
       val connection: Connection = connector!!.openConnection()
       sourceConfiguration.initializeSourceConnection(connection, connectorId)
-      val tableMapper: TableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+      val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
       val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
       val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, databaseMetaData)
       val selectStatement = SelectStatementCreator(connectorRepository, connectorId)
@@ -49,13 +54,15 @@ open class ReadTableDataTool(
       resultSet = selectStatement.executeQuery()
       sourceConfiguration.afterSelect(connection, connectorId, tableMetaData)
     }
+
+    return this
   }
 
   @Throws(SQLException::class)
   fun end() {
     if (connector != null) {
-      val sourceConfiguration: SourceDatabaseConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
-      val connection: Connection = connector!!.openConnection()
+      val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
+      val connection = connector!!.openConnection()
       sourceConfiguration.finalizeSourceConnection(connection, connectorId)
       resultSet!!.close()
       connector!!.closeConnection()
@@ -106,5 +113,9 @@ open class ReadTableDataTool(
     }
 
     return if (rowIndex == 0) null else result
+  }
+
+  override fun close() {
+    end()
   }
 }

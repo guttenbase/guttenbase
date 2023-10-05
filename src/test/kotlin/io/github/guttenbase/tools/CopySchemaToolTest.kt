@@ -6,7 +6,9 @@ import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
+import io.github.guttenbase.tools.ReadTableDataTool
 import io.github.guttenbase.tools.ScriptExecutorTool
+import io.github.guttenbase.tools.TableOrderTool
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -26,12 +28,17 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
 
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/data/test-data.sql")
   }
 
   @Test
   fun testDerby() {
     CopySchemaTool(connectorRepository).copySchema(SOURCE, DERBY)
     DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, DERBY)
+    ReadTableDataTool(connectorRepository, DERBY, "FOO_USER").start().use {
+      val data = it.readTableData(10)
+      println(data)
+    }
   }
 
   @Test
