@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class ColumnDataMapperProviderHintTest : AbstractHintTest("/ddl/tables.sql", "/ddl/tables-uuid.sql", "/data/test-data.sql") {
+class ColumnDataMapperProviderHintTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-uuid.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     val columnDataMapper = TestUUIDColumnDataMapper()

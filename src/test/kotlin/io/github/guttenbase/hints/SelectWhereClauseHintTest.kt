@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class SelectWhereClauseHintTest : AbstractHintTest("/ddl/tables.sql", "/ddl/tables.sql", "/data/test-data.sql") {
+class SelectWhereClauseHintTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(SOURCE, object : SelectWhereClauseHint() {

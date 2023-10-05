@@ -15,7 +15,7 @@ import java.sql.Connection
  *
  * @author M. Dahm
  */
-class ConfigurationLifeCycleTest : AbstractHintTest("/ddl/tables.sql", "/ddl/tables.sql", "/data/test-data.sql") {
+class ConfigurationLifeCycleTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
   private var afterTableCopy = 0
   private var beforeTableCopy = 0
   private var afterSelect = 0

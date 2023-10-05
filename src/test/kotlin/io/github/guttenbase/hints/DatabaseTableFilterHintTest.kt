@@ -24,7 +24,7 @@ class DatabaseTableFilterHintTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
     connectorRepository.addConnectorHint(SOURCE, object : DatabaseTableFilterHint() {
       override val value: DatabaseTableFilter
         get() = object : DefaultDatabaseTableFilter() {

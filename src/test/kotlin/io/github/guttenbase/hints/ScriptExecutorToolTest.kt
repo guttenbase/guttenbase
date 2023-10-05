@@ -26,7 +26,7 @@ class ScriptExecutorToolTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
-    objectUnderTest.executeFileScript(TARGET, resourceName = "/ddl/tables.sql")
+    objectUnderTest.executeFileScript(TARGET, resourceName = "/ddl/tables-hsqldb.sql")
     objectUnderTest.executeFileScript(TARGET, false, false, "/data/test-data.sql")
   }
 

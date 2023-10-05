@@ -28,8 +28,8 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectionInfo(SOURCE, TestDerbyConnectionInfo())
     connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
 
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-derby.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables-h2.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
 
     connectorRepository.addConnectorHint(TARGET, object : TableRowDataFilterHint() {

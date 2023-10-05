@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach
  * @author M. Dahm
  */
 class TableMapperHintTest :
-  AbstractHintTest("/ddl/tables-with-umlauts.sql", "/ddl/tables.sql", "/data/test-data-with-umlauts.sql") {
+  AbstractHintTest("/ddl/tables-with-umlauts.sql", "/ddl/tables-hsqldb.sql", "/data/test-data-with-umlauts.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(TARGET, object : TableMapperHint() {

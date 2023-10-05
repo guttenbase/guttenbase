@@ -2,6 +2,7 @@ package io.github.guttenbase.io.github.guttenbase.tools
 
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
+import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
@@ -19,10 +20,12 @@ import org.junit.jupiter.api.Test
 class CopySchemaToolTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
-    connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
+    connectorRepository.addConnectionInfo(SOURCE, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(H2, TestH2ConnectionInfo())
     connectorRepository.addConnectionInfo(DERBY, TestDerbyConnectionInfo())
     connectorRepository.addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables.sql")
+
+    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
   }
 
   @Test
@@ -37,9 +40,16 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
     DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, HSQLDB)
   }
 
+  @Test
+  fun testH2() {
+    CopySchemaTool(connectorRepository).copySchema(SOURCE, H2)
+    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, H2)
+  }
+
   companion object {
     const val SOURCE = "SOURCE"
     const val DERBY = "TARGET"
+    const val H2 = "H2"
     const val HSQLDB = "HSQLDB"
   }
 }

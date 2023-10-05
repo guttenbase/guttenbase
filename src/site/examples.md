@@ -58,8 +58,8 @@ public class MassDataProducerTest extends AbstractGuttenBaseTest
   {
     _connectorRepository.addConnectionInfo(SOURCE, new TestDerbyConnectionInfo());
     _connectorRepository.addConnectionInfo(TARGET, new TestH2ConnectionInfo());
-    new ScriptExecutorTool(_connectorRepository).executeFileScript(SOURCE, "/ddl/tables.sql");
-    new ScriptExecutorTool(_connectorRepository).executeFileScript(TARGET, "/ddl/tables.sql");
+    new ScriptExecutorTool(_connectorRepository).executeFileScript(SOURCE, "/ddl/tables-hsqldb.sql");
+    new ScriptExecutorTool(_connectorRepository).executeFileScript(TARGET, "/ddl/tables-hsqldb.sql");
     new ScriptExecutorTool(_connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql");
 
     _connectorRepository.addConnectorHint(TARGET, new DefaultColumnDataMapperProviderHint()

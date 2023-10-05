@@ -14,7 +14,8 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class TableRowCountFilterHintTest : AbstractHintTest("/ddl/tables.sql", "/ddl/tables.sql", "/data/test-data.sql") {
+class TableRowCountFilterHintTest :
+  AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-h2.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(SOURCE, object : TableRowCountFilterHint() {
@@ -29,8 +30,8 @@ class TableRowCountFilterHintTest : AbstractHintTest("/ddl/tables.sql", "/ddl/ta
   }
 
   override fun executeChecks() {
-    val source =      connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")!!
-    val target =      connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_USER")!!
+    val source = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")!!
+    val target = connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_USER")!!
     assertEquals(1, source.filteredRowCount)
     assertEquals(1, target.filteredRowCount)
   }

@@ -14,7 +14,7 @@ import java.util.Comparator.comparingInt
  *
  * @author M. Dahm
  */
-class ColumnOrderHintTest : AbstractHintTest("/ddl/tables.sql", "/ddl/tables.sql", "/data/test-data.sql") {
+class ColumnOrderHintTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(SOURCE, object : ColumnOrderHint() {

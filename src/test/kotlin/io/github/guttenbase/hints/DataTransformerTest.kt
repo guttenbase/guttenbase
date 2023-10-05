@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class DataTransformerTest : AbstractHintTest("/ddl/tables.sql", "/ddl/tables.sql", "/data/test-data.sql") {
+class DataTransformerTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     val columnDataMapper: ColumnDataMapper = object : ColumnDataMapper {

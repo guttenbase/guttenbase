@@ -22,7 +22,7 @@ class DatabaseColumnFilterHintTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
   }
 
   @Test

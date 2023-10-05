@@ -47,8 +47,8 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
   fun setup() {
     connectorRepository.addConnectionInfo(SOURCE, TestDerbyConnectionInfo())
     connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables-hsqldb.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
     connectorRepository.addConnectorHint(TARGET, object : DefaultColumnDataMapperProviderHint() {
       override fun addMappings(columnDataMapperFactory: DefaultColumnDataMapperProvider) {
