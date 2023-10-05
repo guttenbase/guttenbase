@@ -88,8 +88,8 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     connection: Connection, connectorId: String, enable: Boolean,
     tableMetaData: TableMetaData
   ) {
-    val tableMapper: TableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
-    val tableName: String = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
 
     if (hasIdentityColumn(tableMetaData)) {
       val flag = if (enable) "ON" else "OFF"
