@@ -62,8 +62,10 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
       val data = tool.readTableData(-1).sortedBy { it["ID"].toString().toInt() }
 
       Assertions.assertThat(data).hasSize(5)
-      Assertions.assertThat(data.last()).hasSize(3)
-      Assertions.assertThat(data.last()["NAME"]).isEqualTo("JENS")
+      val last = data.last()
+      Assertions.assertThat(last).hasSize(3)
+      Assertions.assertThat(last["NAME"]).isEqualTo("JENS")
+      Assertions.assertThat(last["ID"]).isEqualTo(4711L)
     }
   }
 
