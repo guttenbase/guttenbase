@@ -276,14 +276,19 @@ class DatabaseMetaDataInspectorTool(
       val primaryKeyColumn = tableMetaData.getNumericPrimaryKeyColumn()
 
       if(primaryKeyColumn != null) {
-        val maxIdStatement = SELECT_MAXID_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
+        val maxIdStatement = SELECT_MIN_MAX_ID_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
           .replace(COLUMN_PLACEHOLDER, primaryKeyColumn.columnName)
 
-        tableMetaData.maxId = getCount(statement, maxIdStatement)
+        statement.executeQuery(maxIdStatement).use {
+          it.next()
+          tableMetaData.minId =  it.getInt(1)
+          tableMetaData.maxId =  it.getInt(2)
+        }
       }
     } else {
       tableMetaData.totalRowCount = filter.defaultRowCount(tableMetaData)
       tableMetaData.filteredRowCount = filter.defaultRowCount(tableMetaData)
+      tableMetaData.minId = filter.defaultMinId(tableMetaData)
       tableMetaData.maxId = filter.defaultMaxId(tableMetaData)
     }
   }
@@ -353,7 +358,7 @@ class DatabaseMetaDataInspectorTool(
     private const val TABLE_PLACEHOLDER = "<table>"
     private const val COLUMN_PLACEHOLDER = "<column>"
     private const val SELECT_COUNT_STATEMENT = "SELECT COUNT(*) FROM $TABLE_PLACEHOLDER"
-    private const val SELECT_MAXID_STATEMENT = "SELECT MAX($COLUMN_PLACEHOLDER) FROM $TABLE_PLACEHOLDER"
+    private const val SELECT_MIN_MAX_ID_STATEMENT = "SELECT MIN($COLUMN_PLACEHOLDER), MAX($COLUMN_PLACEHOLDER) FROM $TABLE_PLACEHOLDER"
     private const val SELECT_NOTHING_STATEMENT = "SELECT * FROM $TABLE_PLACEHOLDER WHERE 1 > 2"
 
     private fun getValue(method: Method, data: JdbcDatabaseMetaData): Pair<String, Any>? {

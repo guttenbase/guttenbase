@@ -30,6 +30,11 @@ class TableMetaDataImpl(
   /**
    * {@inheritDoc}
    */
+  override var minId = 0
+
+  /**
+   * {@inheritDoc}
+   */
   override var totalRowCount = 0
 
   /**

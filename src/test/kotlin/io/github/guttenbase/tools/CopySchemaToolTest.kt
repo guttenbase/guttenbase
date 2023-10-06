@@ -56,6 +56,7 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
 
     Assertions.assertThat(tableMetaData.totalRowCount).isEqualTo((4))
     Assertions.assertThat(tableMetaData.filteredRowCount).isEqualTo((4))
+    Assertions.assertThat(tableMetaData.minId).isEqualTo((1))
     Assertions.assertThat(tableMetaData.maxId).isEqualTo((4))
 
     // Explicit ID

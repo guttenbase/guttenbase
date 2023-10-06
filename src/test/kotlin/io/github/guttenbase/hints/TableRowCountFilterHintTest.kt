@@ -24,7 +24,9 @@ class TableRowCountFilterHintTest :
           override fun defaultRowCount(tableMetaData: TableMetaData) =
             if (tableMetaData.tableName.equals("FOO_DATA", ignoreCase = true)) 0 else 1
 
-          override fun defaultMaxId(tableMetaData: TableMetaData)=7
+          override fun defaultMaxId(tableMetaData: TableMetaData) = 7
+
+          override fun defaultMinId(tableMetaData: TableMetaData) = 3
         }
     })
   }
@@ -36,5 +38,6 @@ class TableRowCountFilterHintTest :
     assertEquals(1, source.filteredRowCount)
     assertEquals(1, target.filteredRowCount)
     assertEquals(7, source.maxId)
+    assertEquals(3, source.minId)
   }
 }
