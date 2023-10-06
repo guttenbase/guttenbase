@@ -38,7 +38,7 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
   }
 
   /**
-   * @return target database type including precision and optional not null constraint clause
+   * @return target database type including precision and optional not null and primary key constraint clause
    */
   override fun mapColumnType(
     columnMetaData: ColumnMetaData,
@@ -46,11 +46,12 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
   ): String {
     val columnDefinition = lookupColumnDefinition(sourceDatabaseType, targetDatabaseType, columnMetaData)
       ?: createDefaultColumnDefinition(columnMetaData, "")
-    val notNull = if (columnMetaData.isNullable) "" else " NOT NULL"
+    val notNull = if (columnMetaData.isNullable || columnMetaData.isPrimaryKey) "" else " NOT NULL"
     val precision = createPrecisionClause(columnMetaData, columnDefinition.precision)
     val autoincrement = if (columnMetaData.isAutoIncrement) lookupAutoIncrementClause(targetDatabaseType) else ""
+    val primaryKey = if (columnMetaData.isPrimaryKey) " PRIMARY KEY" else ""
 
-    return columnDefinition.type + precision + notNull + autoincrement
+    return columnDefinition.type + precision + primaryKey + notNull + autoincrement
   }
 
   /**
