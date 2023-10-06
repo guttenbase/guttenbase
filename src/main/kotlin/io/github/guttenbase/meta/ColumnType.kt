@@ -31,7 +31,7 @@ enum class ColumnType(vararg classes: Class<*>) {
   CLASS_UNKNOWN(Void::class.java),
 
   //
-  CLASS_STRING(String::class.java),
+  CLASS_STRING(String::class.java, Char::class.java, java.lang.Character::class.java),
 
   //
   CLASS_BIGDECIMAL(BigDecimal::class.java),
@@ -61,28 +61,28 @@ enum class ColumnType(vararg classes: Class<*>) {
   CLASS_TIME(Time::class.java),
 
   //
-  CLASS_INTEGER(Int::class.java),
+  CLASS_INTEGER(Int::class.java, java.lang.Integer::class.java),
 
   //
-  CLASS_BOOLEAN(Boolean::class.java),
+  CLASS_BOOLEAN(Boolean::class.java, java.lang.Boolean::class.java),
 
   //
-  CLASS_LONG(Long::class.java, BigInteger::class.java),
+  CLASS_LONG(Long::class.java, BigInteger::class.java, java.lang.Long::class.java),
 
   //
-  CLASS_DOUBLE(Double::class.java),
+  CLASS_DOUBLE(Double::class.java, java.lang.Double::class.java),
 
   //
-  CLASS_FLOAT(Float::class.java),
+  CLASS_FLOAT(Float::class.java, java.lang.Float::class.java),
 
   //
-  CLASS_BYTE(Byte::class.javaPrimitiveType!!),
+  CLASS_BYTE(Byte::class.javaPrimitiveType!!, java.lang.Byte::class.java),
 
   //
   CLASS_BYTES(ByteArray::class.java),
 
   //
-  CLASS_SHORT(Short::class.java);
+  CLASS_SHORT(Short::class.java, java.lang.Short::class.java);
 
   /**
    * @return classes handled by this type
@@ -152,7 +152,7 @@ enum class ColumnType(vararg classes: Class<*>) {
     var result: Closeable? = null
 
     when (this) {
-      CLASS_STRING -> insertStatement.setString(columnIndex, data as String)
+      CLASS_STRING -> insertStatement.setString(columnIndex, convertToString(data))
       CLASS_INTEGER -> insertStatement.setInt(columnIndex, (data as Int))
       CLASS_LONG -> insertStatement.setLong(columnIndex, (data as Long))
       CLASS_DOUBLE -> insertStatement.setDouble(columnIndex, (data as Double))
@@ -208,6 +208,12 @@ enum class ColumnType(vararg classes: Class<*>) {
     }
 
     return result
+  }
+
+  private fun convertToString(data: Any): String = when (data) {
+    is String -> data
+    is Char -> data.toString()
+    else -> throw IllegalStateException("Whart is this: $data")
   }
 
   private fun driverSupportsJavaTimeAPI(databaseMetaData: DatabaseMetaData) = when {
@@ -269,7 +275,7 @@ enum class ColumnType(vararg classes: Class<*>) {
     /**
      * Check if class can be mapped to [ColumnType].
      */
-    fun isSupportedClass(columnClass: Class<*>) = COLUMN_TYPES.containsKey(columnClass)
+    fun isSupportedClass(columnClass: Class<*>)= COLUMN_TYPES.containsKey(columnClass)
 
     /**
      * Check if class can be mapped to [ColumnType].
