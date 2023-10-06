@@ -1,6 +1,5 @@
 package io.github.guttenbase.tools
 
-import io.github.guttenbase.configuration.SourceDatabaseConfiguration
 import io.github.guttenbase.connector.Connector
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.mapping.ColumnMapper
@@ -19,26 +18,31 @@ import java.sql.SQLException
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
 open class ReadTableDataTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String,
   private val tableMetaData: TableMetaData
-) {
+) :AutoCloseable {
+  constructor(connectorRepository: ConnectorRepository, connectorId: String, tableName: String) : this(
+    connectorRepository, connectorId,
+    connectorRepository.getDatabaseMetaData(connectorId).getTableMetaData(tableName)
+      ?: throw IllegalStateException("Table $tableName not found")
+  )
+
   private var connector: Connector? = null
   private var resultSet: ResultSet? = null
 
   @Throws(SQLException::class)
-  fun start() {
+  fun start(): ReadTableDataTool {
     if (connector == null) {
       val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
       connector = connectorRepository.createConnector(connectorId)
 
       val connection: Connection = connector!!.openConnection()
       sourceConfiguration.initializeSourceConnection(connection, connectorId)
-      val tableMapper: TableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+      val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
       val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
       val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, databaseMetaData)
       val selectStatement = SelectStatementCreator(connectorRepository, connectorId)
@@ -49,13 +53,15 @@ open class ReadTableDataTool(
       resultSet = selectStatement.executeQuery()
       sourceConfiguration.afterSelect(connection, connectorId, tableMetaData)
     }
+
+    return this
   }
 
   @Throws(SQLException::class)
   fun end() {
     if (connector != null) {
-      val sourceConfiguration: SourceDatabaseConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
-      val connection: Connection = connector!!.openConnection()
+      val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
+      val connection = connector!!.openConnection()
       sourceConfiguration.finalizeSourceConnection(connection, connectorId)
       resultSet!!.close()
       connector!!.closeConnection()
@@ -69,7 +75,7 @@ open class ReadTableDataTool(
    * @return list of maps containing table data or null of no more data is available
    */
   @Throws(SQLException::class)
-  fun readTableData(noLines: Int): List<Map<String, Any?>>? {
+  fun readTableData(noLines: Int): List<Map<String, Any?>> {
     var lines = noLines
     val result: MutableList<Map<String, Any?>> = ArrayList()
     val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
@@ -105,6 +111,10 @@ open class ReadTableDataTool(
       rowIndex++
     }
 
-    return if (rowIndex == 0) null else result
+    return result
+  }
+
+  override fun close() {
+    end()
   }
 }

@@ -7,7 +7,9 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
 import io.github.guttenbase.tools.InsertStatementTool
+import io.github.guttenbase.tools.ReadTableDataTool
 import io.github.guttenbase.tools.ScriptExecutorTool
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -27,31 +29,42 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
 
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/data/test-data.sql")
   }
 
   @Test
   fun testDerby() {
-    CopySchemaTool(connectorRepository).copySchema(SOURCE, DERBY)
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, DERBY)
+    test(DERBY)
+  }
 
-    InsertStatementTool(connectorRepository, DERBY).createInsertStatement(
+  @Test
+  fun testHSQLDB() {
+    test(HSQLDB)
+  }
+
+  @Test
+  fun testH2() {
+    test(H2)
+  }
+
+  private fun test(target: String) {
+    CopySchemaTool(connectorRepository).copySchema(SOURCE, target)
+    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, target)
+
+    InsertStatementTool(connectorRepository, target).createInsertStatement(
       "FOO_COMPANY",
       includePrimaryKey = true
     ).setParameter("SUPPLIER", 'x').setParameter("NAME", "JENS")
       .setParameter("ID", 4711L)
       .execute()
-  }
 
-  @Test
-  fun testHSQLDB() {
-    CopySchemaTool(connectorRepository).copySchema(SOURCE, HSQLDB)
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, HSQLDB)
-  }
+    ReadTableDataTool(connectorRepository, target, "FOO_COMPANY").start().use { tool ->
+      val data = tool.readTableData(-1).sortedBy { it["ID"].toString().toInt() }
 
-  @Test
-  fun testH2() {
-    CopySchemaTool(connectorRepository).copySchema(SOURCE, H2)
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, H2)
+      Assertions.assertThat(data).hasSize(5)
+      Assertions.assertThat(data.last()).hasSize(3)
+      Assertions.assertThat(data.last()["NAME"]).isEqualTo("JENS")
+    }
   }
 
   companion object {
