@@ -8,12 +8,11 @@ import io.github.guttenbase.repository.impl.HeuristicColumnTypeResolver
 /**
  * Default implementation tries [HeuristicColumnTypeResolver] first, then [ClassNameColumnTypeResolver].
  *
- *  &copy; 2012-2034 akquinet tech@spree
- *
+ * &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
 open class DefaultColumnTypeResolverListHint : ColumnTypeResolverListHint() {
   override val value: ColumnTypeResolverList
-    get() = ColumnTypeResolverList { listOf(HeuristicColumnTypeResolver(), ClassNameColumnTypeResolver()) }
+    get() = ColumnTypeResolverList { listOf(HeuristicColumnTypeResolver, ClassNameColumnTypeResolver) }
 }

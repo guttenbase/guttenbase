@@ -1,6 +1,5 @@
 package io.github.guttenbase.statements
 
-import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Connection
@@ -28,13 +27,14 @@ abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepo
     assert(numberOfRowsPerBatch > 0) { "numberOfValueClauses > 0" }
 
     val numberOfValuesClauses = if (useMultipleValuesClauses) numberOfRowsPerBatch else 1
-    val sql = createSQL(sourceConnectorId, sourceTableMetaData, targetTableName, targetTableMetaData, numberOfValuesClauses)
+    val sql =
+      createSQL(sourceConnectorId, sourceTableMetaData, targetTableName, targetTableMetaData, numberOfValuesClauses)
 
     LOG.debug("Create INSERT statement: $sql")
     return destConnection.prepareStatement(sql)
   }
 
-  private fun createValueTuples(numberOfValuesClauses: Int, columnCount: Int): String {
+  protected fun createValueTuples(numberOfValuesClauses: Int, columnCount: Int): String {
     val tuple = (1..columnCount).joinToString(prefix = "(", postfix = ")", transform = { "?" })
     return (1..numberOfValuesClauses).joinToString(transform = { tuple })
   }
@@ -43,10 +43,10 @@ abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepo
     sourceConnectorId: String, sourceTableMetaData: TableMetaData, targetTableName: String,
     targetTableMetaData: TableMetaData, numberOfValueClauses: Int
   ): String {
-    val columns: List<ColumnMetaData> = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
+    val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
 
     return INSERT_INTO + targetTableName + " (" + createColumnClause(columns) + ") VALUES " +
-        createValueTuples(numberOfValueClauses, columns.size) + " " + createWhereClause(targetTableMetaData)
+        createValueTuples(numberOfValueClauses, columns.size)
   }
 
   companion object {

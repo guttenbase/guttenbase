@@ -33,8 +33,7 @@ abstract class AbstractStatementCreator(
    * Get the list of target columns with appropriate mappings as defined by [io.github.guttenbase.hints.ColumnMapperHint]
    */
   fun getMappedTargetColumns(
-    sourceTableMetaData: TableMetaData,
-    targetTableMetaData: TableMetaData, sourceConnectorId: String
+    sourceTableMetaData: TableMetaData, targetTableMetaData: TableMetaData, sourceConnectorId: String
   ): List<ColumnMetaData> {
     // Use same order as in SELECT clause
     val sourceColumns = getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)

@@ -55,7 +55,7 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
     connection: Connection, sourceTableMetaData: TableMetaData, tableName: String,
     targetTableMetaData: TableMetaData, sourceConnectorId: String
   ): PreparedStatement {
-    val columns: List<ColumnMetaData> = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
+    val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
     val sql = createSQL(tableName, targetTableMetaData, columns)
 
     return connection.prepareStatement(sql)

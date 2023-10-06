@@ -6,6 +6,7 @@ import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
+import io.github.guttenbase.tools.InsertStatementTool
 import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,6 +33,13 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   fun testDerby() {
     CopySchemaTool(connectorRepository).copySchema(SOURCE, DERBY)
     DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, DERBY)
+
+    InsertStatementTool(connectorRepository, DERBY).createInsertStatement(
+      "FOO_COMPANY",
+      includePrimaryKey = true
+    ).setParameter("SUPPLIER", 'x').setParameter("NAME", "JENS")
+      .setParameter("ID", 4711L)
+      .execute()
   }
 
   @Test

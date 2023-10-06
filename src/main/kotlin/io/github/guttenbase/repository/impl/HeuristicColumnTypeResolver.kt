@@ -9,14 +9,12 @@ import io.github.guttenbase.meta.ColumnType
 /**
  * Will check column type names and determine what Java type is appropriate using some heuristic tests.
  *
- *
- *
  *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class HeuristicColumnTypeResolver : ColumnTypeResolver {
+object HeuristicColumnTypeResolver : ColumnTypeResolver {
   /**
    * Performs some heuristic checks on given column type.
    */
