@@ -6,9 +6,10 @@ import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
-import io.github.guttenbase.tools.ReadTableDataTool
 import io.github.guttenbase.tools.InsertStatementTool
+import io.github.guttenbase.tools.ReadTableDataTool
 import io.github.guttenbase.tools.ScriptExecutorTool
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -33,32 +34,37 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testDerby() {
-    CopySchemaTool(connectorRepository).copySchema(SOURCE, DERBY)
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, DERBY)
+    test(DERBY)
+  }
 
-    InsertStatementTool(connectorRepository, DERBY).createInsertStatement(
+  @Test
+  fun testHSQLDB() {
+    test(HSQLDB)
+  }
+
+  @Test
+  fun testH2() {
+    test(H2)
+  }
+
+  private fun test(target: String) {
+    CopySchemaTool(connectorRepository).copySchema(SOURCE, target)
+    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, target)
+
+    InsertStatementTool(connectorRepository, target).createInsertStatement(
       "FOO_COMPANY",
       includePrimaryKey = true
     ).setParameter("SUPPLIER", 'x').setParameter("NAME", "JENS")
       .setParameter("ID", 4711L)
       .execute()
 
-    ReadTableDataTool(connectorRepository, DERBY, "FOO_USER").start().use {
-      val data = it.readTableData(10)
-      println(data)
+    ReadTableDataTool(connectorRepository, target, "FOO_COMPANY").start().use { tool ->
+      val data = tool.readTableData(-1).sortedBy { it["ID"].toString().toInt() }
+
+      Assertions.assertThat(data).hasSize(5)
+      Assertions.assertThat(data.last()).hasSize(3)
+      Assertions.assertThat(data.last()["NAME"]).isEqualTo("JENS")
     }
-  }
-
-  @Test
-  fun testHSQLDB() {
-    CopySchemaTool(connectorRepository).copySchema(SOURCE, HSQLDB)
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, HSQLDB)
-  }
-
-  @Test
-  fun testH2() {
-    CopySchemaTool(connectorRepository).copySchema(SOURCE, H2)
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, H2)
   }
 
   companion object {
