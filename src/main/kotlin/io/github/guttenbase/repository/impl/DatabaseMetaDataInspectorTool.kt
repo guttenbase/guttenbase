@@ -21,7 +21,10 @@ import java.util.*
  *
  * @author M. Dahm
  */
-class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRepository, private val connectorId: String) {
+class DatabaseMetaDataInspectorTool(
+  private val connectorRepository: ConnectorRepository,
+  private val connectorId: String
+) {
   @Throws(SQLException::class)
   fun getDatabaseMetaData(connection: Connection): DatabaseMetaData {
     val connectionInfo: ConnectorInfo = connectorRepository.getConnectionInfo(connectorId)
@@ -51,10 +54,10 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
       for (table in databaseMetaData.tableMetaData) {
         val tableMetaData = table as InternalTableMetaData
 
-        updateTableWithRowCount(statement, tableMetaData, schemaPrefix)
         updateTableMetaDataWithColumnInformation(statement, tableMetaData, schemaPrefix)
       }
     }
+
     try {
       for (table in databaseMetaData.tableMetaData) {
         val tableMetaData = table as InternalTableMetaData
@@ -67,6 +70,14 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
       // Some drivers such as JdbcOdbcBridge do not support this
       LOG.warn("Could not update additional schema information", e)
     }
+
+    connection.createStatement().use { statement ->
+      for (table in databaseMetaData.tableMetaData) {
+        val tableMetaData = table as InternalTableMetaData
+
+        enrichTableMetaData(statement, tableMetaData, schemaPrefix)
+      }
+    }
   }
 
   @Throws(SQLException::class)
@@ -76,8 +87,9 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     table: TableMetaData
   ) {
     LOG.debug("Retrieving foreign key information for " + table.tableName)
-    val tableFilter: DatabaseTableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
-      .value
+    val tableFilter: DatabaseTableFilter =
+      connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
+        .value
     val resultSet = metaData.getExportedKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchemaPattern(databaseMetaData),
@@ -86,13 +98,19 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
 
     resultSet.use {
       while (resultSet.next()) {
-        val pkTableName = resultSet.getString("PKTABLE_NAME") ?: throw GuttenBaseException("PKTABLE_NAME must not be null")
-        val pkColumnName = resultSet.getString("PKCOLUMN_NAME") ?: throw GuttenBaseException("PKCOLUMN_NAME must not be null")
-        val fkTableName = resultSet.getString("FKTABLE_NAME") ?: throw GuttenBaseException("FKTABLE_NAME must not be null")
-        val fkColumnName = resultSet.getString("FKCOLUMN_NAME") ?: throw GuttenBaseException("FKCOLUMN_NAME must not be null")
+        val pkTableName =
+          resultSet.getString("PKTABLE_NAME") ?: throw GuttenBaseException("PKTABLE_NAME must not be null")
+        val pkColumnName =
+          resultSet.getString("PKCOLUMN_NAME") ?: throw GuttenBaseException("PKCOLUMN_NAME must not be null")
+        val fkTableName =
+          resultSet.getString("FKTABLE_NAME") ?: throw GuttenBaseException("FKTABLE_NAME must not be null")
+        val fkColumnName =
+          resultSet.getString("FKCOLUMN_NAME") ?: throw GuttenBaseException("FKCOLUMN_NAME must not be null")
         val fkName: String = resultSet.getString("FK_NAME") ?: "FK_UNKNOWN_$fkColumnName"
-        val pkTableMetaData: InternalTableMetaData? = databaseMetaData.getTableMetaData(pkTableName) as InternalTableMetaData?
-        val fkTableMetaData: InternalTableMetaData? = databaseMetaData.getTableMetaData(fkTableName) as InternalTableMetaData?
+        val pkTableMetaData: InternalTableMetaData? =
+          databaseMetaData.getTableMetaData(pkTableName) as InternalTableMetaData?
+        val fkTableMetaData: InternalTableMetaData? =
+          databaseMetaData.getTableMetaData(fkTableName) as InternalTableMetaData?
 
         if (fkTableMetaData == null || pkTableMetaData == null) {
           // this table might have been excluded from the list of tables handled by this batch
@@ -128,8 +146,9 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
   ) {
     LOG.debug("Retrieving index information for " + table.tableName)
 
-    val tableFilter: DatabaseTableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
-      .value
+    val tableFilter: DatabaseTableFilter =
+      connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
+        .value
     val resultSet = metaData.getIndexInfo(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchema(databaseMetaData), table.tableName, false,
@@ -171,8 +190,9 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     table: TableMetaData
   ) {
     LOG.debug("Retrieving primary key information for " + table.tableName)
-    val tableFilter: DatabaseTableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
-      .value
+    val tableFilter: DatabaseTableFilter =
+      connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
+        .value
     val resultSet = metaData.getPrimaryKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchema(databaseMetaData), table.tableName
@@ -197,8 +217,9 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     schemaPrefix: String
   ) {
     val tableName = escapeTableName(tableMetaData, schemaPrefix)
-    val columnFilter: DatabaseColumnFilter = connectorRepository.getConnectorHint(connectorId, DatabaseColumnFilter::class.java)
-      .value
+    val columnFilter: DatabaseColumnFilter =
+      connectorRepository.getConnectorHint(connectorId, DatabaseColumnFilter::class.java)
+        .value
     LOG.debug("Retrieving column information for $tableName")
     val selectSQL = SELECT_NOTHING_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
     val resultSet = statement.executeQuery(selectSQL)
@@ -239,40 +260,56 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     connectorRepository.getConnectorHint(connectorId, SelectWhereClause::class.java)
       .value.getWhereClause(tableMetaData)
 
-  @Throws(SQLException::class)
-  private fun updateTableWithRowCount(statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String) {
-    val filter: TableRowCountFilter =
-      connectorRepository.getConnectorHint(connectorId, TableRowCountFilter::class.java).value
+  private fun enrichTableMetaData(
+    statement: Statement,
+    tableMetaData: InternalTableMetaData,
+    schemaPrefix: String
+  ) {
+    val filter = connectorRepository.getConnectorHint(connectorId, TableRowCountFilter::class.java).value
 
     if (filter.accept(tableMetaData)) {
       val tableName = escapeTableName(tableMetaData, schemaPrefix)
       LOG.debug("Retrieving row count for $tableName")
 
-      val countAllSQL = SELECT_COUNT_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
-      val filterClause = createWhereClause(tableMetaData).trim { it <= ' ' }
-      val countFilteredSQL = SELECT_COUNT_STATEMENT.replace(TABLE_PLACEHOLDER, tableName) + " " + filterClause
-      val totalCount = getCount(statement, countAllSQL)
-      val filteredCount = if ("" == filterClause) totalCount else getCount(statement, countFilteredSQL)
+      computeRowCount(tableName, tableMetaData, statement)
 
-      tableMetaData.totalRowCount = totalCount
-      tableMetaData.filteredRowCount = filteredCount
+      val primaryKeyColumn = tableMetaData.getNumericPrimaryKeyColumn()
+
+      if(primaryKeyColumn != null) {
+        val maxIdStatement = SELECT_MAXID_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
+          .replace(COLUMN_PLACEHOLDER, primaryKeyColumn.columnName)
+
+        tableMetaData.maxId = getCount(statement, maxIdStatement)
+      }
     } else {
       tableMetaData.totalRowCount = filter.defaultRowCount(tableMetaData)
       tableMetaData.filteredRowCount = filter.defaultRowCount(tableMetaData)
+      tableMetaData.maxId = filter.defaultMaxId(tableMetaData)
     }
   }
 
-  @Throws(SQLException::class)
+  private fun computeRowCount(
+    tableName: String,
+    tableMetaData: InternalTableMetaData,
+    statement: Statement
+  ) {
+    val countAllSQL = SELECT_COUNT_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
+    val filterClause = createWhereClause(tableMetaData).trim { it <= ' ' }
+    val countFilteredSQL = SELECT_COUNT_STATEMENT.replace(TABLE_PLACEHOLDER, tableName) + " " + filterClause
+    val totalCount = getCount(statement, countAllSQL)
+    val filteredCount = if ("" == filterClause) totalCount else getCount(statement, countFilteredSQL)
+
+    tableMetaData.totalRowCount = totalCount
+    tableMetaData.filteredRowCount = filteredCount
+  }
+
   private fun getCount(statement: Statement, countAllSQL: String): Int {
-    val countResultSet = statement.executeQuery(countAllSQL)
-
-    return countResultSet.use {
-      countResultSet.next()
-      countResultSet.getInt(1)
+    return statement.executeQuery(countAllSQL).use {
+      it.next()
+      it.getInt(1)
     }
   }
 
-  @Throws(SQLException::class)
   private fun loadTables(databaseMetaData: InternalDatabaseMetaData, metaData: JdbcDatabaseMetaData) {
     LOG.debug("Searching tables in schema " + databaseMetaData.schema)
 
@@ -291,8 +328,10 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
          */
         val tableCatalog: String? = resultSet.getString("TABLE_CAT")
         val tableSchema: String? = resultSet.getString("TABLE_SCHEM")
-        val tableName: String = resultSet.getString("TABLE_NAME") ?: throw GuttenBaseException("TABLE_NAME must not be null")
-        val tableType: String = resultSet.getString("TABLE_TYPE") ?: throw GuttenBaseException("TABLE_TYPE must not be null")
+        val tableName: String =
+          resultSet.getString("TABLE_NAME") ?: throw GuttenBaseException("TABLE_NAME must not be null")
+        val tableType: String =
+          resultSet.getString("TABLE_TYPE") ?: throw GuttenBaseException("TABLE_TYPE must not be null")
 
         LOG.debug("Found: $tableCatalog/$tableSchema/$tableName/$tableType")
 
@@ -312,7 +351,9 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
     private val LOG = LoggerFactory.getLogger(DatabaseMetaDataInspectorTool::class.java)
 
     private const val TABLE_PLACEHOLDER = "<table>"
+    private const val COLUMN_PLACEHOLDER = "<column>"
     private const val SELECT_COUNT_STATEMENT = "SELECT COUNT(*) FROM $TABLE_PLACEHOLDER"
+    private const val SELECT_MAXID_STATEMENT = "SELECT MAX($COLUMN_PLACEHOLDER) FROM $TABLE_PLACEHOLDER"
     private const val SELECT_NOTHING_STATEMENT = "SELECT * FROM $TABLE_PLACEHOLDER WHERE 1 > 2"
 
     private fun getValue(method: Method, data: JdbcDatabaseMetaData): Pair<String, Any>? {
@@ -330,7 +371,8 @@ class DatabaseMetaDataInspectorTool(private val connectorRepository: ConnectorRe
       return null
     }
 
-    private fun isPrimitive(clazz: Class<*>) = clazz != Void::class.java && (clazz.isPrimitive || clazz == String::class.java)
+    private fun isPrimitive(clazz: Class<*>) =
+      clazz != Void::class.java && (clazz.isPrimitive || clazz == String::class.java)
 
     private fun escapeTableName(tableMetaData: InternalTableMetaData, schemaPrefix: String): String {
       val tableName = schemaPrefix + tableMetaData.tableName

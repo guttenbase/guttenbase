@@ -1,5 +1,6 @@
 package io.github.guttenbase.meta
 
+import io.github.guttenbase.repository.TableRowCountFilter
 import java.io.Serializable
 
 /**
@@ -12,8 +13,21 @@ import java.io.Serializable
  * @author M. Dahm
  */
 interface TableMetaData : Comparable<TableMetaData>, Serializable {
+  /**
+   * Row count of table using given filter clause [TableRowCountFilter]
+   */
   val filteredRowCount: Int
+
+  /**
+   * Total row count of table
+   */
   val totalRowCount: Int
+
+  /**
+   * Maximum value of ID (primary key) field if any
+   */
+  val maxId: Int
+
   val columnMetaData: List<ColumnMetaData>
   fun getColumnMetaData(columnName: String): ColumnMetaData?
   val columnCount: Int
@@ -36,4 +50,16 @@ interface TableMetaData : Comparable<TableMetaData>, Serializable {
   fun getIndexesContainingColumn(columnMetaData: ColumnMetaData): List<IndexMetaData>
   val importedForeignKeys: List<ForeignKeyMetaData>
   val exportedForeignKeys: List<ForeignKeyMetaData>
+}
+
+fun TableMetaData.getNumericPrimaryKeyColumn(): ColumnMetaData? {
+  if (primaryKeyColumns.size == 1) {
+    val column = primaryKeyColumns[0]
+
+    if (column.columnType.isNumericType()) {
+      return column
+    }
+  }
+
+  return null
 }

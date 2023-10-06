@@ -17,6 +17,7 @@ object ClassNameColumnTypeResolver : ColumnTypeResolver {
    */
   override fun getColumnType(columnMetaData: ColumnMetaData): ColumnType {
     val columnClassName = columnMetaData.columnClassName
+
     return if (ColumnType.isSupportedClass(columnClassName)) ColumnType.valueForClass(columnClassName) else ColumnType.CLASS_UNKNOWN
   }
 }

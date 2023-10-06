@@ -38,11 +38,10 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
   }
 
   /**
-   * @return target database type including precision and optional not null and primary key constraint clause
+   * @return target database type including precision and optional not null, autoincrement, and primary key constraint clauses
    */
   override fun mapColumnType(
-    columnMetaData: ColumnMetaData,
-    sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType
+    columnMetaData: ColumnMetaData, sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType
   ): String {
     val columnDefinition = lookupColumnDefinition(sourceDatabaseType, targetDatabaseType, columnMetaData)
       ?: createDefaultColumnDefinition(columnMetaData, "")

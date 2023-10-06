@@ -51,6 +51,13 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
     CopySchemaTool(connectorRepository).copySchema(SOURCE, target)
     DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, target)
 
+    val databaseMetaData = connectorRepository.getDatabaseMetaData(target)
+    val tableMetaData = databaseMetaData.getTableMetaData("FOO_COMPANY")!!
+
+    Assertions.assertThat(tableMetaData.totalRowCount).isEqualTo((4))
+    Assertions.assertThat(tableMetaData.filteredRowCount).isEqualTo((4))
+    Assertions.assertThat(tableMetaData.maxId).isEqualTo((4))
+
     // Explicit ID
     InsertStatementTool(connectorRepository, target).createInsertStatement(
       "FOO_COMPANY",

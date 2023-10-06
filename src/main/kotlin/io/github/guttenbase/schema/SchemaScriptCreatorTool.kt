@@ -28,8 +28,7 @@ import kotlin.math.abs
 @Suppress("MemberVisibilityCanBePrivate")
 class SchemaScriptCreatorTool(
   private val connectorRepository: ConnectorRepository,
-  val sourceConnectorId: String,
-  val targetConnectorId: String
+  private val sourceConnectorId: String, private val targetConnectorId: String
 ) {
   private val databaseMetaData: DatabaseMetaData
     get() = connectorRepository.getDatabaseMetaData(sourceConnectorId)
@@ -42,6 +41,7 @@ class SchemaScriptCreatorTool(
 
   fun createTableStatements(tables: List<TableMetaData>) = tables.map { createTable(it) }
 
+  @Suppress("unused")
   fun createPrimaryKeyStatements(): List<String> {
     val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
 
@@ -91,6 +91,7 @@ class SchemaScriptCreatorTool(
 
   fun createTable(tableMetaData: TableMetaData): String {
     val tableName = getTableName(tableMetaData)
+
     return ("CREATE TABLE $tableName\n" + tableMetaData.columnMetaData.joinToString(newline = true) {
       "  " + createColumn(it)
     }) + ";"

@@ -25,6 +25,11 @@ class TableMetaDataImpl(
   /**
    * {@inheritDoc}
    */
+  override var maxId = 0
+
+  /**
+   * {@inheritDoc}
+   */
   override var totalRowCount = 0
 
   /**

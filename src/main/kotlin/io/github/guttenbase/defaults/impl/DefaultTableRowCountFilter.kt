@@ -8,4 +8,5 @@ import io.github.guttenbase.repository.TableRowCountFilter
  */
 open class DefaultTableRowCountFilter : TableRowCountFilter {
   override fun defaultRowCount(tableMetaData: TableMetaData) = 0
+  override fun defaultMaxId(tableMetaData: TableMetaData) = 0
 }

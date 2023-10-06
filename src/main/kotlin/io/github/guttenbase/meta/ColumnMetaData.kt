@@ -1,6 +1,7 @@
 package io.github.guttenbase.meta
 
 import java.io.Serializable
+import java.sql.Types
 
 /**
  * Information about a table column.
@@ -38,3 +39,5 @@ interface ColumnMetaData : Comparable<ColumnMetaData>, Serializable {
    */
   val referencingColumns: Map<String, List<ColumnMetaData>>
 }
+
+fun Int.isNumericType() = this in listOf(Types.SMALLINT, Types.NUMERIC, Types.DECIMAL, Types.BIGINT, Types.INTEGER)

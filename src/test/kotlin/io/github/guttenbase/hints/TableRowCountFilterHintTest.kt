@@ -8,9 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 /**
  * Test omitting row count statement
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -25,6 +23,8 @@ class TableRowCountFilterHintTest :
 
           override fun defaultRowCount(tableMetaData: TableMetaData) =
             if (tableMetaData.tableName.equals("FOO_DATA", ignoreCase = true)) 0 else 1
+
+          override fun defaultMaxId(tableMetaData: TableMetaData)=7
         }
     })
   }
@@ -32,7 +32,9 @@ class TableRowCountFilterHintTest :
   override fun executeChecks() {
     val source = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")!!
     val target = connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_USER")!!
+
     assertEquals(1, source.filteredRowCount)
     assertEquals(1, target.filteredRowCount)
+    assertEquals(7, source.maxId)
   }
 }
