@@ -1,7 +1,7 @@
 package io.github.guttenbase.hints
 
 import io.github.guttenbase.AbstractGuttenBaseTest
-import io.github.guttenbase.configuration.TestH2ConnectionInfo
+import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.tools.RESULT_MAP
 import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -25,7 +25,7 @@ class ScriptExecutorToolTest : AbstractGuttenBaseTest() {
 
   @BeforeEach
   fun setup() {
-    connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(TARGET, TestHsqlConnectionInfo())
     objectUnderTest.executeFileScript(TARGET, resourceName = "/ddl/tables-hsqldb.sql")
     objectUnderTest.executeFileScript(TARGET, false, false, "/data/test-data.sql")
   }

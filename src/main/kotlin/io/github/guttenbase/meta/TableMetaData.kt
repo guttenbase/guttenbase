@@ -26,12 +26,12 @@ interface TableMetaData : Comparable<TableMetaData>, Serializable {
   /**
    * Maximum value of ID (primary key) field if any
    */
-  val maxId: Int
+  val maxId: Long
 
   /**
    * Minimum value of ID (primary key) field if any
    */
-  val minId: Int
+  val minId: Long
 
   val columnMetaData: List<ColumnMetaData>
   fun getColumnMetaData(columnName: String): ColumnMetaData?

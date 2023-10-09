@@ -13,15 +13,13 @@ import java.sql.SQLException
 @Suppress("MemberVisibilityCanBePrivate")
 class CopySchemaTool(private val connectorRepository: ConnectorRepository) {
   fun createDDLScript(sourceConnectorId: String, targetConnectorId: String): List<String> {
-    val schemaScriptCreatorTool = SchemaScriptCreatorTool(
-      connectorRepository, sourceConnectorId,
-      targetConnectorId
-    )
+    val schemaScriptCreatorTool = SchemaScriptCreatorTool(connectorRepository, sourceConnectorId, targetConnectorId)
 
     return listOf(
       schemaScriptCreatorTool.createTableStatements(),
       schemaScriptCreatorTool.createForeignKeyStatements(),
-      schemaScriptCreatorTool.createIndexStatements()
+      schemaScriptCreatorTool.createIndexStatements(),
+      schemaScriptCreatorTool.createAutoincrementUpdateStatements()
     ).flatten()
   }
 

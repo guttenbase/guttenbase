@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class ColumnMapperHintTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-id-columns-renamed.sql", "/data/test-data.sql") {
+class ColumnMapperHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-id-columns-renamed.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(TARGET, object : ColumnMapperHint() {

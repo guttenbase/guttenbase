@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class SelectWhereClauseHintTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
+class SelectWhereClauseHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(SOURCE, object : SelectWhereClauseHint() {
@@ -31,7 +31,7 @@ class SelectWhereClauseHintTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/d
   override fun executeChecks() {
     val source = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")!!
     val target = connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_USER")!!
-    assertEquals(5, source.totalRowCount)
+    assertEquals(4, source.totalRowCount)
     assertEquals(3, source.filteredRowCount)
     assertEquals(3, target.totalRowCount)
     assertEquals(3, target.filteredRowCount)

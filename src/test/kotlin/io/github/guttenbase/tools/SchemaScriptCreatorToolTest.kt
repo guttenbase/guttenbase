@@ -63,7 +63,7 @@ class SchemaScriptCreatorToolTest {
     val createStatement = tableStatements[0]
 
     assertThat(createStatement).startsWith("CREATE TABLE schemaName.MY_TABLE")
-    assertThat(createStatement).contains("ID BIGINT NOT NULL")
+    assertThat(createStatement).contains("ID BIGINT IDENTITY")
     assertThat(createStatement).contains("NAME VARCHAR(100) NOT NULL")
 
     val indexStatements = objectUnderTest.createIndexStatements()
@@ -88,7 +88,7 @@ class SchemaScriptCreatorToolTest {
     val createStatement = tableStatements[0]
 
     assertThat(createStatement).startsWith("CREATE TABLE schemaName.MY_TABLE")
-    assertThat(createStatement).contains("ID BIGINT NOT NULL IDENTITY") // taken as default auto increment clause
+    assertThat(createStatement).contains("ID BIGINT IDENTITY(1, 1) PRIMARY KEY")
     assertThat(createStatement).contains("NAME VARCHAR(100) NOT NULL")
   }
 

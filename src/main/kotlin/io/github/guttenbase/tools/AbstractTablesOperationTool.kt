@@ -15,7 +15,7 @@ import java.sql.SQLException
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.TableMapperHint]
  */
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 abstract class AbstractTablesOperationTool(
   protected val connectorRepository: ConnectorRepository,
   protected val template: String

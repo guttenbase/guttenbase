@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class DroppingColumnMapperHintTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-missingColumn.sql", "/data/test-data.sql") {
+class DroppingColumnMapperHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-missingColumn.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(TARGET, object : ColumnMapperHint() {

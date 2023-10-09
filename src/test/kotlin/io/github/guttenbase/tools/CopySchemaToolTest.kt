@@ -64,18 +64,8 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
       "FOO_COMPANY",
       includePrimaryKey = true
     ).setParameter("SUPPLIER", 'x').setParameter("NAME", "JENS")
-      .setParameter("ID", 4711L)
+      .setParameter("ID", 0L)
       .execute()
-
-    ReadTableDataTool(connectorRepository, target, "FOO_COMPANY").start().use { tool ->
-      val data = tool.readTableData(-1).sortedBy { it["ID"].toString().toInt() }
-
-      Assertions.assertThat(data).hasSize(5)
-      val last = data.last()
-      Assertions.assertThat(last).hasSize(3)
-      Assertions.assertThat(last["NAME"]).isEqualTo("JENS")
-      Assertions.assertThat(last["ID"]).isEqualTo(4711L)
-    }
 
     // Implicit ID
     InsertStatementTool(connectorRepository, target).createInsertStatement(
@@ -88,10 +78,15 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
       val data = tool.readTableData(-1).sortedBy { it["ID"].toString().toInt() }
 
       Assertions.assertThat(data).hasSize(6)
+      val first = data.first()
+      Assertions.assertThat(first).hasSize(3)
+      Assertions.assertThat(first["NAME"]).isEqualTo("JENS")
+      Assertions.assertThat(first["ID"]).isEqualTo(0L)
+
       val last = data.last()
       Assertions.assertThat(last).hasSize(3)
       Assertions.assertThat(last["NAME"]).isEqualTo("HIPPE")
-      Assertions.assertThat(last["ID"]).isEqualTo(4712L)
+      Assertions.assertThat(last["ID"]).isEqualTo(5L)
     }
   }
 

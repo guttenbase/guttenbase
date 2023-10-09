@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class ColumnDataMapperProviderHintTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-uuid.sql", "/data/test-data.sql") {
+class ColumnDataMapperProviderHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-uuid.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     val columnDataMapper = TestUUIDColumnDataMapper()
@@ -36,7 +36,7 @@ class ColumnDataMapperProviderHintTest : AbstractHintTest("/ddl/tables-hsqldb.sq
     val list: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
       TARGET, "SELECT DISTINCT ID FROM FOO_USER ORDER BY ID"
     )
-    assertEquals(5, list.size)
+    assertEquals(4, list.size)
     val id = list[0]["ID"]
     assertNotNull(id)
 

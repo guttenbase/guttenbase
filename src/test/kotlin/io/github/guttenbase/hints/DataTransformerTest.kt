@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class DataTransformerTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
+class DataTransformerTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     val columnDataMapper: ColumnDataMapper = object : ColumnDataMapper {
@@ -44,7 +44,7 @@ class DataTransformerTest : AbstractHintTest("/ddl/tables-hsqldb.sql", "/ddl/tab
     val list: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
       TARGET, "SELECT DISTINCT ID, USERNAME, NAME, PASSWORD FROM FOO_USER ORDER BY ID"
     )
-    assertEquals(5, list.size)
+    assertEquals(4, list.size)
 
     val name = list[0]["NAME"] as String
     val userName = list[0]["USERNAME"] as String

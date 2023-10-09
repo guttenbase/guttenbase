@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach
  * @author M. Dahm
  */
 class TableRowCountFilterHintTest :
-  AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-h2.sql", "/data/test-data.sql") {
+  AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(SOURCE, object : TableRowCountFilterHint() {
@@ -24,9 +24,9 @@ class TableRowCountFilterHintTest :
           override fun defaultRowCount(tableMetaData: TableMetaData) =
             if (tableMetaData.tableName.equals("FOO_DATA", ignoreCase = true)) 0 else 1
 
-          override fun defaultMaxId(tableMetaData: TableMetaData) = 7
+          override fun defaultMaxId(tableMetaData: TableMetaData) = 7L
 
-          override fun defaultMinId(tableMetaData: TableMetaData) = 3
+          override fun defaultMinId(tableMetaData: TableMetaData) = 3L
         }
     })
   }
@@ -37,7 +37,7 @@ class TableRowCountFilterHintTest :
 
     assertEquals(1, source.filteredRowCount)
     assertEquals(1, target.filteredRowCount)
-    assertEquals(7, source.maxId)
-    assertEquals(3, source.minId)
+    assertEquals(7L, source.maxId)
+    assertEquals(3L, source.minId)
   }
 }

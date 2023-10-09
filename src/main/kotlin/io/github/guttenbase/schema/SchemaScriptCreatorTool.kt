@@ -52,7 +52,7 @@ class SchemaScriptCreatorTool(
     tables.filter { it.primaryKeyColumns.isNotEmpty() }.map { createPrimaryKeyStatement(it, it.primaryKeyColumns) }
 
   fun createIndexStatements(): List<String> {
-    val tables: List<TableMetaData> = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
+    val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
     return createIndexStatements(tables)
   }
 
@@ -169,6 +169,31 @@ class SchemaScriptCreatorTool(
     val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
 
     return columnMapper.mapColumnName(referencingColumn, referencingColumn.tableMetaData)
+  }
+
+  fun createAutoincrementUpdateStatements(): List<String> {
+    val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
+
+    return createAutoincrementUpdateStatements(tables)
+  }
+
+  fun createAutoincrementUpdateStatements(tables: List<TableMetaData>): List<String> {
+    val result = ArrayList<String>()
+    val databaseType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
+
+    for (table in tables) {
+      val column = table.getNumericPrimaryKeyColumn()
+
+      if (column != null) {
+        val statement = databaseType.createColumnAutoincrementStatement(column)
+
+        if (statement != null) {
+          result.add(statement)
+        }
+      }
+    }
+
+    return result
   }
 
   fun createColumn(columnMetaData: ColumnMetaData): String {

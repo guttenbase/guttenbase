@@ -11,6 +11,6 @@ import io.github.guttenbase.meta.TableMetaData
 interface TableRowCountFilter {
   fun accept(tableMetaData: TableMetaData): Boolean = true
   fun defaultRowCount(tableMetaData: TableMetaData): Int
-  fun defaultMaxId(tableMetaData: TableMetaData): Int
-  fun defaultMinId(tableMetaData: TableMetaData): Int
+  fun defaultMaxId(tableMetaData: TableMetaData): Long
+  fun defaultMinId(tableMetaData: TableMetaData): Long
 }

@@ -47,8 +47,8 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
   fun setup() {
     connectorRepository.addConnectionInfo(SOURCE, TestDerbyConnectionInfo())
     connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables-hsqldb.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-derby.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables-h2.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
     connectorRepository.addConnectorHint(TARGET, object : DefaultColumnDataMapperProviderHint() {
       override fun addMappings(columnDataMapperFactory: DefaultColumnDataMapperProvider) {
@@ -74,11 +74,11 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
     val listUserTable = ScriptExecutorTool(connectorRepository).executeQuery(
       TARGET, "SELECT DISTINCT ID, USERNAME, NAME, PASSWORD FROM FOO_USER ORDER BY ID"
     )
-    assertEquals(5 * MAX_LOOP, listUserTable.size)
+    assertEquals(4 * MAX_LOOP, listUserTable.size)
     val listUserCompanyTable: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
       TARGET, "SELECT DISTINCT USER_ID, ASSIGNED_COMPANY_ID FROM FOO_USER_COMPANY ORDER BY USER_ID"
     )
-    assertEquals(3 * MAX_LOOP, listUserCompanyTable.size)
+    assertEquals(2 * MAX_LOOP, listUserCompanyTable.size)
   }
 
   private fun getOffset(sourceColumnMetaData: ColumnMetaData): Long {

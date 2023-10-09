@@ -2,7 +2,7 @@ package io.github.guttenbase.hints
 
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
-import io.github.guttenbase.configuration.TestH2ConnectionInfo
+import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.schema.comparison.SchemaComparatorTool
 import io.github.guttenbase.tools.CheckEqualTableDataTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
@@ -27,7 +27,7 @@ abstract class AbstractHintTest(
   @BeforeEach
   fun setupTables() {
     connectorRepository.addConnectionInfo(SOURCE, TestDerbyConnectionInfo())
-    connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(TARGET, TestHsqlConnectionInfo())
     val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = "UTF-8")
     scriptExecutorTool.executeFileScript(SOURCE, resourceName = sourceTableSchemaScript)
     scriptExecutorTool.executeFileScript(TARGET, resourceName = targetTableSchemaScript)

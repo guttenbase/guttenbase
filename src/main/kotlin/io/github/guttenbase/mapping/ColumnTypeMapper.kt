@@ -11,5 +11,5 @@ fun interface ColumnTypeMapper {
   /**
    * @return target database type including precision and optional not null constraint clause
    */
-  fun mapColumnType(columnMetaData: ColumnMetaData, sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType): String
+  fun mapColumnType(column: ColumnMetaData, sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType): String
 }

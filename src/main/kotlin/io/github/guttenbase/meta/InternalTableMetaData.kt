@@ -10,8 +10,8 @@ package io.github.guttenbase.meta
 internal interface InternalTableMetaData : TableMetaData {
   override var filteredRowCount: Int
   override var totalRowCount: Int
-  override var maxId: Int
-  override var minId: Int
+  override var maxId: Long
+  override var minId: Long
 
   fun addColumn(column: ColumnMetaData)
   fun removeColumn(columnMetaData: ColumnMetaData)

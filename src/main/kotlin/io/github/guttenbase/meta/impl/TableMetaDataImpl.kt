@@ -25,12 +25,12 @@ class TableMetaDataImpl(
   /**
    * {@inheritDoc}
    */
-  override var maxId = 0
+  override var maxId = 0L
 
   /**
    * {@inheritDoc}
    */
-  override var minId = 0
+  override var minId = 0L
 
   /**
    * {@inheritDoc}

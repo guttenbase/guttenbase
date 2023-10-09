@@ -13,7 +13,7 @@ class EntityTableCheckerHintTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectionInfo(CONNECTOR_ID, TestDerbyConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(CONNECTOR_ID, resourceName = "/ddl/tables-hsqldb.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(CONNECTOR_ID, resourceName = "/ddl/tables-derby.sql")
   }
 
   @Test

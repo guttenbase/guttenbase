@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author M. Dahm
  */
-class TableOrderHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-h2.sql", "/data/test-data.sql") {
+class TableOrderHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-hsqldb.sql", "/data/test-data.sql") {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectorHint(TARGET, RandomTableOrderHint())

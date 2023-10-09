@@ -281,8 +281,8 @@ class DatabaseMetaDataInspectorTool(
 
         statement.executeQuery(maxIdStatement).use {
           it.next()
-          tableMetaData.minId =  it.getInt(1)
-          tableMetaData.maxId =  it.getInt(2)
+          tableMetaData.minId =  it.getLong(1)
+          tableMetaData.maxId =  it.getLong(2)
         }
       }
     } else {
