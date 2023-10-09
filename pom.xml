@@ -297,6 +297,11 @@
 
     <profiles>
         <profile>
+            <!--
+                - Update settings.xml with password
+                - Run mvn clean deploy -Prelease
+                - Enter password(s)
+            -->
             <id>release</id>
 
             <build>

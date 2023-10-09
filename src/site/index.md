@@ -14,3 +14,4 @@ Guttenbase was created with developers in mind and makes it easy create database
 * [The Meta data API](meta.md)
 * [Examples and use cases](examples.md)
 * [Frequently Asked Questions (FAQ)](faq.md)
+* [Recent changes](changelog.md)
