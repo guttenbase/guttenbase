@@ -42,14 +42,14 @@ class SchemaScriptCreatorTool(
   fun createTableStatements(tables: List<TableMetaData>) = tables.map { createTable(it) }
 
   @Suppress("unused")
-  fun createPrimaryKeyStatements(): List<String> {
+  fun createMultiColumnPrimaryKeyStatements(): List<String> {
     val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
 
-    return createPrimaryKeyStatements(tables)
+    return createMultiColumnPrimaryKeyStatements(tables)
   }
 
-  fun createPrimaryKeyStatements(tables: List<TableMetaData>): List<String> =
-    tables.filter { it.primaryKeyColumns.isNotEmpty() }.map { createPrimaryKeyStatement(it, it.primaryKeyColumns) }
+  fun createMultiColumnPrimaryKeyStatements(tables: List<TableMetaData>): List<String> =
+    tables.filter { it.primaryKeyColumns.size > 1 }.map { createPrimaryKeyStatement(it, it.primaryKeyColumns) }
 
   fun createIndexStatements(): List<String> {
     val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)

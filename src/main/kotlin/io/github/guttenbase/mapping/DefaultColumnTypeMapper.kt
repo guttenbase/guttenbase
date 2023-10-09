@@ -45,12 +45,13 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
   ): String {
     val columnDefinition = lookupColumnDefinition(sourceDatabaseType, targetDatabaseType, column)
       ?: createDefaultColumnDefinition(column, "")
-    val notNull = if (column.isNullable || column.isPrimaryKey) "" else " NOT NULL"
     val precision = createPrecisionClause(column, columnDefinition.precision)
-    val autoincrement = if (column.isAutoIncrement) " " + lookupAutoIncrementClause(column, targetDatabaseType) else ""
-    val primaryKey = if (column.isPrimaryKey) " PRIMARY KEY" else ""
+    val singlePrimaryKey = column.isPrimaryKey && column.tableMetaData.primaryKeyColumns.size < 2
+    val autoincrementClause = if (column.isAutoIncrement) " " + lookupAutoIncrementClause(column, targetDatabaseType) else ""
+    val notNullClause = if (column.isNullable || singlePrimaryKey) "" else " NOT NULL" // Primary key implies NOT NULL
+    val primaryKeyClause = if (singlePrimaryKey) " PRIMARY KEY" else ""
 
-    return columnDefinition.type + precision + notNull + autoincrement + primaryKey
+    return columnDefinition.type + precision + notNullClause + autoincrementClause + primaryKeyClause
   }
 
   /**
