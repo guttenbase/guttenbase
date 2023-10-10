@@ -1,6 +1,7 @@
 package io.github.guttenbase.hints
 
 import io.github.guttenbase.defaults.impl.DefaultTableMapper
+import io.github.guttenbase.repository.impl.ConnectorRepositoryImpl
 import io.github.guttenbase.tools.SchemaScriptCreatorToolTest
 import io.github.guttenbase.tools.SchemaScriptCreatorToolTest.Companion.SCHEMA_NAME
 import io.github.guttenbase.tools.SchemaScriptCreatorToolTest.Companion.TABLE
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test
 class DefaultTableMapperTest {
   @Test
   fun testDefaultNameMapper() {
-    val databaseMetaData = SchemaScriptCreatorToolTest.createDatabaseMetaData()
+    val databaseMetaData = SchemaScriptCreatorToolTest.createDatabaseMetaData(ConnectorRepositoryImpl())
     val tableName = TABLE + 1
     val tableMetaData = databaseMetaData.getTableMetaData(tableName)!!
     assertEquals(tableName, DefaultTableMapper().mapTableName(tableMetaData, databaseMetaData))

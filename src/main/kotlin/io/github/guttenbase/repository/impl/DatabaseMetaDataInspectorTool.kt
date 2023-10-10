@@ -36,7 +36,7 @@ class DatabaseMetaDataInspectorTool(
     val properties = JdbcDatabaseMetaData::class.java.declaredMethods
       .filter { method: Method -> method.parameterCount == 0 && isPrimitive(method.returnType) }
       .mapNotNull { method: Method -> getValue(method, metaData) }.toMap()
-    val result = DatabaseMetaDataImpl(schema, properties, connectionInfo.databaseType)
+    val result = DatabaseMetaDataImpl(connectorRepository, connectorId, schema, properties, connectionInfo.databaseType)
 
     loadTables(result, metaData)
     updateTableMetaData(connection, metaData, result, schemaPrefix)

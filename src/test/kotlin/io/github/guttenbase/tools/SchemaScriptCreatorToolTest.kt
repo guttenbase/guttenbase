@@ -27,9 +27,17 @@ import java.math.BigInteger
 import java.sql.Types
 
 class SchemaScriptCreatorToolTest {
-  private val databaseMetaData = createDatabaseMetaData()
-  private val connectorRepository = createRepository(databaseMetaData)
+  private lateinit var databaseMetaData: DatabaseMetaData
+  private val connectorRepository = object : ConnectorRepositoryImpl() {
+    override fun getDatabaseMetaData(connectorId: String): DatabaseMetaData {
+      return databaseMetaData
+    }
+  }.apply { updateRepository(this) }
   private val objectUnderTest = SchemaScriptCreatorTool(connectorRepository, SOURCE, TARGET)
+
+  init {
+    databaseMetaData = createDatabaseMetaData(connectorRepository)
+  }
 
   @Test
   fun testMetaData() {
@@ -97,7 +105,11 @@ class SchemaScriptCreatorToolTest {
     assertEquals("FK_NAME_1", objectUnderTest.createConstraintName("FK_", "NAME_", 1))
 
     val constraintName =
-      objectUnderTest.createConstraintName("FK_", "AUFTRAG_STELLUNGNAHME_HALTUNGSTELLUNGNAHME_ZU_HALTUNG_ID_PARENT_ID__ID_", 1)
+      objectUnderTest.createConstraintName(
+        "FK_",
+        "AUFTRAG_STELLUNGNAHME_HALTUNGSTELLUNGNAHME_ZU_HALTUNG_ID_PARENT_ID__ID_",
+        1
+      )
     assertNotEquals("FK_AUFTRAG_STELLUNGNAHME_HALTUNGSTELLUNGNAHME_ZU_HALTUNG_ID_PARENT_ID__ID_1", constraintName)
     assertEquals(42, constraintName.length)
     assertEquals(42, objectUnderTest.targetMaxNameLength)
@@ -168,8 +180,10 @@ class SchemaScriptCreatorToolTest {
     }
 
     @JvmStatic
-    fun createDatabaseMetaData(): DatabaseMetaDataImpl {
+    fun createDatabaseMetaData(connectorRepository: ConnectorRepository): DatabaseMetaDataImpl {
       val databaseMetaData = DatabaseMetaDataImpl(
+        connectorRepository,
+        SOURCE,
         SCHEMA_NAME, mapOf(
           "getMaxColumnNameLength" to 42,
           "getDatabaseProductName" to "GuttenBaseDB"
@@ -196,10 +210,7 @@ class SchemaScriptCreatorToolTest {
     }
 
     @JvmStatic
-    fun createRepository(databaseMetaData: DatabaseMetaData): ConnectorRepository {
-      val repository: ConnectorRepository = object : ConnectorRepositoryImpl() {
-        override fun getDatabaseMetaData(connectorId: String) = databaseMetaData
-      }
+    fun updateRepository(repository: ConnectorRepository) {
       repository.addConnectionInfo(SOURCE, MockConnectionInfo())
       repository.addConnectionInfo(TARGET, MockConnectionInfo())
       repository.addConnectorHint(TARGET, object : TableMapperHint() {
@@ -210,8 +221,6 @@ class SchemaScriptCreatorToolTest {
         override val value: ColumnMapper
           get() = DefaultColumnMapper(CaseConversionMode.UPPER, "")
       })
-
-      return repository
     }
   }
 }

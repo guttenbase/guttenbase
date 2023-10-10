@@ -4,6 +4,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -18,11 +19,16 @@ import java.util.*
  */
 @Suppress("unused")
 class DatabaseMetaDataImpl(
+  @Transient
+  override val connectorRepository: ConnectorRepository,
+  override val connectorId: String,
   schema: String,
   override val databaseProperties: Map<String, Any>,
   override val databaseType: DatabaseType
 ) : InternalDatabaseMetaData {
   constructor(databaseMetaData: DatabaseMetaData) : this(
+    databaseMetaData.connectorRepository,
+    databaseMetaData.connectorId,
     databaseMetaData.schema,
     LinkedHashMap(databaseMetaData.databaseProperties),
     databaseMetaData.databaseType

@@ -1,6 +1,7 @@
 package io.github.guttenbase.meta
 
 import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.io.Serializable
 
@@ -29,4 +30,6 @@ interface DatabaseMetaData : Serializable {
    */
   val databaseMetaData: JdbcDatabaseMetaData
   val databaseType: DatabaseType
+  val connectorRepository: ConnectorRepository
+  val connectorId: String
 }

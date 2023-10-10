@@ -26,7 +26,6 @@ import java.util.*
 /**
  * The main repository containing all configured connectors.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
  *
  *
@@ -251,6 +250,7 @@ open class ConnectorRepositoryImpl : ConnectorRepository {
     addConnectorHint(connectorId, DefaultColumnDataMapperProviderHint())
     addConnectorHint(connectorId, DefaultTableOrderHint())
     addConnectorHint(connectorId, DefaultColumnOrderHint())
+    addConnectorHint(connectorId, DefaultAutoIncrementValueHint())
     addConnectorHint(connectorId, DefaultTableMapperHint())
     addConnectorHint(connectorId, DefaultColumnMapperHint(createColumnMapperHint(connectorInfo)))
     addConnectorHint(connectorId, DefaultRepositoryColumnFilterHint())
