@@ -31,16 +31,16 @@ open class ReadTableDataTool(
       ?: throw IllegalStateException("Table $tableName not found")
   )
 
-  private var connector: Connector? = null
-  private var resultSet: ResultSet? = null
+  private lateinit var connector: Connector
+  private lateinit var resultSet: ResultSet
 
   @Throws(SQLException::class)
   fun start(): ReadTableDataTool {
-    if (connector == null) {
+    if (!this::connector.isInitialized) {
       val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
       connector = connectorRepository.createConnector(connectorId)
 
-      val connection: Connection = connector!!.openConnection()
+      val connection: Connection = connector.openConnection()
       sourceConfiguration.initializeSourceConnection(connection, connectorId)
       val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
       val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
@@ -59,14 +59,12 @@ open class ReadTableDataTool(
 
   @Throws(SQLException::class)
   fun end() {
-    if (connector != null) {
+    if (this::connector.isInitialized) {
       val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
-      val connection = connector!!.openConnection()
+      val connection = connector.openConnection()
       sourceConfiguration.finalizeSourceConnection(connection, connectorId)
-      resultSet!!.close()
-      connector!!.closeConnection()
-      connector = null
-      resultSet = null
+      resultSet.close()
+      connector.closeConnection()
     }
   }
 
@@ -91,7 +89,7 @@ open class ReadTableDataTool(
 
     var rowIndex = 0
 
-    while (rowIndex < lines && resultSet?.next() ?: throw IllegalStateException("No ResultSet")) {
+    while (rowIndex < lines && resultSet.next()) {
       val rowData = HashMap<String, Any?>()
 
       for (columnIndex in 1..orderedSourceColumns.size) {
@@ -101,7 +99,7 @@ open class ReadTableDataTool(
         val columnTypeMapping = commonColumnTypeResolver.getCommonColumnTypeMapping(
           sourceColumn, connectorId, sourceColumn
         ) ?: throw IllegalStateException("Type mapping not found for $sourceColumn")
-        val data = sourceColumnType.getValue(resultSet!!, columnIndex)
+        val data = sourceColumnType.getValue(resultSet, columnIndex)
         val mappedData = columnTypeMapping.columnDataMapper.map(sourceColumn, sourceColumn, data)
 
         rowData[columnName] = mappedData
