@@ -24,9 +24,8 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
     connectorRepository.addConnectionInfo(SOURCE, TestH2ConnectionInfo())
-    connectorRepository.addConnectionInfo(H2, TestH2ConnectionInfo())
-    connectorRepository.addConnectionInfo(DERBY, TestDerbyConnectionInfo())
-    connectorRepository.addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
+      .addConnectionInfo(H2, TestH2ConnectionInfo()).addConnectionInfo(DERBY, TestDerbyConnectionInfo())
+      .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
 
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/data/test-data.sql")

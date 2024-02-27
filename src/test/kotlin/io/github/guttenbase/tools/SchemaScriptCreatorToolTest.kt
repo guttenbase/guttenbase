@@ -210,12 +210,11 @@ class SchemaScriptCreatorToolTest {
 
     @JvmStatic
     fun updateRepository(repository: ConnectorRepository) {
-      repository.addConnectionInfo(SOURCE, MockConnectionInfo())
-      repository.addConnectionInfo(TARGET, MockConnectionInfo())
-      repository.addConnectorHint(TARGET, object : TableMapperHint() {
-        override val value: TableMapper
-          get() = DefaultTableMapper(CaseConversionMode.UPPER)
-      })
+      repository.addConnectionInfo(SOURCE, MockConnectionInfo()).addConnectionInfo(TARGET, MockConnectionInfo())
+        .addConnectorHint(TARGET, object : TableMapperHint() {
+          override val value: TableMapper
+            get() = DefaultTableMapper(CaseConversionMode.UPPER)
+        })
       repository.addConnectorHint(TARGET, object : ColumnMapperHint() {
         override val value: ColumnMapper
           get() = DefaultColumnMapper(CaseConversionMode.UPPER, "")
