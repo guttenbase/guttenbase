@@ -25,7 +25,6 @@ import java.util.*
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.RepositoryTableFilterHint] when returning table metadata
  */
@@ -47,46 +46,51 @@ open class ConnectorRepository {
   }
 
   /**
-   * {@inheritDoc}
+   * Add connection info to repository with symbolic ID for data base such as "source db", e.g.
    */
-  open fun addConnectionInfo(connectorId: String, connectionInfo: ConnectorInfo) {
+  open fun addConnectionInfo(connectorId: String, connectionInfo: ConnectorInfo): ConnectorRepository {
     connectionInfoMap[connectorId] = connectionInfo
     initDefaultHints(connectorId, connectionInfo)
+    return this
   }
 
   /**
-   * {@inheritDoc}
+   * Remove all information about connector
    */
-  open fun removeConnectionInfo(connectorId: String) {
+  open fun removeConnectionInfo(connectorId: String): ConnectorRepository {
     connectionInfoMap.remove(connectorId)
     connectionHintMap.remove(connectorId)
     databaseMetaDataMap.remove(connectorId)
+
+    return this
   }
 
   /**
-   * {@inheritDoc}
+   * Add configuration hint for connector
    */
-  open fun <T : Any> addConnectorHint(connectorId: String, hint: ConnectorHint<T>) {
+  open fun <T : Any> addConnectorHint(connectorId: String, hint: ConnectorHint<T>): ConnectorRepository {
     // Check connector if is configured
     getConnectionInfo(connectorId)
     val hintMap = connectionHintMap.getOrPut(connectorId) { HashMap() }
     hintMap[hint.connectorHintType] = hint
 
     refreshDatabaseMetaData(connectorId)
+    return this
   }
 
   /**
-   * {@inheritDoc}
+   * Remove configuration hint for connector
    */
-  open fun <T : Any> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>) {
+  open fun <T : Any> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>): ConnectorRepository {
     val hintMap = connectionHintMap[connectorId]
     hintMap?.remove(connectionInfoHintType)
 
     refreshDatabaseMetaData(connectorId)
+    return this
   }
 
   /**
-   * {@inheritDoc}
+   * Get configuration hint for connector
    */
   @Suppress("UNCHECKED_CAST")
   open fun <T : Any> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T> {
@@ -96,13 +100,13 @@ open class ConnectorRepository {
   }
 
   /**
-   * {@inheritDoc}
+   * Get connection info for connector
    */
   open fun getConnectionInfo(connectorId: String) =
     connectionInfoMap[connectorId] ?: throw IllegalStateException("Connector not configured: $connectorId")
 
   /**
-   * {@inheritDoc}
+   * Get all meta data from data base.
    */
   open fun getDatabaseMetaData(connectorId: String): DatabaseMetaData {
     return try {
@@ -123,14 +127,14 @@ open class ConnectorRepository {
   }
 
   /**
-   * {@inheritDoc}
+   * Reset table data, i.e. reload data from the data base.
    */
   open fun refreshDatabaseMetaData(connectorId: String) {
     databaseMetaDataMap.remove(connectorId)
   }
 
   /**
-   * {@inheritDoc}
+   * Create connector object to given database
    */
   open fun createConnector(connectorId: String): Connector {
     val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
@@ -139,7 +143,7 @@ open class ConnectorRepository {
   }
 
   /**
-   * {@inheritDoc}
+   * Get configuration for given source database
    */
   open fun getSourceDatabaseConfiguration(connectorId: String): SourceDatabaseConfiguration {
     val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
@@ -150,27 +154,29 @@ open class ConnectorRepository {
   }
 
   /**
-   * {@inheritDoc}
+   * Define configuration for given source database type when reading data.
    */
   open fun addSourceDatabaseConfiguration(
     databaseType: DatabaseType,
     sourceDatabaseConfiguration: SourceDatabaseConfiguration
-  ) {
+  ): ConnectorRepository {
     sourceDatabaseConfigurationMap[databaseType] = sourceDatabaseConfiguration
+    return this
   }
 
   /**
-   * {@inheritDoc}
+   * Define configuration for given target database type when reading data.
    */
   open fun addTargetDatabaseConfiguration(
     databaseType: DatabaseType,
     targetDatabaseConfiguration: TargetDatabaseConfiguration
-  ) {
+  ): ConnectorRepository {
     targetDatabaseConfigurationMap[databaseType] = targetDatabaseConfiguration
+    return this
   }
 
   /**
-   * {@inheritDoc}
+   * Get configuration for given target database
    */
   open fun getTargetDatabaseConfiguration(connectorId: String): TargetDatabaseConfiguration {
     val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
