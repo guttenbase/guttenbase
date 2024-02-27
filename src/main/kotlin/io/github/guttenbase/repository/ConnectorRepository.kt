@@ -1,94 +1,274 @@
 package io.github.guttenbase.repository
 
-import io.github.guttenbase.configuration.SourceDatabaseConfiguration
-import io.github.guttenbase.configuration.TargetDatabaseConfiguration
+import io.github.guttenbase.configuration.*
 import io.github.guttenbase.connector.Connector
 import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.connector.DatabaseType.*
+import io.github.guttenbase.connector.GuttenBaseException
+import io.github.guttenbase.defaults.impl.DefaultColumnMapper
+import io.github.guttenbase.export.ExportDumpDatabaseConfiguration
+import io.github.guttenbase.export.ImportDumpDatabaseConfiguration
+import io.github.guttenbase.export.zip.DefaultZipExporterClassResourcesHint
+import io.github.guttenbase.hints.CaseConversionMode
 import io.github.guttenbase.hints.ConnectorHint
+import io.github.guttenbase.hints.impl.*
+import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.meta.DatabaseMetaData
-import java.io.Serializable
+import io.github.guttenbase.meta.InternalDatabaseMetaData
+import io.github.guttenbase.meta.InternalTableMetaData
+import java.sql.SQLException
+import java.util.*
 
 /**
  * The main repository containing all configured connectors.
- *
- *
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
  *
  * @author M. Dahm
+ * Hint is used by [io.github.guttenbase.hints.RepositoryTableFilterHint] when returning table metadata
  */
-interface ConnectorRepository : Serializable {
-  /**
-   * Add connection info to repository with symbolic ID for data base such as "source db", e.g.
-   */
-  fun addConnectionInfo(connectorId: String, connectionInfo: ConnectorInfo)
+open class ConnectorRepository {
+  private val connectionInfoMap = TreeMap<String, ConnectorInfo>()
+  private val sourceDatabaseConfigurationMap = HashMap<DatabaseType, SourceDatabaseConfiguration>()
+  private val targetDatabaseConfigurationMap = HashMap<DatabaseType, TargetDatabaseConfiguration>()
 
   /**
-   * Remove all information about connector
+   * Cache metadata since some databases are very slow on retrieving it.
    */
-  fun removeConnectionInfo(connectorId: String)
+  private val databaseMetaDataMap = HashMap<String, InternalDatabaseMetaData>()
+  private val connectionHintMap = HashMap<String, MutableMap<Class<*>, ConnectorHint<*>>>()
+
+  open val connectorIds: List<String> get() = ArrayList(connectionInfoMap.keys)
+
+  init {
+    initDefaultConfiguration()
+  }
 
   /**
-   * Get connection info
+   * {@inheritDoc}
    */
-  fun getConnectionInfo(connectorId: String): ConnectorInfo
+  open fun addConnectionInfo(connectorId: String, connectionInfo: ConnectorInfo) {
+    connectionInfoMap[connectorId] = connectionInfo
+    initDefaultHints(connectorId, connectionInfo)
+  }
 
   /**
-   * Get all meta data from data base.
+   * {@inheritDoc}
    */
-  fun getDatabaseMetaData(connectorId: String): DatabaseMetaData
+  open fun removeConnectionInfo(connectorId: String) {
+    connectionInfoMap.remove(connectorId)
+    connectionHintMap.remove(connectorId)
+    databaseMetaDataMap.remove(connectorId)
+  }
 
   /**
-   * Reset table data, i.e. it will be reread from the data base.
+   * {@inheritDoc}
    */
-  fun refreshDatabaseMetaData(connectorId: String)
+  open fun <T : Any> addConnectorHint(connectorId: String, hint: ConnectorHint<T>) {
+    // Check connector if is configured
+    getConnectionInfo(connectorId)
+    val hintMap = connectionHintMap.getOrPut(connectorId) { HashMap() }
+    hintMap[hint.connectorHintType] = hint
+
+    refreshDatabaseMetaData(connectorId)
+  }
 
   /**
-   * Create connector
+   * {@inheritDoc}
    */
-  fun createConnector(connectorId: String): Connector
+  open fun <T : Any> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>) {
+    val hintMap = connectionHintMap[connectorId]
+    hintMap?.remove(connectionInfoHintType)
+
+    refreshDatabaseMetaData(connectorId)
+  }
 
   /**
-   * Get configuration.
+   * {@inheritDoc}
    */
-  fun getSourceDatabaseConfiguration(connectorId: String): SourceDatabaseConfiguration
+  @Suppress("UNCHECKED_CAST")
+  open fun <T : Any> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T> {
+    val hintMap = connectionHintMap[connectorId]
+      ?: throw IllegalStateException("No hints defined for $connectorId")
+    return hintMap[connectorHintType] as ConnectorHint<T>
+  }
 
   /**
-   * Get configuration.
+   * {@inheritDoc}
    */
-  fun getTargetDatabaseConfiguration(connectorId: String): TargetDatabaseConfiguration
+  open fun getConnectionInfo(connectorId: String) =
+    connectionInfoMap[connectorId] ?: throw IllegalStateException("Connector not configured: $connectorId")
 
   /**
-   * Add configuration hint for connector.
+   * {@inheritDoc}
    */
-  fun <T : Any> addConnectorHint(connectorId: String, hint: ConnectorHint<T>)
+  open fun getDatabaseMetaData(connectorId: String): DatabaseMetaData {
+    return try {
+      var databaseMetaData: InternalDatabaseMetaData? = databaseMetaDataMap[connectorId]
+
+      if (databaseMetaData == null) {
+        val connector = createConnector(connectorId)
+
+        databaseMetaData = connector.retrieveDatabaseMetaData() as InternalDatabaseMetaData
+
+        databaseMetaDataMap[connectorId] = databaseMetaData.withFilteredTables(connectorId)
+      }
+
+      databaseMetaData
+    } catch (e: SQLException) {
+      throw GuttenBaseException("getDatabaseMetaData", e)
+    }
+  }
 
   /**
-   * Remove configuration hint for connector.
+   * {@inheritDoc}
    */
-  fun <T : Any> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>)
+  open fun refreshDatabaseMetaData(connectorId: String) {
+    databaseMetaDataMap.remove(connectorId)
+  }
 
   /**
-   * Get configuration hint for connector.
+   * {@inheritDoc}
    */
-  fun <T : Any> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T>
+  open fun createConnector(connectorId: String): Connector {
+    val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
+
+    return connectionInfo.createConnector(this, connectorId)
+  }
 
   /**
-   * Get all currently configured connector IDs.
+   * {@inheritDoc}
    */
-  val connectorIds: List<String>
+  open fun getSourceDatabaseConfiguration(connectorId: String): SourceDatabaseConfiguration {
+    val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
+    val databaseType: DatabaseType = connectionInfo.databaseType
+
+    return sourceDatabaseConfigurationMap[databaseType]
+      ?: throw IllegalStateException("Unhandled source connector data base type: $databaseType")
+  }
 
   /**
-   * Define configuration for given data base type when reading data.
+   * {@inheritDoc}
    */
-  fun addSourceDatabaseConfiguration(databaseType: DatabaseType, sourceDatabaseConfiguration: SourceDatabaseConfiguration)
+  open fun addSourceDatabaseConfiguration(
+    databaseType: DatabaseType,
+    sourceDatabaseConfiguration: SourceDatabaseConfiguration
+  ) {
+    sourceDatabaseConfigurationMap[databaseType] = sourceDatabaseConfiguration
+  }
 
   /**
-   * Define configuration for given data base type when writing data.
+   * {@inheritDoc}
    */
-  fun addTargetDatabaseConfiguration(databaseType: DatabaseType, targetDatabaseConfiguration: TargetDatabaseConfiguration)
+  open fun addTargetDatabaseConfiguration(
+    databaseType: DatabaseType,
+    targetDatabaseConfiguration: TargetDatabaseConfiguration
+  ) {
+    targetDatabaseConfigurationMap[databaseType] = targetDatabaseConfiguration
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  open fun getTargetDatabaseConfiguration(connectorId: String): TargetDatabaseConfiguration {
+    val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
+    val databaseType: DatabaseType = connectionInfo.databaseType
+
+    return targetDatabaseConfigurationMap[databaseType]
+      ?: throw IllegalStateException("Unhandled target connector data base type: $databaseType")
+  }
+
+  private fun InternalDatabaseMetaData.withFilteredTables(connectorId: String): InternalDatabaseMetaData {
+    val tableFilter: RepositoryTableFilter = getConnectorHint(connectorId, RepositoryTableFilter::class.java).value
+    val columnFilter: RepositoryColumnFilter = getConnectorHint(connectorId, RepositoryColumnFilter::class.java).value
+
+    for (tableMetaData in tableMetaData) {
+      if (tableFilter.accept(tableMetaData)) {
+        for (columnMetaData in tableMetaData.columnMetaData) {
+          if (!columnFilter.accept(columnMetaData)) {
+            (tableMetaData as InternalTableMetaData).removeColumn(columnMetaData)
+          }
+        }
+      } else {
+        removeTable(tableMetaData)
+      }
+    }
+
+    return this
+  }
+
+  private fun initDefaultConfiguration() {
+    addSourceDatabaseConfiguration(GENERIC, GenericSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(MOCK, GenericSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(DB2, Db2SourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(MSSQL, MsSqlSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(MYSQL, MySqlSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(MARIADB, MariaDbSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(POSTGRESQL, PostgresqlSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(ORACLE, OracleSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(EXPORT_DUMP, ImportDumpDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(IMPORT_DUMP, ImportDumpDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(HSQLDB, HsqldbSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(H2DB, H2DbSourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(DERBY, DerbySourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(MS_ACCESS, MsAccessSourceDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(GENERIC, GenericTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(MOCK, GenericTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(DB2, Db2TargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(MSSQL, MsSqlTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(MYSQL, MySqlTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(MARIADB, MariaDbTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(ORACLE, OracleTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(POSTGRESQL, PostgresqlTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(EXPORT_DUMP, ExportDumpDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(IMPORT_DUMP, ExportDumpDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(HSQLDB, HsqldbTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(H2DB, H2DbTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(DERBY, DerbyTargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(MS_ACCESS, MsAccessTargetDatabaseConfiguration(this))
+  }
+
+  private fun initDefaultHints(connectorId: String, connectorInfo: ConnectorInfo) {
+    addConnectorHint(connectorId, DefaultRepositoryTableFilterHint())
+    addConnectorHint(connectorId, DefaultDatabaseTableFilterHint())
+    addConnectorHint(connectorId, DefaultDatabaseColumnFilterHint())
+    addConnectorHint(connectorId, DefaultNumberOfRowsPerBatchHint())
+    addConnectorHint(connectorId, DefaultResultSetParametersHint())
+    addConnectorHint(connectorId, DefaultNumberOfCheckedTableDataHint())
+    addConnectorHint(connectorId, DefaultMaxNumberOfDataItemsHint())
+    addConnectorHint(connectorId, DefaultSplitColumnHint())
+    addConnectorHint(connectorId, DefaultColumnTypeResolverListHint())
+    addConnectorHint(connectorId, DefaultEntityTableCheckerHint())
+    addConnectorHint(connectorId, DefaultExporterFactoryHint())
+    addConnectorHint(connectorId, DefaultImporterFactoryHint())
+    addConnectorHint(connectorId, DefaultZipExporterClassResourcesHint())
+    addConnectorHint(connectorId, DefaultColumnDataMapperProviderHint())
+    addConnectorHint(connectorId, DefaultTableOrderHint())
+    addConnectorHint(connectorId, DefaultColumnOrderHint())
+    addConnectorHint(connectorId, DefaultAutoIncrementValueHint())
+    addConnectorHint(connectorId, DefaultTableMapperHint())
+    addConnectorHint(connectorId, DefaultColumnMapperHint(createColumnMapperHint(connectorInfo)))
+    addConnectorHint(connectorId, DefaultRepositoryColumnFilterHint())
+    addConnectorHint(connectorId, DefaultExportDumpExtraInformationHint())
+    addConnectorHint(connectorId, DefaultImportDumpExtraInformationHint())
+    addConnectorHint(connectorId, DefaultTableCopyProgressIndicatorHint())
+    addConnectorHint(connectorId, DefaultScriptExecutorProgressIndicatorHint())
+    addConnectorHint(connectorId, DefaultRefreshTargetConnectionHint())
+    addConnectorHint(connectorId, DefaultColumnTypeMapperHint())
+    addConnectorHint(connectorId, DefaultSelectWhereClauseHint())
+    addConnectorHint(connectorId, DefaultTableRowCountFilterHint())
+    addConnectorHint(connectorId, DefaultTableRowDataFilterHint())
+  }
+
+  private fun createColumnMapperHint(connectorInfo: ConnectorInfo): ColumnMapper {
+    return when (connectorInfo.databaseType) {
+      MYSQL, MARIADB -> DefaultColumnMapper(CaseConversionMode.NONE, "`")
+      POSTGRESQL -> DefaultColumnMapper(CaseConversionMode.NONE, "\"")
+      else -> DefaultColumnMapper()
+    }
+  }
 }
 
 typealias JdbcDatabaseMetaData = java.sql.DatabaseMetaData

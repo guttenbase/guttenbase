@@ -4,7 +4,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.impl.ColumnMetaDataImpl
 import io.github.guttenbase.meta.impl.DatabaseMetaDataImpl
 import io.github.guttenbase.meta.impl.TableMetaDataImpl
-import io.github.guttenbase.repository.impl.ConnectorRepositoryImpl
+import io.github.guttenbase.repository.ConnectorRepository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.sql.Types
@@ -13,7 +13,7 @@ import java.sql.Types
 class TableMetaDataTest {
   private val objectUnderTest =
     TableMetaDataImpl(
-      DatabaseMetaDataImpl(ConnectorRepositoryImpl(), "jens", "dbo", HashMap(), DatabaseType.MOCK),
+      DatabaseMetaDataImpl(ConnectorRepository(), "jens", "dbo", HashMap(), DatabaseType.MOCK),
       "TEST",
       "TABLE",
       "",

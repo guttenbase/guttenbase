@@ -10,5 +10,4 @@ import io.github.guttenbase.repository.ConnectorRepository
  * @author M. Dahm
  */
 open class URLConnector(connectorRepository: ConnectorRepository, connectorId: String, urlConnectionInfo: URLConnectorInfo) :
-  AbstractURLConnector(connectorRepository, connectorId, urlConnectionInfo) {
-}
+  AbstractURLConnector(connectorRepository, connectorId, urlConnectionInfo)

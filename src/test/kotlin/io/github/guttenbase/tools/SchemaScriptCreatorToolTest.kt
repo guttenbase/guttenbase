@@ -16,7 +16,6 @@ import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.meta.impl.*
 import io.github.guttenbase.repository.ConnectorRepository
-import io.github.guttenbase.repository.impl.ConnectorRepositoryImpl
 import io.github.guttenbase.schema.SchemaScriptCreatorTool
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -28,7 +27,7 @@ import java.sql.Types
 
 class SchemaScriptCreatorToolTest {
   private lateinit var databaseMetaData: DatabaseMetaData
-  private val connectorRepository = object : ConnectorRepositoryImpl() {
+  private val connectorRepository = object : ConnectorRepository() {
     override fun getDatabaseMetaData(connectorId: String): DatabaseMetaData {
       return databaseMetaData
     }
