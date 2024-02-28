@@ -7,6 +7,7 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
+@Suppress("unused")
 class MockConnectionInfo : URLConnectorInfoImpl(
   "anything", "anything", "anything", "io.github.guttenbase.configuration.MockDriver", "",
   DatabaseType.MOCK

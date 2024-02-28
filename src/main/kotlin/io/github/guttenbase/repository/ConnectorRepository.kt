@@ -26,7 +26,6 @@ import java.util.*
  *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
- * Hint is used by [io.github.guttenbase.hints.RepositoryTableFilterHint] when returning table metadata
  */
 open class ConnectorRepository {
   private val connectionInfoMap = TreeMap<String, ConnectorInfo>()

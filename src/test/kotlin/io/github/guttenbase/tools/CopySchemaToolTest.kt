@@ -4,6 +4,7 @@ import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
+import io.github.guttenbase.connector.impl.PropertiesURLConnectorInfo
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
 import io.github.guttenbase.tools.InsertStatementTool
@@ -23,9 +24,12 @@ import org.junit.jupiter.api.Test
 class CopySchemaToolTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
+    val stream = CopySchemaToolTest::class.java.getResourceAsStream("/hsqldb.properties")
+
     connectorRepository.addConnectionInfo(SOURCE, TestH2ConnectionInfo())
       .addConnectionInfo(H2, TestH2ConnectionInfo()).addConnectionInfo(DERBY, TestDerbyConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
+      .addConnectionInfo(PROPS, PropertiesURLConnectorInfo(stream!!))
 
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/data/test-data.sql")
@@ -44,6 +48,11 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   @Test
   fun testH2() {
     test(H2)
+  }
+
+  @Test
+  fun testPropertiesConnectionInfo() {
+    test(PROPS)
   }
 
   private fun test(target: String) {
@@ -94,5 +103,6 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
     const val DERBY = "TARGET"
     const val H2 = "H2"
     const val HSQLDB = "HSQLDB"
+    const val PROPS = "PROPS"
   }
 }
