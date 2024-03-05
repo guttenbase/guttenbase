@@ -19,7 +19,7 @@ You may encrypt a properties file using the **PropertiesEncryptionTool** class, 
 
 You will have to provide a password for encryption.
 
-And then later on read you can decrypt the file in your application at runtime, like this:
+And then later on you decrypt the file in your application at runtime, like this:
 
 ```java
 final var stream = new FileInputStream(new File("./encrypted.properties"));
