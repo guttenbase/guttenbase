@@ -10,14 +10,12 @@ import java.util.Properties
 /**
  * Read properties from file
  */
-class PropertiesURLConnectorInfo(stream: InputStream) : URLConnectorInfo {
+class PropertiesURLConnectorInfo(private val properties: Properties) : URLConnectorInfo {
   constructor(file: File) : this(file.inputStream())
 
   constructor(file: String) : this(File(file))
 
-  private val properties = Properties()
-
-  init {
+  constructor(stream: InputStream) : this(Properties()) {
     stream.use { properties.load(stream) }
   }
 

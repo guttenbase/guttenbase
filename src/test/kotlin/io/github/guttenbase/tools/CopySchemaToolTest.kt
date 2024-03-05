@@ -4,7 +4,9 @@ import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
+import io.github.guttenbase.connector.impl.PropertiesEncryptionTool
 import io.github.guttenbase.connector.impl.PropertiesURLConnectorInfo
+import io.github.guttenbase.connector.impl.URLConnectorInfo
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
 import io.github.guttenbase.tools.InsertStatementTool
@@ -25,11 +27,14 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
     val stream = CopySchemaToolTest::class.java.getResourceAsStream("/hsqldb.properties")
+    val encrypted = CopySchemaToolTest::class.java.getResourceAsStream("/encrypted.properties")
+    val decryptedProperties = PropertiesEncryptionTool(encrypted!!).decrypt("guttenbase")
 
     connectorRepository.addConnectionInfo(SOURCE, TestH2ConnectionInfo())
       .addConnectionInfo(H2, TestH2ConnectionInfo()).addConnectionInfo(DERBY, TestDerbyConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
       .addConnectionInfo(PROPS, PropertiesURLConnectorInfo(stream!!))
+      .addConnectionInfo(ENCRYPTED, PropertiesURLConnectorInfo(decryptedProperties))
 
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/data/test-data.sql")
@@ -53,6 +58,16 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   @Test
   fun testPropertiesConnectionInfo() {
     test(PROPS)
+  }
+
+  @Test
+  fun testEncryptedPropertiesConnectionInfo() {
+    val connectionInfo1 = connectorRepository.getConnectionInfo(PROPS) as URLConnectorInfo
+    val connectionInfo2 = connectorRepository.getConnectionInfo(ENCRYPTED) as URLConnectorInfo
+
+    Assertions.assertThat(connectionInfo1.driver).isEqualTo(connectionInfo2.driver)
+
+    test(ENCRYPTED)
   }
 
   private fun test(target: String) {
@@ -104,5 +119,6 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
     const val H2 = "H2"
     const val HSQLDB = "HSQLDB"
     const val PROPS = "PROPS"
+    const val ENCRYPTED = "ENCRYPTED"
   }
 }
