@@ -9,10 +9,10 @@ One cool feature is that you can specify a class that is used as the value of th
 ## Code example
 
 ```java
-connectorRepository.addConnectionInfo(CONNECTOR_ID1, new MySqlConnectionInfo());
-connectorRepository.addConnectionInfo(CONNECTOR_ID2, new PostgresqlConnectionInfo());
-connectorRepository.addConnectionInfo(EXPORT, new ExportDumpConnectorInfo(CONNECTOR_ID1, DATA_JAR));
-connectorRepository.addConnectionInfo(IMPORT, new ImportDumpConnectionInfo(DATA_JAR));
+connectorRepository.addConnectionInfo(CONNECTOR_ID1, new MySqlConnectionInfo())
+  .addConnectionInfo(CONNECTOR_ID2, new PostgresqlConnectionInfo())
+  .addConnectionInfo(EXPORT, new ExportDumpConnectorInfo(CONNECTOR_ID1, DATA_JAR))
+  .addConnectionInfo(IMPORT, new ImportDumpConnectionInfo(DATA_JAR));
 ...
 // Export data to JAR
 new DefaultTableCopyTool(_connectorRepository).copyTables(CONNECTOR_ID1, EXPORT);
