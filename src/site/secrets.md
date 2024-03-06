@@ -25,7 +25,7 @@ db.type=HSQLDB
 
 You may encrypt a properties file using the **PropertiesEncryptionTool** class, .e.g.:
 
-    java -cp target/classes:$HOME/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.9.22/kotlin-stdlib-1.9.22.jar \
+    java -cp $HOME/.m2/repository/io/github/guttenbase/guttenbase/3.2.0/guttenbase-3.2.0.jar:$HOME/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.9.22/kotlin-stdlib-1.9.22.jar \
         io.github.guttenbase.connector.impl.PropertiesEncryptionTool ./hsqldb.properties ./encrypted.properties
 
 You will have to provide a password for encryption.
