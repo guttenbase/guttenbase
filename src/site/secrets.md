@@ -10,6 +10,17 @@ final var stream = new FileInputStream(new File("./hsqldb.properties"));
 connectorRepository.addConnectionInfo(PROPS, new PropertiesURLConnectorInfo(stream));
 ```
 
+Where a properties file looks like this:
+
+```
+db.url=jdbc:hsqldb:mem:guttenbase
+db.driver=org.hsqldb.jdbc.JDBCDriver
+db.username=sa
+db.password=sa
+db.schema=
+db.type=HSQLDB
+```
+
 ## Encrypted properties file
 
 You may encrypt a properties file using the **PropertiesEncryptionTool** class, .e.g.:
