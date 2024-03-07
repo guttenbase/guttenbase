@@ -27,9 +27,7 @@ import kotlin.math.min
 /**
  * Check two schemas for equal data where the tool takes a configurable number of sample data from each table.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.NumberOfCheckedTableDataHint] How many rows of tables shall be regarded when checking that data has been
@@ -41,8 +39,9 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
   @Throws(SQLException::class)
   fun checkTableData(sourceConnectorId: String, targetConnectorId: String) {
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
-    val numberOfCheckData = connectorRepository.getConnectorHint(sourceConnectorId, NumberOfCheckedTableData::class.java)
-      .value.numberOfCheckedTableData
+    val numberOfCheckData =
+      connectorRepository.getConnectorHint(sourceConnectorId, NumberOfCheckedTableData::class.java)
+        .value.numberOfCheckedTableData
     val tableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val sourceDatabaseConfiguration1: SourceDatabaseConfiguration = connectorRepository
@@ -58,8 +57,9 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     sourceDatabaseConfiguration2.initializeSourceConnection(connection2, targetConnectorId)
 
     for (tableSourceMetaData in tableSourceMetaDatas) {
-      val tableDestMetaData: TableMetaData = tableMapper.map(tableSourceMetaData, targetDatabaseMetaData)
+      val tableDestMetaData = tableMapper.map(tableSourceMetaData, targetDatabaseMetaData)
         ?: throw TableConfigurationException("No matching table for $tableSourceMetaData in target data base!!!")
+
       checkTableData(
         sourceConnectorId, connection1, sourceDatabaseConfiguration1, tableSourceMetaData, targetConnectorId,
         connection2, sourceDatabaseConfiguration2, tableDestMetaData, numberOfCheckData
@@ -72,44 +72,47 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     connector2.closeConnection()
   }
 
-  @Throws(SQLException::class)
   private fun checkTableData(
     sourceConnectorId: String, sourceConnection: Connection,
     sourceConfiguration: SourceDatabaseConfiguration, sourceTableMetaData: TableMetaData,
     targetConnectorId: String, targetConnection: Connection, targetConfiguration: SourceDatabaseConfiguration,
     targetTableMetaData: TableMetaData, numberOfCheckData: Int
   ) {
-    val tableName1: String = connectorRepository.getConnectorHint(sourceConnectorId, TableMapper::class.java).value
+    val tableName1 = connectorRepository.getConnectorHint(sourceConnectorId, TableMapper::class.java).value
       .fullyQualifiedTableName(sourceTableMetaData, sourceTableMetaData.databaseMetaData)
-    val tableName2: String = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
+    val tableName2 = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
       .fullyQualifiedTableName(targetTableMetaData, targetTableMetaData.databaseMetaData)
     val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
-    val sourceColumnNameMapper: ColumnMapper =
-      connectorRepository.getConnectorHint(sourceConnectorId, ColumnMapper::class.java).value
-    val targetColumnNameMapper: ColumnMapper =
-      connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+    val sourceColumnNameMapper = connectorRepository.getConnectorHint(sourceConnectorId, ColumnMapper::class.java).value
+    val targetColumnNameMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+
     checkRowCount(sourceTableMetaData, targetTableMetaData, tableName1, tableName2)
-    val selectStatement1: PreparedStatement = SelectStatementCreator(connectorRepository, sourceConnectorId)
+
+    val selectStatement1 = SelectStatementCreator(connectorRepository, sourceConnectorId)
       .createSelectStatement(sourceConnection, tableName1, sourceTableMetaData)
     selectStatement1.fetchSize = numberOfCheckData
     sourceConfiguration.beforeSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
     val resultSet1 = selectStatement1.executeQuery()
     sourceConfiguration.afterSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
-    val selectStatement2: PreparedStatement = SelectStatementCreator(connectorRepository, targetConnectorId)
-      .createMappedSelectStatement(targetConnection, sourceTableMetaData, tableName2, targetTableMetaData, sourceConnectorId)
+    val selectStatement2 = SelectStatementCreator(connectorRepository, targetConnectorId)
+      .createMappedSelectStatement(
+        targetConnection, sourceTableMetaData, tableName2, targetTableMetaData, sourceConnectorId, targetConnectorId
+      )
     selectStatement2.fetchSize = numberOfCheckData
     targetConfiguration.beforeSelect(targetConnection, targetConnectorId, targetTableMetaData)
     val resultSet2 = selectStatement2.executeQuery()
     targetConfiguration.afterSelect(targetConnection, targetConnectorId, targetTableMetaData)
     val orderedSourceColumns: List<ColumnMetaData> = ColumnOrderHint.getSortedColumns(
-      connectorRepository, sourceConnectorId,
-      sourceTableMetaData
+      connectorRepository, sourceConnectorId, sourceTableMetaData
     )
-    val columnMapper: ColumnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+    val columnMapper: ColumnMapper =
+      connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
     var rowIndex = 1
+
     try {
       while (resultSet1.next() && resultSet2.next() && rowIndex <= numberOfCheckData) {
         var targetColumnIndex = 1
+
         for (sourceColumnIndex in 1..orderedSourceColumns.size) {
           val sourceColumn = orderedSourceColumns[sourceColumnIndex - 1]
           val mapping = columnMapper.map(sourceColumn, targetTableMetaData)
@@ -149,10 +152,10 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     } finally {
       closeEverything(selectStatement1, resultSet1, selectStatement2, resultSet2)
     }
+
     LOG.info("Checking data of $tableName1 <--> $tableName2 finished")
   }
 
-  @Throws(SQLException::class)
   private fun checkData(
     sourceConnectorId: String,
     targetConnectorId: String,
@@ -200,7 +203,6 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     }
   }
 
-  @Throws(UnequalNumberOfRowsException::class)
   private fun checkRowCount(
     sourceTableMetaData: TableMetaData,
     targetTableMetaData: TableMetaData,
@@ -221,7 +223,6 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     LOG.info("Checking data of $tableName1 <--> $tableName2 started")
   }
 
-  @Throws(IncompatibleColumnsException::class)
   private fun checkColumnTypeMapping(
     tableName1: String,
     sourceColumn: ColumnMetaData,
@@ -249,34 +250,29 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     private val LOG = LoggerFactory.getLogger(CheckEqualTableDataTool::class.java)
 
     private fun closeEverything(vararg closeables: AutoCloseable) {
-      closeables.forEach { it.use {  } }
+      closeables.forEach { it.use { } }
     }
 
     @Throws(SQLException::class)
-    private fun createStringFromBlob(blob: Blob?): String? {
-      return if (blob == null) null else String(blob.getBytes(1, min(blob.length(), 1000).toInt()))
-    }
+    private fun createStringFromBlob(blob: Blob?): String? =
+      if (blob == null) null else String(blob.getBytes(1, min(blob.length(), 1000).toInt()))
 
-    private fun trim(data: String?): String? {
-      return data?.trim { it <= ' ' }
-    }
+    private fun trim(data: String?): String? = data?.trim { it <= ' ' }
 
     private fun createIncompatibleDataException(
       tableName: String, index: Int,
       columnType: ColumnType, columnName: String, data1: Any?, data2: Any?
-    ): GuttenBaseException {
-      return UnequalDataException(
-        tableName + ": Row "
-            + index
-            + ": Data not equal on column "
-            + columnName
-            + ": \n'"
-            + data1
-            + "'\n vs. \n'"
-            + data2
-            + "'\n, column class = "
-            + columnType.columnClasses
-      )
-    }
+    ) = UnequalDataException(
+      tableName + ": Row "
+          + index
+          + ": Data not equal on column "
+          + columnName
+          + ": \n'"
+          + data1
+          + "'\n vs. \n'"
+          + data2
+          + "'\n, column class = "
+          + columnType.columnClasses
+    )
   }
 }

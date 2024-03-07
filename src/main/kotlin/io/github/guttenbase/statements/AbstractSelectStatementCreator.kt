@@ -25,9 +25,14 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
    * Create SELECT statement in the source table to retrieve data from the configured source columns.
    */
   @Throws(SQLException::class)
-  fun createSelectStatement(connection: Connection, tableName: String, tableMetaData: TableMetaData): PreparedStatement {
+  fun createSelectStatement(
+    connection: Connection,
+    tableName: String,
+    tableMetaData: TableMetaData
+  ): PreparedStatement {
     val resultSetParameters = connectorRepository.getConnectorHint(connectorId, ResultSetParameters::class.java).value
-    val columns: List<ColumnMetaData> = ColumnOrderHint.getSortedColumns(connectorRepository, connectorId, tableMetaData)
+    val columns: List<ColumnMetaData> =
+      ColumnOrderHint.getSortedColumns(connectorRepository, connectorId, tableMetaData)
     val sql = createSQL(tableName, tableMetaData, columns)
 
     LOG.debug("Create SELECT statement: $sql")
@@ -47,18 +52,25 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
 
   /**
    * Create SELECT statement in the target table to retrieve data from the mapped columns. I.e., since the target table
-   * configuration may be different, the SELECT statement may be different. This is needed to check data compatibility with the
+   * configuration may be different, the SELECT statement may be different. This is used to check data compatibility with the
    * [io.github.guttenbase.tools.CheckEqualTableDataTool]
    */
   @Throws(SQLException::class)
   fun createMappedSelectStatement(
     connection: Connection, sourceTableMetaData: TableMetaData, tableName: String,
-    targetTableMetaData: TableMetaData, sourceConnectorId: String
+    targetTableMetaData: TableMetaData, sourceConnectorId: String, targetConnectorId: String
   ): PreparedStatement {
+    val resultSetParameters =
+      connectorRepository.getConnectorHint(targetConnectorId, ResultSetParameters::class.java).value
     val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
     val sql = createSQL(tableName, targetTableMetaData, columns)
+    LOG.debug("Create SELECT statement: $sql")
 
-    return connection.prepareStatement(sql)
+    return connection.prepareStatement(
+      sql,
+      resultSetParameters.getResultSetType(targetTableMetaData),
+      resultSetParameters.getResultSetConcurrency(targetTableMetaData)
+    )
   }
 
   /**
