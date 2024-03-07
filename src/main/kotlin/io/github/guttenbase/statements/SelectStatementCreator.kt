@@ -23,18 +23,12 @@ class SelectStatementCreator(connectorRepository: ConnectorRepository, connector
     val buf = StringBuilder("ORDER BY ")
     var columnsAdded = 0
 
-    // No BLOB or the like for ordering
-    val isOracleOrMssql = (DatabaseType.ORACLE == tableMetaData.databaseMetaData.databaseType
-        || DatabaseType.MSSQL == tableMetaData.databaseMetaData.databaseType)
-    val rangeFrom = if (isOracleOrMssql) Types.NULL else Types.LONGNVARCHAR // Doesn't like LONG e.g.
-    val rangeTo = Types.JAVA_OBJECT
-
     for (i in 0 until tableMetaData.columnCount) {
       val columnMetaData = tableMetaData.columnMetaData[i]
       val columnName = columnMapper.mapColumnName(columnMetaData, tableMetaData)
       val jdbcType = columnMetaData.columnType
 
-      if (jdbcType in (rangeFrom + 1) until rangeTo) {
+      if (jdbcType.comparable()) {
         buf.append(columnName).append(", ")
         columnsAdded++
       }
@@ -47,4 +41,15 @@ class SelectStatementCreator(connectorRepository: ConnectorRepository, connector
       ""
     }
   }
+}
+
+/** No BLOB or the like for ordering
+ */
+private fun Int.comparable(): Boolean = when (this) {
+  in Types.BIT..Types.BIGINT -> true
+  in Types.CHAR..Types.SMALLINT -> true
+  in Types.DATE..Types.TIMESTAMP -> true
+  Types.LONGVARCHAR, Types.NCHAR, Types.VARCHAR, Types.NVARCHAR, Types.LONGNVARCHAR -> true
+  Types.BOOLEAN -> true
+  else -> false
 }

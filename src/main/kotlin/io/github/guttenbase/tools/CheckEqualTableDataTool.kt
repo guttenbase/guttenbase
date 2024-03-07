@@ -3,7 +3,6 @@ package io.github.guttenbase.tools
 import io.github.guttenbase.configuration.SourceDatabaseConfiguration
 import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.DatabaseType.POSTGRESQL
-import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.TableConfigurationException
 import io.github.guttenbase.exceptions.UnequalDataException
@@ -171,14 +170,15 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     columnName1: String,
     sourceColumnType: ColumnType
   ) {
-    var data1: Any? = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
+    var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
     data1 = columnTypeMapping.columnDataMapper.map(sourceColumn, columnMetaData2, data1)
-    var data2: Any? = columnTypeMapping.targetColumnType.getValue(resultSet2, targetColumnIndex)
+
+    var data2 = columnTypeMapping.targetColumnType.getValue(resultSet2, targetColumnIndex)
 
     when (sourceColumnType) {
       CLASS_STRING -> {
-        val connectionInfo1: ConnectorInfo = connectorRepository.getConnectionInfo(sourceConnectorId)
-        val connectionInfo2: ConnectorInfo = connectorRepository.getConnectionInfo(targetConnectorId)
+        val connectionInfo1 = connectorRepository.getConnectionInfo(sourceConnectorId)
+        val connectionInfo2 = connectorRepository.getConnectionInfo(targetConnectorId)
 
         // See http://www.postgresql.org/docs/8.3/static/datatype-character.html
         if (POSTGRESQL == connectionInfo1.databaseType || POSTGRESQL == connectionInfo2.databaseType) {
@@ -188,8 +188,9 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
       }
 
       CLASS_BLOB -> {
-        val blob1: Blob? = data1 as Blob?
-        val blob2: Blob? = data2 as Blob?
+        val blob1 = data1 as Blob?
+        val blob2 = data2 as Blob?
+
         data1 = createStringFromBlob(blob1)
         data2 = createStringFromBlob(blob2)
       }
