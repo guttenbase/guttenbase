@@ -1,7 +1,6 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.configuration.SourceDatabaseConfiguration
-import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.DatabaseType.POSTGRESQL
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.TableConfigurationException
@@ -197,6 +196,8 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
 
       else -> {}
     }
+
+    @Suppress("KotlinConstantConditions")
     if (data1 == null && data2 != null || data1 != null && data2 == null) {
       throw createIncompatibleDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
     } else if (data1 != null && data2 != null && data1 != data2) {

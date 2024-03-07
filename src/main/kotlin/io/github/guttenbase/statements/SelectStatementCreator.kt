@@ -1,6 +1,5 @@
 package io.github.guttenbase.statements
 
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Types
