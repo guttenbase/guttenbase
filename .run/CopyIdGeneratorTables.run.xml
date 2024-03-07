@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CopyIdGeneratorTables" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="de.akquinet.jbosscc.guttenbase.projects.rbb.CopyIdGeneratorTables" />
+    <module name="GuttenBase-Projects" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../guttenbase-projects" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="de.akquinet.jbosscc.guttenbase.projects.rbb.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
