@@ -48,51 +48,54 @@ open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : Abst
 
     targetDatabaseConfiguration.beforeInsert(targetConnection, targetConnectorId, targetTableMetaData)
 
-    val batchInsertStatement = insertStatementCreator.createInsertStatement(
-      sourceConnectorId,
-      sourceTableMetaData, targetTableName, targetTableMetaData, targetConnection, numberOfRowsPerBatch,
-      useMultipleValuesClauses
-    )
-
-    for (i in 0 until numberOfBatches) {
-      progressIndicator.startExecution()
-
-      insertStatementFiller.fillInsertStatementFromResultSet(
-        sourceConnectorId, sourceTableMetaData, targetConnectorId,
-        targetTableMetaData, targetDatabaseConfiguration, targetConnection, resultSet, batchInsertStatement,
+    if (numberOfBatches > 0) {
+      val batchInsertStatement = insertStatementCreator.createInsertStatement(
+        sourceConnectorId, sourceTableMetaData,
+        targetTableName, targetTableMetaData, targetConnection,
         numberOfRowsPerBatch, useMultipleValuesClauses
       )
 
-      batchInsertStatement.executeBatch()
+      for (i in 0 until numberOfBatches) {
+        progressIndicator.startExecution()
 
-      if (targetDatabaseConfiguration.isMayCommit) {
-        targetConnection.commit()
+        insertStatementFiller.fillInsertStatementFromResultSet(
+          sourceConnectorId, sourceTableMetaData, targetConnectorId,
+          targetTableMetaData, targetDatabaseConfiguration, targetConnection, resultSet, batchInsertStatement,
+          numberOfRowsPerBatch, useMultipleValuesClauses
+        )
+
+        batchInsertStatement.executeBatch()
+
+        if (targetDatabaseConfiguration.isMayCommit) {
+          targetConnection.commit()
+        }
+
+        insertStatementFiller.clear()
+        progressIndicator.endExecution((i + 1) * numberOfRowsPerBatch)
       }
 
-      insertStatementFiller.clear()
-      progressIndicator.endExecution((i + 1) * numberOfRowsPerBatch)
+      batchInsertStatement.close()
     }
-
-    batchInsertStatement.close()
 
     if (remainder > 0) {
       val finalInsert = insertStatementCreator.createInsertStatement(
-        sourceConnectorId,
-        sourceTableMetaData,
-        targetTableName,
-        targetTableMetaData,
-        targetConnection,
-        remainder,
-        useMultipleValuesClauses
+        sourceConnectorId, sourceTableMetaData,
+        targetTableName, targetTableMetaData, targetConnection,
+        remainder, useMultipleValuesClauses
       )
 
       insertStatementFiller.fillInsertStatementFromResultSet(
         sourceConnectorId, sourceTableMetaData, targetConnectorId,
-        targetTableMetaData, targetDatabaseConfiguration, targetConnection, resultSet, finalInsert, remainder,
+        targetTableMetaData, targetDatabaseConfiguration, targetConnection,
+        resultSet, finalInsert, remainder,
         useMultipleValuesClauses
       )
 
-      finalInsert.executeBatch()
+      if (remainder > 1) {
+        finalInsert.executeBatch()
+      } else {
+        finalInsert.execute()
+      }
 
       if (targetDatabaseConfiguration.isMayCommit) {
         targetConnection.commit()

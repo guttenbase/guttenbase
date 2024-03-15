@@ -197,13 +197,15 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
       else -> {}
     }
 
-    @Suppress("KotlinConstantConditions")
     if (data1 == null && data2 != null || data1 != null && data2 == null) {
       throw createIncompatibleDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
-    } else if (data1 != null && data2 != null && data1 != data2) {
+    } else if (data1 != null && data2 != null && equalsValue(data1, data2)) {
       throw createIncompatibleDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
     }
   }
+
+  private fun equalsValue(data1: Any, data2: Any) =
+    data1 != data2
 
   private fun checkRowCount(
     sourceTableMetaData: TableMetaData,

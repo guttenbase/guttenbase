@@ -3,7 +3,7 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.repository.DatabaseTableFilter
 
 /**
- * Regard which tables when [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is looking for tables in the given data base. The
+ * Which tables should be regarded when [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is looking for tables in the given data base. The
  * [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is triggered by default in [io.github.guttenbase.connector.impl.AbstractConnector.retrieveDatabaseMetaData].
  *
  *

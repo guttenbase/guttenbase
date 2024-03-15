@@ -2,7 +2,7 @@
   <configuration default="false" name="CopyIdGeneratorTables" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="de.akquinet.jbosscc.guttenbase.projects.rbb.CopyIdGeneratorTables" />
     <module name="GuttenBase-Projects" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../guttenbase-projects" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../guttenbase-projects" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="de.akquinet.jbosscc.guttenbase.projects.rbb.*" />

@@ -120,7 +120,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
         insertData = false
       }
 
-      // Add another INSERT with one VALUES clause to BATCH
+      // Add INSERTs with single VALUES clause to BATCH, see below for other case
       if (!useMultipleValuesClauses) {
         if (insertData) {
           insertStatement.addBatch()
@@ -133,7 +133,10 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     }
 
     // Add single INSERT with many VALUES clauses to BATCH
-    if (useMultipleValuesClauses) {
+    // If it is just a single row of data to be copied, do not use batching. Some driver (MSSL 🙄 in particular)
+    // are buggy and cannot handle single row batches
+
+    if (useMultipleValuesClauses && numberOfRowsPerBatch > 1) {
       insertStatement.addBatch()
     }
 
