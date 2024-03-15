@@ -94,7 +94,7 @@ open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : Abst
       if (remainder > 1) {
         finalInsert.executeBatch()
       } else {
-        finalInsert.execute()
+        finalInsert.executeUpdate()
       }
 
       if (targetDatabaseConfiguration.isMayCommit) {

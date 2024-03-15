@@ -133,7 +133,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     }
 
     // Add single INSERT with many VALUES clauses to BATCH
-    // If it is just a single row of data to be copied, do not use batching. Some driver (MSSL 🙄 in particular)
+    // If it is just a single row of data to be copied, do not use batching. Some driver (MSSQL 🙄 in particular)
     // are buggy and cannot handle single row batches
 
     if (useMultipleValuesClauses && numberOfRowsPerBatch > 1) {
