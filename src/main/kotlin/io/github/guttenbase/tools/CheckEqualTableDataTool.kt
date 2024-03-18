@@ -13,11 +13,11 @@ import io.github.guttenbase.mapping.ColumnTypeMapping
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
-import io.github.guttenbase.meta.ColumnType.CLASS_BLOB
-import io.github.guttenbase.meta.ColumnType.CLASS_STRING
+import io.github.guttenbase.meta.ColumnType.*
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.statements.SelectStatementCreator
+import io.github.guttenbase.utils.Util.toDate
 import org.slf4j.LoggerFactory
 import java.sql.*
 import kotlin.math.min
@@ -199,13 +199,17 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
 
     if (data1 == null && data2 != null || data1 != null && data2 == null) {
       throw createIncompatibleDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
-    } else if (data1 != null && data2 != null && equalsValue(data1, data2)) {
+    } else if (data1 != null && data2 != null && !equalsValue(data1, data2, sourceColumnType)) {
       throw createIncompatibleDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
     }
   }
 
-  private fun equalsValue(data1: Any, data2: Any) =
-    data1 != data2
+  private fun equalsValue(data1: Any, data2: Any, columnType: ColumnType) =
+    if (columnType.isDate()) {
+      data1.toDate() == data2.toDate()
+    } else {
+      data1 == data2
+    }
 
   private fun checkRowCount(
     sourceTableMetaData: TableMetaData,

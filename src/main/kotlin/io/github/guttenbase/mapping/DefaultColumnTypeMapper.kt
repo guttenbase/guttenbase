@@ -47,7 +47,8 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
       ?: createDefaultColumnDefinition(column, "")
     val precision = createPrecisionClause(column, columnDefinition.precision)
     val singlePrimaryKey = column.isPrimaryKey && column.tableMetaData.primaryKeyColumns.size < 2
-    val autoincrementClause = if (column.isAutoIncrement) " " + lookupAutoIncrementClause(column, targetDatabaseType) else ""
+    val autoincrementClause =
+      if (column.isAutoIncrement) " " + lookupAutoIncrementClause(column, targetDatabaseType) else ""
     val notNullClause = if (column.isNullable || singlePrimaryKey) "" else " NOT NULL" // Primary key implies NOT NULL
     val primaryKeyClause = if (singlePrimaryKey) " PRIMARY KEY" else ""
 
@@ -338,6 +339,8 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
 
   private fun createMysqlToMssqlMapping() {
     addMapping(MYSQL, MSSQL, "LONGTEXT", "NVARCHAR", "(4000)")
+    // MSSQL is very weird concering timestamps
+    // java.sql.BatchUpdateException: Cannot insert an explicit value into a timestamp column. Use INSERT with a column list to exclude the timestamp column, or insert a DEFAULT into the timestamp column.
     addMapping(MYSQL, MSSQL, "TIMESTAMP", "DATETIME")
     addMapping(MYSQL, MSSQL, "LONGBLOB", "VARBINARY")
     addMapping(MYSQL, MSSQL, "DECIMAL", "DECIMAL", "(38)")

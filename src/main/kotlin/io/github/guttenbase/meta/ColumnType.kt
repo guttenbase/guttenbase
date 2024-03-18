@@ -133,21 +133,20 @@ enum class ColumnType(vararg classes: Class<*>) {
    */
   @Throws(SQLException::class)
   fun setValue(
-    insertStatement: PreparedStatement, columnIndex: Int, data: Any?,
-    databaseMetaData: DatabaseMetaData, sqlType: Int
+    insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData,
+    sqlType: Int, data: Any?
   ): Closeable? {
     return if (data == null) {
       insertStatement.setNull(columnIndex, sqlType)
       null
     } else {
-      setStatementValue(insertStatement, columnIndex, data, databaseMetaData)
+      setStatementValue(insertStatement, columnIndex, databaseMetaData, data)
     }
   }
 
   @Throws(SQLException::class)
   private fun setStatementValue(
-    insertStatement: PreparedStatement, columnIndex: Int, data: Any,
-    databaseMetaData: DatabaseMetaData
+    insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData, data: Any
   ): Closeable? {
     var result: Closeable? = null
 
@@ -198,7 +197,9 @@ enum class ColumnType(vararg classes: Class<*>) {
         insertStatement.setObject(columnIndex, data)
       } else {
         // For older drivers not supporting LocalDateTime directly
-        insertStatement.setDate(columnIndex, data.toDate().toSQLDate())
+        val sqlDate = data.toDate().toSQLDate()
+
+        insertStatement.setDate(columnIndex, sqlDate)
       }
 
       CLASS_OBJECT -> insertStatement.setObject(columnIndex, data)
@@ -261,6 +262,11 @@ enum class ColumnType(vararg classes: Class<*>) {
     }
   }
 
+  fun isDate() = when (this) {
+    CLASS_TIME, CLASS_TIMESTAMP, CLASS_DATETIME, CLASS_DATE -> true
+    else -> false
+  }
+
   companion object {
     private val COLUMN_TYPES: Map<Class<*>, ColumnType> by lazy {
       entries.map { ct -> ct.columnClasses.map { it to ct } }.flatten().toMap()
@@ -275,7 +281,7 @@ enum class ColumnType(vararg classes: Class<*>) {
     /**
      * Check if class can be mapped to [ColumnType].
      */
-    fun isSupportedClass(columnClass: Class<*>)= COLUMN_TYPES.containsKey(columnClass)
+    fun isSupportedClass(columnClass: Class<*>) = COLUMN_TYPES.containsKey(columnClass)
 
     /**
      * Check if class can be mapped to [ColumnType].

@@ -29,15 +29,24 @@ object Util {
 
   const val DEFAULT_BUFFER_SIZE = 1024 * 4
 
+  @JvmStatic
   fun Any.toDate(): Date = when (this) {
+    is java.sql.Date -> Date(this.time)
+    is java.sql.Time -> Date(this.time)
+    is java.sql.Timestamp -> Date(this.time)
     is Date -> this
     is LocalDateTime -> this.toDate()
     is LocalDate -> this.toDate()
     else -> throw IllegalStateException("$this:${this.javaClass} is not convertable to Date")
   }
 
+  @JvmStatic
   fun LocalDate.toDate(): Date = Date.from(atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
+
+  @JvmStatic
   fun LocalDateTime.toDate(): Date = Date.from(atZone(ZoneId.systemDefault()).toInstant())
+
+  @JvmStatic
   fun Date.toSQLDate() = java.sql.Date(time)
 
   /**
@@ -64,15 +73,15 @@ object Util {
     val classLoader = Thread.currentThread().contextClassLoader
     var url = getResourceFromClassloader(resource, stripped, classLoader)
 
-    if (url == null) {
+    if (url === null) {
       url = getResourceFromClassloader(resource, stripped, Util::class.java.classLoader)
     }
 
-    if (url == null) {
+    if (url === null) {
       LOG.debug("Trying getResource")
       url = Util::class.java.getResource(resource)
 
-      if (url == null) {
+      if (url === null) {
         url = Util::class.java.getResource(stripped)
       }
     }
@@ -98,16 +107,16 @@ object Util {
       val ucl: URLClassLoader = classLoader
       url = ucl.findResource(resource)
 
-      if (url == null) {
+      if (url === null) {
         url = ucl.findResource(stripped)
       }
     }
 
-    if (url == null) {
+    if (url === null) {
       url = classLoader.getResource(resource)
     }
 
-    if (url == null) {
+    if (url === null) {
       url = classLoader.getResource(stripped)
     }
 
