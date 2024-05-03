@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-private const val ZIP_FILE = "./target/dump.zip"
 
 /**
  * Create a dump of the source database
@@ -51,6 +50,7 @@ class ExportDumpTest : AbstractGuttenBaseTest() {
   }
 
   companion object {
+    private const val ZIP_FILE = "./target/dump.zip"
     const val SOURCE = "SOURCE"
     const val IMPORT = "IMPORT"
     const val EXPORT = "EXPORT"

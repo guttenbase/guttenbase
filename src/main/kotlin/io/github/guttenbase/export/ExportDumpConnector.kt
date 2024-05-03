@@ -61,7 +61,6 @@ class ExportDumpConnector(
     return result
   }
 
-  @Throws(SQLException::class)
   private fun retrieveSourceDatabaseMetaData() =
     connectorRepository.getDatabaseMetaData(exportDumpConnectionInfo.sourceConnectorId)
 }
