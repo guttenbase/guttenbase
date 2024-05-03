@@ -1,4 +1,4 @@
-package io.github.guttenbase.export.plain
+package io.github.guttenbase.export.gzip
 
 import io.github.guttenbase.export.ExportDumpConnectorInfo
 import io.github.guttenbase.export.ExportDumpExtraInformation
@@ -24,6 +24,7 @@ class PlainGzipExporter : Exporter {
   private lateinit var connectorRepository: ConnectorRepository
   private lateinit var connectorId: String
   private lateinit var exportDumpConnectionInfo: ExportDumpConnectorInfo
+  private var closed = false
 
   /**
    * {@inheritDoc}
@@ -48,6 +49,7 @@ class PlainGzipExporter : Exporter {
   override fun finishExport() {
     writeExtraInformation()
     objectOutputStream.close()
+    closed = true
   }
 
   @Throws(IOException::class)
@@ -73,6 +75,8 @@ class PlainGzipExporter : Exporter {
     objectOutputStream.reset()
     objectOutputStream.flush()
   }
+
+  override fun isOutputStreamClosed() = closed
 
   @Throws(IOException::class)
   override fun writeObject(obj: Any?) {

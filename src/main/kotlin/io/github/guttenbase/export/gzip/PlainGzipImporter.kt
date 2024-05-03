@@ -1,4 +1,4 @@
-package io.github.guttenbase.export.plain
+package io.github.guttenbase.export.gzip
 
 import io.github.guttenbase.export.ExportTableHeader
 import io.github.guttenbase.export.ImportDumpConnectionInfo

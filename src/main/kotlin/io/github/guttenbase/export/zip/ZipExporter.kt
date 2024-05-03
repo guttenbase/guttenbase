@@ -36,6 +36,7 @@ class ZipExporter : Exporter {
   private lateinit var connectorRepository: ConnectorRepository
   private lateinit var connectorId: String
   private lateinit var exportDumpConnectionInfo: ExportDumpConnectorInfo
+  private var closed = false
 
   /**
    * {@inheritDoc}
@@ -52,7 +53,8 @@ class ZipExporter : Exporter {
 
     val file = File(exportDumpConnectionInfo.path)
     val fos = FileOutputStream(file)
-    val zipExporterClassResources = connectorRepository.getConnectorHint(connectorId, ZipExporterClassResources::class.java).value
+    val zipExporterClassResources =
+      connectorRepository.getConnectorHint(connectorId, ZipExporterClassResources::class.java).value
 
     zipOutputStream = ZipOutputStream(fos)
 
@@ -67,7 +69,8 @@ class ZipExporter : Exporter {
   override fun finishExport() {
     writeExtraInformation()
 
-    val zipExporterClassResources = connectorRepository.getConnectorHint(connectorId, ZipExporterClassResources::class.java).value
+    val zipExporterClassResources =
+      connectorRepository.getConnectorHint(connectorId, ZipExporterClassResources::class.java).value
 
     addResourcesToJar(zipExporterClassResources)
     zipOutputStream.close()
@@ -122,6 +125,8 @@ class ZipExporter : Exporter {
   override fun finalizeWriteTableData(tableMetaData: TableMetaData) {
     objectOutputStream.close()
 
+    closed = true
+
     val fis = FileInputStream(tempFile)
     IOUtils.copy(fis, zipOutputStream, Util.DEFAULT_BUFFER_SIZE)
     IOUtils.closeQuietly(fis)
@@ -151,13 +156,14 @@ class ZipExporter : Exporter {
    */
   @Throws(IOException::class)
   override fun flush() {
-    if (this::objectOutputStream.isInitialized) {
+    if (this::objectOutputStream.isInitialized && !isOutputStreamClosed()) {
       objectOutputStream.reset()
       objectOutputStream.flush()
     }
   }
 
-  @Throws(IOException::class)
+  override fun isOutputStreamClosed() = closed
+
   override fun writeObject(obj: Any?) {
     objectOutputStream.writeObject(obj)
   }
@@ -195,7 +201,8 @@ class ZipExporter : Exporter {
   @Throws(IOException::class, SQLException::class)
   private fun writeDatabaseEntry(databaseMetaData: DatabaseMetaData) {
     newEntry(ZipConstants.PREFIX + ZipConstants.DBINFO_NAME)
-    ZipDatabaseMetaDataWriter().writeDatabaseMetaDataEntry(databaseMetaData).store("Database meta data", zipOutputStream)
+    ZipDatabaseMetaDataWriter().writeDatabaseMetaDataEntry(databaseMetaData)
+      .store("Database meta data", zipOutputStream)
     closeEntry()
     newEntry(ZipConstants.META_DATA)
     zipOutputStream.write(Util.toByteArray(databaseMetaData))

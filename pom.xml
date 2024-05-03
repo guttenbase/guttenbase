@@ -13,7 +13,7 @@
 
     <description>
         GuttenBase - The database copying and migration framework.
-        
+
         Copying done right...
     </description>
 
@@ -156,8 +156,10 @@
 
                         <jvmTarget>${maven.compiler.target}</jvmTarget>
                         <!-- https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/ -->
-                        <args>-Xjvm-default=all</args>
-
+                        <args>
+                            <arg>-Xjvm-default=all</arg>
+                            <arg>-opt-in=kotlin.ExperimentalStdlibApi</arg>
+                        </args>
                     </configuration>
 
                     <dependencies>
@@ -251,7 +253,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <developers>
         <developer>
             <id>mdahm</id>

@@ -42,10 +42,9 @@ class ImportDumpResultSet(
    */
   private val columnIndexMap = HashMap<Int, Int>()
   private val currentRow = ArrayList<Any?>()
-  private val origTableMetaData: TableMetaData
+  private val origTableMetaData = databaseMetaData.getTableMetaData(tableMetaData.tableName)!!
 
   init {
-    origTableMetaData = databaseMetaData.getTableMetaData(tableMetaData.tableName)!!
     buildColumnIndexMap(selectedColumns)
   }
 
@@ -70,7 +69,7 @@ class ImportDumpResultSet(
     if (hasNext) // Prefetch current row
     {
       for (i in 0 until origTableMetaData.columnCount) {
-        currentRow.add(readObject()!!)
+        currentRow.add(readObject())
       }
     }
 

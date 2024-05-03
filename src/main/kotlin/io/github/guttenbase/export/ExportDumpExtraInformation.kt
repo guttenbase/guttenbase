@@ -5,9 +5,7 @@ import java.io.Serializable
 import java.sql.SQLException
 
 /**
- * Give the user a possibility to add extra informations to the dumped data.
- *
- *
+ * Allow user to add extra informations to the dumped data.
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *

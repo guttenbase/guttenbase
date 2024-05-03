@@ -16,7 +16,7 @@ import java.util.concurrent.Executor
  *
  * @author M. Dahm
  */
-class ExportDumpConnection( private val exporter: Exporter) : Connection {
+class ExportDumpConnection(private val exporter: Exporter) : Connection {
   private var closed = false
   private val exportedTables = HashSet<TableMetaData>()
   private lateinit var currentTableMetaData: TableMetaData
@@ -95,20 +95,22 @@ class ExportDumpConnection( private val exporter: Exporter) : Connection {
    * Simply forwards call to [Exporter] which may then flush its buffers.
    */
   override fun commit() {
-    try {
-      exporter.flush()
-    } catch (e: Exception) {
-      throw ExportException("commit", e)
+    if (!isClosed) {
+      try {
+        exporter.flush()
+      } catch (e: Exception) {
+        throw ExportException("commit", e)
+      }
     }
   }
 
   /**
    * {@inheritDoc}
    */
-  override fun isClosed()= closed
+  override fun isClosed() = closed
 
   override fun setAutoCommit(autoCommit: Boolean) {}
-  override fun getAutoCommit()= false
+  override fun getAutoCommit() = false
 
   override fun setReadOnly(readOnly: Boolean) {}
   override fun isReadOnly(): Boolean {

@@ -30,8 +30,8 @@ interface Exporter {
   fun finishExport()
 
   /**
-   * Write table header when executing an INSERT statement. This is necessary to mark where data for a given table starts since some tables
-   * may be skipped during import. The header is written only once in fact.
+   * Write table header when executing an INSERT statement. This is necessary to mark where the data for a given table starts,
+   * since some tables may be skipped during import. The header is written only once actually.
    */
   @Throws(Exception::class)
   fun writeTableHeader(exportTableHeader: ExportTableHeader)
@@ -74,4 +74,7 @@ interface Exporter {
 
   @Throws(Exception::class)
   fun writeObject(obj: Any?)
+
+  @Throws(Exception::class)
+  fun isOutputStreamClosed(): Boolean
 }

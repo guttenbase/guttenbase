@@ -56,7 +56,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
 
       if (!ok) {
         throw MissingDataException(
-          "No more data in row " + currentRow + "/" + numberOfRowsPerBatch + " in " + sourceTableMetaData.tableName
+          "No more data in row $currentRow/$numberOfRowsPerBatch in ${sourceTableMetaData.tableName}"
         )
       }
 
@@ -94,11 +94,6 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
           val sourceValue = columnTypeMapping.sourceColumnType.getValue(rs, columnIndex)
           val targetValue =
             columnTypeMapping.columnDataMapper.map(sourceColumnMetaData, targetColumnMetaData, sourceValue)
-
-//          if (sourceValue != targetValue) {
-//            throw UnequalDataException(sourceTableMetaData.tableName + "::" + sourceColumnMetaData)
-//          }
-
           val optionalCloseableObject = columnTypeMapping.targetColumnType.setValue(
             insertStatement, targetColumnIndex++, targetDatabase, targetColumnMetaData.columnType, targetValue
           )
