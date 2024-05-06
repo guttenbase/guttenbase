@@ -27,8 +27,17 @@ data class ExportPlainConnectorInfo
   override val password: String get() = "password"
   override val schema: String get() = "schema"
 
-  override fun createConnector(connectorRepository: ConnectorRepository, connectorId: String) =
-    ExportPlainConnector(connectorRepository, connectorId, this)
+  private lateinit var exportPlainConnector: ExportPlainConnector
+
+  override fun createConnector(connectorRepository: ConnectorRepository, connectorId: String): ExportPlainConnector {
+    if (!this::exportPlainConnector.isInitialized) {
+      exportPlainConnector = ExportPlainConnector(connectorRepository, this)
+    }
+
+    return exportPlainConnector
+  }
+
+  val statements: List<String> get() = exportPlainConnector.connection.statements
 
   companion object {
     private const val serialVersionUID = 1L

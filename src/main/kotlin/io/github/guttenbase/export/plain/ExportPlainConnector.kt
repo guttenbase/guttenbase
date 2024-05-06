@@ -19,10 +19,9 @@ import java.sql.Connection
  */
 class ExportPlainConnector(
   private val connectorRepository: ConnectorRepository,
-  private val connectorId: String,
   private val connectorInfo: ExportPlainConnectorInfo
 ) : Connector {
-  private lateinit var connection: ExportPlainConnection
+  internal lateinit var connection: ExportPlainConnection
 
   override fun openConnection(): Connection {
     connection = ExportPlainConnection()
@@ -32,7 +31,6 @@ class ExportPlainConnector(
   override fun closeConnection() {
     connection.close()
   }
-
 
   /**
    * Table metadata is the same as the metadata of the source connector. The only difference is that the row count

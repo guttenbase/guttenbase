@@ -8,14 +8,11 @@ import java.sql.SQLException
 /**
  * (Almost) empty implementation
  *
- *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
-abstract class DefaultTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
+open class DefaultTargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
   AbstractDatabaseConfiguration(connectorRepository), TargetDatabaseConfiguration {
   override val isMayCommit: Boolean
     /**

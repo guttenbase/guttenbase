@@ -15,7 +15,7 @@ import kotlin.collections.ArrayList
 class ExportPlainConnection : Connection {
   private var closed = false
   private val preparedStatements = ArrayList<ExportPlainStatement>()
-  private val statements = ArrayList<String>()
+  internal val statements = ArrayList<String>()
 
   private fun createStatement(sql: String = ""): ExportPlainStatement {
     val result = ExportPlainStatement(sql, this)

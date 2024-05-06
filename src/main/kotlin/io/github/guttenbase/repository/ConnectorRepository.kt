@@ -9,12 +9,17 @@ import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.defaults.impl.DefaultColumnMapper
 import io.github.guttenbase.export.ExportDumpDatabaseConfiguration
 import io.github.guttenbase.export.ImportDumpDatabaseConfiguration
+import io.github.guttenbase.export.plain.ExportPlainConnectorInfo
 import io.github.guttenbase.export.zip.DefaultZipExporterClassResourcesHint
 import io.github.guttenbase.hints.CaseConversionMode
 import io.github.guttenbase.hints.ConnectorHint
+import io.github.guttenbase.hints.ForeignKeyMapperHint
+import io.github.guttenbase.hints.IndexMapperHint
 import io.github.guttenbase.hints.impl.*
 import io.github.guttenbase.mapping.ColumnMapper
-import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.mapping.ForeignKeyMapper
+import io.github.guttenbase.mapping.IndexMapper
+import io.github.guttenbase.meta.*
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.InternalTableMetaData
 import java.sql.SQLException
@@ -148,8 +153,12 @@ open class ConnectorRepository {
     val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
     val databaseType: DatabaseType = connectionInfo.databaseType
 
-    return sourceDatabaseConfigurationMap[databaseType]
-      ?: throw IllegalStateException("Unhandled source connector data base type: $databaseType")
+    return if (connectionInfo is ExportPlainConnectorInfo) {
+      DefaultSourceDatabaseConfiguration(this)
+    } else {
+      sourceDatabaseConfigurationMap[databaseType]
+        ?: throw IllegalStateException("Unhandled source connector data base type: $databaseType")
+    }
   }
 
   /**
@@ -178,11 +187,15 @@ open class ConnectorRepository {
    * Get configuration for given target database
    */
   open fun getTargetDatabaseConfiguration(connectorId: String): TargetDatabaseConfiguration {
-    val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
-    val databaseType: DatabaseType = connectionInfo.databaseType
+    val connectionInfo = getConnectionInfo(connectorId)
+    val databaseType = connectionInfo.databaseType
 
-    return targetDatabaseConfigurationMap[databaseType]
-      ?: throw IllegalStateException("Unhandled target connector data base type: $databaseType")
+    return if (connectionInfo is ExportPlainConnectorInfo) {
+      DefaultTargetDatabaseConfiguration(this)
+    } else {
+      targetDatabaseConfigurationMap[databaseType]
+        ?: throw IllegalStateException("Unhandled target connector data base type: $databaseType")
+    }
   }
 
   private fun InternalDatabaseMetaData.withFilteredTables(connectorId: String): InternalDatabaseMetaData {
@@ -265,7 +278,15 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultSelectWhereClauseHint())
     addConnectorHint(connectorId, DefaultTableRowCountFilterHint())
     addConnectorHint(connectorId, DefaultTableRowDataFilterHint())
+    addConnectorHint(connectorId, object : IndexMapperHint() {
+      override val value: IndexMapper get() = IndexMapper { fixName(it.indexName) }
+    })
+    addConnectorHint(connectorId, object : ForeignKeyMapperHint() {
+      override val value: ForeignKeyMapper get() = ForeignKeyMapper { fixName(it.foreignKeyName) }
+    })
   }
+
+  private fun fixName(name: String) = name.uppercase().replace('-', '_')
 
   private fun createColumnMapperHint(connectorInfo: ConnectorInfo): ColumnMapper {
     return when (connectorInfo.databaseType) {

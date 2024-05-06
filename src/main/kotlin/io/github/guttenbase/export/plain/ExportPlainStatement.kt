@@ -1,11 +1,13 @@
 package io.github.guttenbase.export.plain
 
+import io.github.guttenbase.utils.Util.toDate
 import java.io.InputStream
 import java.io.Reader
 import java.math.BigDecimal
 import java.net.URL
 import java.sql.*
 import java.sql.Date
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -15,14 +17,43 @@ import java.util.*
  *
  * @author M. Dahm
  */
-class ExportPlainStatement(private var sql: String, private val connection: ExportPlainConnection) : PreparedStatement {
+class ExportPlainStatement(sql: String, private val connection: ExportPlainConnection) : PreparedStatement {
   private var closed = false
+  private var sql: String = sql
+    set(sql) {
+      if (!checkSQL(sql)) throw UnsupportedOperationException("Statement not supported: $sql")
+      field = sql
+    }
 
-  override fun <T : Any?> unwrap(iface: Class<T>?): T {
-    throw UnsupportedOperationException("Not implemented")
+  private val values = ArrayList<StatementValue>(1000)
+
+  private fun checkSQL(sql: String): Boolean {
+    val trimmed = sql.uppercase().trim()
+
+    return when {
+      trimmed.isEmpty() -> true
+      trimmed.startsWith("INSERT ") -> true
+      trimmed.startsWith("UPDATE ") -> true
+      else -> false
+    }
   }
 
-  override fun isWrapperFor(iface: Class<*>?) = false
+  private fun createSQLStatement(): String {
+    var count = 0
+    val result = Regex("([?])").replace(sql) {
+      values[count++].toSQL()
+    }
+
+    values.clear()
+
+    return result
+  }
+
+  private fun setValue(parameterIndex: Int, value: Any?) {
+    assert(parameterIndex - 1 == values.size) { "Adding parameters not executed in sequence"}
+    values.ensureCapacity(parameterIndex + 100)
+    values.add(StatementValue(value))
+  }
 
   override fun close() {
     if (sql.isNotBlank() && !closed) {
@@ -47,7 +78,8 @@ class ExportPlainStatement(private var sql: String, private val connection: Expo
   override fun executeBatch() = intArrayOf(1)
 
   override fun executeUpdate(): Int {
-    connection.addStatement(sql)
+    connection.addStatement(createSQLStatement())
+
     return 1
   }
 
@@ -195,79 +227,115 @@ class ExportPlainStatement(private var sql: String, private val connection: Expo
   }
 
   override fun setNull(parameterIndex: Int, sqlType: Int) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, null)
   }
 
   override fun setNull(parameterIndex: Int, sqlType: Int, typeName: String?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, null)
+  }
+
+  override fun setObject(parameterIndex: Int, x: Any?, targetSqlType: Int) {
+    TODO("not implemented")
+  }
+
+  override fun setObject(parameterIndex: Int, x: Any?) {
+    TODO("not implemented")
+  }
+
+  override fun setObject(parameterIndex: Int, x: Any?, targetSqlType: Int, scaleOrLength: Int) {
+    TODO("not implemented")
+  }
+
+  override fun setBlob(parameterIndex: Int, x: Blob?) {
+    TODO()
+  }
+
+  override fun setBlob(parameterIndex: Int, inputStream: InputStream, length: Long) {
+    TODO()
+  }
+
+  override fun setBlob(parameterIndex: Int, inputStream: InputStream) {
+    TODO()
+  }
+
+  override fun setClob(parameterIndex: Int, x: Clob?) {
+    TODO()
+  }
+
+  override fun setClob(parameterIndex: Int, reader: Reader, length: Long) {
+    TODO()
+  }
+
+  override fun setClob(parameterIndex: Int, reader: Reader) {
+    TODO()
   }
 
   override fun setBoolean(parameterIndex: Int, x: Boolean) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setByte(parameterIndex: Int, x: Byte) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setShort(parameterIndex: Int, x: Short) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setInt(parameterIndex: Int, x: Int) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setLong(parameterIndex: Int, x: Long) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setFloat(parameterIndex: Int, x: Float) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setDouble(parameterIndex: Int, x: Double) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setBigDecimal(parameterIndex: Int, x: BigDecimal?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setString(parameterIndex: Int, x: String?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
-  override fun setBytes(parameterIndex: Int, x: ByteArray?) {
-    throw UnsupportedOperationException("Not implemented")
+  override fun setBytes(parameterIndex: Int, x: ByteArray) {
+    setValue(parameterIndex, x)
   }
 
   override fun setDate(parameterIndex: Int, x: Date?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setDate(parameterIndex: Int, x: Date?, cal: Calendar?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setTime(parameterIndex: Int, x: Time?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setTime(parameterIndex: Int, x: Time?, cal: Calendar?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setTimestamp(parameterIndex: Int, x: Timestamp?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setTimestamp(parameterIndex: Int, x: Timestamp?, cal: Calendar?) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setAsciiStream(parameterIndex: Int, x: InputStream?, length: Int) {
-    throw UnsupportedOperationException("Not implemented")
+    setValue(parameterIndex, x)
   }
 
   override fun setAsciiStream(parameterIndex: Int, x: InputStream?, length: Long) {
@@ -278,6 +346,7 @@ class ExportPlainStatement(private var sql: String, private val connection: Expo
     throw UnsupportedOperationException("Not implemented")
   }
 
+  @Deprecated("Deprecated in Java", ReplaceWith("Dunno"))
   override fun setUnicodeStream(parameterIndex: Int, x: InputStream?, length: Int) {
     throw UnsupportedOperationException("Not implemented")
   }
@@ -295,19 +364,7 @@ class ExportPlainStatement(private var sql: String, private val connection: Expo
   }
 
   override fun clearParameters() {
-    throw UnsupportedOperationException("Not implemented")
-  }
-
-  override fun setObject(parameterIndex: Int, x: Any?, targetSqlType: Int) {
-    throw UnsupportedOperationException("Not implemented")
-  }
-
-  override fun setObject(parameterIndex: Int, x: Any?) {
-    throw UnsupportedOperationException("Not implemented")
-  }
-
-  override fun setObject(parameterIndex: Int, x: Any?, targetSqlType: Int, scaleOrLength: Int) {
-    throw UnsupportedOperationException("Not implemented")
+    values.clear()
   }
 
   override fun setCharacterStream(parameterIndex: Int, reader: Reader?, length: Int) {
@@ -326,29 +383,6 @@ class ExportPlainStatement(private var sql: String, private val connection: Expo
     throw UnsupportedOperationException("Not implemented")
   }
 
-  override fun setBlob(parameterIndex: Int, x: Blob?) {
-    throw UnsupportedOperationException("Not implemented")
-  }
-
-  override fun setBlob(parameterIndex: Int, inputStream: InputStream?, length: Long) {
-    throw UnsupportedOperationException("Not implemented")
-  }
-
-  override fun setBlob(parameterIndex: Int, inputStream: InputStream?) {
-    throw UnsupportedOperationException("Not implemented")
-  }
-
-  override fun setClob(parameterIndex: Int, x: Clob?) {
-    throw UnsupportedOperationException("Not implemented")
-  }
-
-  override fun setClob(parameterIndex: Int, reader: Reader?, length: Long) {
-    throw UnsupportedOperationException("Not implemented")
-  }
-
-  override fun setClob(parameterIndex: Int, reader: Reader?) {
-    throw UnsupportedOperationException("Not implemented")
-  }
 
   override fun setArray(parameterIndex: Int, x: java.sql.Array?) {
     throw UnsupportedOperationException("Not implemented")
@@ -397,4 +431,33 @@ class ExportPlainStatement(private var sql: String, private val connection: Expo
   override fun setSQLXML(parameterIndex: Int, xmlObject: SQLXML?) {
     throw UnsupportedOperationException("Not implemented")
   }
+
+  override fun <T : Any?> unwrap(iface: Class<T>?): T {
+    throw UnsupportedOperationException("Not implemented")
+  }
+
+  override fun isWrapperFor(iface: Class<*>?) = false
 }
+
+private data class StatementValue(private val value: Any?) {
+  fun toSQL(): String = when (value) {
+    null -> "NULL"
+    is String -> "'$value'"
+    is Double -> value.toString()
+    is Boolean -> value.toString()
+    is Byte -> value.toString()
+    is Float -> value.toString()
+    is Short -> value.toString()
+    is Long -> value.toString()
+    is Int -> value.toString()
+    is BigDecimal -> value.toPlainString()
+    is Date -> SQL_DATE_FORMAT.format(value.toDate().toInstant())
+    is Timestamp -> SQL_TIMESTAMP_FORMAT.format(value.toDate().toInstant())
+    is Time -> SQL_TIME_FORMAT.format(value.toDate().toInstant())
+    else -> throw IllegalStateException("Cannot transform $value::${value.javaClass.name}")
+  }
+}
+
+private val SQL_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+private val SQL_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
+private val SQL_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss")

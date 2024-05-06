@@ -120,7 +120,7 @@ class SchemaScriptCreatorToolTest {
     val sql = objectUnderTest.createForeignKey(foreignKeyMetaData)
 
     assertEquals(
-      "ALTER TABLE schemaName.MY_TABLE1 ADD CONSTRAINT FK_Name FOREIGN KEY (NAME) REFERENCES schemaName.MY_TABLE2(NAME);",
+      "ALTER TABLE schemaName.MY_TABLE1 ADD CONSTRAINT FK_NAME FOREIGN KEY (NAME) REFERENCES schemaName.MY_TABLE2(NAME);",
       sql
     )
   }
@@ -137,7 +137,7 @@ class SchemaScriptCreatorToolTest {
     val index = databaseMetaData.tableMetaData[0].getIndexesContainingColumn(columnMetaData)[0]
     val sql = objectUnderTest.createIndex(index)
 
-    assertEquals("CREATE UNIQUE INDEX Name_IDX1 ON schemaName.MY_TABLE1(NAME);", sql)
+    assertEquals("CREATE UNIQUE INDEX NAME_IDX1 ON schemaName.MY_TABLE1(NAME);", sql)
   }
 
   companion object {
