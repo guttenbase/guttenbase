@@ -102,12 +102,14 @@ enum class DatabaseType(
     }
   }
 
+  // TODO
   fun createBlobDataClause(data: ByteArray): String {
     val hex = data.toHex()
 
     return when (this) {
       POSTGRESQL -> """E'\\x$hex'"""
-      MYSQL -> """0x$hex'"""
+      SYBASE, MSSQL, MYSQL -> """0x$hex"""
+      ORACLE -> """'$hex'"""
       DB2 -> """BLOB(x'$hex')"""
       H2DB, HSQLDB, DERBY -> """CAST (X'$hex' AS BLOB)"""
       else -> """CAST (X'$hex' AS BLOB)""" // Hope for the best...
