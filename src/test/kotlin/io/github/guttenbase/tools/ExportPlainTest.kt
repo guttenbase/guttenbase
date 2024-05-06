@@ -3,6 +3,7 @@ package io.github.guttenbase.io.github.guttenbase.tools
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
+import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.export.plain.ExportPlainConnectorInfo
 import io.github.guttenbase.schema.CopySchemaTool

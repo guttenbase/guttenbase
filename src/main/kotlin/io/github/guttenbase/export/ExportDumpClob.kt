@@ -11,7 +11,10 @@ import java.sql.Clob
  *
  * @author M. Dahm
  */
-class ExportDumpClob(inputStream: InputStream) : AbstractExportDumpObject(inputStream), Clob {
+open class ExportDumpClob(inputStream: InputStream) : AbstractExportDumpObject(inputStream), Clob {
+  // Serialization
+  protected constructor() : this(ByteArrayInputStream(ByteArray(0)))
+
   override fun getAsciiStream()= getBinaryStream()
 
   override fun getCharacterStream()= InputStreamReader(getBinaryStream())

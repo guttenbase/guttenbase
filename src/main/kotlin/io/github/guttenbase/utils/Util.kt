@@ -182,13 +182,15 @@ object Util {
     }
   }
 
+  @JvmStatic
+  fun ByteArray.toHex(): String = joinToString(separator = "") { "%02x".format(it) }
+
   /**
    * Deserialize from byte array
    *
    * @throws Exception
    */
   @Throws(Exception::class)
-  @JvmStatic
   fun <T : Any> fromByteArray(clazz: Class<T>, byteArray: ByteArray): T {
     val bis = ByteArrayInputStream(byteArray)
     val objectInputStream = ObjectInputStream(bis)

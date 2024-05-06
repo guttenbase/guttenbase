@@ -1,5 +1,6 @@
 package io.github.guttenbase.export
 
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.sql.Blob
@@ -14,6 +15,9 @@ import java.sql.Blob
  * @author M. Dahm
  */
 open class ExportDumpBlob(inputStream: InputStream) : AbstractExportDumpObject(inputStream), Blob {
+  // Serialization
+  constructor() : this(ByteArrayInputStream(ByteArray(0)))
+
   override fun position(pattern: ByteArray, start: Long): Long {
     throw UnsupportedOperationException()
   }

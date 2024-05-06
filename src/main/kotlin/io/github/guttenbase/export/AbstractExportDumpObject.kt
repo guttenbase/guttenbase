@@ -22,6 +22,9 @@ abstract class AbstractExportDumpObject(@field:Transient private val inputStream
   @Transient
   private lateinit var fileInputStream: FileInputStream
 
+  // Serialization
+  constructor() : this(ByteArrayInputStream(ByteArray(0)))
+
   /**
    * Read data in chunks and write it to the outputstream to avoid out of memory
    * errors.

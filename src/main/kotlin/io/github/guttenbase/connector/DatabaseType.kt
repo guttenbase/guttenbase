@@ -2,10 +2,11 @@ package io.github.guttenbase.connector
 
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.schema.AutoIncrementValue
+import io.github.guttenbase.utils.Util.toHex
 import java.sql.Types
 
 /**
- * Number known/handled data bases. Contains some special knowledge about the database, i.e. specific SQL clauses
+ * Bundle knowledge about well-known data bases, e.g.. specific SQL clauses
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
@@ -78,7 +79,8 @@ enum class DatabaseType(
     val startValue = autoIncrementValue.startValue(column)
     val stepValue = autoIncrementValue.stepWidth(column)
 
-    return autoincrementColumnClause.replace(NEXT_VALUE, startValue.toString()).replace(STEP_VALUE, stepValue.toString())
+    return autoincrementColumnClause.replace(NEXT_VALUE, startValue.toString())
+      .replace(STEP_VALUE, stepValue.toString())
       .replace(TABLE_NAME, column.tableMetaData.tableName).replace(COLUMN_NAME, column.columnName)
   }
 
@@ -97,6 +99,18 @@ enum class DatabaseType(
         .replace(TABLE_NAME, column.tableMetaData.tableName).replace(COLUMN_NAME, column.columnName)
     } else {
       null
+    }
+  }
+
+  fun createBlobDataClause(data: ByteArray): String {
+    val hex = data.toHex()
+
+    return when (this) {
+      POSTGRESQL -> """E'\\x$hex'"""
+      MYSQL -> """0x$hex'"""
+      DB2 -> """BLOB(x'$hex')"""
+      H2DB, HSQLDB, DERBY -> """CAST (X'$hex' AS BLOB)"""
+      else -> """CAST (X'$hex' AS BLOB)""" // Hope for the best...
     }
   }
 
