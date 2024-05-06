@@ -19,11 +19,22 @@ import java.util.*
  */
 class ExportPlainStatement(sql: String, private val connection: ExportPlainConnection) : PreparedStatement {
   private var closed = false
-  private var sql: String = sql
+  private var sql: String = ""
     set(sql) {
-      if (!checkSQL(sql)) throw UnsupportedOperationException("Statement not supported: $sql")
-      field = sql
+      if (!checkSQL(sql)) {
+        throw UnsupportedOperationException("Statement not supported: $sql")
+      }
+
+      field = if (!sql.endsWith(';') && sql.isNotEmpty()) {
+        "$sql;"
+      } else {
+        sql
+      }
     }
+
+  init {
+    this.sql = sql
+  }
 
   private val values = ArrayList<StatementValue>(1000)
 
@@ -38,19 +49,31 @@ class ExportPlainStatement(sql: String, private val connection: ExportPlainConne
     }
   }
 
-  private fun createSQLStatement(): String {
-    var count = 0
-    val result = Regex("([?])").replace(sql) {
-      values[count++].toSQL()
+  override fun addBatch() {
+    val sql = createSQLStatement()
+
+    if (sql != null) {
+      connection.addStatement(sql)
     }
+  }
 
-    values.clear()
+  private fun createSQLStatement(): String? {
+    return if (values.isNotEmpty() && sql.isNotEmpty()) {
+      var count = 0
+      val result = Regex("([?])").replace(sql) {
+        values[count++].toSQL()
+      }
 
-    return result
+      values.clear()
+
+      return result
+    } else {
+      null
+    }
   }
 
   private fun setValue(parameterIndex: Int, value: Any?) {
-    assert(parameterIndex - 1 == values.size) { "Adding parameters not executed in sequence"}
+    assert(parameterIndex - 1 == values.size) { "Adding parameters not executed in sequence" }
     values.ensureCapacity(parameterIndex + 100)
     values.add(StatementValue(value))
   }
@@ -64,10 +87,8 @@ class ExportPlainStatement(sql: String, private val connection: ExportPlainConne
     sql = ""
   }
 
-  override fun addBatch() {
-  }
-
   override fun addBatch(sql: String) {
+    addBatch()
     this.sql = sql
   }
 
@@ -78,7 +99,7 @@ class ExportPlainStatement(sql: String, private val connection: ExportPlainConne
   override fun executeBatch() = intArrayOf(1)
 
   override fun executeUpdate(): Int {
-    connection.addStatement(createSQLStatement())
+    addBatch()
 
     return 1
   }

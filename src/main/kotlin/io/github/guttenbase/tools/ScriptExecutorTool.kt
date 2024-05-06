@@ -59,7 +59,7 @@ constructor(
    * Execute given lines of SQL. Each statement (not line!) must end with a ';'
    *
    * @param connectorId
-   * @param scriptUpdatesSchema     The script alters the schema, scheme information needs to be reloaded
+   * @param scriptUpdatesSchema     The script alters the schema, schema information needs to be reloaded
    * @param prepareTargetConnection the target connection is initialized using the appropriate [TargetDatabaseConfiguration]
    * @param lines                   SQL statements ending with ';'
    * @throws SQLException
