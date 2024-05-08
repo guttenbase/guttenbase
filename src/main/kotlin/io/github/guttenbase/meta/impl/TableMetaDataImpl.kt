@@ -42,9 +42,6 @@ class TableMetaDataImpl(
    */
   override var filteredRowCount = 0
 
-  override val columnCount: Int
-    get() = columnMetaData.size
-
   private val columnMap = LinkedHashMap<String, ColumnMetaData>()
   private val indexMap = LinkedHashMap<String, IndexMetaData>()
   private val importedForeignKeyMap = LinkedHashMap<String, ForeignKeyMetaData>()
@@ -58,6 +55,9 @@ class TableMetaDataImpl(
   override val exportedForeignKeys: List<ForeignKeyMetaData> get() = ArrayList(exportedForeignKeyMap.values)
 
   override val importedForeignKeys: List<ForeignKeyMetaData> get() = ArrayList(importedForeignKeyMap.values)
+
+  override val columnCount: Int
+    get() = columnMetaData.size
 
   override val primaryKeyColumns: List<ColumnMetaData>
     get() = columnMetaData.filter(ColumnMetaData::isPrimaryKey)

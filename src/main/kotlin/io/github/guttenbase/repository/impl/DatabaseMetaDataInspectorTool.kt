@@ -25,30 +25,29 @@ class DatabaseMetaDataInspectorTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String
 ) {
-  @Throws(SQLException::class)
   fun getDatabaseMetaData(connection: Connection): DatabaseMetaData {
     val connectionInfo: ConnectorInfo = connectorRepository.getConnectionInfo(connectorId)
+
     LOG.info("Retrieving meta data for $connectorId:$connectionInfo")
 
     val schema: String = connectionInfo.schema
     val schemaPrefix = if ("" == Util.trim(schema)) "" else "$schema."
     val metaData = connection.metaData
     val properties = JdbcDatabaseMetaData::class.java.declaredMethods
-      .filter { method: Method -> method.parameterCount == 0 && isPrimitive(method.returnType) }
-      .mapNotNull { method: Method -> getValue(method, metaData) }.toMap()
+      .filter { method -> method.parameterCount == 0 && isPrimitive(method.returnType) }
+      .mapNotNull { method -> getValue(method, metaData) }.toMap()
     val result = DatabaseMetaDataImpl(connectorRepository, connectorId, schema, properties, connectionInfo.databaseType)
 
     loadTables(result, metaData)
     updateTableMetaData(connection, metaData, result, schemaPrefix)
+
     LOG.info("Retrieving meta data for $connectorId DONE")
 
     return result
   }
 
-  @Throws(SQLException::class)
   private fun updateTableMetaData(
-    connection: Connection, metaData: JdbcDatabaseMetaData,
-    databaseMetaData: DatabaseMetaData, schemaPrefix: String
+    connection: Connection, metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, schemaPrefix: String
   ) {
     connection.createStatement().use { statement ->
       for (table in databaseMetaData.tableMetaData) {
@@ -211,22 +210,19 @@ class DatabaseMetaDataInspectorTool(
     }
   }
 
-  @Throws(SQLException::class)
   private fun updateTableMetaDataWithColumnInformation(
-    statement: Statement, tableMetaData: InternalTableMetaData,
-    schemaPrefix: String
+    statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String
   ) {
     val tableName = escapeTableName(tableMetaData, schemaPrefix)
-    val columnFilter: DatabaseColumnFilter =
-      connectorRepository.getConnectorHint(connectorId, DatabaseColumnFilter::class.java)
-        .value
+    val columnFilter = connectorRepository.getConnectorHint(connectorId, DatabaseColumnFilter::class.java).value
     LOG.debug("Retrieving column information for $tableName")
+
     val selectSQL = SELECT_NOTHING_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
     val resultSet = statement.executeQuery(selectSQL)
 
     resultSet.use {
-      val meta: ResultSetMetaData = resultSet.metaData
-      val columnCount: Int = meta.columnCount
+      val meta = resultSet.metaData
+      val columnCount = meta.columnCount
 
       for (i in 1..columnCount) {
         val columnTypeName: String = meta.getColumnTypeName(i)
@@ -275,14 +271,14 @@ class DatabaseMetaDataInspectorTool(
 
       val primaryKeyColumn = tableMetaData.getNumericPrimaryKeyColumn()
 
-      if(primaryKeyColumn != null) {
+      if (primaryKeyColumn != null) {
         val maxIdStatement = SELECT_MIN_MAX_ID_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
           .replace(COLUMN_PLACEHOLDER, primaryKeyColumn.columnName)
 
         statement.executeQuery(maxIdStatement).use {
           it.next()
-          tableMetaData.minId =  it.getLong(1)
-          tableMetaData.maxId =  it.getLong(2)
+          tableMetaData.minId = it.getLong(1)
+          tableMetaData.maxId = it.getLong(2)
         }
       }
     } else {
@@ -358,7 +354,8 @@ class DatabaseMetaDataInspectorTool(
     private const val TABLE_PLACEHOLDER = "<table>"
     private const val COLUMN_PLACEHOLDER = "<column>"
     private const val SELECT_COUNT_STATEMENT = "SELECT COUNT(*) FROM $TABLE_PLACEHOLDER"
-    private const val SELECT_MIN_MAX_ID_STATEMENT = "SELECT MIN($COLUMN_PLACEHOLDER), MAX($COLUMN_PLACEHOLDER) FROM $TABLE_PLACEHOLDER"
+    private const val SELECT_MIN_MAX_ID_STATEMENT =
+      "SELECT MIN($COLUMN_PLACEHOLDER), MAX($COLUMN_PLACEHOLDER) FROM $TABLE_PLACEHOLDER"
     private const val SELECT_NOTHING_STATEMENT = "SELECT * FROM $TABLE_PLACEHOLDER WHERE 1 > 2"
 
     private fun getValue(method: Method, data: JdbcDatabaseMetaData): Pair<String, Any>? {
