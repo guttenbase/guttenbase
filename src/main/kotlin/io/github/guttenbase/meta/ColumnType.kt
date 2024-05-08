@@ -1,13 +1,11 @@
 package io.github.guttenbase.meta
 
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.exceptions.UnhandledColumnTypeException
 import io.github.guttenbase.utils.Util
 import io.github.guttenbase.utils.Util.toDate
 import io.github.guttenbase.utils.Util.toSQLDate
 import java.io.Closeable
-import java.io.IOException
 import java.io.InputStream
 import java.io.Serializable
 import java.math.BigDecimal
@@ -155,34 +153,21 @@ enum class ColumnType(vararg classes: Class<*>) {
       CLASS_INTEGER -> insertStatement.setInt(columnIndex, (data as Int))
       CLASS_LONG -> insertStatement.setLong(columnIndex, (data as Long))
       CLASS_DOUBLE -> insertStatement.setDouble(columnIndex, (data as Double))
-      CLASS_BLOB -> if (driverSupportsStream(databaseMetaData.databaseType)) {
+      CLASS_BLOB -> {
         val inputStream = (data as Blob).binaryStream
         result = inputStream
         insertStatement.setBlob(columnIndex, inputStream)
-      } else {
-        val blob = data as Blob
-        result = ClosableBlobWrapper(blob)
-        insertStatement.setBlob(columnIndex, blob)
       }
-
-      CLASS_CLOB -> if (driverSupportsStream(databaseMetaData.databaseType)) {
+      CLASS_CLOB ->  {
         val characterStream = (data as Clob).characterStream
         result = characterStream
         insertStatement.setClob(columnIndex, characterStream)
-      } else {
-        val clob = data as Clob
-        result = ClosableClobWrapper(clob)
-        insertStatement.setClob(columnIndex, clob)
       }
 
-      CLASS_SQLXML -> if (driverSupportsStream(databaseMetaData.databaseType)) {
+      CLASS_SQLXML -> {
         val inputStream: InputStream = (data as SQLXML).binaryStream
         result = inputStream
         insertStatement.setBlob(columnIndex, inputStream)
-      } else {
-        val blob: SQLXML = data as SQLXML
-        result = ClosableSqlXmlWrapper(blob)
-        insertStatement.setSQLXML(columnIndex, blob)
       }
 
       CLASS_BOOLEAN -> insertStatement.setBoolean(columnIndex, (data as Boolean))
@@ -223,44 +208,8 @@ enum class ColumnType(vararg classes: Class<*>) {
     else -> true
   }
 
-  private fun driverSupportsStream(databaseType: DatabaseType) =
-    !(DatabaseType.POSTGRESQL == databaseType || DatabaseType.DB2 == databaseType || DatabaseType.MSSQL == databaseType)
-
   val isNumber: Boolean
     get() = Number::class.java.isAssignableFrom(columnClasses[0])
-
-  private class ClosableBlobWrapper(private val _blob: Blob) : Closeable {
-    @Throws(IOException::class)
-    override fun close() {
-      try {
-        _blob.free()
-      } catch (e: SQLException) {
-        throw IOException("close", e)
-      }
-    }
-  }
-
-  private class ClosableClobWrapper(private val blob: Clob) : Closeable {
-    @Throws(IOException::class)
-    override fun close() {
-      try {
-        blob.free()
-      } catch (e: SQLException) {
-        throw IOException("close", e)
-      }
-    }
-  }
-
-  private class ClosableSqlXmlWrapper(private val blob: SQLXML) : Closeable {
-    @Throws(IOException::class)
-    override fun close() {
-      try {
-        blob.free()
-      } catch (e: SQLException) {
-        throw IOException("close", e)
-      }
-    }
-  }
 
   fun isDate() = when (this) {
     CLASS_TIME, CLASS_TIMESTAMP, CLASS_DATETIME, CLASS_DATE -> true
