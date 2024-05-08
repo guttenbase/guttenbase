@@ -2,7 +2,6 @@ package io.github.guttenbase.connector
 
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.schema.AutoIncrementValue
-import io.github.guttenbase.utils.Util.toHex
 import java.sql.Types
 
 /**
@@ -12,6 +11,7 @@ import java.sql.Types
  *
  * @author M. Dahm
  */
+@Suppress("MemberVisibilityCanBePrivate")
 enum class DatabaseType(
   /**
    * ID columns may be defined as autoincremented, i.e. every time data is inserted the ID will be incremented autoimatically.
@@ -102,17 +102,32 @@ enum class DatabaseType(
     }
   }
 
-  // TODO
-  fun createBlobDataClause(data: ByteArray): String {
-    val hex = data.toHex()
+  /**
+   * @return clause to print before the hex-encoded data
+   */
+  fun getBlobDataPrefix(): String {
+    val clause = getBlobDataClause()
 
+    return clause.substring(0, clause.indexOf(HEX_VALUE))
+  }
+
+  /**
+   * @return clause to print after the hex-encoded data
+   */
+  fun getBlobDataSuffix(): String {
+    val clause = getBlobDataClause()
+
+    return clause.substring(clause.indexOf(HEX_VALUE) + HEX_VALUE.length)
+  }
+
+  fun getBlobDataClause(): String {
     return when (this) {
-      POSTGRESQL -> """E'\\x$hex'"""
-      SYBASE, MSSQL, MYSQL -> """0x$hex"""
-      ORACLE -> """'$hex'"""
-      DB2 -> """BLOB(x'$hex')"""
-      H2DB, HSQLDB, DERBY -> """CAST (X'$hex' AS BLOB)"""
-      else -> """CAST (X'$hex' AS BLOB)""" // Hope for the best...
+      POSTGRESQL -> """E'\\x$HEX_VALUE'"""
+      SYBASE, MSSQL, MYSQL -> """0x$HEX_VALUE"""
+      ORACLE -> """'$HEX_VALUE'"""
+      DB2 -> """BLOB(x'$HEX_VALUE')"""
+      H2DB, HSQLDB, DERBY -> """CAST (X'$HEX_VALUE' AS BLOB)"""
+      else -> """CAST (X'$HEX_VALUE' AS BLOB)""" // Hope for the best...
     }
   }
 
@@ -124,6 +139,8 @@ enum class DatabaseType(
   }
 }
 
+// Placeholders to be replaced in string
+private const val HEX_VALUE = "@@HEX_VALUE@@"
 private const val NEXT_VALUE = "@@NEXT_VALUE@@"
 private const val STEP_VALUE = "@@STEP_VALUE@@"
 private const val TABLE_NAME = "@@TABLE_NAME@@"
