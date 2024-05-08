@@ -5,7 +5,7 @@ There are two ways implemented to export your data to file: Plain SQL text or bi
 ## Plain text SQL export
 
 Using the _ExportPlainTextConnectorInfo_ class you may specify a file or output stream where to dump the data. In combination
-with the _SchemaScriptCreatorTool_ you can export data to text files using the target database specific syntax.
+with the _CopySchemaTool_ you may export data to text files using the target database specific syntax.
 
 ### Code example
 ```kotlin
