@@ -1,5 +1,11 @@
 # Change log
 
+## 3.3.x
+
+- Export data to SQL script via JDBC driver implementation
+- Code cleanup and removal of deprecated code
+- Blob handling for different types of RDBMS 
+
 ## 3.2.x
 
 - Added support builder patttern style in connector repository
