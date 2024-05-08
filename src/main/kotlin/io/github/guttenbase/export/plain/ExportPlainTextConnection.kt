@@ -1,9 +1,14 @@
 package io.github.guttenbase.export.plain
 
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
+import java.io.PrintWriter
 import java.sql.*
 import java.util.*
 import java.util.concurrent.Executor
 import kotlin.collections.ArrayList
+
+typealias TO_STRING = (PrintWriter) -> Unit
 
 /**
  * Connection info for exporting data to a file.
@@ -12,31 +17,27 @@ import kotlin.collections.ArrayList
  *
  * @author M. Dahm
  */
-class ExportPlainConnection : Connection {
+class ExportPlainTextConnection(internal val connector: ExportPlainConnector) : Connection {
   private var closed = false
-  private val preparedStatements = ArrayList<ExportPlainStatement>()
-  internal val statements = ArrayList<String>()
+  private val preparedStatements = ArrayList<ExportPlainTextStatement>()
+  internal val printWriter = PrintWriter(BufferedWriter(OutputStreamWriter(connector.connectorInfo.outputStream)))
 
-  private fun createStatement(sql: String = ""): ExportPlainStatement {
-    val result = ExportPlainStatement(sql, this)
+  private fun createStatement(sql: String = ""): ExportPlainTextStatement {
+    val result = ExportPlainTextStatement(sql, this)
     preparedStatements.add(result)
     return result
-  }
-
-  internal fun addStatement(sql: String) {
-    statements.add(sql)
   }
 
   override fun close() {
     closed = true
     preparedStatements.forEach { it.close() }
+    printWriter.close()
   }
 
   override fun commit() {
   }
 
   override fun rollback() {
-    statements.clear()
   }
 
   override fun createStatement() = createStatement("")
@@ -46,7 +47,7 @@ class ExportPlainConnection : Connection {
   override fun createStatement(resultSetType: Int, resultSetConcurrency: Int, resultSetHoldability: Int) =
     createStatement("")
 
-  override fun prepareStatement(sql: String) = ExportPlainStatement(sql, this)
+  override fun prepareStatement(sql: String) = ExportPlainTextStatement(sql, this)
 
   override fun prepareStatement(sql: String, resultSetType: Int, resultSetConcurrency: Int) = createStatement(sql)
 

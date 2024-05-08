@@ -54,8 +54,9 @@ class ExportDumpConnector(
     val data = retrieveSourceDatabaseMetaData()
     val result = Util.copyObject(DatabaseMetaData::class.java, data)
 
-    for (tableMetaData in result.tableMetaData) {
-      (tableMetaData as InternalTableMetaData).totalRowCount = 0
+    result.tableMetaData.map { it as InternalTableMetaData }.forEach {
+      it.totalRowCount = 0
+      it.filteredRowCount = 0
     }
 
     return result

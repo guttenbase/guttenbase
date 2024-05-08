@@ -5,10 +5,13 @@ import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.utils.Util
+import io.github.guttenbase.utils.Util.forEach
+import io.github.guttenbase.utils.Util.toHex
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayInputStream
 
 internal class UtilTest : AbstractGuttenBaseTest() {
   @BeforeEach
@@ -39,4 +42,29 @@ internal class UtilTest : AbstractGuttenBaseTest() {
     assertThat(columnMetaData1.referencingColumns).hasSize(2)
     assertThat(columnMetaData1.referencingColumns).isEqualTo(columnMetaData2.referencingColumns)
   }
+
+  @Test
+  fun `Hexa-decimal bytes`() {
+    val bytes = byteArrayOf(SPACE, A)
+
+    assertEquals("20", bytes[0].toHex())
+    assertEquals("2041", bytes.toHex())
+  }
+
+  @Test
+  fun `For each byte`() {
+    val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
+    for (i in 0 until DEFAULT_BUFFER_SIZE) {
+      bytes[i] = if (i % 2 == 0) SPACE else A
+    }
+
+    var count = 0
+    ByteArrayInputStream(bytes).forEach {
+      val ch = if (count++ % 2 == 0) SPACE else A
+      assertEquals(ch, it)
+    }
+  }
 }
+
+private const val SPACE = ' '.code.toByte()
+private const val A = 'A'.code.toByte()

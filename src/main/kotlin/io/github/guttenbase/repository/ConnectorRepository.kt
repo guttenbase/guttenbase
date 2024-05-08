@@ -9,7 +9,7 @@ import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.defaults.impl.DefaultColumnMapper
 import io.github.guttenbase.export.ExportDumpDatabaseConfiguration
 import io.github.guttenbase.export.ImportDumpDatabaseConfiguration
-import io.github.guttenbase.export.plain.ExportPlainConnectorInfo
+import io.github.guttenbase.export.plain.ExportPlainTextConnectorInfo
 import io.github.guttenbase.export.zip.DefaultZipExporterClassResourcesHint
 import io.github.guttenbase.hints.CaseConversionMode
 import io.github.guttenbase.hints.ConnectorHint
@@ -153,7 +153,7 @@ open class ConnectorRepository {
     val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
     val databaseType: DatabaseType = connectionInfo.databaseType
 
-    return if (connectionInfo is ExportPlainConnectorInfo) {
+    return if (connectionInfo is ExportPlainTextConnectorInfo) {
       DefaultSourceDatabaseConfiguration(this)
     } else {
       sourceDatabaseConfigurationMap[databaseType]
@@ -190,7 +190,7 @@ open class ConnectorRepository {
     val connectionInfo = getConnectionInfo(connectorId)
     val databaseType = connectionInfo.databaseType
 
-    return if (connectionInfo is ExportPlainConnectorInfo) {
+    return if (connectionInfo is ExportPlainTextConnectorInfo) {
       DefaultTargetDatabaseConfiguration(this)
     } else {
       targetDatabaseConfigurationMap[databaseType]

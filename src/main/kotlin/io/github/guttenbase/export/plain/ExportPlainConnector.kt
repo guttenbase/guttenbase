@@ -19,12 +19,12 @@ import java.sql.Connection
  */
 class ExportPlainConnector(
   private val connectorRepository: ConnectorRepository,
-  private val connectorInfo: ExportPlainConnectorInfo
+  internal val connectorInfo: ExportPlainTextConnectorInfo
 ) : Connector {
-  internal lateinit var connection: ExportPlainConnection
+  internal lateinit var connection: ExportPlainTextConnection
 
   override fun openConnection(): Connection {
-    connection = ExportPlainConnection()
+    connection = ExportPlainTextConnection(this)
     return connection
   }
 
@@ -42,7 +42,10 @@ class ExportPlainConnector(
     val data = retrieveSourceDatabaseMetaData()
     val tableMetaData = Util.copyObject(InternalDatabaseMetaData::class.java, data).tableMetaData
 
-    tableMetaData.forEach { (it as InternalTableMetaData).totalRowCount = 0 }
+    tableMetaData.map { it as InternalTableMetaData }.forEach {
+      it.totalRowCount = 0
+      it.filteredRowCount = 0
+    }
 
     return object : InternalDatabaseMetaData by data {
       override val databaseType: DatabaseType

@@ -11,6 +11,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Collection of utility methods.
@@ -65,6 +66,30 @@ object Util {
       LOG.warn("$resourceName not found")
       ArrayList()
     }
+  }
+
+  @JvmStatic
+  fun InputStream.forEach(action: (Byte) -> Unit) = use {
+    do {
+      val available = available()
+      val buffer = ByteArray(available)
+      val count = read(buffer)
+
+      assert(count <= available) { "Could not read $available bytes, but got $count" }
+
+      buffer.forEach { action(it) }
+    } while (count > 0)
+  }
+
+  @JvmStatic
+  fun Reader.forEach(action: (Char) -> Unit) = use {
+    val buffer = CharArray(DEFAULT_BUFFER_SIZE)
+
+    do {
+      val count = read(buffer)
+
+      buffer.forEach { action(it) }
+    } while (count > 0)
   }
 
   @JvmStatic
@@ -183,7 +208,10 @@ object Util {
   }
 
   @JvmStatic
-  fun ByteArray.toHex(): String = joinToString(separator = "") { "%02x".format(it) }
+  fun ByteArray.toHex(): String = joinToString(separator = "") { it.toHex() }
+
+  @JvmStatic
+  fun Byte.toHex(): String = "%02x".format(this)
 
   /**
    * Deserialize from byte array

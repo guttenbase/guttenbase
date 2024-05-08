@@ -54,18 +54,16 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
     targetDatabaseConfiguration.initializeTargetConnection(targetConnection, targetConnectorId)
     progressIndicator.startProcess(tableSourceMetaDatas.size)
 
-    var noCopiedTables = 0
-    for (sourceTableMetaData in tableSourceMetaDatas) {
+    for ((numberOfCopiedTables, sourceTableMetaData) in tableSourceMetaDatas.withIndex()) {
       val targetTableMetaData = targetTableMapper.map(sourceTableMetaData, targetDatabaseMetaData)
         ?: throw TableConfigurationException("No matching table for $sourceTableMetaData in target data base!!!")
-
       val defaultNumberOfRowsPerBatch = numberOfRowsPerInsertionHint.getNumberOfRowsPerBatch(targetTableMetaData)
       val useMultipleValuesClauses = numberOfRowsPerInsertionHint.useMultipleValuesClauses(targetTableMetaData)
       val maxNumberOfDataItems = maxNumberOfDataItemsHint.getMaxNumberOfDataItems(targetTableMetaData)
+      val sourceTableName = sourceTableMapper.fullyQualifiedTableName(sourceTableMetaData, sourceDatabaseMetaData)
+      val targetTableName = targetTableMapper.fullyQualifiedTableName(targetTableMetaData, targetDatabaseMetaData)
+      val targetRowCount = targetTableMetaData.filteredRowCount
 
-      val sourceTableName: String = sourceTableMapper.fullyQualifiedTableName(sourceTableMetaData, sourceDatabaseMetaData)
-      val targetTableName: String = targetTableMapper.fullyQualifiedTableName(targetTableMetaData, targetDatabaseMetaData)
-      val targetRowCount: Int = targetTableMetaData.filteredRowCount
       if (targetRowCount > 0) {
         progressIndicator.warn("Target table " + targetTableMetaData.tableName + " is not empty!")
       }
@@ -95,7 +93,7 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
       targetDatabaseConfiguration.afterTableCopy(targetConnection, targetConnectorId, targetTableMetaData)
       progressIndicator.endProcess()
 
-      if (refreshTargetConnection.refreshConnection(noCopiedTables++, sourceTableMetaData)) {
+      if (refreshTargetConnection.refreshConnection(numberOfCopiedTables, sourceTableMetaData)) {
         progressIndicator.info("Refreshing target connection.")
         targetDatabaseConfiguration.finalizeTargetConnection(targetConnection, targetConnectorId)
         targetConnector.closeConnection()

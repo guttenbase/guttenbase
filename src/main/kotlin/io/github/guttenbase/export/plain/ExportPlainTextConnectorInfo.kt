@@ -13,10 +13,10 @@ import java.io.OutputStream
  *
  * @author M. Dahm
  */
-data class ExportPlainConnectorInfo
+data class ExportPlainTextConnectorInfo
 @JvmOverloads constructor(
   internal val sourceConnectorId: String,
-  private val outputStream: OutputStream,
+  internal val outputStream: OutputStream,
   override val databaseType: DatabaseType = DatabaseType.GENERIC
 ) : ConnectorInfo {
   @JvmOverloads
@@ -36,8 +36,6 @@ data class ExportPlainConnectorInfo
 
     return exportPlainConnector
   }
-
-  val statements: List<String> get() = exportPlainConnector.connection.statements
 
   companion object {
     private const val serialVersionUID = 1L
