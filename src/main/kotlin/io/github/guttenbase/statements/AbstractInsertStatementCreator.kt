@@ -39,6 +39,6 @@ abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepo
   protected fun createValueTuples(numberOfValuesClauses: Int, columnCount: Int): String {
     val tuple = (1..columnCount).joinToString(prefix = "(", postfix = ")", transform = { "?" })
 
-    return (1..numberOfValuesClauses).joinToString(separator = ",\n", transform = { tuple })
+    return (1..numberOfValuesClauses).joinToString(separator = ",\n\t", transform = { tuple })
   }
 }
