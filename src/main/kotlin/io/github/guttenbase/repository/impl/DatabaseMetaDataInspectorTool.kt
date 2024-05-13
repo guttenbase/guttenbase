@@ -30,7 +30,7 @@ class DatabaseMetaDataInspectorTool(
 
     LOG.info("Retrieving meta data for $connectorId:$connectionInfo")
 
-    val schema: String = connectionInfo.schema
+    val schema = connectionInfo.schema
     val schemaPrefix = if ("" == Util.trim(schema)) "" else "$schema."
     val metaData = connection.metaData
     val properties = JdbcDatabaseMetaData::class.java.declaredMethods
@@ -79,16 +79,15 @@ class DatabaseMetaDataInspectorTool(
     }
   }
 
-  @Throws(SQLException::class)
   private fun updateColumnsWithForeignKeyInformation(
     metaData: JdbcDatabaseMetaData,
     databaseMetaData: DatabaseMetaData,
     table: TableMetaData
   ) {
     LOG.debug("Retrieving foreign key information for " + table.tableName)
+
     val tableFilter: DatabaseTableFilter =
-      connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
-        .value
+      connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java).value
     val resultSet = metaData.getExportedKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchemaPattern(databaseMetaData),
@@ -97,30 +96,22 @@ class DatabaseMetaDataInspectorTool(
 
     resultSet.use {
       while (resultSet.next()) {
-        val pkTableName =
-          resultSet.getString("PKTABLE_NAME") ?: throw GuttenBaseException("PKTABLE_NAME must not be null")
-        val pkColumnName =
-          resultSet.getString("PKCOLUMN_NAME") ?: throw GuttenBaseException("PKCOLUMN_NAME must not be null")
-        val fkTableName =
-          resultSet.getString("FKTABLE_NAME") ?: throw GuttenBaseException("FKTABLE_NAME must not be null")
-        val fkColumnName =
-          resultSet.getString("FKCOLUMN_NAME") ?: throw GuttenBaseException("FKCOLUMN_NAME must not be null")
-        val fkName: String = resultSet.getString("FK_NAME") ?: "FK_UNKNOWN_$fkColumnName"
-        val pkTableMetaData: InternalTableMetaData? =
-          databaseMetaData.getTableMetaData(pkTableName) as InternalTableMetaData?
-        val fkTableMetaData: InternalTableMetaData? =
-          databaseMetaData.getTableMetaData(fkTableName) as InternalTableMetaData?
+        val pkTableName = resultSet.getStringNotNull("PKTABLE_NAME")
+        val pkColumnName = resultSet.getStringNotNull("PKCOLUMN_NAME")
+        val fkTableName = resultSet.getStringNotNull("FKTABLE_NAME")
+        val fkColumnName = resultSet.getStringNotNull("FKCOLUMN_NAME")
+        val fkName = resultSet.getString("FK_NAME") ?: "FK_UNKNOWN_$fkColumnName"
+        val pkTableMetaData = databaseMetaData.getTableMetaData(pkTableName) as InternalTableMetaData?
+        val fkTableMetaData = databaseMetaData.getTableMetaData(fkTableName) as InternalTableMetaData?
 
         if (fkTableMetaData == null || pkTableMetaData == null) {
           // this table might have been excluded from the list of tables handled by this batch
           LOG.warn("Unable to retrieve metadata information for table $fkTableName referenced by $pkTableName")
         } else {
-          val pkColumn: ColumnMetaData = pkTableMetaData.getColumnMetaData(pkColumnName)!!
-          val fkColumn: ColumnMetaData = fkTableMetaData.getColumnMetaData(fkColumnName)!!
-          val exportedForeignKey: InternalForeignKeyMetaData? = pkTableMetaData
-            .getExportedForeignKey(fkName) as InternalForeignKeyMetaData?
-          val importedForeignKey: InternalForeignKeyMetaData? = fkTableMetaData
-            .getImportedForeignKey(fkName) as InternalForeignKeyMetaData?
+          val pkColumn = pkTableMetaData.getColumnMetaData(pkColumnName)!!
+          val fkColumn = fkTableMetaData.getColumnMetaData(fkColumnName)!!
+          val exportedForeignKey = pkTableMetaData.getExportedForeignKey(fkName) as InternalForeignKeyMetaData?
+          val importedForeignKey = fkTableMetaData.getImportedForeignKey(fkName) as InternalForeignKeyMetaData?
 
           if (exportedForeignKey == null) {
             pkTableMetaData.addExportedForeignKey(ForeignKeyMetaDataImpl(pkTableMetaData, fkName, fkColumn, pkColumn))
@@ -138,25 +129,23 @@ class DatabaseMetaDataInspectorTool(
     }
   }
 
-  @Throws(SQLException::class)
   private fun updateTableWithIndexInformation(
     metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData,
     table: InternalTableMetaData
   ) {
     LOG.debug("Retrieving index information for " + table.tableName)
 
-    val tableFilter: DatabaseTableFilter =
-      connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
-        .value
+    val tableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java).value
     val resultSet = metaData.getIndexInfo(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchema(databaseMetaData), table.tableName, false,
       true
     )
+
     resultSet.use {
       while (resultSet.next()) {
         val nonUnique = resultSet.getBoolean("NON_UNIQUE")
-        val columnName = resultSet.getString("COLUMN_NAME")
+        val columnName: String? = resultSet.getString("COLUMN_NAME")
         val indexName = resultSet.getString("INDEX_NAME") ?: "IDX_UNKNOWN_$columnName"
         val ascOrDesc: String? = resultSet.getString("ASC_OR_DESC")
 
@@ -165,7 +154,7 @@ class DatabaseMetaDataInspectorTool(
 
           // May be strange SYS...$ column as with Oracle
           if (column != null) {
-            var indexMetaData: InternalIndexMetaData? = table.getIndexMetaData(indexName) as InternalIndexMetaData?
+            var indexMetaData = table.getIndexMetaData(indexName) as InternalIndexMetaData?
 
             if (indexMetaData == null) {
               val ascending = ascOrDesc == null || "A" == ascOrDesc
@@ -189,13 +178,13 @@ class DatabaseMetaDataInspectorTool(
     table: TableMetaData
   ) {
     LOG.debug("Retrieving primary key information for " + table.tableName)
-    val tableFilter: DatabaseTableFilter =
-      connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java)
-        .value
+
+    val tableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java).value
     val resultSet = metaData.getPrimaryKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchema(databaseMetaData), table.tableName
     )
+
     resultSet.use {
       while (resultSet.next()) {
         val pkName = resultSet.getString("PK_NAME")
@@ -215,9 +204,10 @@ class DatabaseMetaDataInspectorTool(
   ) {
     val tableName = escapeTableName(tableMetaData, schemaPrefix)
     val columnFilter = connectorRepository.getConnectorHint(connectorId, DatabaseColumnFilter::class.java).value
+    val selectSQL = SELECT_NOTHING_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
+
     LOG.debug("Retrieving column information for $tableName")
 
-    val selectSQL = SELECT_NOTHING_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
     val resultSet = statement.executeQuery(selectSQL)
 
     resultSet.use {
@@ -225,14 +215,14 @@ class DatabaseMetaDataInspectorTool(
       val columnCount = meta.columnCount
 
       for (i in 1..columnCount) {
-        val columnTypeName: String = meta.getColumnTypeName(i)
-        val columnType: Int = meta.getColumnType(i)
-        val columnName: String = meta.getColumnName(i)
-        val columnClassName: String = meta.getColumnClassName(i)
+        val columnTypeName = meta.getColumnTypeName(i)
+        val columnType = meta.getColumnType(i)
+        val columnName = meta.getColumnName(i)
+        val columnClassName = meta.getColumnClassName(i)
         val isNullable = meta.isNullable(i) != ResultSetMetaData.columnNoNulls
-        val isAutoIncrement: Boolean = meta.isAutoIncrement(i)
-        val precision: Int = meta.getPrecision(i)
-        val scale: Int = meta.getScale(i)
+        val isAutoIncrement = meta.isAutoIncrement(i)
+        val precision = meta.getPrecision(i)
+        val scale = meta.getScale(i)
         val column = ColumnMetaDataImpl(
           tableMetaData,
           columnType,
@@ -327,12 +317,10 @@ class DatabaseMetaDataInspectorTool(
       while (resultSet.next()) {
         /** @see [java.sql.DatabaseMetaData.getTables]
          */
-        val tableCatalog: String? = resultSet.getString("TABLE_CAT")
-        val tableSchema: String? = resultSet.getString("TABLE_SCHEM")
-        val tableName: String =
-          resultSet.getString("TABLE_NAME") ?: throw GuttenBaseException("TABLE_NAME must not be null")
-        val tableType: String =
-          resultSet.getString("TABLE_TYPE") ?: throw GuttenBaseException("TABLE_TYPE must not be null")
+        val tableCatalog = resultSet.getString("TABLE_CAT")
+        val tableSchema = resultSet.getString("TABLE_SCHEM")
+        val tableName = resultSet.getStringNotNull("TABLE_NAME")
+        val tableType = resultSet.getStringNotNull("TABLE_TYPE")
 
         LOG.debug("Found: $tableCatalog/$tableSchema/$tableName/$tableType")
 
@@ -370,6 +358,7 @@ class DatabaseMetaDataInspectorTool(
       } catch (e: Exception) {
         LOG.warn("Could not get meta data property:" + key + "->" + e.message)
       }
+
       return null
     }
 
@@ -387,3 +376,6 @@ class DatabaseMetaDataInspectorTool(
     }
   }
 }
+
+private fun ResultSet.getStringNotNull(name: String): String = getString(name)
+  ?: throw GuttenBaseException("Column $name must not be NULL")

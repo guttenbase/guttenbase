@@ -1,7 +1,6 @@
 package io.github.guttenbase.export.plain
 
 import io.github.guttenbase.utils.Util.forEach
-import io.github.guttenbase.utils.Util.toDate
 import io.github.guttenbase.utils.Util.toHex
 import java.io.*
 import java.math.BigDecimal
@@ -304,7 +303,7 @@ class ExportPlainTextStatement(sql: String, private val connection: ExportPlainT
   }
 
   override fun setDate(parameterIndex: Int, x: Date?) {
-    val value = if (x != null) SQL_DATE_FORMAT.format(x.toDate().toInstant()) else "NULL"
+    val value = if (x != null) SQL_DATE_FORMAT.format(x.toLocalDate()) else "NULL"
 
     setValue(parameterIndex, value)
   }
@@ -314,7 +313,7 @@ class ExportPlainTextStatement(sql: String, private val connection: ExportPlainT
   }
 
   override fun setTime(parameterIndex: Int, x: Time?) {
-    val value = if (x != null) SQL_TIME_FORMAT.format(x.toDate().toInstant()) else "NULL"
+    val value = if (x != null) SQL_TIME_FORMAT.format(x.toLocalTime()) else "NULL"
 
     setValue(parameterIndex, value)
   }
@@ -324,7 +323,7 @@ class ExportPlainTextStatement(sql: String, private val connection: ExportPlainT
   }
 
   override fun setTimestamp(parameterIndex: Int, x: Timestamp?) {
-    val value = if (x != null) SQL_TIMESTAMP_FORMAT.format(x.toDate().toInstant()) else "NULL"
+    val value = if (x != null) SQL_TIMESTAMP_FORMAT.format(x.toLocalDateTime()) else "NULL"
 
     setValue(parameterIndex, value)
   }
