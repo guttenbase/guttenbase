@@ -27,8 +27,10 @@ abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepo
     assert(numberOfRowsPerBatch > 0) { "numberOfValueClauses > 0" }
 
     val numberOfValuesClauses = if (useMultipleValuesClauses) numberOfRowsPerBatch else 1
+    val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
     val sql =
-      createSQL(sourceConnectorId, sourceTableMetaData, targetTableName, targetTableMetaData, numberOfValuesClauses)
+      "INSERT INTO " + targetTableName + " (" + createColumnClause(columns) + ") VALUES " +
+          createValueTuples(numberOfValuesClauses, columns.size)
 
     LOG.debug("Create INSERT statement: $sql")
     return destConnection.prepareStatement(sql)
@@ -38,19 +40,5 @@ abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepo
     val tuple = (1..columnCount).joinToString(prefix = "(", postfix = ")", transform = { "?" })
 
     return (1..numberOfValuesClauses).joinToString(separator = ",\n", transform = { tuple })
-  }
-
-  private fun createSQL(
-    sourceConnectorId: String, sourceTableMetaData: TableMetaData, targetTableName: String,
-    targetTableMetaData: TableMetaData, numberOfValueClauses: Int
-  ): String {
-    val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
-
-    return INSERT_INTO + targetTableName + " (" + createColumnClause(columns) + ") VALUES " +
-        createValueTuples(numberOfValueClauses, columns.size)
-  }
-
-  companion object {
-    const val INSERT_INTO = "INSERT INTO "
   }
 }
