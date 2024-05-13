@@ -29,7 +29,7 @@ abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepo
     val numberOfValuesClauses = if (useMultipleValuesClauses) numberOfRowsPerBatch else 1
     val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
     val sql =
-      "INSERT INTO " + targetTableName + " (" + createColumnClause(columns) + ") VALUES " +
+      "INSERT INTO " + targetTableName + " (" + createColumnClause(columns) + ") VALUES\n" +
           createValueTuples(numberOfValuesClauses, columns.size)
 
     LOG.debug("Create INSERT statement: $sql")

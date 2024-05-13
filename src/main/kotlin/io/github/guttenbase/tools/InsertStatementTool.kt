@@ -26,7 +26,7 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, connectorId:
     columns = getMappedTargetColumns(tableMetaData, tableMetaData, connectorId)
       .filter { if (!includePrimaryKey) !it.isPrimaryKey else true }
 
-    return "INSERT INTO " + tableName + " (" + createColumnClause(columns) + ") VALUES " +
+    return "INSERT INTO " + tableName + " (" + createColumnClause(columns) + ") VALUES\n" +
         createValueTuples(1, columns.size)
   }
 
