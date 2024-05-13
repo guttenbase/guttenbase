@@ -1,11 +1,9 @@
 package io.github.guttenbase.export.plain
 
 import io.github.guttenbase.connector.Connector
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.InternalTableMetaData
-import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.utils.Util
 import java.sql.Connection
@@ -34,7 +32,7 @@ class ExportPlainConnector(
 
   /**
    * Table metadata is the same as the metadata of the source connector. The only difference is that the row count
-   * of all tables is reset to 0 and teh database type is set
+   * of all tables is reset to 0 and the database type is set
    *
    * {@inheritDoc}
    */
@@ -48,11 +46,13 @@ class ExportPlainConnector(
     }
 
     return object : InternalDatabaseMetaData by data {
-      override val databaseType: DatabaseType
-        get() = connectorInfo.databaseType
+      override val databaseType get() = connectorInfo.databaseType
 
-      override val tableMetaData: List<TableMetaData>
-        get() = tableMetaData
+      override val tableMetaData get() = tableMetaData
+
+      override val schema get() = connectorInfo.schema.ifBlank { data.schema }
+
+      override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
     }
   }
 

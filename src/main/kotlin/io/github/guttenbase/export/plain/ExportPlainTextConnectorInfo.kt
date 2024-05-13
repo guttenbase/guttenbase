@@ -17,15 +17,20 @@ data class ExportPlainTextConnectorInfo
 @JvmOverloads constructor(
   internal val sourceConnectorId: String,
   internal val outputStream: OutputStream,
+  override val schema: String = "",
   override val databaseType: DatabaseType = DatabaseType.GENERIC
 ) : ConnectorInfo {
   @JvmOverloads
-  constructor(sourceConnectorId: String, path: String, databaseType: DatabaseType = DatabaseType.GENERIC)
-      : this(sourceConnectorId, FileOutputStream(path), databaseType)
+  constructor(
+    sourceConnectorId: String,
+    path: String,
+    schema: String = "",
+    databaseType: DatabaseType = DatabaseType.GENERIC
+  )
+      : this(sourceConnectorId, FileOutputStream(path), schema, databaseType)
 
   override val user: String get() = "user"
   override val password: String get() = "password"
-  override val schema: String get() = "schema"
 
   private lateinit var exportPlainConnector: ExportPlainConnector
 

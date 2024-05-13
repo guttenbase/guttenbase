@@ -34,17 +34,17 @@ class DatabaseMetaDataImpl(
     databaseMetaData.databaseType
   )
 
-  override val schema: String = schema.trim { it <= ' ' }
+  override val schema = schema.trim { it <= ' ' }
 
-  private val tableMetaDataMap: MutableMap<String, TableMetaData> = LinkedHashMap<String, TableMetaData>()
+  private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()
 
-  override val databaseMetaData: JdbcDatabaseMetaData get() = createMetaDataProxy(databaseProperties)
+  override val databaseMetaData get() = createMetaDataProxy(databaseProperties)
 
-  override val schemaPrefix: String get() = if (schema.isNotBlank()) "$schema." else ""
+  override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
 
-  override val tableMetaData: List<TableMetaData> get() = ArrayList(tableMetaDataMap.values)
+  override val tableMetaData get() = ArrayList(tableMetaDataMap.values)
 
-  override fun getTableMetaData(tableName: String): TableMetaData? = tableMetaDataMap[tableName.uppercase()]
+  override fun getTableMetaData(tableName: String) = tableMetaDataMap[tableName.uppercase()]
 
   override fun addTable(tableMetaData: TableMetaData) {
     tableMetaDataMap[tableMetaData.tableName.uppercase()] = tableMetaData

@@ -1,6 +1,5 @@
 package io.github.guttenbase.tools
 
-import io.github.guttenbase.meta.ForeignKeyMetaData
 import io.github.guttenbase.meta.TableMetaData
 
 /**
@@ -9,14 +8,12 @@ import io.github.guttenbase.meta.TableMetaData
  * (starting at the leaves) manner. <br></br>
  * If there are cycles in the dependencies, we choose the node with the fewest incoming/outgoing edges.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
 open class TableOrderTool {
-  fun getOrderedTables(tableMetaData: List<TableMetaData>, topDown: Boolean): List<TableMetaData> {
+  fun getOrderedTables(tableMetaData: List<TableMetaData>, topDown: Boolean = true): List<TableMetaData> {
     val tableNodes = createGraph(tableMetaData)
 
     return orderTables(tableNodes, topDown)
@@ -39,6 +36,7 @@ open class TableOrderTool {
       result.add(tableNode.tableMetaData)
       tableNodes.remove(tableNode.tableMetaData.tableName.uppercase())
     }
+
     return result
   }
 
@@ -52,9 +50,10 @@ open class TableOrderTool {
     }[0]
 
   private fun createGraph(tableMetaData: List<TableMetaData>): MutableMap<String, TableNode> {
-    val tableNodes: MutableMap<String, TableNode> = LinkedHashMap()
+    val tableNodes = LinkedHashMap<String, TableNode>()
+
     for (table in tableMetaData) {
-      val importedForeignKeys: List<ForeignKeyMetaData> = table.importedForeignKeys
+      val importedForeignKeys = table.importedForeignKeys
       val tableNode = getTableNode(tableNodes, table)
 
       for (foreignKeyMetaData in importedForeignKeys) {
@@ -67,14 +66,12 @@ open class TableOrderTool {
         referencedTable.addReferencedByTable(referencingTable)
       }
     }
+
     return tableNodes
   }
 
-  private fun getTableNode(tableNodes: MutableMap<String, TableNode>, table: TableMetaData): TableNode {
-    val tableName: String = table.tableName.uppercase()
-
-    return tableNodes.getOrPut(tableName) { TableNode(table) }
-  }
+  private fun getTableNode(tableNodes: MutableMap<String, TableNode>, table: TableMetaData) =
+    tableNodes.getOrPut(table.tableName.uppercase()) { TableNode(table) }
 
   private data class TableNode(val tableMetaData: TableMetaData) {
     val referencedTables = ArrayList<TableNode>()

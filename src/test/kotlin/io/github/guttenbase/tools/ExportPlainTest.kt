@@ -23,7 +23,7 @@ import java.io.File
  * @author M. Dahm
  */
 class ExportPlainTest : AbstractGuttenBaseTest() {
-  private val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, DatabaseType.H2DB)
+  private val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, "", DatabaseType.H2DB)
 
   @BeforeEach
   fun setup() {
