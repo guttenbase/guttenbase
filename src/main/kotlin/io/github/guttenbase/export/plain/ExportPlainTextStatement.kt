@@ -11,9 +11,9 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-private val SQL_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-private val SQL_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
-private val SQL_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss")
+private val SQL_DATE_FORMAT = DateTimeFormatter.ofPattern("''yyyy-MM-dd''")
+private val SQL_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("''yyyy-MM-dd HH:mm:ss''")
+private val SQL_TIME_FORMAT = DateTimeFormatter.ofPattern("''HH:mm:ss''")
 
 /**
  * Connection info for exporting data to a file.

@@ -1,10 +1,11 @@
 # Change log
 
-## 3.4.x
+## 3.3.2
 
 - Filter synthetic indexes and foreign keys, i.e. constraints created by the database itself
+- Fix plain text export issues
 
-## 3.3.x
+## 3.3.1
 
 - Export data to SQL script via JDBC driver implementation
 - Code cleanup and removal of deprecated code

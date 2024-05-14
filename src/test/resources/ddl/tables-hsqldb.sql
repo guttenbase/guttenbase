@@ -5,6 +5,7 @@ CREATE TABLE FOO_USER
     USERNAME        varchar(100) NOT NULL,
     NAME            varchar(100) NOT NULL,
     PASSWORD        varchar(255) NOT NULL,
+    CREATED         TIMESTAMP,
     COMPANY_ID      bigint
 );
 
