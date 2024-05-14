@@ -30,7 +30,7 @@ Finally, we perform (empirical) checks whether the data has been transmitted cor
 In many cases, that's it!
 
 ```java
-  final ConnectorRepository connectorRepository = new ConnectorRepositoryImpl();
+  final ConnectorRepository connectorRepository = new ConnectorRepository();
   connectorRepository.addConnectionInfo("MySql", new AevMySqlConnectionInfo());
   connectorRepository.addConnectionInfo("Postgresql", new AevPostgresqlConnectionInfo());
 

@@ -73,7 +73,7 @@ You then may start to configure the guttenbase repository right away.
 public static final String SOURCE = "source";
 public static final String TARGET = "target";
 ...
-final ConnectorRepository connectorRepository = new ConnectorRepositoryImpl();
+final ConnectorRepository connectorRepository = new ConnectorRepository();
 connectorRepository.addConnectionInfo(SOURCE, new PostgreSQLConnectionInfo());
 connectorRepository.addConnectionInfo(TARGET, new MySQLConnectionsInfo());
 ```
