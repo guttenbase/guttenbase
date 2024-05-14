@@ -1,10 +1,11 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.connector.DatabaseType.*
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.hints.TableOrderHint.Companion.getSortedTables
 import io.github.guttenbase.mapping.TableMapper
+import io.github.guttenbase.meta.IndexMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.Util
@@ -14,7 +15,6 @@ import java.sql.SQLException
  * Will drop tables in given schema. USE WITH CARE!
  *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  * Hint is used by [TableOrderHint] to determine order of tables
@@ -29,30 +29,23 @@ open class DropTablesTool @JvmOverloads constructor(
       getSortedTables(connectorRepository, connectorId), false
     )
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val statements = ArrayList<String>()
     val connectionInfo = connectorRepository.getConnectionInfo(connectorId)
     val constraintClause = getConstraintClause(connectionInfo)
 
-    for (table in tableMetaData) {
-      for (foreignKey in table.importedForeignKeys) {
-        statements.add(
-          "ALTER TABLE " + tableMapper.fullyQualifiedTableName(
-            table, table.databaseMetaData
-          ) + " DROP" + constraintClause + foreignKey.foreignKeyName + ";"
-        )
+    return tableMetaData.map { table ->
+      table.importedForeignKeys.map {
+        val fullTableName = tableMapper.fullyQualifiedTableName(table, table.databaseMetaData)
+        DEFAULT_CONSTRAINT_DROP.replace("@@FULL_TABLE_NAME@@", fullTableName)
+          .replace("@@CONSTRAINT@@", constraintClause).replace("@@FK_NAME@@", it.foreignKeyName)
       }
-    }
-
-    return statements
+    }.flatten()
   }
 
   fun createDropIndexesStatements(connectorId: String): List<String> {
     val tableMetaData = TableOrderTool().getOrderedTables(
       getSortedTables(connectorRepository, connectorId), false
     )
-    val connectionInfo = connectorRepository.getConnectionInfo(connectorId)
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val postgresql = connectionInfo.databaseType === DatabaseType.POSTGRESQL
 
     return tableMetaData.map { table ->
       val schemaPrefix = table.databaseMetaData.schemaPrefix
@@ -60,14 +53,26 @@ open class DropTablesTool @JvmOverloads constructor(
 
       table.indexes.filter { !it.isPrimaryKeyIndex }.map {
         val fullIndexName = schemaPrefix + it.indexName
-        val existsClause = if (postgresql) "IF EXISTS" else ""
-        val constraintClause = if (postgresql && it.isUnique) POSTGRES_CONSTRAINT_DROP else DEFAULT_INDEX_DROP
+        val existsClause = chooseExistsClause(it)
+        val dropIndexClause = chooseDropIndexClause(it)
 
-        constraintClause
+        dropIndexClause
           .replace("@@EXISTS@@", existsClause).replace("@@INDEX_NAME@@", it.indexName)
           .replace("@@FULL_INDEX_NAME@@", fullIndexName).replace("@@FULL_TABLE_NAME@@", fullTableName)
       }
     }.flatten()
+  }
+
+  private fun chooseExistsClause(index: IndexMetaData) =
+    when (index.tableMetaData.databaseMetaData.databaseType) {
+      POSTGRESQL -> "IF EXISTS"
+      MYSQL -> "IF EXISTS"
+      else -> ""
+    }
+
+  private fun chooseDropIndexClause(index: IndexMetaData) = when (index.tableMetaData.databaseMetaData.databaseType) {
+    MYSQL -> MYSQL_INDEX_DROP
+    else -> DEFAULT_INDEX_DROP
   }
 
   fun createDropAll(connectorId: String) =
@@ -111,8 +116,8 @@ open class DropTablesTool @JvmOverloads constructor(
 
   private fun getConstraintClause(connectionInfo: ConnectorInfo): String {
     return when (connectionInfo.databaseType) {
-      DatabaseType.MARIADB, DatabaseType.MYSQL -> " FOREIGN KEY "
-      DatabaseType.POSTGRESQL -> " CONSTRAINT IF EXISTS "
+      MARIADB, MYSQL -> " FOREIGN KEY "
+      POSTGRESQL -> " CONSTRAINT IF EXISTS "
       else -> " CONSTRAINT "
     }
   }
@@ -129,7 +134,7 @@ open class DropTablesTool @JvmOverloads constructor(
 
   companion object {
     private const val DEFAULT_INDEX_DROP = "DROP INDEX @@EXISTS@@ @@FULL_INDEX_NAME@@;"
-    private const val POSTGRES_CONSTRAINT_DROP =
-      "ALTER TABLE @@FULL_TABLE_NAME@@ DROP CONSTRAINT @@EXISTS@@ @@INDEX_NAME@@;"
+    private const val MYSQL_INDEX_DROP = "ALTER TABLE @@FULL_TABLE_NAME@@ DROP INDEX @@EXISTS@@ @@FULL_INDEX_NAME@@;"
+    private const val DEFAULT_CONSTRAINT_DROP = "ALTER TABLE @@FULL_TABLE_NAME@@ DROP @@CONSTRAINT@@ @@FK_NAME@@;"
   }
 }
