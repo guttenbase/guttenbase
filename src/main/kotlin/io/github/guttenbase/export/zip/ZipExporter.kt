@@ -8,6 +8,7 @@ import io.github.guttenbase.export.Exporter
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.Util
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
@@ -53,8 +54,7 @@ class ZipExporter : Exporter {
 
     val file = File(exportDumpConnectionInfo.path)
     val fos = FileOutputStream(file)
-    val zipExporterClassResources =
-      connectorRepository.getConnectorHint(connectorId, ZipExporterClassResources::class.java).value
+    val zipExporterClassResources = connectorRepository.hint<ZipExporterClassResources>(connectorId)
 
     zipOutputStream = ZipOutputStream(fos)
 
@@ -70,7 +70,7 @@ class ZipExporter : Exporter {
     writeExtraInformation()
 
     val zipExporterClassResources =
-      connectorRepository.getConnectorHint(connectorId, ZipExporterClassResources::class.java).value
+      connectorRepository.hint<ZipExporterClassResources>(connectorId)
 
     addResourcesToJar(zipExporterClassResources)
     zipOutputStream.close()
@@ -168,7 +168,6 @@ class ZipExporter : Exporter {
     objectOutputStream.writeObject(obj)
   }
 
-  @Throws(IOException::class)
   private fun writeIndexEntries(tableMetaData: TableMetaData) {
     val indexPath: String = (ZipConstants.PREFIX + tableMetaData.tableName + ZipConstants.PATH_SEPARATOR
         ) + ZipConstants.INDEX_NAME + ZipConstants.PATH_SEPARATOR
@@ -180,7 +179,6 @@ class ZipExporter : Exporter {
     }
   }
 
-  @Throws(IOException::class)
   private fun writeColumnEntries(tableMetaData: TableMetaData) {
     val columnPath: String =
       (ZipConstants.PREFIX + tableMetaData.tableName + ZipConstants.PATH_SEPARATOR) + ZipConstants.COLUMN_NAME + ZipConstants.PATH_SEPARATOR
@@ -191,14 +189,12 @@ class ZipExporter : Exporter {
     }
   }
 
-  @Throws(IOException::class)
   private fun writeTableEntry(tableMetaData: TableMetaData) {
     newEntry((ZipConstants.PREFIX + tableMetaData.tableName + ZipConstants.PATH_SEPARATOR) + ZipConstants.TABLE_INFO_NAME)
     ZipTableMetaDataWriter().writeTableMetaDataEntry(tableMetaData).store("Table meta data", zipOutputStream)
     closeEntry()
   }
 
-  @Throws(IOException::class, SQLException::class)
   private fun writeDatabaseEntry(databaseMetaData: DatabaseMetaData) {
     newEntry(ZipConstants.PREFIX + ZipConstants.DBINFO_NAME)
     ZipDatabaseMetaDataWriter().writeDatabaseMetaDataEntry(databaseMetaData)
@@ -209,17 +205,14 @@ class ZipExporter : Exporter {
     closeEntry()
   }
 
-  @Throws(IOException::class)
   private fun newEntry(name: String) {
     zipOutputStream.putNextEntry(ZipEntry(name))
   }
 
-  @Throws(IOException::class)
   private fun closeEntry() {
     zipOutputStream.closeEntry()
   }
 
-  @Throws(IOException::class)
   private fun addClassesToJar(zipExporterClassResources: ZipExporterClassResources) {
     val zipClassesFromClassResourceExporter = ZipClassesFromClassResourceExporter(zipOutputStream)
 
@@ -228,7 +221,6 @@ class ZipExporter : Exporter {
     }
   }
 
-  @Throws(IOException::class)
   private fun addResourcesToJar(zipExporterClassResources: ZipExporterClassResources) {
     val zipResourceExporter = ZipResourceExporter(zipOutputStream)
 
@@ -242,7 +234,6 @@ class ZipExporter : Exporter {
     }
   }
 
-  @Throws(IOException::class)
   private fun writeManifestEntry(zipExporterClassResources: ZipExporterClassResources) {
     newEntry(ZipConstants.MANIFEST_NAME)
     val bos = ByteArrayOutputStream()
@@ -257,13 +248,9 @@ class ZipExporter : Exporter {
     closeEntry()
   }
 
-  @Throws(IOException::class, SQLException::class)
   private fun writeExtraInformation() {
-    val exportDumpExtraInformation: ExportDumpExtraInformation = connectorRepository.getConnectorHint(
-      connectorId,
-      ExportDumpExtraInformation::class.java
-    ).value
-    val extraInformation: Map<String, Serializable> = exportDumpExtraInformation.getExtraInformation(
+    val exportDumpExtraInformation = connectorRepository.hint<ExportDumpExtraInformation>(connectorId)
+    val extraInformation = exportDumpExtraInformation.getExtraInformation(
       connectorRepository,
       connectorId, exportDumpConnectionInfo
     )

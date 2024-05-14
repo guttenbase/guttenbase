@@ -183,9 +183,9 @@ object Util {
    * Create deep copy of object.
    */
   @JvmStatic
-  fun <T : Any> copyObject(clazz: Class<T>, sourceObject: T): T {
+  fun <T> copyObject(clazz: Class<T>, sourceObject: T): T {
     return try {
-      val byteArray = toByteArray(sourceObject)
+      val byteArray = toByteArray(sourceObject!!)
       fromByteArray(clazz, byteArray)
     } catch (e: Exception) {
       throw IllegalStateException("Can not copy ", e)
@@ -219,7 +219,7 @@ object Util {
    * @throws Exception
    */
   @Throws(Exception::class)
-  fun <T : Any> fromByteArray(clazz: Class<T>, byteArray: ByteArray): T {
+  fun <T> fromByteArray(clazz: Class<T>, byteArray: ByteArray): T {
     val bis = ByteArrayInputStream(byteArray)
     val objectInputStream = ObjectInputStream(bis)
 

@@ -4,6 +4,7 @@ import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import java.sql.Connection
 import java.sql.SQLException
 
@@ -51,8 +52,8 @@ open class PostgresqlTargetDatabaseConfiguration(connectorRepository: ConnectorR
     enable: Boolean
   ) {
     for (tableMetaData in tableMetaDatas) {
-      val tableNameMapper: TableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
-      val tableName: String = tableNameMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+      val tableNameMapper = connectorRepository.hint<TableMapper>(connectorId)
+      val tableName = tableNameMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
 
       executeSQL(connection, "ALTER TABLE " + tableName + (if (enable) " ENABLE " else " DISABLE ") + "TRIGGER ALL;")
     }

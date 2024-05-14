@@ -4,13 +4,13 @@ import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.ResultSetParameters
 import io.github.guttenbase.tools.SelectWhereClause
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.SQLException
 import kotlin.math.min
-
 
 /**
  * Create SELECT statement for copying data.
@@ -30,9 +30,8 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
     tableName: String,
     tableMetaData: TableMetaData
   ): PreparedStatement {
-    val resultSetParameters = connectorRepository.getConnectorHint(connectorId, ResultSetParameters::class.java).value
-    val columns: List<ColumnMetaData> =
-      ColumnOrderHint.getSortedColumns(connectorRepository, connectorId, tableMetaData)
+    val resultSetParameters = connectorRepository.hint<ResultSetParameters>(connectorId)
+    val columns = ColumnOrderHint.getSortedColumns(connectorRepository, connectorId, tableMetaData)
     val sql = createSQL(tableName, tableMetaData, columns)
 
     LOG.debug("Create SELECT statement: $sql")
@@ -48,12 +47,13 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   }
 
   override fun createWhereClause(tableMetaData: TableMetaData) =
-    connectorRepository.getConnectorHint(connectorId, SelectWhereClause::class.java).value.getWhereClause(tableMetaData)
+    connectorRepository.hint<SelectWhereClause>(connectorId).getWhereClause(tableMetaData)
 
   /**
    * Create SELECT statement in the target table to retrieve data from the mapped columns. I.e., since the target table
-   * configuration may be different, the SELECT statement may be different. This is used to check data compatibility with the
-   * [io.github.guttenbase.tools.CheckEqualTableDataTool]
+   * configuration may be different, the SELECT statement may be different as well.
+   *
+   * This is used to check data compatibility by the [io.github.guttenbase.tools.CheckEqualTableDataTool]
    */
   @Throws(SQLException::class)
   fun createMappedSelectStatement(
@@ -61,10 +61,10 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
     targetTableMetaData: TableMetaData, sourceConnectorId: String, targetConnectorId: String
   ): PreparedStatement {
     val resultSetParameters =
-      connectorRepository.getConnectorHint(targetConnectorId, ResultSetParameters::class.java).value
+      connectorRepository.hint<ResultSetParameters>(targetConnectorId)
     val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
     val sql = createSQL(tableName, targetTableMetaData, columns)
-    LOG.debug("Create SELECT statement: $sql")
+    LOG.debug("Create mapped SELECT statement: $sql")
 
     return connection.prepareStatement(
       sql,
@@ -74,17 +74,13 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   }
 
   /**
-   * Try to retrieve data in some deterministic order
+   * Retrieve data in some deterministic order
    */
   protected open fun createOrderBy(tableMetaData: TableMetaData) = ""
 
   private fun createSQL(tableName: String, tableMetaData: TableMetaData, columns: List<ColumnMetaData>) =
     "SELECT " + createColumnClause(columns) +
-        FROM + tableName +
+        " FROM " + tableName +
         " " + createWhereClause(tableMetaData) +
         " " + createOrderBy(tableMetaData)
-
-  companion object {
-    const val FROM = " FROM "
-  }
 }

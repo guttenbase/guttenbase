@@ -2,9 +2,8 @@ package io.github.guttenbase.tools
 
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
-import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
-import java.sql.SQLException
+import io.github.guttenbase.repository.hint
 
 /**
  * Update auto-increment sequences for table IDs.
@@ -22,12 +21,11 @@ abstract class AbstractSequenceUpdateTool(protected val connectorRepository: Con
   protected val scriptExecutor = ScriptExecutorTool(connectorRepository)
   protected val minMaxIdSelector = MinMaxIdSelectorTool(connectorRepository)
 
-  @Throws(SQLException::class)
   fun updateSequences(connectorId: String) {
-    val tableMetaDatas: List<TableMetaData> = TableOrderHint.getSortedTables(connectorRepository, connectorId)
-    val entityTableChecker = connectorRepository.getConnectorHint(connectorId, EntityTableChecker::class.java).value
-    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
-    val updateClauses: MutableList<String> = ArrayList()
+    val tableMetaDatas = TableOrderHint.getSortedTables(connectorRepository, connectorId)
+    val entityTableChecker = connectorRepository.hint<EntityTableChecker>(connectorId)
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
+    val updateClauses = ArrayList<String>()
 
     for (tableMetaData in tableMetaDatas) {
       if (entityTableChecker.isEntityTable(tableMetaData)) {
@@ -36,6 +34,7 @@ abstract class AbstractSequenceUpdateTool(protected val connectorRepository: Con
         val sequenceValue = minMaxIdSelector.maxValue + 1
         val tableName: String = tableMapper.mapTableName(tableMetaData, tableMetaData.databaseMetaData)
         val sequenceName = getSequenceName(tableName)
+
         updateClauses.add(getUpdateSequenceClause(sequenceName, sequenceValue))
       }
     }

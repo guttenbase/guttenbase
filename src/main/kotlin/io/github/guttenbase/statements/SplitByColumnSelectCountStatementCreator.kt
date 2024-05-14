@@ -3,6 +3,7 @@ package io.github.guttenbase.statements
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.SplitColumn
 
 
@@ -26,8 +27,8 @@ class SplitByColumnSelectCountStatementCreator(connectorRepository: ConnectorRep
   override fun createColumnClause(columns: List<ColumnMetaData>) = "COUNT(*)"
 
   override fun createWhereClause(tableMetaData: TableMetaData): String {
-    val splitColumn: ColumnMetaData = connectorRepository.getConnectorHint(connectorId, SplitColumn::class.java).value
-      .getSplitColumn(tableMetaData)
+    val splitColumn = connectorRepository.hint<SplitColumn>(connectorId).getSplitColumn(tableMetaData)
+
     return "WHERE " + splitColumn.columnName + " BETWEEN ? AND ?"
   }
 }

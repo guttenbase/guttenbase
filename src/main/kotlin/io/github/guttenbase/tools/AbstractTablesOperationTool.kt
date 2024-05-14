@@ -4,6 +4,7 @@ import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import java.sql.SQLException
 
 /**
@@ -47,8 +48,8 @@ abstract class AbstractTablesOperationTool(
   }
 
   private fun createSql(connectorId: String, tableMetaData: TableMetaData): String {
-    val tableMapper: TableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
-    val tableName: String = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
+    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
     return template.replace(TABLE_PLACEHOLDER.toRegex(), tableName)
   }
 

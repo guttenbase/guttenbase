@@ -1,6 +1,7 @@
 package io.github.guttenbase.connector
 
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.schema.AutoIncrementValue
 import java.sql.Types
 
@@ -135,7 +136,7 @@ enum class DatabaseType(
     val connectorRepository = column.tableMetaData.databaseMetaData.connectorRepository
     val connectorId = column.tableMetaData.databaseMetaData.connectorId
 
-    return connectorRepository.getConnectorHint(connectorId, AutoIncrementValue::class.java).value
+    return connectorRepository.hint<AutoIncrementValue>(connectorId)
   }
 }
 

@@ -7,8 +7,8 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
-import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
 
@@ -40,9 +40,9 @@ open class ReadTableDataTool(
       val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
       connector = connectorRepository.createConnector(connectorId)
 
-      val connection: Connection = connector.openConnection()
+      val connection = connector.openConnection()
       sourceConfiguration.initializeSourceConnection(connection, connectorId)
-      val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+      val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
       val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
       val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, databaseMetaData)
       val selectStatement = SelectStatementCreator(connectorRepository, connectorId)
@@ -78,7 +78,7 @@ open class ReadTableDataTool(
     val result: MutableList<Map<String, Any?>> = ArrayList()
     val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
     val sourceColumnNameMapper: ColumnMapper =
-      connectorRepository.getConnectorHint(connectorId, ColumnMapper::class.java).value
+      connectorRepository.hint<ColumnMapper>(connectorId)
     val orderedSourceColumns: List<ColumnMetaData> = ColumnOrderHint.getSortedColumns(
       connectorRepository, connectorId, tableMetaData
     )

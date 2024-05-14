@@ -7,6 +7,7 @@ import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.TableCopyProgressIndicator
 import java.sql.Connection
 import java.sql.SQLException
@@ -30,19 +31,16 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
    */
   @Throws(SQLException::class)
   fun copyTables(sourceConnectorId: String, targetConnectorId: String) {
-    progressIndicator = connectorRepository.getConnectorHint(targetConnectorId, TableCopyProgressIndicator::class.java).value
+    progressIndicator = connectorRepository.hint<TableCopyProgressIndicator>(targetConnectorId)
     progressIndicator.initializeIndicator()
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
-    val numberOfRowsPerInsertionHint =
-      connectorRepository.getConnectorHint(targetConnectorId, NumberOfRowsPerBatch::class.java).value
-    val maxNumberOfDataItemsHint =
-      connectorRepository.getConnectorHint(targetConnectorId, MaxNumberOfDataItems::class.java).value
+    val numberOfRowsPerInsertionHint = connectorRepository.hint<NumberOfRowsPerBatch>(targetConnectorId)
+    val maxNumberOfDataItemsHint = connectorRepository.hint<MaxNumberOfDataItems>(targetConnectorId)
     val sourceDatabaseConfiguration = connectorRepository.getSourceDatabaseConfiguration(sourceConnectorId)
     val targetDatabaseConfiguration = connectorRepository.getTargetDatabaseConfiguration(targetConnectorId)
-    val sourceTableMapper = connectorRepository.getConnectorHint(sourceConnectorId, TableMapper::class.java).value
-    val targetTableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
-    val refreshTargetConnection =
-      connectorRepository.getConnectorHint(targetConnectorId, RefreshTargetConnection::class.java).value
+    val sourceTableMapper = connectorRepository.hint<TableMapper>(sourceConnectorId)
+    val targetTableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
+    val refreshTargetConnection = connectorRepository.hint<RefreshTargetConnection>(targetConnectorId)
     val sourceDatabaseMetaData = connectorRepository.getDatabaseMetaData(sourceConnectorId)
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val sourceConnector = connectorRepository.createConnector(sourceConnectorId)

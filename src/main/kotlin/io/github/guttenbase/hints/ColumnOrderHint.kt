@@ -4,6 +4,7 @@ import io.github.guttenbase.mapping.ColumnOrderComparatorFactory
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 
 /**
  * Determine order of columns in SELECT statement. This will of course also influence the ordering of the resulting INSERT statement.
@@ -28,8 +29,8 @@ abstract class ColumnOrderHint : ConnectorHint<ColumnOrderComparatorFactory> {
     @JvmStatic
     fun getSortedColumns(connectorRepository: ConnectorRepository, connectorId: String, tableMetaData: TableMetaData)
         : List<ColumnMetaData> {
-      val sourceColumnComparator = connectorRepository
-        .getConnectorHint(connectorId, ColumnOrderComparatorFactory::class.java).value.createComparator()
+      val sourceColumnComparator =
+        connectorRepository.hint<ColumnOrderComparatorFactory>(connectorId).createComparator()
 
       return tableMetaData.columnMetaData.sortedWith(sourceColumnComparator)
     }

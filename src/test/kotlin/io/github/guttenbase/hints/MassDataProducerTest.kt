@@ -9,6 +9,7 @@ import io.github.guttenbase.mapping.ColumnDataMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -93,7 +94,7 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
 
   private fun computeMaximumIds() {
     val tables: List<TableMetaData> = connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData
-    val entityTableChecker = connectorRepository.getConnectorHint(SOURCE, EntityTableChecker::class.java)      .value
+    val entityTableChecker = connectorRepository.hint<EntityTableChecker>(SOURCE)
     val minMaxIdSelectorTool = MinMaxIdSelectorTool(connectorRepository)
 
     for (tableMetaData in tables) {

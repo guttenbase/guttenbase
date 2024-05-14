@@ -16,6 +16,7 @@ import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
 import io.github.guttenbase.utils.Util.toDate
 import org.slf4j.LoggerFactory
@@ -38,18 +39,17 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
   fun checkTableData(sourceConnectorId: String, targetConnectorId: String) {
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
     val numberOfCheckData =
-      connectorRepository.getConnectorHint(sourceConnectorId, NumberOfCheckedTableData::class.java)
-        .value.numberOfCheckedTableData
-    val tableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
+      connectorRepository.hint<NumberOfCheckedTableData>(sourceConnectorId).numberOfCheckedTableData
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
-    val sourceDatabaseConfiguration1: SourceDatabaseConfiguration = connectorRepository
+    val sourceDatabaseConfiguration1 = connectorRepository
       .getSourceDatabaseConfiguration(sourceConnectorId)
-    val sourceDatabaseConfiguration2: SourceDatabaseConfiguration = connectorRepository
+    val sourceDatabaseConfiguration2 = connectorRepository
       .getSourceDatabaseConfiguration(targetConnectorId)
     val connector1 = connectorRepository.createConnector(sourceConnectorId)
     val connector2 = connectorRepository.createConnector(targetConnectorId)
-    val connection1: Connection = connector1.openConnection()
-    val connection2: Connection = connector2.openConnection()
+    val connection1 = connector1.openConnection()
+    val connection2 = connector2.openConnection()
 
     sourceDatabaseConfiguration1.initializeSourceConnection(connection1, sourceConnectorId)
     sourceDatabaseConfiguration2.initializeSourceConnection(connection2, targetConnectorId)
@@ -76,13 +76,13 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     targetConnectorId: String, targetConnection: Connection, targetConfiguration: SourceDatabaseConfiguration,
     targetTableMetaData: TableMetaData, numberOfCheckData: Int
   ) {
-    val tableName1 = connectorRepository.getConnectorHint(sourceConnectorId, TableMapper::class.java).value
+    val tableName1 = connectorRepository.hint<TableMapper>(sourceConnectorId)
       .fullyQualifiedTableName(sourceTableMetaData, sourceTableMetaData.databaseMetaData)
-    val tableName2 = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
+    val tableName2 = connectorRepository.hint<TableMapper>(targetConnectorId)
       .fullyQualifiedTableName(targetTableMetaData, targetTableMetaData.databaseMetaData)
     val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
-    val sourceColumnNameMapper = connectorRepository.getConnectorHint(sourceConnectorId, ColumnMapper::class.java).value
-    val targetColumnNameMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+    val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(sourceConnectorId)
+    val targetColumnNameMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
 
     checkRowCount(sourceTableMetaData, targetTableMetaData, tableName1, tableName2)
 
@@ -104,7 +104,7 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
       connectorRepository, sourceConnectorId, sourceTableMetaData
     )
     val columnMapper: ColumnMapper =
-      connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+      connectorRepository.hint<ColumnMapper>(targetConnectorId)
     var rowIndex = 1
 
     try {

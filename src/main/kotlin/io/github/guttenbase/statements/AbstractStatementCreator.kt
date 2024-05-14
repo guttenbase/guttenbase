@@ -6,6 +6,7 @@ import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -22,7 +23,7 @@ abstract class AbstractStatementCreator(
   protected val connectorRepository: ConnectorRepository,
   protected val connectorId: String
 ) {
-  protected val columnMapper = connectorRepository.getConnectorHint(connectorId, ColumnMapper::class.java).value
+  protected val columnMapper = connectorRepository.hint<ColumnMapper>(connectorId)
 
   protected open fun createColumnClause(columns: List<ColumnMetaData>) =
     columns.joinToString(separator = ", ", transform = { columnMapper.mapColumnName(it, it.tableMetaData) })
@@ -37,7 +38,7 @@ abstract class AbstractStatementCreator(
   ): List<ColumnMetaData> {
     // Use same order as in SELECT clause
     val sourceColumns = getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
-    val columnMapper = connectorRepository.getConnectorHint(connectorId, ColumnMapper::class.java).value
+    val columnMapper = connectorRepository.hint<ColumnMapper>(connectorId)
 
     return sourceColumns.map {
       val mapping = columnMapper.map(it, targetTableMetaData)

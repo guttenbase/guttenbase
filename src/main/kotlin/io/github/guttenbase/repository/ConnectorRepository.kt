@@ -72,7 +72,7 @@ open class ConnectorRepository {
   /**
    * Add configuration hint for connector
    */
-  open fun <T : Any> addConnectorHint(connectorId: String, hint: ConnectorHint<T>): ConnectorRepository {
+  open fun <T> addConnectorHint(connectorId: String, hint: ConnectorHint<T>): ConnectorRepository {
     // Check connector if is configured
     getConnectionInfo(connectorId)
     val hintMap = connectionHintMap.getOrPut(connectorId) { HashMap() }
@@ -85,7 +85,7 @@ open class ConnectorRepository {
   /**
    * Remove configuration hint for connector
    */
-  open fun <T : Any> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>): ConnectorRepository {
+  open fun <T> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>): ConnectorRepository {
     val hintMap = connectionHintMap[connectorId]
     hintMap?.remove(connectionInfoHintType)
 
@@ -97,9 +97,8 @@ open class ConnectorRepository {
    * Get configuration hint for connector
    */
   @Suppress("UNCHECKED_CAST")
-  open fun <T : Any> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T> {
-    val hintMap = connectionHintMap[connectorId]
-      ?: throw IllegalStateException("No hints defined for $connectorId")
+  open fun <T> getConnectorHint(connectorId: String, connectorHintType: Class<T>): ConnectorHint<T> {
+    val hintMap = connectionHintMap[connectorId] ?: throw IllegalStateException("No hints defined for $connectorId")
     return hintMap[connectorHintType] as ConnectorHint<T>
   }
 
@@ -199,8 +198,8 @@ open class ConnectorRepository {
   }
 
   private fun InternalDatabaseMetaData.withFilteredTables(connectorId: String): InternalDatabaseMetaData {
-    val tableFilter: RepositoryTableFilter = getConnectorHint(connectorId, RepositoryTableFilter::class.java).value
-    val columnFilter: RepositoryColumnFilter = getConnectorHint(connectorId, RepositoryColumnFilter::class.java).value
+    val tableFilter = hint<RepositoryTableFilter>(connectorId)
+    val columnFilter = hint<RepositoryColumnFilter>(connectorId)
 
     for (tableMetaData in tableMetaData) {
       if (tableFilter.accept(tableMetaData)) {
@@ -298,3 +297,7 @@ open class ConnectorRepository {
 }
 
 typealias JdbcDatabaseMetaData = java.sql.DatabaseMetaData
+
+inline fun <reified T> ConnectorRepository.hint(connectorId: String): T =
+  getConnectorHint(connectorId, T::class.java).value
+

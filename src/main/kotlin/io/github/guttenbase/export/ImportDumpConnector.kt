@@ -4,6 +4,7 @@ import io.github.guttenbase.connector.impl.AbstractConnector
 import io.github.guttenbase.exceptions.ImportException
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import java.sql.Connection
 import java.sql.SQLException
 
@@ -33,8 +34,7 @@ class ImportDumpConnector(
   override fun openConnection(): Connection {
     if (!connectionReady()) {
       try {
-        val importer = connectorRepository.getConnectorHint(connectorId, ImporterFactory::class.java).value
-          .createImporter()
+        val importer = connectorRepository.hint<ImporterFactory>(connectorId).createImporter()
         importer.initializeImport(connectorRepository, connectorId, importDumpConnectionInfo)
         databaseMetaData = importer.readDatabaseMetaData()
         connection = ImportDumpConnection(importer, databaseMetaData)

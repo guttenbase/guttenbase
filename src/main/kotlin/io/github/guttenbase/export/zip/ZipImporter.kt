@@ -7,6 +7,7 @@ import io.github.guttenbase.export.Importer
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.Util
 import org.apache.commons.io.IOUtils
 import java.io.*
@@ -95,10 +96,7 @@ class ZipImporter : Importer {
 
   @Throws(Exception::class)
   private fun readExtraInformation() {
-    val importDumpExtraInformation: ImportDumpExtraInformation = connectorRepository.getConnectorHint(
-      connectorId,
-      ImportDumpExtraInformation::class.java
-    ).value
+    val importDumpExtraInformation = connectorRepository.hint<ImportDumpExtraInformation>(connectorId)
     val extraInformation = HashMap<String, Serializable>()
     val prefix = ZipConstants.EXTRA_INFO + ZipConstants.PATH_SEPARATOR
     val entries = zipFile.entries()

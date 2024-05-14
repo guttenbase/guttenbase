@@ -16,29 +16,20 @@ import java.sql.Types
 class SelectStatementCreator(connectorRepository: ConnectorRepository, connectorId: String) :
   AbstractSelectStatementCreator(connectorRepository, connectorId) {
   /**
-   * Try to retrieve data in some deterministic order
+   * Retrieve data in some deterministic order
    */
   override fun createOrderBy(tableMetaData: TableMetaData): String {
-    val buf = StringBuilder("ORDER BY ")
-    var columnsAdded = 0
-
-    for (i in 0 until tableMetaData.columnCount) {
-      val columnMetaData = tableMetaData.columnMetaData[i]
-      val columnName = columnMapper.mapColumnName(columnMetaData, tableMetaData)
-      val jdbcType = columnMetaData.columnType
-
-      if (jdbcType.comparable()) {
-        buf.append(columnName).append(", ")
-        columnsAdded++
+    val columns = tableMetaData.columnMetaData.filter { it.columnType.comparable() }
+      .sortedWith { column1, column2 ->
+        when {
+          column1.isPrimaryKey -> -1
+          column2.isPrimaryKey -> 1
+          else -> column1.compareTo(column2)
+        }
       }
-    }
+      .map { columnMapper.mapColumnName(it, tableMetaData) }
 
-    return if (columnsAdded > 0) {
-      buf.setLength(buf.length - 2)
-      buf.toString()
-    } else {
-      ""
-    }
+    return if (columns.isEmpty()) "" else "ORDER BY " + columns.joinToString()
   }
 }
 

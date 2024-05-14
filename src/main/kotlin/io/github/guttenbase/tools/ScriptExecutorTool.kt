@@ -2,6 +2,7 @@ package io.github.guttenbase.tools
 
 import io.github.guttenbase.configuration.TargetDatabaseConfiguration
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.sql.SQLLexer
 import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
 import io.github.guttenbase.utils.Util
@@ -74,8 +75,7 @@ constructor(
       val targetDatabaseConfiguration = connectorRepository.getTargetDatabaseConfiguration(connectorId)
       val sqlStatements = SQLLexer(lines, delimiter).parse()
 
-      progressIndicator =
-        connectorRepository.getConnectorHint(connectorId, ScriptExecutorProgressIndicator::class.java).value
+      progressIndicator = connectorRepository.hint<ScriptExecutorProgressIndicator>(connectorId)
       progressIndicator.initializeIndicator()
 
       connectorRepository.createConnector(connectorId).use { connector ->
@@ -175,7 +175,9 @@ constructor(
   @Throws(SQLException::class)
   fun executeQuery(connection: Connection, sql: String, action: Command) {
     connection.createStatement()
-      .use { statement -> statement.executeQuery(sql).use { resultSet -> readMapFromResultSet(connection, resultSet, action) } }
+      .use { statement ->
+        statement.executeQuery(sql).use { resultSet -> readMapFromResultSet(connection, resultSet, action) }
+      }
   }
 
   @Throws(SQLException::class)

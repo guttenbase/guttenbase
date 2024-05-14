@@ -2,6 +2,7 @@ package io.github.guttenbase.hints
 
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.EntityTableChecker
 import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -18,7 +19,8 @@ class EntityTableCheckerHintTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testMainTable() {
-    val objectUnderTest = connectorRepository.getConnectorHint(CONNECTOR_ID, EntityTableChecker::class.java).value
+    val objectUnderTest = connectorRepository.hint<EntityTableChecker>(CONNECTOR_ID)
+
     assertTrue(
       objectUnderTest.isEntityTable(
         connectorRepository.getDatabaseMetaData(CONNECTOR_ID).getTableMetaData("FOO_COMPANY")!!

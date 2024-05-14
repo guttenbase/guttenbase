@@ -7,6 +7,7 @@ import io.github.guttenbase.export.Importer
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.Serializable
@@ -20,6 +21,7 @@ import java.util.zip.GZIPInputStream
  *
  * @author M. Dahm
  */
+@Suppress("unused")
 class PlainGzipImporter : Importer {
   private lateinit var objectInputStream: ObjectInputStream
   private lateinit var connectorRepository: ConnectorRepository
@@ -81,8 +83,7 @@ class PlainGzipImporter : Importer {
   @Suppress("UNCHECKED_CAST")
   @Throws(Exception::class)
   private fun readExtraInformation() {
-    val importDumpExtraInformation =
-      connectorRepository.getConnectorHint(connectorId, ImportDumpExtraInformation::class.java).value
+    val importDumpExtraInformation = connectorRepository.hint<ImportDumpExtraInformation>(connectorId)
     val extraInformation = readObject() as Map<String, Serializable>
     importDumpExtraInformation.processExtraInformation(extraInformation)
   }

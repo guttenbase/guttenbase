@@ -4,6 +4,7 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import java.sql.Connection
 import java.sql.SQLException
 
@@ -73,7 +74,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     connection: Connection, connectorId: String, tableMetaDatas: List<TableMetaData>,
     enable: Boolean
   ) {
-    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
 
     for (tableMetaData in tableMetaDatas) {
       val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
@@ -88,7 +89,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     connection: Connection, connectorId: String, enable: Boolean,
     tableMetaData: TableMetaData
   ) {
-    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
 
     if (hasIdentityColumn(tableMetaData)) {

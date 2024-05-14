@@ -6,6 +6,7 @@ import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.CommonColumnTypeResolverTool
 
 /**
@@ -31,7 +32,7 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
    */
   fun check(sourceConnectorId: String, targetConnectorId: String): SchemaCompatibilityIssues {
     val sourceTables: List<TableMetaData> = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
-    val tableMapper: TableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
+    val tableMapper: TableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
 
     checkEqualTables(sourceTables, targetDatabase, tableMapper)
@@ -120,10 +121,10 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
     sourceConnectorId: String, targetConnectorId: String,
     sourceTableMetaData: TableMetaData, targetTableMetaData: TableMetaData
   ): SchemaCompatibilityIssues {
-    val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
-    val sourceColumnNameMapper = connectorRepository.getConnectorHint(sourceConnectorId, ColumnMapper::class.java).value
-    val targetColumnNameMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+    val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(sourceConnectorId)
+    val targetColumnNameMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val tableName = sourceTableMetaData.tableName
     val sourceColumns = ColumnOrderHint.getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
     val mappedTargetColumns = HashSet<ColumnMetaData>(targetTableMetaData.columnMetaData)

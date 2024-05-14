@@ -4,7 +4,7 @@ import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
-import java.sql.SQLException
+import io.github.guttenbase.repository.hint
 
 /**
  * Create auto-increment sequences for table IDs.
@@ -22,17 +22,16 @@ import java.sql.SQLException
 abstract class AbstractSequenceCreationTool(protected val connectorRepository: ConnectorRepository) {
   protected val scriptExecutor = ScriptExecutorTool(connectorRepository)
 
-  @Throws(SQLException::class)
   fun createSequences(connectorId: String, start: Long, incrementBy: Long) {
     val tableMetaDatas = TableOrderHint.getSortedTables(connectorRepository, connectorId)
-    val entityTableChecker: EntityTableChecker =
-      connectorRepository.getConnectorHint(connectorId, EntityTableChecker::class.java).value
-    val tableMapper: TableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
-    val updateClauses: MutableList<String> = ArrayList()
+    val entityTableChecker =
+      connectorRepository.hint<EntityTableChecker>(connectorId)
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
+    val updateClauses = ArrayList<String>()
 
     for (tableMetaData in tableMetaDatas) {
       if (entityTableChecker.isEntityTable(tableMetaData)) {
-        val tableName: String = tableMapper.mapTableName(tableMetaData, tableMetaData.databaseMetaData)
+        val tableName = tableMapper.mapTableName(tableMetaData, tableMetaData.databaseMetaData)
         val sequenceName = getSequenceName(tableName)
 
         updateClauses.addAll(getCreateSequenceClauses(tableName, getIdColumn(tableMetaData), sequenceName, start, incrementBy))

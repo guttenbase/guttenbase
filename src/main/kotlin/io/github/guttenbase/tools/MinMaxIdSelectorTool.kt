@@ -3,6 +3,7 @@ package io.github.guttenbase.tools
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SplitByColumnSelectMinMaxStatementCreator
 import java.sql.Connection
 import java.sql.SQLException
@@ -38,7 +39,7 @@ open class MinMaxIdSelectorTool(private val connectorRepository: ConnectorReposi
    */
   @Throws(SQLException::class)
   fun computeMinMax(connectorId: String, tableMetaData: TableMetaData, connection: Connection) {
-    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
     val minMaxStatement = SplitByColumnSelectMinMaxStatementCreator(connectorRepository, connectorId)
       .createSelectStatement(connection, tableName, tableMetaData)

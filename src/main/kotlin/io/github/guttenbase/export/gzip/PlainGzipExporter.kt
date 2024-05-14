@@ -7,6 +7,7 @@ import io.github.guttenbase.export.Exporter
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import java.io.*
 import java.sql.SQLException
 import java.util.zip.GZIPOutputStream
@@ -85,8 +86,7 @@ class PlainGzipExporter : Exporter {
 
   @Throws(IOException::class, SQLException::class)
   private fun writeExtraInformation() {
-    val exportDumpExtraInformation =
-      connectorRepository.getConnectorHint(connectorId, ExportDumpExtraInformation::class.java).value
+    val exportDumpExtraInformation = connectorRepository.hint<ExportDumpExtraInformation>(connectorId)
     val extraInformation =
       exportDumpExtraInformation.getExtraInformation(connectorRepository, connectorId, exportDumpConnectionInfo)
 

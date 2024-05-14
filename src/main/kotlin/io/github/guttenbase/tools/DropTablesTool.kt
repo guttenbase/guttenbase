@@ -7,6 +7,7 @@ import io.github.guttenbase.hints.TableOrderHint.Companion.getSortedTables
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.Util
 import java.sql.SQLException
 
@@ -30,9 +31,9 @@ open class DropTablesTool @JvmOverloads constructor(
     val tableMetaData: List<TableMetaData> = TableOrderTool().getOrderedTables(
       getSortedTables(connectorRepository, connectorId), false
     )
-    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val statements = ArrayList<String>()
-    val connectionInfo: ConnectorInfo = connectorRepository.getConnectionInfo(connectorId)
+    val connectionInfo = connectorRepository.getConnectionInfo(connectorId)
     val constraintClause = getConstraintClause(connectionInfo)
 
     for (table in tableMetaData) {
@@ -62,7 +63,7 @@ open class DropTablesTool @JvmOverloads constructor(
     )
     val statements = ArrayList<String>()
     val connectionInfo: ConnectorInfo = connectorRepository.getConnectionInfo(connectorId)
-    val tableMapper: TableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val tableMapper: TableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val postgresql = connectionInfo.databaseType === DatabaseType.POSTGRESQL
 
     for (table in tableMetaData) {
@@ -114,7 +115,7 @@ open class DropTablesTool @JvmOverloads constructor(
 
   private fun createTableStatements(connectorId: String, clausePrefix: String, clauseSuffix: String): List<String> {
     val tableMetaData = TableOrderTool().getOrderedTables(getSortedTables(connectorRepository, connectorId), false)
-    val tableMapper = connectorRepository.getConnectorHint(connectorId, TableMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val suffix = if ("" == Util.trim(clauseSuffix)) "" else " $clauseSuffix"
 
     return tableMetaData.map { clausePrefix + " " + tableMapper.fullyQualifiedTableName(it, it.databaseMetaData) + suffix + ";" }

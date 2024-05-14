@@ -5,6 +5,7 @@ import io.github.guttenbase.exceptions.ExportException
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalTableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.Util
 import java.sql.Connection
 import java.sql.SQLException
@@ -30,8 +31,7 @@ class ExportDumpConnector(
   override fun openConnection(): Connection {
     if (!connectionReady()) {
       try {
-        val exporter =
-          connectorRepository.getConnectorHint(connectorId, ExporterFactory::class.java).value.createExporter()
+        val exporter = connectorRepository.hint<ExporterFactory>(connectorId).createExporter()
         exporter.initializeExport(connectorRepository, connectorId, exportDumpConnectionInfo)
         exporter.writeDatabaseMetaData(retrieveSourceDatabaseMetaData())
         connection = ExportDumpConnection(exporter)

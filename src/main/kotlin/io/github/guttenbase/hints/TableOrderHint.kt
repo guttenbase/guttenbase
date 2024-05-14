@@ -1,9 +1,9 @@
 package io.github.guttenbase.hints
 
 import io.github.guttenbase.mapping.TableOrderComparatorFactory
-import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 
 /**
  * Determine order of tables during copying/comparison.
@@ -26,9 +26,8 @@ abstract class TableOrderHint : ConnectorHint<TableOrderComparatorFactory> {
      */
     @JvmStatic
     fun getSortedTables(connectorRepository: ConnectorRepository, connectorId: String): List<TableMetaData> {
-      val databaseMetaData: DatabaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
-      val comparator: Comparator<TableMetaData> = connectorRepository
-        .getConnectorHint(connectorId, TableOrderComparatorFactory::class.java).value.createComparator()
+      val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
+      val comparator = connectorRepository.hint<TableOrderComparatorFactory>(connectorId).createComparator()
 
       return databaseMetaData.tableMetaData.sortedWith(comparator)
     }

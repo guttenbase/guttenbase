@@ -87,7 +87,7 @@ class DatabaseMetaDataInspectorTool(
     LOG.debug("Retrieving foreign key information for " + table.tableName)
 
     val tableFilter: DatabaseTableFilter =
-      connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java).value
+      connectorRepository.hint<DatabaseTableFilter>(connectorId)
     val resultSet = metaData.getExportedKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchemaPattern(databaseMetaData),
@@ -135,7 +135,7 @@ class DatabaseMetaDataInspectorTool(
   ) {
     LOG.debug("Retrieving index information for " + table.tableName)
 
-    val tableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java).value
+    val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
     val resultSet = metaData.getIndexInfo(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchema(databaseMetaData), table.tableName, false,
@@ -179,7 +179,7 @@ class DatabaseMetaDataInspectorTool(
   ) {
     LOG.debug("Retrieving primary key information for " + table.tableName)
 
-    val tableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java).value
+    val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
     val resultSet = metaData.getPrimaryKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchema(databaseMetaData), table.tableName
@@ -203,7 +203,7 @@ class DatabaseMetaDataInspectorTool(
     statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String
   ) {
     val tableName = escapeTableName(tableMetaData, schemaPrefix)
-    val columnFilter = connectorRepository.getConnectorHint(connectorId, DatabaseColumnFilter::class.java).value
+    val columnFilter = connectorRepository.hint<DatabaseColumnFilter>(connectorId)
     val selectSQL = SELECT_NOTHING_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
 
     LOG.debug("Retrieving column information for $tableName")
@@ -243,15 +243,14 @@ class DatabaseMetaDataInspectorTool(
   }
 
   private fun createWhereClause(tableMetaData: TableMetaData) =
-    connectorRepository.getConnectorHint(connectorId, SelectWhereClause::class.java)
-      .value.getWhereClause(tableMetaData)
+    connectorRepository.hint<SelectWhereClause>(connectorId).getWhereClause(tableMetaData)
 
   private fun enrichTableMetaData(
     statement: Statement,
     tableMetaData: InternalTableMetaData,
     schemaPrefix: String
   ) {
-    val filter = connectorRepository.getConnectorHint(connectorId, TableRowCountFilter::class.java).value
+    val filter = connectorRepository.hint<TableRowCountFilter>(connectorId)
 
     if (filter.accept(tableMetaData)) {
       val tableName = escapeTableName(tableMetaData, schemaPrefix)
@@ -304,7 +303,7 @@ class DatabaseMetaDataInspectorTool(
   private fun loadTables(databaseMetaData: InternalDatabaseMetaData, metaData: JdbcDatabaseMetaData) {
     LOG.debug("Searching tables in schema " + databaseMetaData.schema)
 
-    val tableFilter = connectorRepository.getConnectorHint(connectorId, DatabaseTableFilter::class.java).value
+    val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
 
     val resultSet = metaData.getTables(
       tableFilter.getCatalog(databaseMetaData),

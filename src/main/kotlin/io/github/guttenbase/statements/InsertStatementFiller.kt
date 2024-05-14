@@ -11,6 +11,7 @@ import io.github.guttenbase.mapping.TableRowDataFilter
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.CommonColumnTypeResolverTool
 import org.slf4j.LoggerFactory
 import java.io.Closeable
@@ -23,9 +24,7 @@ import java.sql.SQLException
 /**
  * Fill previously created INSERT statement with data from source connector.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  * Hint is used by [ColumnOrderHint] to determine column order
@@ -42,8 +41,8 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
   ) {
     val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
     val sourceColumns = getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
-    val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
-    val filter = connectorRepository.getConnectorHint(targetConnectorId, TableRowDataFilter::class.java).value
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
+    val filter = connectorRepository.hint<TableRowDataFilter>(targetConnectorId)
     val targetDatabase = targetTableMetaData.databaseMetaData
     var targetColumnIndex = 1
     var dataItemsCount = 0

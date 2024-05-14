@@ -7,6 +7,7 @@ import io.github.guttenbase.mapping.*
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.schema.comparison.DuplicateIndexIssue
 import io.github.guttenbase.schema.comparison.SchemaComparatorTool
 import io.github.guttenbase.schema.comparison.SchemaCompatibilityIssueType
@@ -96,7 +97,7 @@ class SchemaScriptCreatorTool(
 
   private fun getTableName(tableMetaData: TableMetaData): String {
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
-    val tableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val rawTableName = tableMapper.mapTableName(tableMetaData, targetDatabaseMetaData)
     val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)
     val maxNameLength = targetMaxNameLength
@@ -112,8 +113,8 @@ class SchemaScriptCreatorTool(
   }
 
   private fun createPrimaryKeyStatement(tableMetaData: TableMetaData, primaryKeyColumns: List<ColumnMetaData>): String {
-    val tableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
-    val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val qualifiedTableName = tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)
     val tableName = tableMapper.mapTableName(tableMetaData, targetDatabaseMetaData)
@@ -125,8 +126,8 @@ class SchemaScriptCreatorTool(
 
   private fun createIndex(indexMetaData: IndexMetaData, counter: Int): String {
     val tableMetaData = indexMetaData.tableMetaData
-    val indexMapper = connectorRepository.getConnectorHint(targetConnectorId, IndexMapper::class.java).value
-    val tableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
+    val indexMapper = connectorRepository.hint<IndexMapper>(targetConnectorId)
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val tableName = tableMapper.mapTableName(tableMetaData, targetDatabaseMetaData)
     val indexName = createConstraintName(
@@ -137,15 +138,15 @@ class SchemaScriptCreatorTool(
   }
 
   fun createIndex(indexMetaData: IndexMetaData): String {
-    val indexMapper = connectorRepository.getConnectorHint(targetConnectorId, IndexMapper::class.java).value
+    val indexMapper = connectorRepository.hint<IndexMapper>(targetConnectorId)
 
     return createIndex(indexMetaData, indexMapper.mapIndexName(indexMetaData))
   }
 
   private fun createIndex(indexMetaData: IndexMetaData, indexName: String): String {
     val targetDatabaseMetaData: DatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
-    val tableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
-    val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val tableMetaData = indexMetaData.tableMetaData
     val unique = if (indexMetaData.isUnique) " UNIQUE " else " "
 
@@ -155,8 +156,8 @@ class SchemaScriptCreatorTool(
   }
 
   fun createForeignKey(foreignKeyMetaData: ForeignKeyMetaData): String {
-    val tableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
-    val fkMapper = connectorRepository.getConnectorHint(targetConnectorId, ForeignKeyMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
+    val fkMapper = connectorRepository.hint<ForeignKeyMapper>(targetConnectorId)
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val tableMetaData = foreignKeyMetaData.referencingTableMetaData
     val qualifiedTableName = tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)
@@ -169,7 +170,7 @@ class SchemaScriptCreatorTool(
   }
 
   private fun getColumnName(referencingColumn: ColumnMetaData): String {
-    val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
 
     return columnMapper.mapColumnName(referencingColumn, referencingColumn.tableMetaData)
   }
@@ -200,10 +201,10 @@ class SchemaScriptCreatorTool(
   }
 
   fun createColumn(columnMetaData: ColumnMetaData): String {
-    val tableMapper = connectorRepository.getConnectorHint(targetConnectorId, TableMapper::class.java).value
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
-    val columnMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnMapper::class.java).value
-    val columnTypeMapper = connectorRepository.getConnectorHint(targetConnectorId, ColumnTypeMapper::class.java).value
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
+    val columnTypeMapper = connectorRepository.hint<ColumnTypeMapper>(targetConnectorId)
     val sourceType = connectorRepository.getDatabaseMetaData(sourceConnectorId).databaseType
     val targetType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
     val columnName = columnMapper.mapColumnName(columnMetaData, columnMetaData.tableMetaData)
