@@ -87,6 +87,7 @@ class DatabaseMetaDataInspectorTool(
     LOG.debug("Retrieving foreign key information for " + table.tableName)
 
     val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
+    val fkFilter = connectorRepository.hint<DatabaseForeignKeyFilter>(connectorId)
     val resultSet = metaData.getExportedKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchemaPattern(databaseMetaData),
@@ -109,17 +110,25 @@ class DatabaseMetaDataInspectorTool(
         } else {
           val pkColumn = pkTableMetaData.getColumnMetaData(pkColumnName)!!
           val fkColumn = fkTableMetaData.getColumnMetaData(fkColumnName)!!
-          val exportedForeignKey = pkTableMetaData.getExportedForeignKey(fkName) as InternalForeignKeyMetaData?
-          val importedForeignKey = fkTableMetaData.getImportedForeignKey(fkName) as InternalForeignKeyMetaData?
+          var exportedForeignKey = pkTableMetaData.getExportedForeignKey(fkName) as InternalForeignKeyMetaData?
+          var importedForeignKey = fkTableMetaData.getImportedForeignKey(fkName) as InternalForeignKeyMetaData?
 
           if (exportedForeignKey == null) {
-            pkTableMetaData.addExportedForeignKey(ForeignKeyMetaDataImpl(pkTableMetaData, fkName, fkColumn, pkColumn))
+            exportedForeignKey = ForeignKeyMetaDataImpl(pkTableMetaData, fkName, fkColumn, pkColumn)
+
+            if (fkFilter.accept(exportedForeignKey)) {
+              pkTableMetaData.addExportedForeignKey(exportedForeignKey)
+            }
           } else {
             exportedForeignKey.addColumnTuple(fkColumn, pkColumn)
           }
 
           if (importedForeignKey == null) {
-            fkTableMetaData.addImportedForeignKey(ForeignKeyMetaDataImpl(fkTableMetaData, fkName, fkColumn, pkColumn))
+            importedForeignKey = ForeignKeyMetaDataImpl(fkTableMetaData, fkName, fkColumn, pkColumn)
+
+            if (fkFilter.accept(importedForeignKey)) {
+              fkTableMetaData.addImportedForeignKey(importedForeignKey)
+            }
           } else {
             importedForeignKey.addColumnTuple(fkColumn, pkColumn)
           }

@@ -7,6 +7,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.connector.DatabaseType.*
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.defaults.impl.DefaultColumnMapper
+import io.github.guttenbase.defaults.impl.DefaultDatabaseForeignKeyFilter
 import io.github.guttenbase.defaults.impl.DefaultDatabaseIndexFilter
 import io.github.guttenbase.export.ExportDumpDatabaseConfiguration
 import io.github.guttenbase.export.ImportDumpDatabaseConfiguration
@@ -252,6 +253,10 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, object : DatabaseIndexFilterHint(){
       override val value: DatabaseIndexFilter
         get() = DefaultDatabaseIndexFilter()
+    })
+    addConnectorHint(connectorId, object : DatabaseForeignKeyFilterHint(){
+      override val value: DatabaseForeignKeyFilter
+        get() = DefaultDatabaseForeignKeyFilter()
     })
     addConnectorHint(connectorId, DefaultNumberOfRowsPerBatchHint())
     addConnectorHint(connectorId, DefaultResultSetParametersHint())
