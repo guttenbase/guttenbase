@@ -216,8 +216,13 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
   }
 
   private fun createH2ToDerbyMapping() {
-    addMapping(H2DB, DERBY, "LONGTEXT", "CLOB")
-    addMapping(H2DB, DERBY, "LONGBLOB", "BLOB")
+    entries.forEach {
+      if (it != H2DB) {
+        addMapping(H2DB, it, "LONGTEXT", "CLOB")
+        addMapping(H2DB, it, "LONGBLOB", "BLOB")
+        addMapping(H2DB, it, "BINARY LARGE OBJECT", "BLOB")
+      }
+    }
   }
 
   private fun createDerbyToH2Mapping() {

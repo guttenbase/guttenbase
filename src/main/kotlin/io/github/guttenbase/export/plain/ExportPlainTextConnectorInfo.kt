@@ -26,8 +26,7 @@ data class ExportPlainTextConnectorInfo
     path: String,
     schema: String = "",
     databaseType: DatabaseType = DatabaseType.GENERIC
-  )
-      : this(sourceConnectorId, FileOutputStream(path), schema, databaseType)
+  ) : this(sourceConnectorId, FileOutputStream(path), schema, databaseType)
 
   override val user: String get() = "user"
   override val password: String get() = "password"
