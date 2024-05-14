@@ -7,9 +7,11 @@ There are two ways implemented to export your data to file: Plain SQL text or bi
 Using the _ExportPlainTextConnectorInfo_ class you may specify a file or output stream where to dump the data. In combination
 with the _CopySchemaTool_ you may export data to text files using the target database specific syntax.
 
+*Warning:* You should do this only for small databases as the plain text file may become very large.
+
 ### Code example
 ```kotlin
-val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, DatabaseType.H2DB)
+val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, DatabaseType.MYSQL)
 ...
 connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
 connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
