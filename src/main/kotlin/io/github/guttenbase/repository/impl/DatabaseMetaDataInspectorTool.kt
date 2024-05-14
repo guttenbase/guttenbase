@@ -86,8 +86,7 @@ class DatabaseMetaDataInspectorTool(
   ) {
     LOG.debug("Retrieving foreign key information for " + table.tableName)
 
-    val tableFilter: DatabaseTableFilter =
-      connectorRepository.hint<DatabaseTableFilter>(connectorId)
+    val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
     val resultSet = metaData.getExportedKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchemaPattern(databaseMetaData),
@@ -153,7 +152,8 @@ class DatabaseMetaDataInspectorTool(
           val column = table.getColumnMetaData(columnName)
 
           // May be strange SYS...$ column as with Oracle
-          if (column != null) {
+          // Same DBs handle add indexes as foreign keys
+          if (column != null && !table.hasForeignKey(indexName)) {
             var indexMetaData = table.getIndexMetaData(indexName) as InternalIndexMetaData?
 
             if (indexMetaData == null) {
@@ -170,6 +170,10 @@ class DatabaseMetaDataInspectorTool(
       }
     }
   }
+
+  private fun TableMetaData.hasForeignKey(name: String) =
+    exportedForeignKeys.map { it.foreignKeyName.uppercase() }.contains(name.uppercase())
+        || importedForeignKeys.map { it.foreignKeyName.uppercase() }.contains(name.uppercase())
 
   @Throws(SQLException::class)
   private fun updateColumnsWithPrimaryKeyInformation(

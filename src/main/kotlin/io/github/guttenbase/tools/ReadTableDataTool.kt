@@ -4,7 +4,6 @@ import io.github.guttenbase.connector.Connector
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
-import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
@@ -24,7 +23,7 @@ open class ReadTableDataTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String,
   private val tableMetaData: TableMetaData
-) :AutoCloseable {
+) : AutoCloseable {
   constructor(connectorRepository: ConnectorRepository, connectorId: String, tableName: String) : this(
     connectorRepository, connectorId,
     connectorRepository.getDatabaseMetaData(connectorId).getTableMetaData(tableName)
@@ -75,11 +74,10 @@ open class ReadTableDataTool(
   @Throws(SQLException::class)
   fun readTableData(noLines: Int): List<Map<String, Any?>> {
     var lines = noLines
-    val result: MutableList<Map<String, Any?>> = ArrayList()
+    val result = ArrayList<Map<String, Any?>>()
     val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
-    val sourceColumnNameMapper: ColumnMapper =
-      connectorRepository.hint<ColumnMapper>(connectorId)
-    val orderedSourceColumns: List<ColumnMetaData> = ColumnOrderHint.getSortedColumns(
+    val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(connectorId)
+    val orderedSourceColumns = ColumnOrderHint.getSortedColumns(
       connectorRepository, connectorId, tableMetaData
     )
 
@@ -93,8 +91,8 @@ open class ReadTableDataTool(
       val rowData = HashMap<String, Any?>()
 
       for (columnIndex in 1..orderedSourceColumns.size) {
-        val sourceColumn: ColumnMetaData = orderedSourceColumns[columnIndex - 1]
-        val columnName: String = sourceColumnNameMapper.mapColumnName(sourceColumn, tableMetaData)
+        val sourceColumn = orderedSourceColumns[columnIndex - 1]
+        val columnName = sourceColumnNameMapper.mapColumnName(sourceColumn, tableMetaData)
         val sourceColumnType = commonColumnTypeResolver.getColumnType(connectorId, sourceColumn)
         val columnTypeMapping = commonColumnTypeResolver.getCommonColumnTypeMapping(
           sourceColumn, connectorId, sourceColumn

@@ -26,6 +26,10 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, connectorId:
     columns = getMappedTargetColumns(tableMetaData, tableMetaData, connectorId)
       .filter { if (!includePrimaryKey) !it.isPrimaryKey else true }
 
+    if(columns.isEmpty()) {
+      throw IllegalStateException("No matching columns for $tableName")
+    }
+
     return "INSERT INTO " + tableName + " (" + createColumnClause(columns) + ") VALUES\n" +
         createValueTuples(1, columns.size)
   }

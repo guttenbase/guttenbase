@@ -51,8 +51,9 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
       if (column.isAutoIncrement) " " + lookupAutoIncrementClause(column, targetDatabaseType) else ""
     val notNullClause = if (column.isNullable || singlePrimaryKey) "" else " NOT NULL" // Primary key implies NOT NULL
     val primaryKeyClause = if (singlePrimaryKey) " PRIMARY KEY" else ""
+    val defaultValueClause = lookupDefaultValueClause(columnDefinition, targetDatabaseType)
 
-    return columnDefinition.type + precision + notNullClause + autoincrementClause + primaryKeyClause
+    return columnDefinition.type + precision + defaultValueClause + notNullClause + autoincrementClause + primaryKeyClause
   }
 
   /**
@@ -139,6 +140,17 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
 
     return this
   }
+
+  protected fun lookupDefaultValueClause(columnDefinition: ColumnDefinition, targetDatabaseType: DatabaseType) =
+    when (targetDatabaseType) {
+      MYSQL -> if (columnDefinition.type.equals("TIMESTAMP", true)) {
+        " DEFAULT CURRENT_TIMESTAMP"    // Otherwise may result in [42000][1067] Invalid default value for 'CREATED_AT'
+      } else {
+        ""
+      }
+
+      else -> ""
+    }
 
   private fun addMappingInternal(
     sourceDB: DatabaseType,
