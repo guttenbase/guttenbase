@@ -13,7 +13,7 @@
 
 ## 3.2.x
 
-- Added support builder patttern style in connector repository
+- Added support for builder patttern style in connector repository
 - Added support to externalize and optionally encrypt database properties
 
 ## 3.1.x
