@@ -1,5 +1,9 @@
 # Change log
 
+## 3.4.x
+
+- Filter synthetic indexes and foreign keys, i.e. constraints created by the database itself
+
 ## 3.3.x
 
 - Export data to SQL script via JDBC driver implementation

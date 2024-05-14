@@ -7,14 +7,12 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.connector.DatabaseType.*
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.defaults.impl.DefaultColumnMapper
+import io.github.guttenbase.defaults.impl.DefaultDatabaseIndexFilter
 import io.github.guttenbase.export.ExportDumpDatabaseConfiguration
 import io.github.guttenbase.export.ImportDumpDatabaseConfiguration
 import io.github.guttenbase.export.plain.ExportPlainTextConnectorInfo
 import io.github.guttenbase.export.zip.DefaultZipExporterClassResourcesHint
-import io.github.guttenbase.hints.CaseConversionMode
-import io.github.guttenbase.hints.ConnectorHint
-import io.github.guttenbase.hints.ForeignKeyMapperHint
-import io.github.guttenbase.hints.IndexMapperHint
+import io.github.guttenbase.hints.*
 import io.github.guttenbase.hints.impl.*
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.ForeignKeyMapper
@@ -251,6 +249,10 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultRepositoryTableFilterHint())
     addConnectorHint(connectorId, DefaultDatabaseTableFilterHint())
     addConnectorHint(connectorId, DefaultDatabaseColumnFilterHint())
+    addConnectorHint(connectorId, object : DatabaseIndexFilterHint(){
+      override val value: DatabaseIndexFilter
+        get() = DefaultDatabaseIndexFilter()
+    })
     addConnectorHint(connectorId, DefaultNumberOfRowsPerBatchHint())
     addConnectorHint(connectorId, DefaultResultSetParametersHint())
     addConnectorHint(connectorId, DefaultNumberOfCheckedTableDataHint())

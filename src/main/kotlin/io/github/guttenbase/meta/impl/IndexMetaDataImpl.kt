@@ -19,12 +19,12 @@ class IndexMetaDataImpl(
   override val isUnique: Boolean,
   override val isPrimaryKeyIndex: Boolean
 ) : InternalIndexMetaData {
-  private val _columns: MutableList<ColumnMetaData> = ArrayList()
+  private val columns: MutableList<ColumnMetaData> = ArrayList()
 
-  override val columnMetaData: List<ColumnMetaData> get() = ArrayList(_columns)
+  override val columnMetaData: List<ColumnMetaData> get() = ArrayList(columns)
 
   override fun addColumn(columnMetaData: ColumnMetaData) {
-    _columns.add(columnMetaData)
+    columns.add(columnMetaData)
   }
 
   override operator fun compareTo(other: IndexMetaData) = indexName.uppercase().compareTo(other.indexName.uppercase())

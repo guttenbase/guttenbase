@@ -135,6 +135,7 @@ class DatabaseMetaDataInspectorTool(
     LOG.debug("Retrieving index information for " + table.tableName)
 
     val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
+    val indexFilter = connectorRepository.hint<DatabaseIndexFilter>(connectorId)
     val resultSet = metaData.getIndexInfo(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchema(databaseMetaData), table.tableName, false,
@@ -144,15 +145,13 @@ class DatabaseMetaDataInspectorTool(
     resultSet.use {
       while (resultSet.next()) {
         val nonUnique = resultSet.getBoolean("NON_UNIQUE")
-        val columnName: String? = resultSet.getString("COLUMN_NAME")
+        val columnName = resultSet.getString("COLUMN_NAME")
         val indexName = resultSet.getString("INDEX_NAME") ?: "IDX_UNKNOWN_$columnName"
-        val ascOrDesc: String? = resultSet.getString("ASC_OR_DESC")
+        val ascOrDesc = resultSet.getString("ASC_OR_DESC")
 
         if (columnName != null) {
           val column = table.getColumnMetaData(columnName)
 
-          // May be strange SYS...$ column as with Oracle
-          // Same DBs handle add indexes as foreign keys
           if (column != null && !table.hasForeignKey(indexName)) {
             var indexMetaData = table.getIndexMetaData(indexName) as InternalIndexMetaData?
 
@@ -161,10 +160,14 @@ class DatabaseMetaDataInspectorTool(
               val unique = !nonUnique
 
               indexMetaData = IndexMetaDataImpl(table, indexName, ascending, unique, column.isPrimaryKey)
-              table.addIndex(indexMetaData)
-            }
+              indexMetaData.addColumn(column)
 
-            indexMetaData.addColumn(column)
+              if (indexFilter.accept(indexMetaData)) {
+                table.addIndex(indexMetaData)
+              }
+            } else {
+              indexMetaData.addColumn(column)
+            }
           }
         }
       }
@@ -192,10 +195,11 @@ class DatabaseMetaDataInspectorTool(
     resultSet.use {
       while (resultSet.next()) {
         val pkName = resultSet.getString("PK_NAME")
-        val columnName = resultSet.getString("COLUMN_NAME") ?: throw GuttenBaseException("COLUMN_NAME must not be null")
+        val columnName =
+          resultSet.getString("COLUMN_NAME") ?: throw GuttenBaseException("COLUMN_NAME must not be null")
 
         if (pkName != null) {
-          val columnMetaData: InternalColumnMetaData = table.getColumnMetaData(columnName) as InternalColumnMetaData?
+          val columnMetaData = table.getColumnMetaData(columnName) as InternalColumnMetaData?
             ?: throw IllegalStateException("No column meta data for $columnName")
           columnMetaData.isPrimaryKey = true
         }

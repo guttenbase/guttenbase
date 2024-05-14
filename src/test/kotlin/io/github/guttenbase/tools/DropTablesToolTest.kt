@@ -1,6 +1,8 @@
 package io.github.guttenbase.io.github.guttenbase.tools
 
 import io.github.guttenbase.AbstractGuttenBaseTest
+import io.github.guttenbase.configuration.TestDerbyConnectionInfo
+import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.tools.*
 import org.assertj.core.api.Assertions.assertThat
@@ -20,23 +22,37 @@ import java.sql.SQLIntegrityConstraintViolationException
 class DropTablesToolTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setup() {
-    connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
+    val scriptExecutorTool = ScriptExecutorTool(connectorRepository)
 
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
+    connectorRepository.addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
+    connectorRepository.addConnectionInfo(H2, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(DERBY, TestDerbyConnectionInfo())
+
+    scriptExecutorTool.executeFileScript(HSQLDB, resourceName = "/ddl/tables-hsqldb.sql")
+    scriptExecutorTool.executeFileScript(H2, resourceName = "/ddl/tables-h2.sql")
+    scriptExecutorTool.executeFileScript(DERBY, resourceName = "/ddl/tables-derby.sql")
+    scriptExecutorTool.executeFileScript(HSQLDB, false, false, "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(H2, false, false, "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(DERBY, false, false, "/data/test-data.sql")
   }
 
   @Test
   fun `Delete data, but keep schema`() {
-    val data1 = ReadTableDataTool(connectorRepository, SOURCE, "FOO_COMPANY").start().use {
+    delete(HSQLDB)
+    delete(H2)
+    delete(DERBY)
+  }
+
+  private fun delete(target: String) {
+    val data1 = ReadTableDataTool(connectorRepository, target, "FOO_COMPANY").start().use {
       it.readTableData(-1)
     }
 
     assertThat(data1).hasSize(4)
 
-    DropTablesTool(connectorRepository).clearTables(SOURCE)
+    DropTablesTool(connectorRepository).clearTables(target)
 
-    val data2 = ReadTableDataTool(connectorRepository, SOURCE, "FOO_COMPANY").start().use {
+    val data2 = ReadTableDataTool(connectorRepository, target, "FOO_COMPANY").start().use {
       it.readTableData(-1)
     }
 
@@ -45,45 +61,71 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Drop tables`() {
-    DropTablesTool(connectorRepository).dropTables(SOURCE)
+    drop(HSQLDB)
+    drop(H2)
+    drop(DERBY)
+  }
 
-    assertThat(connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData).isEmpty()
+  private fun drop(target: String) {
+    DropTablesTool(connectorRepository).dropTables(target)
+
+    assertThat(connectorRepository.getDatabaseMetaData(target).tableMetaData).isEmpty()
   }
 
   @Test
   fun `Drop all`() {
-    DropTablesTool(connectorRepository).dropAll(SOURCE)
+    dropALl(HSQLDB)
+    dropALl(H2)
+    dropALl(DERBY)
+  }
 
-    assertThat(connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData).isEmpty()
+  private fun dropALl(target: String) {
+    DropTablesTool(connectorRepository).dropAll(target)
+
+    assertThat(connectorRepository.getDatabaseMetaData(target).tableMetaData).isEmpty()
   }
 
   @Test
   fun `Drop constraints`() {
+    dropConstraints(HSQLDB)
+    dropConstraints(H2)
+    dropConstraints(DERBY)
+  }
+
+  private fun dropConstraints(target: String) {
     assertThrows<SQLIntegrityConstraintViolationException> {
-      InsertStatementTool(connectorRepository, SOURCE).createInsertStatement("FOO_USER_COMPANY")
+      InsertStatementTool(connectorRepository, target).createInsertStatement("FOO_USER_COMPANY")
         .setParameter("USER_ID", 42L).setParameter("ASSIGNED_COMPANY_ID", 4711L)
         .execute()
     }
 
-    DropTablesTool(connectorRepository).dropForeignKeys(SOURCE)
+    DropTablesTool(connectorRepository).dropForeignKeys(target)
 
-    InsertStatementTool(connectorRepository, SOURCE).createInsertStatement("FOO_USER_COMPANY")
+    InsertStatementTool(connectorRepository, target).createInsertStatement("FOO_USER_COMPANY")
       .setParameter("USER_ID", 42L).setParameter("ASSIGNED_COMPANY_ID", 4711L)
       .execute()
   }
 
   @Test
   fun `Drop indexes`() {
-    DropTablesTool(connectorRepository).dropIndexes(SOURCE)
+    dropIndexes(H2)
+    dropIndexes(HSQLDB)
+    dropIndexes(DERBY)
+  }
 
-    val data1 = ReadTableDataTool(connectorRepository, SOURCE, "FOO_COMPANY").start().use {
+  private fun dropIndexes(target: String) {
+    DropTablesTool(connectorRepository).dropIndexes(target)
+
+    val data1 = ReadTableDataTool(connectorRepository, target, "FOO_COMPANY").start().use {
       it.readTableData(-1)
     }
 
-    assertThat(data1).hasSize(4)  }
+    assertThat(data1).hasSize(4)
+  }
 
   companion object {
-    const val SOURCE = "SOURCE"
-    const val TARGET = "TARGET"
+    const val HSQLDB = "HSQLDB"
+    const val H2 = "H2"
+    const val DERBY = "DERBY"
   }
 }

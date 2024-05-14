@@ -7,6 +7,16 @@ import io.github.guttenbase.repository.DatabaseTableFilter
 import io.github.guttenbase.utils.Util
 
 
+/**
+ * Regard which tables when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for tables. The methods refer to
+ * the parameters passed to JDBC data base meta data methods such as [DatabaseMetaData.getTableMetaData]
+ *
+ *
+ *  &copy; 2012-2034 akquinet tech@spree
+ *
+ *
+ * @author M. Dahm
+ */
 open class DefaultDatabaseTableFilter : DatabaseTableFilter {
   override fun getCatalog(databaseMetaData: DatabaseMetaData) = when (databaseMetaData.databaseType) {
     MARIADB, MYSQL -> databaseMetaData.schema
