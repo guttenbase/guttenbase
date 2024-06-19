@@ -10,31 +10,36 @@ import java.util.*
  * Default uses same data type as source
  *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  */
 @Suppress("MemberVisibilityCanBePrivate")
 open class DefaultColumnTypeMapper : ColumnTypeMapper {
   private val mappings = HashMap<DatabaseType, MutableMap<DatabaseType, MutableMap<String, ColumnDefinition>>>()
 
   init {
-    createPostgresToMysqlMapping()
-    createOracleToPostgresMapping()
-    createMysqlToPostresMapping()
+    // DB data types to Standard SQL, if possible
+    createH2SpecificMappings()
+    createDerbySpecificMappings()
+    createPostgresSpecificMappings()
+    createOracleSpecificMappings()
+    createMssqlSpecificMappings()
+    createMysqlSpecificMappings()
+
+    // Mappings between specific DBs, may override above configurations
+    createMysqlToPostgresMapping()
+    createMysqlToDB2Mapping()
+    createMysqlToMssqlMapping()
     createMysqlToOracle()
-    createOracleToMysql()
+
+    createOracleToPostgresMapping()
+
+    createPostgresToMssqlMapping()
+
     createMssqlToOracle()
-    createMssqlToMysql()
     createMssqlToPostgres()
-    createH2ToDerbyMapping()
-    createDerbyToH2Mapping()
+
     createDB2ToMysqlMapping()
     createDB2ToPostgresMapping()
-    createMysqltoDB2Mapping()
-    createPostgrestoDB2Mapping()
-    createMysqlToMssqlMapping()
-    createPostgresToMssqlMapping()
     createDB2ToMssqlMapping()
-    createPostgresToOracleMapping()
   }
 
   /**
@@ -165,87 +170,92 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
     mapping[sourceTypeName] = ColumnDefinition(targetTypeName, precision)
   }
 
-  private fun createPostgresToMysqlMapping() {
-    addMapping(POSTGRESQL, MYSQL, "INT8", "TINYINT")
-    addMapping(POSTGRESQL, MYSQL, "ARRAY", "LONGTEXT")
-    addMapping(POSTGRESQL, MYSQL, "BIGSERIAL", "BIGINT")
-    addMapping(POSTGRESQL, MYSQL, "BOOLEAN", "TINYINT(1)")
-    addMapping(POSTGRESQL, MYSQL, "BOX", "POLYGON")
-    addMapping(POSTGRESQL, MYSQL, "BYTEA", "LONGBLOB")
-    addMapping(POSTGRESQL, MYSQL, "CIDR", "VARCHAR(43)")
-    addMapping(POSTGRESQL, MYSQL, "CIRCLE", "POLYGON")
-    addMapping(POSTGRESQL, MYSQL, "DOUBLE PRECISION", "DOUBLE")
-    addMapping(POSTGRESQL, MYSQL, "INET", "VARCHAR", "(43)")
-    addMapping(POSTGRESQL, MYSQL, "INTERVAL", "TIME")
-    addMapping(POSTGRESQL, MYSQL, "JSON", "LONGTEXT")
-    addMapping(POSTGRESQL, MYSQL, "LINE", "LINESTRING")
-    addMapping(POSTGRESQL, MYSQL, "LSEG", "LINESTRING")
-    addMapping(POSTGRESQL, MYSQL, "MACADDR", "VARCHAR", "(17)")
-    addMapping(POSTGRESQL, MYSQL, "MONEY", "DECIMAL", "(19,2)")
-    addMapping(POSTGRESQL, MYSQL, "NATIONAL CHARACTER VARYING", "VARCHAR")
-    addMapping(POSTGRESQL, MYSQL, "NATIONAL CHARACTER", "CHAR")
-    addMapping(POSTGRESQL, MYSQL, "NUMERIC", "DECIMAL")
-    addMapping(POSTGRESQL, MYSQL, "PATH", "LINESTRING")
-    addMapping(POSTGRESQL, MYSQL, "REAL", "FLOAT")
-    addMapping(POSTGRESQL, MYSQL, "SERIAL", "INT")
-    addMapping(POSTGRESQL, MYSQL, "SMALLSERIAL", "SMALLINT")
-    addMapping(POSTGRESQL, MYSQL, "TEXT", "LONGTEXT")
-    addMapping(POSTGRESQL, MYSQL, "TIMESTAMP", "DATETIME")
-    addMapping(POSTGRESQL, MYSQL, "TSQUERY", "LONGTEXT")
-    addMapping(POSTGRESQL, MYSQL, "TSVECTOR", "LONGTEXT")
-    addMapping(POSTGRESQL, MYSQL, "TXID_SNAPSHOT", "VARCHAR")
-    addMapping(POSTGRESQL, MYSQL, "UUID", "VARCHAR", "(36)")
-    addMapping(POSTGRESQL, MYSQL, "XML", "LONGTEXT")
-    addMapping(POSTGRESQL, MYSQL, "OID", "BLOB")
+  private fun createPostgresSpecificMappings() {
+    mapDBspecificTypeToStandard(POSTGRESQL, "TEXT", "VARCHAR", "(4000)") //CHAR(254)
+    mapDBspecificTypeToStandard(POSTGRESQL, "BYTEA", "BLOB") //CLOB (2G) LONGBLOB
+    mapDBspecificTypeToStandard(POSTGRESQL, "NUMERIC", "DECIMAL", "(16)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INT(2)", "DECIMAL", "(16)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INT(4)", "DECIMAL", "(16)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INT4", "INT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INT2", "INT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INT8", "TINYINT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "ARRAY", "LONGTEXT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "BIGSERIAL", "BIGINT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "BOOLEAN", "TINYINT(1)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "BOX", "POLYGON")
+    mapDBspecificTypeToStandard(POSTGRESQL, "BYTEA", "LONGBLOB")
+    mapDBspecificTypeToStandard(POSTGRESQL, "CIDR", "VARCHAR(43)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "CIRCLE", "POLYGON")
+    mapDBspecificTypeToStandard(POSTGRESQL, "DOUBLE PRECISION", "DOUBLE")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INET", "VARCHAR", "(43)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INTERVAL", "TIME")
+    mapDBspecificTypeToStandard(POSTGRESQL, "JSON", "LONGTEXT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "LINE", "LINESTRING")
+    mapDBspecificTypeToStandard(POSTGRESQL, "LSEG", "LINESTRING")
+    mapDBspecificTypeToStandard(POSTGRESQL, "MACADDR", "VARCHAR", "(17)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "MONEY", "DECIMAL", "(19,2)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "NATIONAL CHARACTER VARYING", "VARCHAR")
+    mapDBspecificTypeToStandard(POSTGRESQL, "NATIONAL CHARACTER", "CHAR")
+    mapDBspecificTypeToStandard(POSTGRESQL, "NUMERIC", "DECIMAL")
+    mapDBspecificTypeToStandard(POSTGRESQL, "PATH", "LINESTRING")
+    mapDBspecificTypeToStandard(POSTGRESQL, "REAL", "FLOAT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "SERIAL", "INT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "SMALLSERIAL", "SMALLINT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "TEXT", "LONGTEXT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "TIMESTAMP", "DATETIME")
+    mapDBspecificTypeToStandard(POSTGRESQL, "TSQUERY", "LONGTEXT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "TSVECTOR", "LONGTEXT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "TXID_SNAPSHOT", "VARCHAR")
+    mapDBspecificTypeToStandard(POSTGRESQL, "UUID", "VARCHAR", "(36)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "XML", "LONGTEXT")
+    mapDBspecificTypeToStandard(POSTGRESQL, "BPCHAR", "CHAR", "(1)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "BPCHAR", "CHAR")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INT8", "NUMBER", "(3)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INT4", "NUMBER", "(5)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "INT16", "NUMBER", "(10)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "BIGSERIAL", "NUMBER", "(19)")
+    mapDBspecificTypeToStandard(POSTGRESQL, "OID", "BLOB")
+    mapDBspecificTypeToStandard(POSTGRESQL, "BYTEA", "BINARY")
+  }
+
+  private fun createOracleSpecificMappings() {
+    mapDBspecificTypeToStandard(ORACLE, "VARCHAR2", "VARCHAR")
+    mapDBspecificTypeToStandard(ORACLE, "RAW", "BYTEA")
+    mapDBspecificTypeToStandard(ORACLE, "RAW", "BIT") //TINYBLOB
+    mapDBspecificTypeToStandard(ORACLE, "NUMBER(19, 0)", "BIGINT")
+    mapDBspecificTypeToStandard(ORACLE, "DATE", "DATETIME")
+    mapDBspecificTypeToStandard(ORACLE, "FLOAT(24)", "DECIMAL") // DOUBLE, DOUBLE PRECISION, REAL
+    mapDBspecificTypeToStandard(ORACLE, "NUMBER(10, 0)", "INT") // INTEGER
+    mapDBspecificTypeToStandard(ORACLE, "BLOB", "LONGBLOB") // MEDIUMBLOB
+    mapDBspecificTypeToStandard(ORACLE, "CLOB", "MEDIUMTEXT")
+    mapDBspecificTypeToStandard(ORACLE, "NUMBER(7, 0)", "MEDIUMINT")
+    mapDBspecificTypeToStandard(ORACLE, "NUMBER", "NUMERIC") //YEAR
+    mapDBspecificTypeToStandard(ORACLE, "NUMBER(5, 0)", "SMALLINT")
+    mapDBspecificTypeToStandard(ORACLE, "BYTEA", "VARBINARY")
   }
 
   private fun createOracleToPostgresMapping() {
     addMapping(ORACLE, POSTGRESQL, "NUMBER", "NUMERIC")
-    addMapping(ORACLE, POSTGRESQL, "VARCHAR2", "VARCHAR")
-    addMapping(ORACLE, POSTGRESQL, "RAW", "BYTEA")
   }
 
-  private fun createPostgresToOracleMapping() {
-    addMapping(POSTGRESQL, ORACLE, "BPCHAR", "CHAR", "(1)")
-    addMapping(POSTGRESQL, ORACLE, "BPCHAR", "CHAR")
-    addMapping(POSTGRESQL, ORACLE, "INT8", "NUMBER", "(3)")
-    addMapping(POSTGRESQL, ORACLE, "INT4", "NUMBER", "(5)")
-    addMapping(POSTGRESQL, ORACLE, "INT16", "NUMBER", "(10)")
-    addMapping(POSTGRESQL, ORACLE, "BIGSERIAL", "NUMBER", "(19)")
-    addMapping(POSTGRESQL, ORACLE, "OID", "BLOB")
+  private fun createH2SpecificMappings() {
+    mapDBspecificTypeToStandard(H2DB, "LONGTEXT", "CLOB")
+    mapDBspecificTypeToStandard(H2DB, "LONGBLOB", "BLOB")
+    mapDBspecificTypeToStandard(H2DB, "BINARY LARGE OBJECT", "BLOB")
   }
 
-  private fun createH2ToDerbyMapping() {
-    entries.forEach {
-      if (it != H2DB) {
-        addMapping(H2DB, it, "LONGTEXT", "CLOB")
-        addMapping(H2DB, it, "LONGBLOB", "BLOB")
-        addMapping(H2DB, it, "BINARY LARGE OBJECT", "BLOB")
-      }
-    }
+  private fun createDerbySpecificMappings() {
+    mapDBspecificTypeToStandard(DERBY, "LONGTEXT", "CLOB")
+    mapDBspecificTypeToStandard(DERBY, "LONGBLOB", "BLOB")
   }
 
-  private fun createDerbyToH2Mapping() {
-    addMapping(DERBY, H2DB, "LONGTEXT", "CLOB")
-    addMapping(DERBY, H2DB, "LONGBLOB", "BLOB")
-  }
-
-  private fun createMysqltoDB2Mapping() {
+  private fun createMysqlToDB2Mapping() {
     addMapping(MYSQL, DB2, "LONGTEXT", "VARCHAR", "(4000)") //CHAR(254)
     addMapping(MYSQL, DB2, "LONGBLOB", "BLOB") //CLOB (2G)
     addMapping(MYSQL, DB2, "DECIMAL", "DECIMAL", "(16)") //CLOB (2G)
   }
 
-  private fun createPostgrestoDB2Mapping() {
-    addMapping(POSTGRESQL, DB2, "TEXT", "VARCHAR", "(4000)") //CHAR(254)
-    addMapping(POSTGRESQL, DB2, "BYTEA", "BLOB") //CLOB (2G) LONGBLOB
-    addMapping(POSTGRESQL, DB2, "NUMERIC", "DECIMAL", "(16)")
-    addMapping(POSTGRESQL, DB2, "INT(2)", "DECIMAL", "(16)")
-    addMapping(POSTGRESQL, DB2, "INT(4)", "DECIMAL", "(16)")
-  }
-
   private fun createDB2ToMysqlMapping() {
-    addMapping(DB2, MYSQL, "CHAR", "CHAR")
     addMapping(DB2, MYSQL, "CLOB", "LONGBLOB")
     addMapping(DB2, MYSQL, "INTEGER", "INT", "(11)")
   }
@@ -258,11 +268,9 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
     addMapping(DB2, MSSQL, "BLOB", "VARBINARY")
   }
 
-  private fun createMysqlToPostresMapping() {
+  private fun createMysqlToPostgresMapping() {
     addMapping(MYSQL, POSTGRESQL, "BIGINT AUTO_INCREMENT", "BIGSERIAL")
     addMapping(MYSQL, POSTGRESQL, "BIGINT UNSIGNED", "NUMERIC", "(20)")
-    addMapping(MYSQL, POSTGRESQL, "INTEGER UNSIGNED", "BIGINT")
-    addMapping(MYSQL, POSTGRESQL, "INT UNSIGNED", "BIGINT")
     addMapping(MYSQL, POSTGRESQL, "MEDIUMINT UNSIGNED", "INTEGER")
     addMapping(MYSQL, POSTGRESQL, "BINARY", "BYTEA")
     addMapping(MYSQL, POSTGRESQL, "BLOB", "BYTEA")
@@ -277,7 +285,6 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
     addMapping(MYSQL, POSTGRESQL, "LONGTEXT", "TEXT")
     addMapping(MYSQL, POSTGRESQL, "MEDIUMTEXT", "TEXT")
     addMapping(MYSQL, POSTGRESQL, "SMALLINT AUTO_INCREMENT", "SMALLSERIAL")
-    addMapping(MYSQL, POSTGRESQL, "SMALLINT UNSIGNED", "INTEGER")
     addMapping(MYSQL, POSTGRESQL, "TINYINT", "NUMERIC(1)")
     addMapping(MYSQL, POSTGRESQL, "TINYINT AUTO_INCREMENT", "SMALLSERIAL")
     addMapping(MYSQL, POSTGRESQL, "TINYINT UNSIGNED", "SMALLSERIAL")
@@ -310,48 +317,14 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
     addMapping(MYSQL, ORACLE, "TINYBLOB", "RAW")
     addMapping(MYSQL, ORACLE, "TINYINT", "NUMBER", "(3, 0)")
     addMapping(MYSQL, ORACLE, "TINYTEXT", "VARCHAR2")
-    addMapping(MYSQL, ORACLE, "YEAR", "NUMBER")
     addMapping(MYSQL, ORACLE, "VARBINARY", "BYTEA")
   }
 
-  private fun createOracleToMysql() {
-    addMapping(ORACLE, MYSQL, "RAW", "BIT") //TINYBLOB
-    addMapping(ORACLE, MYSQL, "NUMBER(19, 0)", "BIGINT")
-    addMapping(ORACLE, MYSQL, "DATE", "DATETIME")
-    addMapping(ORACLE, MYSQL, "FLOAT (24)", "DECIMAL") // DOUBLE, DOUBLE PRECISION, REAL
-    addMapping(ORACLE, MYSQL, "VARCHAR2", "VARCHAR")
-    addMapping(ORACLE, MYSQL, "NUMBER(10, 0)", "INT") // INTEGER
-    addMapping(ORACLE, MYSQL, "BLOB", "LONGBLOB") // MEDIUMBLOB
-    addMapping(ORACLE, MYSQL, "CLOB", "MEDIUMTEXT")
-    addMapping(ORACLE, MYSQL, "NUMBER(7, 0)", "MEDIUMINT")
-    addMapping(ORACLE, MYSQL, "NUMBER", "NUMERIC") //YEAR
-    addMapping(ORACLE, MYSQL, "NUMBER(5, 0)", "SMALLINT")
-    addMapping(ORACLE, MYSQL, "BYTEA", "VARBINARY")
-  }
-
-  private fun createMssqlToOracle() {
-    addMapping(MSSQL, ORACLE, "BIGINT", "NUMBER", "(19)")
-    addMapping(MSSQL, ORACLE, "BINARY", "RAW")
-    addMapping(MSSQL, ORACLE, "BIT", "NUMBER", "(1)")
-    addMapping(MSSQL, ORACLE, "DATETIME", "DATE")
-    addMapping(MSSQL, ORACLE, "DECIMAL", "NUMBER", "(10)")
-    addMapping(MSSQL, ORACLE, "FLOAT", "FLOAT", "(49)")
-    addMapping(MSSQL, ORACLE, "IMAGE", "LONG RAW")
-    addMapping(MSSQL, ORACLE, "INTEGER", "NUMBER", "(10")
-    addMapping(MSSQL, ORACLE, "MONEY", "NUMBER", "(19,4)")
-    addMapping(MSSQL, ORACLE, "NTEXT", "LONG")
-    addMapping(MSSQL, ORACLE, "NVARCHAR", "NCHAR")
-    addMapping(MSSQL, ORACLE, "NUMERIC", "NUMBER", "(10)")
-    addMapping(MSSQL, ORACLE, "REAL", "FLOAT", "(23)")
-    addMapping(MSSQL, ORACLE, "SMALL DATETIME", "DATE")
-    addMapping(MSSQL, ORACLE, "SMALL MONEY", "NUMBER", "(10,4)")
-    addMapping(MSSQL, ORACLE, "SMALLINT", "NUMBER", "(5)")
-    addMapping(MSSQL, ORACLE, "TEXT", "LONG")
-    addMapping(MSSQL, ORACLE, "TIMESTAMP", "RAW")
-    addMapping(MSSQL, ORACLE, "TINYINT", "NUMBER", "(3)")
-    addMapping(MSSQL, ORACLE, "UNIQUEIDENTIFIER", "CHAR", "(36)")
-    addMapping(MSSQL, ORACLE, "VARBINARY", "RAW")
-    addMapping(MSSQL, ORACLE, "VARCHAR", "VARCHAR2")
+  private fun createMysqlSpecificMappings() {
+    mapDBspecificTypeToStandard(MYSQL, "YEAR", "NUMBER")
+    mapDBspecificTypeToStandard(MYSQL, "SMALLINT UNSIGNED", "INTEGER")
+    mapDBspecificTypeToStandard(MYSQL, "INTEGER UNSIGNED", "BIGINT")
+    mapDBspecificTypeToStandard(MYSQL, "INT UNSIGNED", "BIGINT")
   }
 
   private fun createMysqlToMssqlMapping() {
@@ -366,18 +339,52 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
   private fun createPostgresToMssqlMapping() {
     addMapping(POSTGRESQL, MSSQL, "TEXT", "NVARCHAR", "(4000)")
     addMapping(POSTGRESQL, MSSQL, "BYTEA", "BINARY")
-    addMapping(POSTGRESQL, MSSQL, "INT4", "INT")
-    addMapping(POSTGRESQL, MSSQL, "INT2", "INT")
   }
 
-  private fun createMssqlToMysql() {
-    addMapping(MSSQL, MYSQL, "NVARCHAR", "VARCHAR", "(255)")
-    addMapping(MSSQL, MYSQL, "VARBINARY", "BLOB")
+  private fun createMssqlSpecificMappings() {
+    mapDBspecificTypeToStandard(MSSQL, "NVARCHAR", "VARCHAR", "(255)")
+    mapDBspecificTypeToStandard(MSSQL, "VARBINARY", "BLOB")
+    mapDBspecificTypeToStandard(MSSQL, "BINARY", "BLOB")
+    mapDBspecificTypeToStandard(MSSQL, "MONEY", "NUMBER", "(19,4)")
+    mapDBspecificTypeToStandard(MSSQL, "SMALL DATETIME", "DATE")
+    mapDBspecificTypeToStandard(MSSQL, "SMALL MONEY", "NUMBER", "(10,4)")
+    mapDBspecificTypeToStandard(MSSQL, "UNIQUEIDENTIFIER", "CHAR", "(36)")
+  }
+
+  private fun createMssqlToOracle() {
+    addMapping(MSSQL, ORACLE, "BIGINT", "NUMBER", "(19)")
+    addMapping(MSSQL, ORACLE, "BINARY", "RAW")
+    addMapping(MSSQL, ORACLE, "BIT", "NUMBER", "(1)")
+    addMapping(MSSQL, ORACLE, "DATETIME", "DATE")
+    addMapping(MSSQL, ORACLE, "DECIMAL", "NUMBER", "(10)")
+    addMapping(MSSQL, ORACLE, "FLOAT", "FLOAT", "(49)")
+    addMapping(MSSQL, ORACLE, "IMAGE", "LONG RAW")
+    addMapping(MSSQL, ORACLE, "INTEGER", "NUMBER", "(10")
+    addMapping(MSSQL, ORACLE, "NTEXT", "LONG")
+    addMapping(MSSQL, ORACLE, "NVARCHAR", "NCHAR")
+    addMapping(MSSQL, ORACLE, "NUMERIC", "NUMBER", "(10)")
+    addMapping(MSSQL, ORACLE, "REAL", "FLOAT", "(23)")
+    addMapping(MSSQL, ORACLE, "SMALLINT", "NUMBER", "(5)")
+    addMapping(MSSQL, ORACLE, "TEXT", "LONG")
+    addMapping(MSSQL, ORACLE, "TIMESTAMP", "DATETIME")
+    addMapping(MSSQL, ORACLE, "TINYINT", "NUMBER", "(3)")
+    addMapping(MSSQL, ORACLE, "VARBINARY", "RAW")
+    addMapping(MSSQL, ORACLE, "VARCHAR", "VARCHAR2")
   }
 
   private fun createMssqlToPostgres() {
     addMapping(MSSQL, POSTGRESQL, "NVARCHAR", "TEXT")
     addMapping(MSSQL, POSTGRESQL, "VARBINARY", "BYTEA")
+  }
+
+  private fun mapDBspecificTypeToStandard(
+    sourceDB: DatabaseType, sourceTypeName: String, targetTypeName: String, precision: String = ""
+  ) {
+    entries.forEach {
+      if (it != sourceDB) {
+        addMapping(sourceDB, it, sourceTypeName, targetTypeName, precision)
+      }
+    }
   }
 
   data class ColumnDefinition(val type: String, val precision: String)

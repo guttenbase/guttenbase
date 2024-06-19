@@ -58,3 +58,19 @@ connectorRepository.addConnectorHint(TARGET, new NumberOfRowsPerInsertionHint() 
     }
 });
 ```
+## Q: What can I do, if the source database uses a unknown data type
+
+If your database supports a type, say "MONEY", that is unknown to the target database you simply have to
+add a new type mapping:
+
+```java
+connectorRepository.addConnectorHint("EXPORT", new ColumnTypeMapperHint()
+  {
+    @Override
+    public ColumnTypeMapper getValue()
+    {
+      return new DefaultColumnTypeMapper()
+          .addMapping(DatabaseType.MSSL, DatabaseType.MYSQL, "MONEY", "NUMBER", "(19,4)");
+    }
+});
+```
