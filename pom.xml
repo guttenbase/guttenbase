@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <groupId>io.github.guttenbase</groupId>
     <artifactId>guttenbase</artifactId>
-    <version>3.3.3-SNAPSHOT</version>
+    <version>3.3.3</version>
 
     <modelVersion>4.0.0</modelVersion>
     <url>https://github.com/guttenbase/guttenbase</url>
@@ -301,6 +301,7 @@
         <profile>
             <!--
                 - Update settings.xml with my password and remove other password for https://s01.oss.sonatype.org/
+                - Remove "-SNAPSHOT" from version number
                 - mvn clean deploy -Prelease
                 - Enter password for GNUPG
             -->
