@@ -31,8 +31,8 @@
         <mockito.kotlin.version>4.1.0</mockito.kotlin.version>
         <assertj.version>3.24.2</assertj.version>
         <hsqldb.version>2.7.1</hsqldb.version>
-        <h2.version>2.1.214</h2.version>
-        <derby.version>10.15.2.0</derby.version>
+        <h2.version>2.2.224</h2.version>
+        <derby.version>10.15.2.0</derby.version> <!-- Last known version for JDK 11-->
     </properties>
 
     <dependencies>
