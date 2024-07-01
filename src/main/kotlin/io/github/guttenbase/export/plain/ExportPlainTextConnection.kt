@@ -20,7 +20,7 @@ typealias TO_STRING = (PrintWriter) -> Unit
 class ExportPlainTextConnection(internal val connector: ExportPlainConnector) : Connection {
   private var closed = false
   private val preparedStatements = ArrayList<ExportPlainTextStatement>()
-  internal val printWriter = PrintWriter(BufferedWriter(OutputStreamWriter(connector.connectorInfo.outputStream)))
+  internal val printWriter = PrintWriter(BufferedWriter(OutputStreamWriter(connector.connectorInfo.outputStream, connector.connectorInfo.encoding)))
 
   private fun createStatement(sql: String = ""): ExportPlainTextStatement {
     val result = ExportPlainTextStatement(sql, this)

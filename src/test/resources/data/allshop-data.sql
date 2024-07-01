@@ -1,3 +1,4 @@
+-- noinspection SqlResolveForFile
 INSERT INTO offices (officecode, city, phone, addressline1, addressline2, state, country, postalcode, territory) VALUES ('1', 'San Francisco', '+1 650 219 4782', '100 Market Street', 'Suite 300', 'CA', 'USA', '94080', 'NA');
 INSERT INTO offices (officecode, city, phone, addressline1, addressline2, state, country, postalcode, territory) VALUES ('2', 'Boston', '+1 215 837 0825', '1550 Court Place', 'Suite 102', 'MA', 'USA', '02107', 'NA');
 INSERT INTO offices (officecode, city, phone, addressline1, addressline2, state, country, postalcode, territory) VALUES ('3', 'NYC', '+1 212 555 3000', '523 East 53rd Street', 'apt. 5A', 'NY', 'USA', '10022', 'NA');

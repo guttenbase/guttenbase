@@ -1,5 +1,9 @@
 # Change log
 
+## 3.3.4
+
+- Fix encoding issues, i.e. allow for explicit encoding
+
 ## 3.3.3
 
 - Generally map DB-specific types to their generic counterparts

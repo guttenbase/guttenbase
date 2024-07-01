@@ -5,6 +5,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.nio.charset.Charset
 
 /**
  * Connection info for exporting data to a file.
@@ -18,15 +19,17 @@ data class ExportPlainTextConnectorInfo
   internal val sourceConnectorId: String,
   internal val outputStream: OutputStream,
   override val schema: String = "",
-  override val databaseType: DatabaseType = DatabaseType.GENERIC
+  override val databaseType: DatabaseType = DatabaseType.GENERIC,
+  internal val encoding: Charset = Charsets.UTF_8
 ) : ConnectorInfo {
   @JvmOverloads
   constructor(
     sourceConnectorId: String,
     path: String,
     schema: String = "",
-    databaseType: DatabaseType = DatabaseType.GENERIC
-  ) : this(sourceConnectorId, FileOutputStream(path), schema, databaseType)
+    databaseType: DatabaseType = DatabaseType.GENERIC,
+    encoding: Charset = Charsets.UTF_8
+  ) : this(sourceConnectorId, FileOutputStream(path), schema, databaseType, encoding)
 
   override val user: String get() = "user"
   override val password: String get() = "password"
