@@ -1,6 +1,6 @@
 package io.github.guttenbase.hints
 
-import io.github.guttenbase.utils.TableCopyProgressIndicator
+import io.github.guttenbase.progress.TableCopyProgressIndicator
 
 /**
  * Select implementation of progress indicator. May be simple logger or fancy UI.

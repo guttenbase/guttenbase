@@ -1,8 +1,8 @@
 package io.github.guttenbase.hints.impl
 
 import io.github.guttenbase.hints.ScriptExecutorProgressIndicatorHint
-import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
-import io.github.guttenbase.utils.SwingScriptExecutorProgressIndicator
+import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
+import io.github.guttenbase.progress.SwingScriptExecutorProgressIndicator
 
 /**
  * Use UI to show progress.

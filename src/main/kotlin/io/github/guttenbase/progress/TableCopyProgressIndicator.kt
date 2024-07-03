@@ -1,4 +1,4 @@
-package io.github.guttenbase.utils
+package io.github.guttenbase.progress
 
 /**
  * Show progress when copying tables. Simple implementation will just log to console.

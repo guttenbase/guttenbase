@@ -5,8 +5,10 @@ import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.utils.Util
+import io.github.guttenbase.utils.Util.abbreviate
 import io.github.guttenbase.utils.Util.forEach
 import io.github.guttenbase.utils.Util.toHex
+import io.github.guttenbase.utils.Util.trim
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -63,6 +65,15 @@ internal class UtilTest : AbstractGuttenBaseTest() {
       val ch = if (count++ % 2 == 0) SPACE else A
       assertEquals(ch, it)
     }
+  }
+
+  @Test
+  fun `String helpers`() {
+    assertThat(trim(null)).isEqualTo("")
+    assertThat(trim("")).isEqualTo("")
+    assertThat(trim("Jens ")).isEqualTo("Jens")
+
+    assertThat("More than 15 characters".abbreviate(15)).isEqualTo("More than 15...")
   }
 }
 

@@ -1,4 +1,4 @@
-package io.github.guttenbase.utils
+package io.github.guttenbase.progress
 
 import io.github.guttenbase.utils.Util.formatTime
 import org.slf4j.LoggerFactory

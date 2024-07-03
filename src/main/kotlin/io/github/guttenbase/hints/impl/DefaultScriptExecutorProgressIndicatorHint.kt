@@ -1,8 +1,8 @@
 package io.github.guttenbase.hints.impl
 
 import io.github.guttenbase.hints.ScriptExecutorProgressIndicatorHint
-import io.github.guttenbase.utils.LoggingScriptExecutorProgressIndicator
-import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
+import io.github.guttenbase.progress.LoggingScriptExecutorProgressIndicator
+import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 
 
 /**

@@ -179,6 +179,9 @@ object Util {
   @JvmStatic
   fun trim(src: String?) = src?.trim { it <= ' ' } ?: ""
 
+  @JvmStatic
+  fun String.abbreviate(length: Int) = if (this.length > length) substring(0, length - 3) + "..." else this
+
   /**
    * Create deep copy of object.
    */

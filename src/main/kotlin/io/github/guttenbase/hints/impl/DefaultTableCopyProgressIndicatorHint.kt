@@ -2,8 +2,8 @@ package io.github.guttenbase.hints.impl
 
 
 import io.github.guttenbase.hints.TableCopyProgressIndicatorHint
-import io.github.guttenbase.utils.LoggingTableCopyProgressIndicator
-import io.github.guttenbase.utils.TableCopyProgressIndicator
+import io.github.guttenbase.progress.LoggingTableCopyProgressIndicator
+import io.github.guttenbase.progress.TableCopyProgressIndicator
 
 /**
  * By default return logging implementation.

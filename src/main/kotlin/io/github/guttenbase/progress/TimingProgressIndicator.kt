@@ -1,20 +1,17 @@
-package io.github.guttenbase.utils
+package io.github.guttenbase.progress
 
 /**
  * Record timings.
  *
  *  &copy; 2013-2020 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
 class TimingProgressIndicator : TableCopyProgressIndicator {
-  var startTotalTime: Long = 0
-    private set
-  var startProcessTime: Long = 0
-    private set
-  var startExecutionTime: Long = 0
-    private set
+  private var startTotalTime: Long = 0
+  private var startProcessTime: Long = 0
+  private var startExecutionTime: Long = 0
+
   var itemCounter = 0
     private set
   var sourceTableName: String? = null
@@ -33,6 +30,7 @@ class TimingProgressIndicator : TableCopyProgressIndicator {
     private set
 
   override fun initializeIndicator() {}
+
   override fun startProcess(numberOfTables: Int) {
     setNumberOfItems(numberOfTables)
     itemCounter = 1
@@ -44,6 +42,7 @@ class TimingProgressIndicator : TableCopyProgressIndicator {
     this.sourceTableName = sourceTableName
     this.rowCount = rowCount
     this.targetTableName = targetTableName
+
     startProcessTime = System.currentTimeMillis()
   }
 
@@ -74,6 +73,7 @@ class TimingProgressIndicator : TableCopyProgressIndicator {
 
   override fun updateTimers() {
     val millis = System.currentTimeMillis()
+
     elapsedExecutionTime = millis - startExecutionTime
     elapsedTotalTime = millis - startTotalTime
     elapsedProcessTime = millis - startProcessTime

@@ -8,7 +8,7 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
-import io.github.guttenbase.utils.TableCopyProgressIndicator
+import io.github.guttenbase.progress.TableCopyProgressIndicator
 import java.sql.Connection
 import java.sql.SQLException
 
@@ -33,6 +33,7 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
   fun copyTables(sourceConnectorId: String, targetConnectorId: String) {
     progressIndicator = connectorRepository.hint<TableCopyProgressIndicator>(targetConnectorId)
     progressIndicator.initializeIndicator()
+
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
     val numberOfRowsPerInsertionHint = connectorRepository.hint<NumberOfRowsPerBatch>(targetConnectorId)
     val maxNumberOfDataItemsHint = connectorRepository.hint<MaxNumberOfDataItems>(targetConnectorId)
@@ -65,6 +66,7 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
       if (targetRowCount > 0) {
         progressIndicator.warn("Target table " + targetTableMetaData.tableName + " is not empty!")
       }
+
       var numberOfRowsPerBatch = defaultNumberOfRowsPerBatch
       val columnCount: Int = targetTableMetaData.columnCount
       if (columnCount * numberOfRowsPerBatch > maxNumberOfDataItems) {
@@ -79,16 +81,21 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
               + numberOfRowsPerBatch
         )
       }
-      sourceDatabaseConfiguration.beforeTableCopy(sourceConnection, sourceConnectorId, sourceTableMetaData)
+
+        sourceDatabaseConfiguration.beforeTableCopy(sourceConnection, sourceConnectorId, sourceTableMetaData)
       targetDatabaseConfiguration.beforeTableCopy(targetConnection, targetConnectorId, targetTableMetaData)
+
       progressIndicator.startCopyTable(sourceTableName, sourceTableMetaData.filteredRowCount, targetTableName)
+
       copyTable(
         sourceConnectorId, sourceConnection, sourceDatabaseConfiguration, sourceTableMetaData, sourceTableName,
         targetConnectorId, targetConnection, targetDatabaseConfiguration, targetTableMetaData, targetTableName,
         numberOfRowsPerBatch, useMultipleValuesClauses
       )
+
       sourceDatabaseConfiguration.afterTableCopy(sourceConnection, sourceConnectorId, sourceTableMetaData)
       targetDatabaseConfiguration.afterTableCopy(targetConnection, targetConnectorId, targetTableMetaData)
+
       progressIndicator.endProcess()
 
       if (refreshTargetConnection.refreshConnection(numberOfCopiedTables, sourceTableMetaData)) {

@@ -1,8 +1,8 @@
 package io.github.guttenbase.hints.impl
 
 import io.github.guttenbase.hints.TableCopyProgressIndicatorHint
-import io.github.guttenbase.utils.SwingTableCopyProgressIndicator
-import io.github.guttenbase.utils.TableCopyProgressIndicator
+import io.github.guttenbase.progress.SwingTableCopyProgressIndicator
+import io.github.guttenbase.progress.TableCopyProgressIndicator
 
 /**
  * Use UI to show progress.

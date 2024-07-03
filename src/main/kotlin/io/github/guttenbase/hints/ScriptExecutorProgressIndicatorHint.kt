@@ -1,6 +1,6 @@
 package io.github.guttenbase.hints
 
-import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
+import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 
 /**
  * Select implementation of progress indicator. May be simple logger or fancy UI.

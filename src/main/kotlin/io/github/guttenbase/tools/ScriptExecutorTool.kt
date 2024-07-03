@@ -4,7 +4,7 @@ import io.github.guttenbase.configuration.TargetDatabaseConfiguration
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.sql.SQLLexer
-import io.github.guttenbase.utils.ScriptExecutorProgressIndicator
+import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 import io.github.guttenbase.utils.Util
 import java.nio.charset.Charset
 import java.sql.*

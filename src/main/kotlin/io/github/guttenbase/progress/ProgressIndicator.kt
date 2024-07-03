@@ -1,4 +1,4 @@
-package io.github.guttenbase.utils
+package io.github.guttenbase.progress
 
 /**
  * Common interface.
