@@ -1,8 +1,16 @@
 package io.github.guttenbase.progress
 
 import io.github.guttenbase.utils.Util.abbreviate
+import org.apache.commons.io.ThreadUtils
+import java.time.Duration
 
-class ProgressBarIndicator: TableCopyProgressIndicator {
+class ProgressBarIndicator : TableCopyProgressIndicator {
+  private var totalTableCount: Int = 0
+  private var tableCount: Int = 0
+  private var totalRowCount: Int = 0
+  private var rowCount: Int = 0
+  private var tableName = ""
+
   override fun initializeIndicator() {
     print(CLEAR_SCREEN)
   }
@@ -12,41 +20,66 @@ class ProgressBarIndicator: TableCopyProgressIndicator {
   }
 
   override fun startProcess(numberOfTables: Int) {
-    val prefix = "%15s (%03d/%03d) ".format( "Länger als 15 Zeichen".abbreviate(15), 0, numberOfTables)
-    println(prefix + progressBar(20, 0))
+    this.totalTableCount = numberOfTables
+
+    val overallProgress = status(totalTableCount, 0, "Tables", EMPTY_PROGRESSBAR)
+    val currentProgress = status(0, 0, "Rows", EMPTY_PROGRESSBAR)
+
+    println(overallProgress)
+    println(currentProgress)
   }
 
   override fun startCopyTable(sourceTableName: String, rowCount: Int, targetTableName: String) {
+    this.tableName = sourceTableName
+    this.totalRowCount = rowCount
+    this.rowCount = 0
 
+    val progressBar = progressbar(tableCount, totalTableCount)
+    val overallProgress = status(totalTableCount, ++tableCount, "Tables", progressBar)
+    val currentProgress = status(totalRowCount, this.rowCount, tableName, EMPTY_PROGRESSBAR)
+
+    print(linesUp(2) + ERASE_RIGHT)
+    println(overallProgress)
+    println(currentProgress)
   }
 
   override fun startExecution() {
-    TODO("Not yet implemented")
   }
 
   override fun endExecution(totalCopiedRows: Int) {
-    TODO("Not yet implemented")
+    this.rowCount = totalCopiedRows
+
+    val progressBar = progressbar(rowCount, totalRowCount)
+    val currentProgress = status(totalRowCount, this.rowCount, tableName, progressBar)
+
+    print(linesUp(1) + ERASE_RIGHT)
+    println(currentProgress)
   }
 
   override fun endProcess() {
-    TODO("Not yet implemented")
   }
 
   override fun updateTimers() {
-    TODO("Not yet implemented")
   }
 
   override fun warn(text: String) {
+    println("Warning: $text")
+    print(linesUp(1))
   }
 
   override fun info(text: String) {
+    println("Info: $text")
+    print(linesUp(1))
   }
 
   override fun debug(text: String) {
+    println("Debug: $text")
+    print(linesUp(1))
   }
 
   @Suppress("MemberVisibilityCanBePrivate")
-  companion object{
+  companion object {
+    // https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
     const val CHAR_ESCAPE = ''
     const val CHAR_INCOMPLETE = '░' // U+2591 Unicode Character
     const val CHAR_COMPLETED = '█'  // U+2588 Unicode Character
@@ -56,16 +89,55 @@ class ProgressBarIndicator: TableCopyProgressIndicator {
     const val HOME = "${ESCAPE_START}H"
     const val CLEAR_SCREEN = "${HOME}$ERASE_SCREEN"
 
-    fun linesUp(n:Int) = "${ESCAPE_START}${n}F"
-    fun linesDown(n:Int) = "${ESCAPE_START}${n}E"
+    private const val PROGRESSBAR_SIZE = 50
+    private val EMPTY_PROGRESSBAR = progressBar(PROGRESSBAR_SIZE, 0)
 
-    fun progressBar(incomplete: Int, complete:Int) = "$CHAR_INCOMPLETE".repeat(incomplete) + "$CHAR_COMPLETED".repeat(complete)
+    fun linesUp(n: Int) = "${ESCAPE_START}${n}F"
+
+    private fun status(totalCount: Int, count: Int, text: String, progressBar: String): String {
+      val digits = totalCount.toString().length
+      val digitFormat = "%0${digits}d"
+
+      return "%-15s %50s ($digitFormat/$digitFormat)".format(text.abbreviate(15), progressBar, count, totalCount)
+    }
+
+    private fun progressBar(incomplete: Int, complete: Int) =
+      "$CHAR_COMPLETED".repeat(complete) + "$CHAR_INCOMPLETE".repeat(incomplete)
+
+    private fun progressbar(count: Int, totalCount: Int): String {
+      val percentage = count / totalCount.toDouble()
+      val completed = (percentage * PROGRESSBAR_SIZE).toInt()
+      val incomplete = PROGRESSBAR_SIZE - completed
+      val progressBar = progressBar(incomplete, completed)
+
+      return progressBar
+    }
 
     @JvmStatic
     fun main(args: Array<String>) {
       val indicator = ProgressBarIndicator()
       indicator.initializeIndicator()
-      indicator.startProcess(15)
+      val numberOfTables = 15
+      indicator.startProcess(numberOfTables)
+      val totalRows = 250000
+      val step = 2500
+
+      for (tables in 1..numberOfTables) {
+        indicator.startCopyTable("TABLE_$tables", totalRows, "")
+
+        for (rows in step..totalRows step step) {
+          indicator.startExecution()
+
+          if (rows % (step * 10) == 0) {
+            indicator.info("Huiuiuiui $rows")
+          }
+
+          ThreadUtils.sleep(Duration.ofMillis(50))
+          indicator.endExecution(rows)
+        }
+      }
+
+      indicator.endProcess()
       indicator.finalizeIndicator()
     }
   }
