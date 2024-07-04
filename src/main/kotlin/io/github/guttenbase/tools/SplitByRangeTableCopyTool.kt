@@ -23,7 +23,8 @@ import kotlin.math.min
  *  &copy; 2012-2034 akquinet tech@spree
  *
  */
-open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) : AbstractTableCopyTool(connectorRepository) {
+open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
+  AbstractTableCopyTool(connectorRepository) {
   /**
    * Copy data with multiple VALUES-tuples per batch statement.
    *
@@ -43,8 +44,9 @@ open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
     minMaxIdSelector.computeMinMax(sourceConnectorId, sourceTableMetaData, sourceConnection)
     val minValue = minMaxIdSelector.minValue
     val maxValue = minMaxIdSelector.maxValue
-    val countStatement: PreparedStatement = SplitByColumnSelectCountStatementCreator(connectorRepository, sourceConnectorId)
-      .createSelectStatement(sourceConnection, sourceTableName, sourceTableMetaData)
+    val countStatement: PreparedStatement =
+      SplitByColumnSelectCountStatementCreator(connectorRepository, sourceConnectorId)
+        .createSelectStatement(sourceConnection, sourceTableName, sourceTableMetaData)
     val selectStatement: PreparedStatement = SplitByColumnSelectStatementCreator(connectorRepository, sourceConnectorId)
       .createSelectStatement(sourceConnection, sourceTableName, sourceTableMetaData).apply {
         fetchSize = min(numberOfRowsPerBatch, maxRows)
@@ -59,8 +61,9 @@ open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
       sourceDatabaseConfiguration.beforeSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
       val countData = getCurrentCount(countStatement, start, end)
       sourceDatabaseConfiguration.afterSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
+
       if (countData > 0) {
-        progressIndicator.startExecution()
+        progressIndicator.startExecution("Splitting")
         selectStatement.setLong(1, start)
         selectStatement.setLong(2, end)
         sourceDatabaseConfiguration.beforeSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
@@ -71,6 +74,7 @@ open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
           sourceConnectorId, sourceTableMetaData,
           targetTableName, targetTableMetaData, targetConnection, countData.toInt(), useMultipleValuesClauses
         )
+
         insertStatementFiller.fillInsertStatementFromResultSet(
           sourceConnectorId, sourceTableMetaData, targetConnectorId,
           targetTableMetaData, targetDatabaseConfiguration, targetConnection, resultSet, bulkInsert, countData.toInt(),
@@ -80,9 +84,11 @@ open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
         if (targetDatabaseConfiguration.isMayCommit) {
           targetConnection.commit()
         }
+
         insertStatementFiller.clear()
         totalWritten += countData.toInt()
         progressIndicator.endExecution(totalWritten)
+
         if (resultSet.next()) {
           progressIndicator.warn("Uncopied data!!!")
         }
@@ -90,8 +96,10 @@ open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
         bulkInsert.close()
         targetDatabaseConfiguration.afterInsert(targetConnection, targetConnectorId, targetTableMetaData)
       }
+
       splitColumnValue += (numberOfRowsPerBatch + 1).toLong()
     }
+
     countStatement.close()
     selectStatement.close()
   }

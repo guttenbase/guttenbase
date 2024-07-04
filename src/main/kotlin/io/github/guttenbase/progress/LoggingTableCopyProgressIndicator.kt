@@ -33,8 +33,8 @@ class LoggingTableCopyProgressIndicator : TableCopyProgressIndicator {
     )
   }
 
-  override fun startExecution() {
-    timingDelegate.startExecution()
+  override fun startExecution(action: String) {
+    timingDelegate.startExecution(action)
   }
 
   override fun endExecution(totalCopiedRows: Int) {

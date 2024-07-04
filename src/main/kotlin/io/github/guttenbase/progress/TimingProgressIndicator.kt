@@ -46,7 +46,7 @@ class TimingProgressIndicator : TableCopyProgressIndicator {
     startProcessTime = System.currentTimeMillis()
   }
 
-  override fun startExecution() {
+  override fun startExecution(action: String) {
     startExecutionTime = System.currentTimeMillis()
   }
 

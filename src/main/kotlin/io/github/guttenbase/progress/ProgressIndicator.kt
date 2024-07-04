@@ -10,7 +10,7 @@ package io.github.guttenbase.progress
 interface ProgressIndicator {
   fun initializeIndicator()
   fun startProcess(numberOfTables: Int)
-  fun startExecution()
+  fun startExecution(action: String)
   fun endExecution(totalCopiedRows: Int)
   fun endProcess()
   fun updateTimers()

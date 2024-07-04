@@ -1,5 +1,9 @@
 # Change log
 
+## 3.4.0
+
+- Use new progress bar indicator by default
+
 ## 3.3.4
 
 - Fix encoding issues, i.e. allow for explicit encoding

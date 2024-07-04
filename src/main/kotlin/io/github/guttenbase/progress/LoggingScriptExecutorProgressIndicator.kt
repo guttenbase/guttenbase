@@ -18,8 +18,8 @@ class LoggingScriptExecutorProgressIndicator : ScriptExecutorProgressIndicator {
     timingDelegate.startProcess(numberOfTables)
   }
 
-  override fun startExecution() {
-    timingDelegate.startExecution()
+  override fun startExecution(action: String) {
+    timingDelegate.startExecution(action)
   }
 
   override fun endExecution(totalCopiedRows: Int) {

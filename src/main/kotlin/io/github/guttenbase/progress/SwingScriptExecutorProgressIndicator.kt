@@ -57,8 +57,8 @@ class SwingScriptExecutorProgressIndicator : ScriptExecutorProgressIndicator {
     panel.totalProgress.maximum = numberOfTables
   }
 
-  override fun startExecution() {
-    timingDelegate.startExecution()
+  override fun startExecution(action: String) {
+    timingDelegate.startExecution(action)
   }
 
   override fun endExecution(totalCopiedRows: Int) {

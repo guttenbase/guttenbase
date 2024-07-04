@@ -92,7 +92,7 @@ constructor(
             progressIndicator.startProcess(sqlStatements.size)
 
             for (sql in sqlStatements) {
-              progressIndicator.startExecution()
+              progressIndicator.startExecution(sql)
               executeSQL(statement, sql)
               progressIndicator.endExecution(1)
               progressIndicator.endProcess()

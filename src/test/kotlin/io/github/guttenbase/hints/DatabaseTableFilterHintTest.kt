@@ -44,8 +44,4 @@ class DatabaseTableFilterHintTest : AbstractGuttenBaseTest() {
       assertEquals("TABLE", table.tableType)
     }
   }
-
-  companion object {
-    const val SOURCE = "SOURCE"
-  }
 }

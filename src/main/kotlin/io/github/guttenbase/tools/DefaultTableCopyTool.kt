@@ -56,7 +56,7 @@ open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : Abst
       )
 
       for (i in 0 until numberOfBatches) {
-        progressIndicator.startExecution()
+        progressIndicator.startExecution("Committing")
 
         insertStatementFiller.fillInsertStatementFromResultSet(
           sourceConnectorId, sourceTableMetaData, targetConnectorId,

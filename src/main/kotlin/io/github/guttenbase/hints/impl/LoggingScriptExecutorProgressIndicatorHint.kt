@@ -1,9 +1,8 @@
 package io.github.guttenbase.hints.impl
 
 import io.github.guttenbase.hints.ScriptExecutorProgressIndicatorHint
-import io.github.guttenbase.progress.ScriptExecutorProgressBarIndicator
+import io.github.guttenbase.progress.LoggingScriptExecutorProgressIndicator
 import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
-
 
 /**
  * By default return fancy progress var implementation.
@@ -12,7 +11,7 @@ import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
  *
  * @author M. Dahm
  */
-open class DefaultScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
+open class LoggingScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
   override val value: ScriptExecutorProgressIndicator
-    get() = ScriptExecutorProgressBarIndicator()
+    get() = LoggingScriptExecutorProgressIndicator()
 }
