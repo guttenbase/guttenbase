@@ -5,12 +5,17 @@ import org.apache.commons.io.ThreadUtils
 import org.slf4j.LoggerFactory
 import java.time.Duration
 
-class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
+class TableCopyProgressBarIndicator
+@JvmOverloads constructor(
+  private val messageLength: Int = 20,
+  private val progressBarLength: Int = 50
+) : TableCopyProgressIndicator {
   private var totalTableCount = 0
   private var tableCount = 0
   private var totalRowCount = 0
   private var rowCount = 0
   private var tableName = ""
+  private val initialProgressbar = progressBar(progressBarLength, 0)
 
   override fun initializeIndicator() {
     print(CLEAR_SCREEN)
@@ -22,8 +27,8 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
   override fun startProcess(numberOfTables: Int) {
     this.totalTableCount = numberOfTables
 
-    val overallProgress = status(totalTableCount, 0, "Tables", EMPTY_PROGRESSBAR)
-    val currentProgress = status(0, 0, "Rows", EMPTY_PROGRESSBAR)
+    val overallProgress = status(messageLength, totalTableCount, 0, "Tables", initialProgressbar)
+    val currentProgress = status(messageLength, 0, 0, "Rows", initialProgressbar)
 
     println(overallProgress)
     println(currentProgress)
@@ -34,9 +39,9 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
     this.totalRowCount = rowCount
     this.rowCount = 0
 
-    val progressBar = progressbar(tableCount, totalTableCount)
-    val overallProgress = status(totalTableCount, ++tableCount, "Tables", progressBar)
-    val currentProgress = status(totalRowCount, this.rowCount, tableName, EMPTY_PROGRESSBAR)
+    val progressBar = progressbar(progressBarLength, tableCount, totalTableCount)
+    val overallProgress = status(messageLength, totalTableCount, ++tableCount, "Tables", progressBar)
+    val currentProgress = status(messageLength, totalRowCount, this.rowCount, tableName, initialProgressbar)
 
     print(linesUp(2) + ERASE_RIGHT)
     println(overallProgress)
@@ -49,8 +54,8 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
   override fun endExecution(totalCopiedRows: Int) {
     this.rowCount = totalCopiedRows
 
-    val progressBar = progressbar(rowCount, totalRowCount)
-    val currentProgress = status(totalRowCount, this.rowCount, tableName, progressBar)
+    val progressBar = progressbar(progressBarLength, rowCount, totalRowCount)
+    val currentProgress = status(messageLength, totalRowCount, this.rowCount, tableName, progressBar)
 
     print(linesUp(1) + ERASE_RIGHT)
     println(currentProgress)
@@ -95,32 +100,30 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
     const val HOME = "${ESCAPE_START}H"
     const val CLEAR_SCREEN = "${HOME}$ERASE_SCREEN"
 
-    private const val PROGRESSBAR_SIZE = 50
-    private const val MESSAGE_SIZE = 20
-    internal val EMPTY_PROGRESSBAR = progressBar(PROGRESSBAR_SIZE, 0)
-
     @JvmStatic
     internal val PROGRESS_LOG = LoggerFactory.getLogger(TableCopyProgressIndicator::class.java)
 
-    fun linesUp(n: Int) = "${ESCAPE_START}${n}F"
+    internal fun linesUp(n: Int) = "${ESCAPE_START}${n}F"
 
-    internal fun status(totalCount: Int, count: Int, text: String, progressBar: String): String {
-      val digits = totalCount.toString().length
-      val digitFormat = "%0${digits}d"
-
-      return "%-${MESSAGE_SIZE}s %50s ($digitFormat/$digitFormat)".format(text.abbreviate(MESSAGE_SIZE), progressBar, count, totalCount)
-    }
-
-    private fun progressBar(incomplete: Int, complete: Int) =
+    internal fun progressBar(incomplete: Int, complete: Int) =
       "$CHAR_COMPLETED".repeat(complete) + "$CHAR_INCOMPLETE".repeat(incomplete)
 
-    internal fun progressbar(count: Int, totalCount: Int): String {
+    internal fun progressbar(progressBarLength: Int, count: Int, totalCount: Int): String {
       val percentage = count / totalCount.toDouble()
-      val completed = (percentage * PROGRESSBAR_SIZE).toInt()
-      val incomplete = PROGRESSBAR_SIZE - completed
+      val completed = (percentage * progressBarLength).toInt()
+      val incomplete = progressBarLength - completed
       val progressBar = progressBar(incomplete, completed)
 
       return progressBar
+    }
+
+    internal fun status(messageLength: Int, totalCount: Int, count: Int, text: String, progressBar: String): String {
+      val digits = totalCount.toString().length
+      val digitFormat = "%0${digits}d"
+
+      return "%-${messageLength}s %50s ($digitFormat/$digitFormat)".format(
+        text.abbreviate(messageLength), progressBar, count, totalCount
+      )
     }
 
     internal fun stripSchema(name: String) = when (val index = name.lastIndexOf('.')) {
@@ -159,3 +162,4 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
     }
   }
 }
+

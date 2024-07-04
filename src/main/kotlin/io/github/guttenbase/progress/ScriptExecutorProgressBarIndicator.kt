@@ -1,20 +1,24 @@
 package io.github.guttenbase.progress
 
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.CLEAR_SCREEN
-import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.EMPTY_PROGRESSBAR
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.ERASE_RIGHT
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.PROGRESS_LOG
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.linesUp
+import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.progressBar
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.progressbar
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.status
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.stripNewlines
 import org.apache.commons.io.ThreadUtils
 import java.time.Duration
 
-class ScriptExecutorProgressBarIndicator : ScriptExecutorProgressIndicator {
+class ScriptExecutorProgressBarIndicator @JvmOverloads constructor(
+  private val messageLength: Int = 20,
+  private val progressBarLength: Int = 50
+) : ScriptExecutorProgressIndicator {
   private var totalStatementCount = 0
   private var statementCount = 0
   private var action = ""
+  private val initialProgressbar = progressBar(progressBarLength, 0)
 
   override fun initializeIndicator() {
     print(CLEAR_SCREEN)
@@ -26,7 +30,7 @@ class ScriptExecutorProgressBarIndicator : ScriptExecutorProgressIndicator {
   override fun startProcess(numberOfTables: Int) {
     this.totalStatementCount = numberOfTables
 
-    val overallProgress = status(totalStatementCount, 0, "Statements", EMPTY_PROGRESSBAR)
+    val overallProgress = status(messageLength, totalStatementCount, 0, "Statements", initialProgressbar)
 
     println(overallProgress)
   }
@@ -38,8 +42,8 @@ class ScriptExecutorProgressBarIndicator : ScriptExecutorProgressIndicator {
   override fun endExecution(totalCopiedRows: Int) {
     this.statementCount += totalCopiedRows
 
-    val progressBar = progressbar(statementCount, totalStatementCount)
-    val overallProgress = status(totalStatementCount, statementCount, action, progressBar)
+    val progressBar = progressbar(progressBarLength, statementCount, totalStatementCount)
+    val overallProgress = status(messageLength, totalStatementCount, statementCount, action, progressBar)
 
     print(linesUp(1) + ERASE_RIGHT)
     println(overallProgress)
