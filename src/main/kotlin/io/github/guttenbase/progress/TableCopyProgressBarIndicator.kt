@@ -2,6 +2,7 @@ package io.github.guttenbase.progress
 
 import io.github.guttenbase.utils.Util.abbreviate
 import org.apache.commons.io.ThreadUtils
+import org.slf4j.LoggerFactory
 import java.time.Duration
 
 class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
@@ -29,7 +30,7 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
   }
 
   override fun startCopyTable(sourceTableName: String, rowCount: Int, targetTableName: String) {
-    this.tableName = sourceTableName
+    this.tableName = stripSchema(sourceTableName)
     this.totalRowCount = rowCount
     this.rowCount = 0
 
@@ -62,18 +63,24 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
   }
 
   override fun warn(text: String) {
-    println("Warning: $text")
-    print(linesUp(1))
+    if (PROGRESS_LOG.isWarnEnabled) {
+      println(ERASE_RIGHT + "WARNING: " + stripNewlines(text))
+      print(linesUp(1))
+    }
   }
 
   override fun info(text: String) {
-    println("Info: $text")
-    print(linesUp(1))
+    if (PROGRESS_LOG.isInfoEnabled) {
+      println(ERASE_RIGHT + "INFO: " + stripNewlines(text))
+      print(linesUp(1))
+    }
   }
 
   override fun debug(text: String) {
-    println("Debug: $text")
-    print(linesUp(1))
+    if (PROGRESS_LOG.isDebugEnabled) {
+      println(ERASE_RIGHT + "DEBUG: " + stripNewlines(text))
+      print(linesUp(1))
+    }
   }
 
   @Suppress("MemberVisibilityCanBePrivate")
@@ -89,7 +96,11 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
     const val CLEAR_SCREEN = "${HOME}$ERASE_SCREEN"
 
     private const val PROGRESSBAR_SIZE = 50
+    private const val MESSAGE_SIZE = 20
     internal val EMPTY_PROGRESSBAR = progressBar(PROGRESSBAR_SIZE, 0)
+
+    @JvmStatic
+    internal val PROGRESS_LOG = LoggerFactory.getLogger(TableCopyProgressIndicator::class.java)
 
     fun linesUp(n: Int) = "${ESCAPE_START}${n}F"
 
@@ -97,7 +108,7 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
       val digits = totalCount.toString().length
       val digitFormat = "%0${digits}d"
 
-      return "%-15s %50s ($digitFormat/$digitFormat)".format(text.abbreviate(15), progressBar, count, totalCount)
+      return "%-${MESSAGE_SIZE}s %50s ($digitFormat/$digitFormat)".format(text.abbreviate(MESSAGE_SIZE), progressBar, count, totalCount)
     }
 
     private fun progressBar(incomplete: Int, complete: Int) =
@@ -111,6 +122,13 @@ class TableCopyProgressBarIndicator : TableCopyProgressIndicator {
 
       return progressBar
     }
+
+    internal fun stripSchema(name: String) = when (val index = name.lastIndexOf('.')) {
+      -1 -> name
+      else -> name.substring(index + 1)
+    }
+
+    internal fun stripNewlines(text: String) = text.replace("\n", "\t")
 
     @JvmStatic
     fun main(args: Array<String>) {

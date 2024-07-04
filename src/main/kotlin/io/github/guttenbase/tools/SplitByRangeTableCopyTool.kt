@@ -39,7 +39,7 @@ open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
     targetTableName: String, numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
   ) {
     val insertStatementCreator = InsertStatementCreator(connectorRepository, targetConnectorId)
-    val insertStatementFiller = InsertStatementFiller(connectorRepository)
+    val insertStatementFiller = InsertStatementFiller(connectorRepository, targetConnectorId)
     val minMaxIdSelector = MinMaxIdSelectorTool(connectorRepository)
     minMaxIdSelector.computeMinMax(sourceConnectorId, sourceTableMetaData, sourceConnection)
     val minValue = minMaxIdSelector.minValue

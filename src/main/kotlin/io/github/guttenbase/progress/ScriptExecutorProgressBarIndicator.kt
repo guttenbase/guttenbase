@@ -3,9 +3,11 @@ package io.github.guttenbase.progress
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.CLEAR_SCREEN
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.EMPTY_PROGRESSBAR
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.ERASE_RIGHT
+import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.PROGRESS_LOG
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.linesUp
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.progressbar
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.status
+import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.stripNewlines
 import org.apache.commons.io.ThreadUtils
 import java.time.Duration
 
@@ -50,18 +52,24 @@ class ScriptExecutorProgressBarIndicator : ScriptExecutorProgressIndicator {
   }
 
   override fun warn(text: String) {
-    println("Warning: $text")
-    print(linesUp(1))
+    if (PROGRESS_LOG.isWarnEnabled) {
+      println(ERASE_RIGHT + "WARNING: " + stripNewlines(text))
+      print(linesUp(1))
+    }
   }
 
   override fun info(text: String) {
-    println("Info: $text")
-    print(linesUp(1))
+    if (PROGRESS_LOG.isInfoEnabled) {
+      println(ERASE_RIGHT + "INFO: " + stripNewlines(text))
+      print(linesUp(1))
+    }
   }
 
   override fun debug(text: String) {
-    println("Debug: $text")
-    print(linesUp(1))
+    if (PROGRESS_LOG.isDebugEnabled) {
+      println(ERASE_RIGHT + "DEBUG: " + stripNewlines(text))
+      print(linesUp(1))
+    }
   }
 
   @Suppress("MemberVisibilityCanBePrivate")

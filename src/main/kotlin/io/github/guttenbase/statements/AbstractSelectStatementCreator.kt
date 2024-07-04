@@ -34,7 +34,8 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
     val columns = ColumnOrderHint.getSortedColumns(connectorRepository, connectorId, tableMetaData)
     val sql = createSQL(tableName, tableMetaData, columns)
 
-    LOG.debug("Create SELECT statement: $sql")
+    indicator.debug("Create SELECT statement: $sql")
+
     val preparedStatement = connection.prepareStatement(
       sql,
       resultSetParameters.getResultSetType(tableMetaData),
@@ -64,7 +65,8 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
       connectorRepository.hint<ResultSetParameters>(targetConnectorId)
     val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
     val sql = createSQL(tableName, targetTableMetaData, columns)
-    LOG.debug("Create mapped SELECT statement: $sql")
+
+    indicator.debug("Create mapped SELECT statement: $sql")
 
     return connection.prepareStatement(
       sql,

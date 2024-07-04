@@ -10,10 +10,10 @@ import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableRowDataFilter
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.progress.TableCopyProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.CommonColumnTypeResolverTool
-import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.IOException
 import java.sql.Connection
@@ -29,8 +29,9 @@ import java.sql.SQLException
  * @author M. Dahm
  * Hint is used by [ColumnOrderHint] to determine column order
  */
-class InsertStatementFiller(private val connectorRepository: ConnectorRepository) {
+class InsertStatementFiller(private val connectorRepository: ConnectorRepository, connectorId: String) {
   private val closeables = ArrayList<Closeable>()
+  private val indicator = connectorRepository.hint<TableCopyProgressIndicator>(connectorId)
 
   @Throws(SQLException::class)
   fun fillInsertStatementFromResultSet(
@@ -67,12 +68,12 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
 
         if (mapping.columns.isEmpty()) {
           if (mapping.isEmptyColumnListOk) {
-            LOG.warn("Dropping column $sourceColumnMetaData")
+            indicator.warn("Dropping column $sourceColumnMetaData")
             // Unused result, but we may have to skip the next data item from an underlying stream implementation
             rs.getObject(columnIndex)
 
             if (!sourceColumnMetaData.isNullable) {
-              LOG.warn(
+              indicator.warn(
                 """
                 $sourceColumnMetaData does not allow null values, but value is ignored for target table.
                 Make sure that the column is omitted during target table creation, too, or has a default value set.
@@ -140,7 +141,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
       insertStatement.addBatch()
     }
 
-    LOG.debug("Number of data items: $dataItemsCount")
+    indicator.debug("Number of data items: $dataItemsCount")
   }
 
   private fun findMapping(
@@ -176,14 +177,10 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
       try {
         closeableObject.close()
       } catch (e: IOException) {
-        LOG.warn("While closing $closeableObject", e)
+        indicator.warn("While closing $closeableObject: $e")
       }
     }
-    closeables.clear()
-  }
 
-  companion object {
-    @JvmStatic
-    private val LOG = LoggerFactory.getLogger(InsertStatementFiller::class.java)
+    closeables.clear()
   }
 }

@@ -5,10 +5,9 @@ import io.github.guttenbase.hints.ColumnOrderHint.Companion.getSortedColumns
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.progress.TableCopyProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 /**
  * Contains some helper methods for implementing classes.
@@ -24,6 +23,7 @@ abstract class AbstractStatementCreator(
   protected val connectorId: String
 ) {
   protected val columnMapper = connectorRepository.hint<ColumnMapper>(connectorId)
+  protected val indicator = connectorRepository.hint<TableCopyProgressIndicator>(connectorId)
 
   protected open fun createColumnClause(columns: List<ColumnMetaData>) =
     columns.joinToString(separator = ", ", transform = { columnMapper.mapColumnName(it, it.tableMetaData) })
@@ -44,10 +44,5 @@ abstract class AbstractStatementCreator(
       val mapping = columnMapper.map(it, targetTableMetaData)
       mapping.columns
     }.flatten()
-  }
-
-  companion object {
-    @JvmStatic
-    protected val LOG: Logger = LoggerFactory.getLogger(AbstractStatementCreator::class.java)
   }
 }

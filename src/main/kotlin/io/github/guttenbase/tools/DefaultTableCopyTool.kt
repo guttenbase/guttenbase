@@ -44,7 +44,7 @@ open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : Abst
     val numberOfBatches = sourceRowCount / numberOfRowsPerBatch
     val remainder = sourceRowCount - numberOfBatches * numberOfRowsPerBatch
     val insertStatementCreator = InsertStatementCreator(connectorRepository, targetConnectorId)
-    val insertStatementFiller = InsertStatementFiller(connectorRepository)
+    val insertStatementFiller = InsertStatementFiller(connectorRepository, targetConnectorId)
 
     targetDatabaseConfiguration.beforeInsert(targetConnection, targetConnectorId, targetTableMetaData)
 
