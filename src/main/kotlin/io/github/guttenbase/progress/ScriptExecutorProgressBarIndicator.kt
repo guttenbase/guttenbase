@@ -8,8 +8,6 @@ import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.pro
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.progressbar
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.status
 import io.github.guttenbase.progress.TableCopyProgressBarIndicator.Companion.stripNewlines
-import org.apache.commons.io.ThreadUtils
-import java.time.Duration
 
 class ScriptExecutorProgressBarIndicator @JvmOverloads constructor(
   private val messageLength: Int = 20,
@@ -73,32 +71,6 @@ class ScriptExecutorProgressBarIndicator @JvmOverloads constructor(
     if (PROGRESS_LOG.isDebugEnabled) {
       println(ERASE_RIGHT + "DEBUG: " + stripNewlines(text))
       print(linesUp(1))
-    }
-  }
-
-  @Suppress("MemberVisibilityCanBePrivate")
-  companion object {
-    @JvmStatic
-    fun main(args: Array<String>) {
-      val indicator = ScriptExecutorProgressBarIndicator()
-      indicator.initializeIndicator()
-      val numberOfStatements = 15
-      indicator.startProcess(numberOfStatements)
-
-      for (tables in 1..numberOfStatements) {
-        val action = when {
-          tables < 5 -> "INSERT INTO FOOTABLE("
-          tables < 10 -> "UPDATE BLA SET X = Y"
-          else -> "ALTER TABLE FOO"
-        }
-        indicator.startExecution(action)
-
-        ThreadUtils.sleep(Duration.ofMillis(50))
-        indicator.endExecution(1)
-      }
-
-      indicator.endProcess()
-      indicator.finalizeIndicator()
     }
   }
 }

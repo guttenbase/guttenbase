@@ -1,9 +1,7 @@
 package io.github.guttenbase.progress
 
 import io.github.guttenbase.utils.Util.abbreviate
-import org.apache.commons.io.ThreadUtils
 import org.slf4j.LoggerFactory
-import java.time.Duration
 
 class TableCopyProgressBarIndicator
 @JvmOverloads constructor(
@@ -132,34 +130,5 @@ class TableCopyProgressBarIndicator
     }
 
     internal fun stripNewlines(text: String) = text.replace("\n", "\t")
-
-    @JvmStatic
-    fun main(args: Array<String>) {
-      val indicator = TableCopyProgressBarIndicator()
-      indicator.initializeIndicator()
-      val numberOfTables = 15
-      indicator.startProcess(numberOfTables)
-      val totalRows = 250000
-      val step = 2500
-
-      for (tables in 1..numberOfTables) {
-        indicator.startCopyTable("TABLE_$tables", totalRows, "")
-
-        for (rows in step..totalRows step step) {
-          indicator.startExecution("foo")
-
-          if (rows % (step * 10) == 0) {
-            indicator.info("Huiuiuiui $rows")
-          }
-
-          ThreadUtils.sleep(Duration.ofMillis(50))
-          indicator.endExecution(rows)
-        }
-      }
-
-      indicator.endProcess()
-      indicator.finalizeIndicator()
-    }
   }
 }
-
