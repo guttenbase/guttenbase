@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.nio.file.Files
 import kotlin.text.Charsets.ISO_8859_1
 import kotlin.text.Charsets.UTF_8
 
@@ -25,6 +26,7 @@ import kotlin.text.Charsets.UTF_8
  */
 class ExportPlainTest : AbstractGuttenBaseTest() {
   private val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, "", DatabaseType.H2DB, UTF_8)
+  private val compressedInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, "", DatabaseType.H2DB, UTF_8, true)
 
   @BeforeEach
   fun setup() {
@@ -51,6 +53,16 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
   }
 
   @Test
+  fun `Compress data`() {
+    connectorRepository.addConnectionInfo(COMPRESSED, compressedInfo)
+
+    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, COMPRESSED)
+    val contentType = Files.probeContentType(File(FILE).toPath())
+
+    assertThat(contentType).isEqualTo("application/x-gzip-compressed")
+  }
+
+  @Test
   fun `Explicit encoding`() {
     val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, "", DatabaseType.H2DB, ISO_8859_1)
     connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
@@ -69,6 +81,7 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
 
     const val SOURCE = "SOURCE"
     const val SCRIPT = "SCRIPT"
+    const val COMPRESSED = "COMPRESSED"
     const val TARGET = "TARGET"
   }
 }

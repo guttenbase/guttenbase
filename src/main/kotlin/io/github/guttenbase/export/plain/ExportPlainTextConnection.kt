@@ -6,6 +6,7 @@ import java.io.PrintWriter
 import java.sql.*
 import java.util.*
 import java.util.concurrent.Executor
+import java.util.zip.GZIPOutputStream
 import kotlin.collections.ArrayList
 
 typealias TO_STRING = (PrintWriter) -> Unit
@@ -20,7 +21,16 @@ typealias TO_STRING = (PrintWriter) -> Unit
 class ExportPlainTextConnection(internal val connector: ExportPlainConnector) : Connection {
   private var closed = false
   private val preparedStatements = ArrayList<ExportPlainTextStatement>()
-  internal val printWriter = PrintWriter(BufferedWriter(OutputStreamWriter(connector.connectorInfo.outputStream, connector.connectorInfo.encoding)))
+  internal val printWriter = PrintWriter(BufferedWriter(outputStreamWriter()))
+
+  private fun outputStreamWriter(): OutputStreamWriter {
+    val outputStream = if (connector.connectorInfo.compress)
+      GZIPOutputStream(connector.connectorInfo.outputStream)
+    else
+      connector.connectorInfo.outputStream
+
+    return OutputStreamWriter(outputStream, connector.connectorInfo.encoding)
+  }
 
   private fun createStatement(sql: String = ""): ExportPlainTextStatement {
     val result = ExportPlainTextStatement(sql, this)

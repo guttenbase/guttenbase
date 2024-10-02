@@ -8,7 +8,7 @@ import java.io.OutputStream
 import java.nio.charset.Charset
 
 /**
- * Connection info for exporting data to a file.
+ * Connection info for exporting data to a (optionally compressed) file.
  *
  *  &copy; 2024-2044 akquinet tech@spree
  *
@@ -20,7 +20,8 @@ data class ExportPlainTextConnectorInfo
   internal val outputStream: OutputStream,
   override val schema: String = "",
   override val databaseType: DatabaseType = DatabaseType.GENERIC,
-  internal val encoding: Charset = Charsets.UTF_8
+  internal val encoding: Charset = Charsets.UTF_8,
+  internal val compress: Boolean = false
 ) : ConnectorInfo {
   @JvmOverloads
   constructor(
@@ -28,8 +29,9 @@ data class ExportPlainTextConnectorInfo
     path: String,
     schema: String = "",
     databaseType: DatabaseType = DatabaseType.GENERIC,
-    encoding: Charset = Charsets.UTF_8
-  ) : this(sourceConnectorId, FileOutputStream(path), schema, databaseType, encoding)
+    encoding: Charset = Charsets.UTF_8,
+    compress: Boolean = false
+  ) : this(sourceConnectorId, FileOutputStream(path), schema, databaseType, encoding, compress)
 
   override val user: String get() = "user"
   override val password: String get() = "password"
