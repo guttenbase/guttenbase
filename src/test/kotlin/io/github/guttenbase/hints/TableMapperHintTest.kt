@@ -2,7 +2,6 @@ package io.github.guttenbase.hints
 
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.tools.ReadTableDataTool
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 
