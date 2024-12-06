@@ -16,8 +16,8 @@ interface ColumnDataMapperProvider {
    *
    * @param sourceColumnMetaData source column
    * @param targetColumnMetaData target column
-   * @param sourceColumnType     as determined by [ColumnTypeResolver]
-   * @param targetColumnType     as determined by [ColumnTypeResolver]
+   * @param sourceColumnType     source column type
+   * @param targetColumnType     target column type
    */
   fun findMapping(
     sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData,

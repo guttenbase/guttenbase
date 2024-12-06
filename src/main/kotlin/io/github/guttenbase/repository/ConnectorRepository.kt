@@ -42,8 +42,6 @@ open class ConnectorRepository {
   private val databaseMetaDataMap = HashMap<String, InternalDatabaseMetaData>()
   private val connectionHintMap = HashMap<String, MutableMap<Class<*>, ConnectorHint<*>>>()
 
-  open val connectorIds: List<String> get() = ArrayList(connectionInfoMap.keys)
-
   init {
     initDefaultConfiguration()
   }
@@ -76,17 +74,6 @@ open class ConnectorRepository {
     getConnectionInfo(connectorId)
     val hintMap = connectionHintMap.getOrPut(connectorId) { HashMap() }
     hintMap[hint.connectorHintType] = hint
-
-    refreshDatabaseMetaData(connectorId)
-    return this
-  }
-
-  /**
-   * Remove configuration hint for connector
-   */
-  open fun <T> removeConnectorHint(connectorId: String, connectionInfoHintType: Class<T>): ConnectorRepository {
-    val hintMap = connectionHintMap[connectorId]
-    hintMap?.remove(connectionInfoHintType)
 
     refreshDatabaseMetaData(connectorId)
     return this
