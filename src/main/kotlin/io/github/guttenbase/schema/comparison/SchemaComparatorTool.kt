@@ -7,7 +7,7 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
-import io.github.guttenbase.tools.ColumnTypeResolverTool
+import io.github.guttenbase.tools.ColumnDataMappingTool
 
 /**
  * Will check two schemas for compatibility and report found issues.
@@ -160,7 +160,7 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
 
       for (targetColumn in targetColumns) {
         val targetColumnName = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
-        val columnTypeMapping = ColumnTypeResolverTool(connectorRepository).getCommonColumnTypeMapping(
+        val columnTypeMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
           sourceColumn, targetConnectorId, targetColumn
         )
 

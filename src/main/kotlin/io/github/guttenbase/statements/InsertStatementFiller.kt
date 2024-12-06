@@ -13,7 +13,7 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.progress.TableCopyProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
-import io.github.guttenbase.tools.ColumnTypeResolverTool
+import io.github.guttenbase.tools.ColumnDataMappingTool
 import java.io.Closeable
 import java.io.IOException
 import java.sql.Connection
@@ -145,7 +145,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     targetConnectorId: String,
     sourceColumn: ColumnMetaData,
     targetColumn: ColumnMetaData
-  ) = ColumnTypeResolverTool(connectorRepository).getCommonColumnTypeMapping(
+  ) = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
     sourceColumn, targetConnectorId, targetColumn
   ) ?: throw IncompatibleColumnsException(
     """Columns have incompatible types: ${sourceColumn.columnName}/${sourceColumn.columnTypeName} vs. ${targetColumn.columnName}/${targetColumn.columnTypeName}

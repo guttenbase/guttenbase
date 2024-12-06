@@ -115,7 +115,7 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
           val mapping = columnMapper.map(sourceColumn, targetTableMetaData)
 
           for (targetColumn in mapping.columns) {
-            val columnTypeMapping = ColumnTypeResolverTool(connectorRepository).getCommonColumnTypeMapping(
+            val columnTypeMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
               sourceColumn, targetConnectorId, targetColumn
             )
               ?: throw IllegalStateException("Could not find type mapping for $sourceColumn -> $targetColumn")

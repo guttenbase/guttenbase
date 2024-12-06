@@ -20,7 +20,7 @@ import io.github.guttenbase.repository.impl.HeuristicColumnTypeResolver
  *
  * @author M. Dahm
  */
-open class ColumnTypeResolverTool(private val connectorRepository: ConnectorRepository) {
+open class ColumnDataMappingTool(private val connectorRepository: ConnectorRepository) {
   private val columnTypeResolvers = mutableListOf(HeuristicColumnTypeResolver, ClassNameColumnTypeResolver)
 
   /**
@@ -38,12 +38,10 @@ open class ColumnTypeResolverTool(private val connectorRepository: ConnectorRepo
     sourceColumnMetaData: ColumnMetaData,
     targetConnectorId: String, targetColumnMetaData: ColumnMetaData
   ): ColumnDataMapping? = columnTypeResolvers
-    .map { it.findMapping(sourceColumnMetaData, targetColumnMetaData, targetConnectorId) }
-    .firstOrNull()
+    .map { it.findMapping(sourceColumnMetaData, targetColumnMetaData, targetConnectorId) }.firstOrNull()
 
   private fun ColumnTypeResolver.findMapping(
-    sourceColumnMetaData: ColumnMetaData,
-    targetColumnMetaData: ColumnMetaData, targetConnectorId: String
+    sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, targetConnectorId: String
   ): ColumnDataMapping? {
     val sourceColumnType = getColumnType(sourceColumnMetaData)
     val targetColumnType = getColumnType(targetColumnMetaData)
