@@ -15,27 +15,4 @@ abstract class AbstractGuttenBaseTest {
   fun dropTables() {
     Util.deleteDirectory(DB_DIRECTORY)
   }
-
-  protected fun insertBinaryData(connectorId: String, dataId: Int) {
-    val connector = connectorRepository.createConnector(connectorId)
-    val connection = connector.openConnection()
-    val preparedStatement = connection.prepareStatement("INSERT INTO FOO_DATA (ID, SOME_DATA) VALUES(?, ?)")
-
-    preparedStatement.setLong(1, dataId.toLong())
-    preparedStatement.setBinaryStream(2, ByteArrayInputStream(IMAGE))
-    preparedStatement.executeUpdate()
-    connector.closeConnection()
-  }
-
-  companion object {
-    /**
-     * Place all DB data in temporary directory. Pure in-memory DBs are faster but mess up when running multiple tests.
-     */
-    val IMAGE = loadImage()
-
-    private fun loadImage(): ByteArray {
-      val stream = Util.getResourceAsStream("/data/test.gif")!!
-      return IOUtils.readFully(stream, stream.available())
-    }
-  }
 }

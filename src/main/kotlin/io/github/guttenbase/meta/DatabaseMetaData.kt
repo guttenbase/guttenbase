@@ -4,6 +4,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.io.Serializable
+import java.sql.JDBCType
 
 /**
  * Information about data base such as schema name.
@@ -28,8 +29,17 @@ interface DatabaseMetaData : Serializable {
   /**
    * @return (cached) meta data
    */
+  fun isSupportedType(type: String): DatabaseSupportedType?
+  val supportedTypes: List<DatabaseSupportedType>
   val databaseMetaData: JdbcDatabaseMetaData
   val databaseType: DatabaseType
   val connectorRepository: ConnectorRepository
   val connectorId: String
 }
+
+data class DatabaseSupportedType(
+  val typeName: String,
+  val jdbcType: JDBCType,
+  val precision: Int,
+  val nullable: Boolean
+) : Serializable

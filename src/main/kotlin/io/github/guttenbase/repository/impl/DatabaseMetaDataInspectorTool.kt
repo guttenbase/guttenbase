@@ -11,21 +11,19 @@ import io.github.guttenbase.utils.Util
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.sql.*
-import java.util.*
 
 /**
  * Get table meta data from connection.
- *
  *
  * (C) 2012-2045 by akquinet tech@spree
  *
  * @author M. Dahm
  */
-class DatabaseMetaDataInspectorTool(
+internal class DatabaseMetaDataInspectorTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String
 ) {
-  fun getDatabaseMetaData(connection: Connection): DatabaseMetaData {
+  internal fun getDatabaseMetaData(connection: Connection): DatabaseMetaData {
     val connectionInfo: ConnectorInfo = connectorRepository.getConnectionInfo(connectorId)
 
     LOG.info("Retrieving meta data for $connectorId:$connectionInfo")
@@ -38,6 +36,7 @@ class DatabaseMetaDataInspectorTool(
       .mapNotNull { method -> getValue(method, metaData) }.toMap()
     val result = DatabaseMetaDataImpl(connectorRepository, connectorId, schema, properties, connectionInfo.databaseType)
 
+    loadSupportedTypes(result, metaData)
     loadTables(result, metaData)
     updateTableMetaData(connection, metaData, result, schemaPrefix)
 
@@ -314,6 +313,24 @@ class DatabaseMetaDataInspectorTool(
     return statement.executeQuery(countAllSQL).use {
       it.next()
       it.getInt(1)
+    }
+  }
+
+  private fun loadSupportedTypes(databaseMetaData: InternalDatabaseMetaData, metaData: JdbcDatabaseMetaData) {
+    LOG.debug("Look up supported types of " + databaseMetaData.databaseType)
+    val resultSet = metaData.typeInfo
+
+    resultSet.use {
+      while (resultSet.next()) {
+        /** @see [java.sql.DatabaseMetaData.typeInfo]
+         */
+        val typeName = resultSet.getString("TYPE_NAME")
+        val jdbcType = JDBCType.valueOf(resultSet.getInt("DATA_TYPE"))
+        val precision = resultSet.getInt("PRECISION")
+        val nullable = resultSet.getBoolean("NULLABLE")
+
+        databaseMetaData.addSupportedType(typeName, jdbcType, precision, nullable)
+      }
     }
   }
 

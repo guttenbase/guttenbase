@@ -6,7 +6,7 @@ import io.github.guttenbase.schema.AutoIncrementValue
 import java.sql.Types
 
 /**
- * Bundle knowledge about well-known data bases, e.g.. specific SQL clauses
+ * Bundle knowledge about well-known data bases
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *

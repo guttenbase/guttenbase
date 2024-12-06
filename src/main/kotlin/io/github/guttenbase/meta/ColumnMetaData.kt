@@ -1,6 +1,7 @@
 package io.github.guttenbase.meta
 
 import java.io.Serializable
+import java.sql.JDBCType
 import java.sql.Types
 
 /**

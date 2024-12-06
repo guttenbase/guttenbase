@@ -1,5 +1,7 @@
 package io.github.guttenbase.meta
 
+import java.sql.JDBCType
+
 /**
  * Extension for internal access.
  *
@@ -13,4 +15,5 @@ package io.github.guttenbase.meta
 internal interface InternalDatabaseMetaData : DatabaseMetaData {
   fun addTable(tableMetaData: TableMetaData)
   fun removeTable(tableMetaData: TableMetaData)
+  fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, nullable: Boolean)
 }

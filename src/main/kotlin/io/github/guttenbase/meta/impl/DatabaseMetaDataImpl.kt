@@ -2,12 +2,14 @@ package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.meta.DatabaseSupportedType
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.sql.JDBCType
 import java.util.*
 
 /**
@@ -34,9 +36,13 @@ class DatabaseMetaDataImpl(
     databaseMetaData.databaseType
   )
 
+  override val supportedTypes: List<DatabaseSupportedType> get() = supportedTypeMap.values.toList()
+
   override val schema = schema.trim { it <= ' ' }
 
   private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()
+
+  private val supportedTypeMap = mutableMapOf<String, DatabaseSupportedType>()
 
   override val databaseMetaData get() = createMetaDataProxy(databaseProperties)
 
@@ -53,6 +59,12 @@ class DatabaseMetaDataImpl(
   override fun removeTable(tableMetaData: TableMetaData) {
     tableMetaDataMap.remove(tableMetaData.tableName.uppercase())
   }
+
+  override fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, nullable: Boolean) {
+    supportedTypeMap[type.uppercase()] = DatabaseSupportedType(type, jdbcType, precision, nullable)
+  }
+
+  override fun isSupportedType(type: String) = supportedTypeMap[type.uppercase()]
 
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
 

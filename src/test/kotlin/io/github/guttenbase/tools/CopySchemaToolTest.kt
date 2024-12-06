@@ -129,7 +129,7 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   }
 
   companion object {
-    const val DERBY = "TARGET"
+    const val DERBY = "DERBY"
     const val H2 = "H2"
     const val HSQLDB = "HSQLDB"
     const val PROPS = "PROPS"
