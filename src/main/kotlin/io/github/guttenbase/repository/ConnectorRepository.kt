@@ -263,7 +263,6 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultNumberOfCheckedTableDataHint())
     addConnectorHint(connectorId, DefaultMaxNumberOfDataItemsHint())
     addConnectorHint(connectorId, DefaultSplitColumnHint())
-    addConnectorHint(connectorId, DefaultColumnTypeResolverListHint())
     addConnectorHint(connectorId, DefaultEntityTableCheckerHint())
     addConnectorHint(connectorId, DefaultExporterFactoryHint())
     addConnectorHint(connectorId, DefaultImporterFactoryHint())

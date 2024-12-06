@@ -93,7 +93,7 @@ open class ReadTableDataTool(
       for (columnIndex in 1..orderedSourceColumns.size) {
         val sourceColumn = orderedSourceColumns[columnIndex - 1]
         val columnName = sourceColumnNameMapper.mapColumnName(sourceColumn, tableMetaData)
-        val sourceColumnType = commonColumnTypeResolver.getColumnType(connectorId, sourceColumn)
+        val sourceColumnType = commonColumnTypeResolver.getColumnType(sourceColumn)
         val columnTypeMapping = commonColumnTypeResolver.getCommonColumnTypeMapping(
           sourceColumn, connectorId, sourceColumn
         ) ?: throw IllegalStateException("Type mapping not found for $sourceColumn")

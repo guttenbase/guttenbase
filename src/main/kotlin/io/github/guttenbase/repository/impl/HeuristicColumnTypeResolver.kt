@@ -7,10 +7,11 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 
 /**
- * Will check column type names and determine what Java type is appropriate using some heuristic tests.
+ * Will check column type names and determine what Java type is appropriate.
+ *
+ * Mapping is based on heuristic knowledge and experience.
  *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -19,8 +20,8 @@ object HeuristicColumnTypeResolver : ColumnTypeResolver {
    * Performs some heuristic checks on given column type.
    */
   override fun getColumnType(columnMetaData: ColumnMetaData): ColumnType {
-    val columnType: String = columnMetaData.columnTypeName.uppercase()
-    val databaseType: DatabaseType = columnMetaData.tableMetaData.databaseMetaData.databaseType
+    val columnType = columnMetaData.columnTypeName.uppercase()
+    val databaseType = columnMetaData.tableMetaData.databaseMetaData.databaseType
 
     return checkDatabaseSpecificTypes(columnType, databaseType)
       ?: return when {

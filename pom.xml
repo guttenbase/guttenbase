@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <groupId>io.github.guttenbase</groupId>
     <artifactId>guttenbase</artifactId>
-    <version>3.4.1-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
 
     <modelVersion>4.0.0</modelVersion>
     <url>https://github.com/guttenbase/guttenbase</url>
@@ -22,7 +22,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <kotlin.version>2.0.20</kotlin.version>
+        <kotlin.version>2.1.0</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 
         <slf4j.version>2.0.6</slf4j.version>

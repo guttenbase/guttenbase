@@ -13,14 +13,11 @@ import java.math.BigInteger
 import java.sql.*
 import java.sql.Date
 import java.time.LocalDateTime
-import java.util.*
 
 /**
  * Define column type and mapping methods
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -28,58 +25,40 @@ import java.util.*
 enum class ColumnType(vararg classes: Class<*>) {
   CLASS_UNKNOWN(Void::class.java),
 
-  //
-  CLASS_STRING(String::class.java, Char::class.java, java.lang.Character::class.java),
+  CLASS_STRING(String::class.java, Char::class.java, Character::class.java),
 
-  //
   CLASS_BIGDECIMAL(BigDecimal::class.java),
 
-  //
   CLASS_BLOB(Blob::class.java),
 
-  //
   CLASS_CLOB(Clob::class.java),
 
-  //
   CLASS_SQLXML(SQLXML::class.java),
 
-  //
   CLASS_OBJECT(Any::class.java, Serializable::class.java, Util.ByteArrayClass),
 
-  //
   CLASS_DATE(Date::class.java),
 
-  //
   CLASS_TIMESTAMP(Timestamp::class.java),
 
-  //
   CLASS_DATETIME(LocalDateTime::class.java),
 
-  //
   CLASS_TIME(Time::class.java),
 
-  //
-  CLASS_INTEGER(Int::class.java, java.lang.Integer::class.java),
+  CLASS_INTEGER(Int::class.java, Integer::class.java),
 
-  //
   CLASS_BOOLEAN(Boolean::class.java, java.lang.Boolean::class.java),
 
-  //
   CLASS_LONG(Long::class.java, BigInteger::class.java, java.lang.Long::class.java),
 
-  //
   CLASS_DOUBLE(Double::class.java, java.lang.Double::class.java),
 
-  //
   CLASS_FLOAT(Float::class.java, java.lang.Float::class.java),
 
-  //
   CLASS_BYTE(Byte::class.javaPrimitiveType!!, java.lang.Byte::class.java),
 
-  //
   CLASS_BYTES(ByteArray::class.java),
 
-  //
   CLASS_SHORT(Short::class.java, java.lang.Short::class.java);
 
   /**
@@ -158,7 +137,8 @@ enum class ColumnType(vararg classes: Class<*>) {
         result = inputStream
         insertStatement.setBlob(columnIndex, inputStream)
       }
-      CLASS_CLOB ->  {
+
+      CLASS_CLOB -> {
         val characterStream = (data as Clob).characterStream
         result = characterStream
         insertStatement.setClob(columnIndex, characterStream)
