@@ -9,7 +9,7 @@ import io.github.guttenbase.exceptions.UnequalNumberOfRowsException
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.ColumnMapper
-import io.github.guttenbase.mapping.ColumnTypeMapping
+import io.github.guttenbase.mapping.ColumnDataMapping
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
@@ -80,7 +80,6 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
       .fullyQualifiedTableName(sourceTableMetaData, sourceTableMetaData.databaseMetaData)
     val tableName2 = connectorRepository.hint<TableMapper>(targetConnectorId)
       .fullyQualifiedTableName(targetTableMetaData, targetTableMetaData.databaseMetaData)
-    val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
     val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(sourceConnectorId)
     val targetColumnNameMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
 
@@ -116,9 +115,10 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
           val mapping = columnMapper.map(sourceColumn, targetTableMetaData)
 
           for (targetColumn in mapping.columns) {
-            val columnTypeMapping =
-              commonColumnTypeResolver.getCommonColumnTypeMapping(sourceColumn, targetConnectorId, targetColumn)
-                ?: throw IllegalStateException("Could not find type mapping for $sourceColumn -> $targetColumn")
+            val columnTypeMapping = ColumnTypeResolverTool(connectorRepository).getCommonColumnTypeMapping(
+              sourceColumn, targetConnectorId, targetColumn
+            )
+              ?: throw IllegalStateException("Could not find type mapping for $sourceColumn -> $targetColumn")
             val columnName1 = sourceColumnNameMapper.mapColumnName(sourceColumn, targetTableMetaData)
             val columnName2 = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
             checkColumnTypeMapping(tableName1, sourceColumn, targetColumn, columnTypeMapping, columnName1, columnName2)
@@ -165,14 +165,14 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     sourceColumnIndex: Int,
     sourceColumn: ColumnMetaData,
     columnMetaData2: ColumnMetaData,
-    columnTypeMapping: ColumnTypeMapping,
+    columnDataMapping: ColumnDataMapping,
     columnName1: String,
     sourceColumnType: ColumnType
   ) {
     var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
-    data1 = columnTypeMapping.columnDataMapper.map(sourceColumn, columnMetaData2, data1)
+    data1 = columnDataMapping.columnDataMapper.map(sourceColumn, columnMetaData2, data1)
 
-    var data2 = columnTypeMapping.targetColumnType.getValue(resultSet2, targetColumnIndex)
+    var data2 = columnDataMapping.targetColumnType.getValue(resultSet2, targetColumnIndex)
 
     when (sourceColumnType) {
       CLASS_STRING -> {
@@ -235,11 +235,11 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     tableName1: String,
     sourceColumn: ColumnMetaData,
     columnMetaData2: ColumnMetaData,
-    columnTypeMapping: ColumnTypeMapping?,
+    columnDataMapping: ColumnDataMapping?,
     columnName1: String,
     columnName2: String
   ) {
-    if (columnTypeMapping == null) {
+    if (columnDataMapping == null) {
       throw IncompatibleColumnsException(
         (tableName1 + ": Columns have incompatible types: "
             + columnName1

@@ -7,7 +7,7 @@ import io.github.guttenbase.mapping.ColumnDataMapperProvider
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- * Hint is used by [io.github.guttenbase.tools.CommonColumnTypeResolverTool] to determine mapping between different column types
+ * Hint is used by [io.github.guttenbase.tools.ColumnTypeResolverTool] to determine mapping between different column types
  *
  * @author M. Dahm
  */

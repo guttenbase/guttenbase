@@ -4,13 +4,13 @@ import io.github.guttenbase.meta.ColumnType
 
 
 /**
- * Container for column type mapping information.
+ * Container for column data mapping information.
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
-data class ColumnTypeMapping(
+data class ColumnDataMapping(
   val sourceColumnType: ColumnType,
   val targetColumnType: ColumnType,
   val columnDataMapper: ColumnDataMapper

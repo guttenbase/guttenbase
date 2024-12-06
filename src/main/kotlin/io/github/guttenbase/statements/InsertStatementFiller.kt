@@ -1,11 +1,11 @@
 package io.github.guttenbase.statements
 
 import io.github.guttenbase.configuration.TargetDatabaseConfiguration
+import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.MissingDataException
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.hints.ColumnOrderHint.Companion.getSortedColumns
-import io.github.guttenbase.hints.impl.DefaultColumnDataMapperProviderHint
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableRowDataFilter
 import io.github.guttenbase.meta.ColumnMetaData
@@ -13,7 +13,7 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.progress.TableCopyProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
-import io.github.guttenbase.tools.CommonColumnTypeResolverTool
+import io.github.guttenbase.tools.ColumnTypeResolverTool
 import java.io.Closeable
 import java.io.IOException
 import java.sql.Connection
@@ -40,7 +40,6 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     targetDatabaseConfiguration: TargetDatabaseConfiguration, targetConnection: Connection, rs: ResultSet,
     insertStatement: PreparedStatement, numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
   ) {
-    val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
     val sourceColumns = getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val filter = connectorRepository.hint<TableRowDataFilter>(targetConnectorId)
@@ -88,12 +87,10 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
         }
 
         for (targetColumnMetaData in mapping.columns) {
-          val columnTypeMapping = findMapping(
-            targetConnectorId, commonColumnTypeResolver, sourceColumnMetaData, targetColumnMetaData
-          )
+          val columnTypeMapping = findMapping(targetConnectorId, sourceColumnMetaData, targetColumnMetaData)
           val sourceValue = columnTypeMapping.sourceColumnType.getValue(rs, columnIndex)
-          val targetValue =
-            columnTypeMapping.columnDataMapper.map(sourceColumnMetaData, targetColumnMetaData, sourceValue)
+          val targetValue = columnTypeMapping.columnDataMapper
+            .map(sourceColumnMetaData, targetColumnMetaData, sourceValue)
           val optionalCloseableObject = columnTypeMapping.targetColumnType.setValue(
             insertStatement, targetColumnIndex++, targetDatabase, targetColumnMetaData.columnType, targetValue
           )
@@ -146,28 +143,16 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
 
   private fun findMapping(
     targetConnectorId: String,
-    commonColumnTypeResolver: CommonColumnTypeResolverTool,
     sourceColumn: ColumnMetaData,
     targetColumn: ColumnMetaData
-  ) = commonColumnTypeResolver.getCommonColumnTypeMapping(sourceColumn, targetConnectorId, targetColumn)
-    ?: throw IncompatibleColumnsException(
-      """Columns have incompatible types: ${sourceColumn.columnName}/${sourceColumn.columnTypeName} vs. ${targetColumn.columnName}/${targetColumn.columnTypeName}
-         Please add a mapping using ${DefaultColumnDataMapperProviderHint::class.java.name}, e.g.,
-         connectorRepository.addConnectorHint(TARGET, new DefaultColumnDataMapperProviderHint() {
-         @Override
-         protected void addMappings(final DefaultColumnDataMapperProvider columnDataMapperFactory) {
-           super.addMappings(columnDataMapperFactory);
-
-           columnDataMapperFactory.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, new ColumnDataMapper() {
-             @Override
-             public Object map(final ColumnMetaData sourceColumnMetaData, final ColumnMetaData targetColumnMetaData, final Object value) {
-               return ...
-             }
-           });
-         }
+  ) = ColumnTypeResolverTool(connectorRepository).getCommonColumnTypeMapping(
+    sourceColumn, targetConnectorId, targetColumn
+  ) ?: throw IncompatibleColumnsException(
+    """Columns have incompatible types: ${sourceColumn.columnName}/${sourceColumn.columnTypeName} vs. ${targetColumn.columnName}/${targetColumn.columnTypeName}
+         Please add a mapping using ${DefaultColumnDataMapperProvider::class.java.name}, e.g.
        });
       """.trimIndent()
-    )
+  )
 
   /**
    * Clear any resources associated with this commit, open BLOBs in particular.

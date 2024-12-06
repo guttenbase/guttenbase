@@ -23,9 +23,4 @@ interface ColumnDataMapperProvider {
     sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData,
     sourceColumnType: ColumnType, targetColumnType: ColumnType
   ): ColumnDataMapper?
-
-  /**
-   * Specify additional mapping
-   */
-  fun addMapping(sourceColumnType: ColumnType, targetColumnType: ColumnType, columnDataMapper: ColumnDataMapper)
 }

@@ -1,7 +1,6 @@
 package io.github.guttenbase.hints
 
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider
-import io.github.guttenbase.hints.impl.DefaultColumnDataMapperProviderHint
 import io.github.guttenbase.mapping.ColumnDataMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
@@ -32,12 +31,7 @@ class DataTransformerTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tabl
         value.toString() + SUFFIX
     }
 
-    connectorRepository.addConnectorHint(TARGET, object : DefaultColumnDataMapperProviderHint() {
-      override fun addMappings(columnDataMapperFactory: DefaultColumnDataMapperProvider) {
-        super.addMappings(columnDataMapperFactory)
-        columnDataMapperFactory.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, columnDataMapper)
-      }
-    })
+    DefaultColumnDataMapperProvider.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, columnDataMapper)
   }
 
   override fun executeChecks() {

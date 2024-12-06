@@ -3,6 +3,7 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.tools.ReadTableDataTool
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 
 /**
@@ -27,11 +28,11 @@ class TableMapperHintTest : AbstractHintTest(
     ReadTableDataTool(connectorRepository, TARGET, "FOO_COMPANY").start().use { tool ->
       val data = tool.readTableData(-1).sortedBy { it["NAME"].toString() }
 
-      Assertions.assertThat(data).hasSize(4)
+      assertThat(data).hasSize(4)
 
       val last = data.last()
-      Assertions.assertThat(last).hasSize(3)
-      Assertions.assertThat(last["NAME"]).isEqualTo("Häagen daß")
+      assertThat(last).hasSize(3)
+      assertThat(last["NAME"]).isEqualTo("Häagen daß")
     }
   }
 }

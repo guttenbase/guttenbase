@@ -75,7 +75,6 @@ open class ReadTableDataTool(
   fun readTableData(noLines: Int): List<Map<String, Any?>> {
     var lines = noLines
     val result = ArrayList<Map<String, Any?>>()
-    val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
     val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(connectorId)
     val orderedSourceColumns = ColumnOrderHint.getSortedColumns(
       connectorRepository, connectorId, tableMetaData
@@ -93,11 +92,10 @@ open class ReadTableDataTool(
       for (columnIndex in 1..orderedSourceColumns.size) {
         val sourceColumn = orderedSourceColumns[columnIndex - 1]
         val columnName = sourceColumnNameMapper.mapColumnName(sourceColumn, tableMetaData)
-        val sourceColumnType = commonColumnTypeResolver.getColumnType(sourceColumn)
-        val columnTypeMapping = commonColumnTypeResolver.getCommonColumnTypeMapping(
+        val columnTypeMapping = ColumnTypeResolverTool(connectorRepository).getCommonColumnTypeMapping(
           sourceColumn, connectorId, sourceColumn
         ) ?: throw IllegalStateException("Type mapping not found for $sourceColumn")
-        val data = sourceColumnType.getValue(resultSet, columnIndex)
+        val data = columnTypeMapping.sourceColumnType.getValue(resultSet, columnIndex)
         val mappedData = columnTypeMapping.columnDataMapper.map(sourceColumn, sourceColumn, data)
 
         rowData[columnName] = mappedData

@@ -7,7 +7,7 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
-import io.github.guttenbase.tools.CommonColumnTypeResolverTool
+import io.github.guttenbase.tools.ColumnTypeResolverTool
 
 /**
  * Will check two schemas for compatibility and report found issues.
@@ -60,7 +60,12 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
         sourceFK.referencedColumns == it.referencedColumns &&
             sourceFK.tableMetaData == it.tableMetaData &&
             sourceFK.referencingColumns == it.referencingColumns
-      } ?: schemaCompatibilityIssues.addIssue(MissingForeignKeyIssue("Missing/incompatible foreign key $sourceFK", sourceFK))
+      } ?: schemaCompatibilityIssues.addIssue(
+        MissingForeignKeyIssue(
+          "Missing/incompatible foreign key $sourceFK",
+          sourceFK
+        )
+      )
     }
 
     return schemaCompatibilityIssues
@@ -122,7 +127,6 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
     sourceTableMetaData: TableMetaData, targetTableMetaData: TableMetaData
   ): SchemaCompatibilityIssues {
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
-    val commonColumnTypeResolver = CommonColumnTypeResolverTool(connectorRepository)
     val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(sourceConnectorId)
     val targetColumnNameMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val tableName = sourceTableMetaData.tableName
@@ -156,27 +160,18 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
 
       for (targetColumn in targetColumns) {
         val targetColumnName = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
-        val columnTypeMapping = commonColumnTypeResolver.getCommonColumnTypeMapping(
+        val columnTypeMapping = ColumnTypeResolverTool(connectorRepository).getCommonColumnTypeMapping(
           sourceColumn, targetConnectorId, targetColumn
         )
 
         if (columnTypeMapping == null) {
           schemaCompatibilityIssues.addIssue(
             IncompatibleColumnsIssue(
-              (((tableName + ":"
-                  + sourceColumn
-                  + ": Columns have incompatible types: "
-                  + sourceColumnName
-                  + "/"
-                  + sourceColumn.columnTypeName
-                  ) + "/"
-                  + sourceColumn.columnClassName
-                  ) + " vs. "
-                  + targetColumnName
-                  + "/"
-                  + targetColumn.columnTypeName
-                  ) + "/"
-                  + targetColumn.columnClassName, sourceColumn, targetColumn
+              """
+        $tableName: $sourceColumn: Columns have incompatible types: 
+        $sourceColumnName/${sourceColumn.columnTypeName}/${sourceColumn.columnClassName} vs.
+        $targetColumnName/${targetColumn.columnTypeName}/${targetColumn.columnClassName}            
+              """.trimIndent(), sourceColumn, targetColumn
             )
           )
         }
@@ -217,7 +212,8 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
 
   companion object {
     private fun getFullyQualifiedColumnNames(columnMetaData: List<ColumnMetaData>) =
-      columnMetaData.joinToString(separator = ", ", prefix = "(", postfix = ")",
+      columnMetaData.joinToString(
+        separator = ", ", prefix = "(", postfix = ")",
         transform = { it.tableMetaData.tableName + "." + it.columnName })
   }
 }

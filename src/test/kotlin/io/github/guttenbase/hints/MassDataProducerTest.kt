@@ -51,14 +51,9 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-derby.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables-h2.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
-    connectorRepository.addConnectorHint(TARGET, object : DefaultColumnDataMapperProviderHint() {
-      override fun addMappings(columnDataMapperFactory: DefaultColumnDataMapperProvider) {
-        super.addMappings(columnDataMapperFactory)
 
-        columnDataMapperFactory.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, nameDataMapper)
-        columnDataMapperFactory.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_LONG, idDataMapper)
-      }
-    })
+    DefaultColumnDataMapperProvider.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, nameDataMapper)
+    DefaultColumnDataMapperProvider.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_LONG, idDataMapper)
 
     computeMaximumIds()
   }

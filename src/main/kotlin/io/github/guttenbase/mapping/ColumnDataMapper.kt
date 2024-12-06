@@ -4,10 +4,10 @@ import io.github.guttenbase.meta.ColumnMetaData
 import java.sql.SQLException
 
 /**
- * Map data contained in a column to some other type. I.e., the target column may have a different type and thus an INSERT needs conversion.
+ * Map data contained in a column to some other type. I.e., the target column may have a different type and the
+ * INSERT statement arguments thus require some conversion.
  *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
