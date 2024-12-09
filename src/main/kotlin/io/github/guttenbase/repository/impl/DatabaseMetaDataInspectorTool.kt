@@ -325,7 +325,14 @@ internal class DatabaseMetaDataInspectorTool(
         /** @see [java.sql.DatabaseMetaData.typeInfo]
          */
         val typeName = resultSet.getString("TYPE_NAME")
-        val jdbcType = JDBCType.valueOf(resultSet.getInt("DATA_TYPE"))
+        val sqlType = resultSet.getInt("DATA_TYPE")
+
+        // Handle DB-specific types such as Oracle's VECTOR(-105)
+        val jdbcType = try {
+          JDBCType.valueOf(sqlType)
+        } catch (_: IllegalArgumentException) {
+          JDBCType.OTHER
+        }
         val precision = resultSet.getInt("PRECISION")
         val nullable = resultSet.getBoolean("NULLABLE")
 
