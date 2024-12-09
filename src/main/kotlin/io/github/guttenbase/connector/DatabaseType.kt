@@ -72,7 +72,10 @@ enum class DatabaseType(
   }
 
   /**
-   * To be executed when table DDL script is created
+   * ID columns may be defined as autoincremented, i.e. every time data is inserted the ID will be incremented autoimatically.
+   * Unfortunately every database has its own way to implement this feature.
+   *
+   * @return the autoincrement clause for the target database
    */
   fun createColumnAutoincrementClause(column: ColumnMetaData): String {
     assert(column.isAutoIncrement) { "$column is no auto increment column" }
@@ -86,15 +89,10 @@ enum class DatabaseType(
       .replace(TABLE_NAME, column.tableMetaData.tableName).replace(COLUMN_NAME, column.columnName)
   }
 
-  fun lookupDefaultValueClause(columnDefinition: ColumnDefinition) = when (this) {
-    MYSQL -> if (columnDefinition.type.equals("TIMESTAMP", true)) {
-      " DEFAULT CURRENT_TIMESTAMP"    // Otherwise may result in [42000][1067] Invalid default value for 'CREATED_AT'
-    } else {
-      ""
-    }
-
-    else -> ""
-  }
+  fun createDefaultValueClause(columnDefinition: ColumnDefinition): String? =
+    if (this == MYSQL && columnDefinition.targetType.equals("TIMESTAMP", true)) {
+      "DEFAULT CURRENT_TIMESTAMP"    // Otherwise may result in [42000][1067] Invalid default value for 'CREATED_AT'
+    } else null
 
   /**
    * To be executed after table DDL script has run (optionally)

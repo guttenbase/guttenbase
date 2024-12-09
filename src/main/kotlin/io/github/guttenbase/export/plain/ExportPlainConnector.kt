@@ -9,7 +9,7 @@ import io.github.guttenbase.utils.Util
 import java.sql.Connection
 
 /**
- * Connection info for exporting data to a file.
+ * Connector for exporting DDL and data to a file.
  *
  *  &copy; 2024-2044 akquinet tech@spree
  *
@@ -48,7 +48,7 @@ class ExportPlainConnector(
     val tableMetaDataMap = tableMetaData.associateBy { it.tableName.uppercase() }
 
     return object : InternalDatabaseMetaData by data {
-      override val databaseType get() = connectorInfo.databaseType
+      override val databaseType get() = connectorInfo.sourceDatabaseType
 
       override val tableMetaData get() = tableMetaData
 
@@ -60,6 +60,6 @@ class ExportPlainConnector(
     }
   }
 
-  private fun retrieveSourceDatabaseMetaData(): InternalDatabaseMetaData =
+  private fun retrieveSourceDatabaseMetaData() =
     connectorRepository.getDatabaseMetaData(connectorInfo.sourceConnectorId) as InternalDatabaseMetaData
 }

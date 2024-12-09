@@ -90,9 +90,9 @@ class SchemaScriptCreatorTool(
   fun createTable(tableMetaData: TableMetaData): String {
     val tableName = getTableName(tableMetaData)
 
-    return ("CREATE TABLE $tableName\n" + tableMetaData.columnMetaData.joinToString(newline = true) {
-      "  " + createColumn(it)
-    }) + ";"
+    return ("CREATE TABLE $tableName\n" + tableMetaData.columnMetaData
+      .joinToString(newline = true) { "  " + createColumn(it) }
+        ) + ";"
   }
 
   private fun getTableName(tableMetaData: TableMetaData): String {
@@ -205,8 +205,8 @@ class SchemaScriptCreatorTool(
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val columnTypeMapper = connectorRepository.hint<ColumnTypeMapper>(targetConnectorId)
-    val sourceType = connectorRepository.getDatabaseMetaData(sourceConnectorId).databaseType
-    val targetType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
+    val sourceType = connectorRepository.getDatabaseMetaData(sourceConnectorId)
+    val targetType = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val columnName = columnMapper.mapColumnName(columnMetaData, columnMetaData.tableMetaData)
     val columnType = columnTypeMapper.mapColumnType(columnMetaData, sourceType, targetType)
     val maxNameLength = targetMaxNameLength

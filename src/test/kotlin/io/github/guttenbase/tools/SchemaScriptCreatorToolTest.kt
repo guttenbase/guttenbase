@@ -26,7 +26,7 @@ import java.math.BigInteger
 import java.sql.Types
 
 class SchemaScriptCreatorToolTest {
-  private lateinit var databaseMetaData: DatabaseMetaData
+  private var databaseMetaData: DatabaseMetaData
   private val connectorRepository = object : ConnectorRepository() {
     override fun getDatabaseMetaData(connectorId: String): DatabaseMetaData {
       return databaseMetaData

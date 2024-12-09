@@ -16,6 +16,7 @@ interface ColumnMetaData : Comparable<ColumnMetaData>, Serializable {
    * Column type as defined in [java.sql.Types]
    */
   val columnType: Int
+  val jdbcColumnType: JDBCType
   val columnName: String
   val columnTypeName: String
   val columnClassName: String

@@ -1,9 +1,7 @@
 package io.github.guttenbase.io.github.guttenbase.tools
 
 import io.github.guttenbase.AbstractGuttenBaseTest
-import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.export.plain.ExportPlainTextConnectorInfo
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.CheckEqualTableDataTool
@@ -25,13 +23,15 @@ import kotlin.text.Charsets.UTF_8
  * @author M. Dahm
  */
 class ExportPlainTest : AbstractGuttenBaseTest() {
-  private val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, "", DatabaseType.H2DB, UTF_8)
-  private val compressedInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, "", DatabaseType.H2DB, UTF_8, true)
 
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
-    connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(TARGET, TestHsqlConnectionInfo())
+
+    val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
+    val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(sourceDatabase, FILE, "", UTF_8)
+
     connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
 
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
@@ -40,20 +40,22 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Export SQL data`() {
-    val ddlScript = CopySchemaTool(connectorRepository).createDDLScript(SOURCE, SCRIPT)
     DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, SCRIPT)
-
     val dataScript = File(FILE).readLines(UTF_8)
     assertThat(dataScript).contains("	(3, 'Häagen daß', 'Y');")
 
+    val ddlScript = CopySchemaTool(connectorRepository).createDDLScript(SOURCE, SCRIPT)
+
     ScriptExecutorTool(connectorRepository).executeScript(TARGET, true, true, ddlScript)
-    ScriptExecutorTool(connectorRepository).executeScript(TARGET, false, true, dataScript)
+    ScriptExecutorTool(connectorRepository).executeScript(TARGET, true, true, dataScript)
 
     CheckEqualTableDataTool(connectorRepository).checkTableData(SOURCE, TARGET)
   }
 
   @Test
   fun `Compress data`() {
+    val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
+    val compressedInfo = ExportPlainTextConnectorInfo(sourceDatabase, FILE, "", UTF_8, true)
     connectorRepository.addConnectionInfo(COMPRESSED, compressedInfo)
 
     DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, COMPRESSED)
@@ -64,7 +66,8 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Explicit encoding`() {
-    val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(SOURCE, FILE, "", DatabaseType.H2DB, ISO_8859_1)
+    val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
+    val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(sourceDatabase, FILE, "", ISO_8859_1)
     connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
 
     DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, SCRIPT)

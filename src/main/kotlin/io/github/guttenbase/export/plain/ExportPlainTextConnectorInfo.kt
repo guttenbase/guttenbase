@@ -2,6 +2,7 @@ package io.github.guttenbase.export.plain
 
 import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -17,24 +18,24 @@ import java.nio.charset.Charset
 data class ExportPlainTextConnectorInfo
 @JvmOverloads constructor(
   internal val sourceConnectorId: String,
+  internal val sourceDatabaseType: DatabaseType,
   internal val outputStream: OutputStream,
   override val schema: String = "",
-  override val databaseType: DatabaseType = DatabaseType.GENERIC,
   internal val encoding: Charset = Charsets.UTF_8,
   internal val compress: Boolean = false
 ) : ConnectorInfo {
   @JvmOverloads
   constructor(
-    sourceConnectorId: String,
+    sourceDatabase: DatabaseMetaData,
     path: String,
     schema: String = "",
-    databaseType: DatabaseType = DatabaseType.GENERIC,
     encoding: Charset = Charsets.UTF_8,
     compress: Boolean = false
-  ) : this(sourceConnectorId, FileOutputStream(path), schema, databaseType, encoding, compress)
+  ) : this(sourceDatabase.connectorId, sourceDatabase.databaseType, FileOutputStream(path), schema, encoding, compress)
 
   override val user: String get() = "user"
   override val password: String get() = "password"
+  override val databaseType = sourceDatabaseType
 
   private lateinit var exportPlainConnector: ExportPlainConnector
 
@@ -47,6 +48,7 @@ data class ExportPlainTextConnectorInfo
   }
 
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
   }
 }

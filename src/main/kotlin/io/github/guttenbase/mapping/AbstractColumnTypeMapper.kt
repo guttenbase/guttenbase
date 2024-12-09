@@ -1,8 +1,7 @@
 package io.github.guttenbase.mapping
 
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.ColumnMetaData
-import java.sql.Types
+import io.github.guttenbase.meta.DatabaseMetaData
 
 /**
  * Default uses same data type as source
@@ -15,78 +14,57 @@ abstract class AbstractColumnTypeMapper : ColumnTypeMapper {
    * @return target database type including precision and optional not null, autoincrement, and primary key constraint clauses
    */
   override fun mapColumnType(
-    column: ColumnMetaData, sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType
+    column: ColumnMetaData, sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData
   ): String {
-    val columnDefinition = lookupColumnDefinitionInternal(sourceDatabaseType, targetDatabaseType, column)
-      ?: createDefaultColumnDefinition(column)
-    val precision = createPrecisionClause(column, columnDefinition.precision)
+    val columnDefinition = lookupColumnDefinitionInternal(sourceDatabase, targetDatabase, column)
+      ?: ColumnDefinition(column, column.columnTypeName, column.precision)
     val singlePrimaryKey = column.isPrimaryKey && column.tableMetaData.primaryKeyColumns.size < 2
     val autoincrementClause =
-      if (column.isAutoIncrement) " " + lookupAutoIncrementClause(column, targetDatabaseType) else ""
+      if (column.isAutoIncrement) " " + targetDatabase.databaseType.createColumnAutoincrementClause(column) else ""
     val notNullClause = if (column.isNullable || singlePrimaryKey) "" else " NOT NULL" // Primary key implies NOT NULL
     val primaryKeyClause = if (singlePrimaryKey) " PRIMARY KEY" else ""
-    val defaultValueClause = targetDatabaseType.lookupDefaultValueClause(columnDefinition)
+    val defaultValueClause = targetDatabase.databaseType.createDefaultValueClause(columnDefinition) ?: ""
 
-    return columnDefinition.type + precision + defaultValueClause + notNullClause + autoincrementClause + primaryKeyClause
-  }
-
-  /**
-   * Override this method if you just want to change the way column types are logically mapped
-   *
-   * @return target database type including precision
-   */
-  @Suppress("SameParameterValue")
-  protected fun createDefaultColumnDefinition(
-    columnMetaData: ColumnMetaData, precision: String = ""
-  ): ColumnDefinition {
-    val precisionClause = createPrecisionClause(columnMetaData, precision)
-    val defaultColumnType: String = columnMetaData.columnTypeName
-
-    return ColumnDefinition(defaultColumnType, precisionClause)
-  }
-
-  protected fun createPrecisionClause(columnMetaData: ColumnMetaData, optionalPrecision: String): String {
-    return when (columnMetaData.columnType) {
-      Types.CHAR, Types.VARCHAR, Types.VARBINARY -> if (columnMetaData.columnTypeName.uppercase().contains("TEXT")) {
-        "" // TEXT does not support precision
-      } else {
-        val precision = columnMetaData.precision
-
-        if (precision > 0) "($precision)" else ""
-      }
-
-      else -> optionalPrecision
-    }
+    return columnDefinition.toString() + " $defaultValueClause".trim() + notNullClause + autoincrementClause + primaryKeyClause
   }
 
   private fun lookupColumnDefinitionInternal(
-    sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType, column: ColumnMetaData
+    sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
   ): ColumnDefinition? {
     if (column.isAutoIncrement) {
-      val columnType = targetDatabaseType.createColumnAutoIncrementType(column)
+      val columnType = targetDatabase.databaseType.createColumnAutoIncrementType(column)
 
       if (columnType != null) {
-        return ColumnDefinition(columnType, "")
+        return ColumnDefinition(column, columnType)
       }
     }
 
-    return lookupColumnDefinition(sourceDatabaseType, targetDatabaseType, column)
+    return lookupColumnDefinition(sourceDatabase, targetDatabase, column)
   }
 
   protected abstract fun lookupColumnDefinition(
-    sourceDatabaseType: DatabaseType,
-    targetDatabaseType: DatabaseType,
-    column: ColumnMetaData
+    sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
   ): ColumnDefinition?
-
-  /**
-   * ID columns may be defined as autoincremented, i.e. every time data is inserted the ID will be incremented autoimatically.
-   * Unfortunately every database has its own way to implement this feature.
-   *
-   * @return the autoincrement clause for the target database
-   */
-  protected fun lookupAutoIncrementClause(column: ColumnMetaData, targetDatabaseType: DatabaseType) =
-    targetDatabaseType.createColumnAutoincrementClause(column)
 }
 
-data class ColumnDefinition(val type: String, val precision: String)
+data class ColumnDefinition(
+  val sourceColumn: ColumnMetaData, val targetType: String,
+  val precision: Int = 0, val scale: Int = 0,
+  val usePrecision: Boolean = false
+) {
+  override fun toString(): String {
+    val result = StringBuilder(targetType)
+
+    if (usePrecision) {
+      result.append("($precision")
+
+      if (scale > 0) {
+        result.append(", $scale")
+      }
+
+      result.append(")")
+    }
+
+    return result.toString()
+  }
+}

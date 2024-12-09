@@ -1,7 +1,7 @@
 package io.github.guttenbase.mapping
 
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.meta.DatabaseMetaData
 
 
 /**
@@ -11,5 +11,5 @@ fun interface ColumnTypeMapper {
   /**
    * @return target database type including precision and optional not null constraint clause
    */
-  fun mapColumnType(column: ColumnMetaData, sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType): String
+  fun mapColumnType(column: ColumnMetaData, sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData): String
 }
