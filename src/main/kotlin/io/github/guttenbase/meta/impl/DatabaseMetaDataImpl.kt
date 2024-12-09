@@ -36,13 +36,13 @@ class DatabaseMetaDataImpl(
     databaseMetaData.databaseType
   )
 
-  override val supportedTypes: List<DatabaseSupportedType> get() = supportedTypeMap.values.toList()
+  override val supportedTypes: List<DatabaseSupportedType> get() = supportedTypeMap.values.flatten()
 
   override val schema = schema.trim { it <= ' ' }
 
   private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()
 
-  private val supportedTypeMap = mutableMapOf<String, DatabaseSupportedType>()
+  private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseSupportedType>>()
 
   override val databaseMetaData get() = createMetaDataProxy(databaseProperties)
 
@@ -61,10 +61,12 @@ class DatabaseMetaDataImpl(
   }
 
   override fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, nullable: Boolean) {
-    supportedTypeMap[type.uppercase()] = DatabaseSupportedType(type, jdbcType, precision, nullable)
+    val list = supportedTypeMap.computeIfAbsent(jdbcType) { mutableListOf<DatabaseSupportedType>() }
+    list.add(DatabaseSupportedType(type, jdbcType, precision, nullable))
   }
 
-  override fun isSupportedType(type: String) = supportedTypeMap[type.uppercase()]
+  override fun typeFor(type: JDBCType, precision: IntRange) =
+    supportedTypeMap[type]?.firstOrNull { it.jdbcType == type && it.precision in precision }
 
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
 

@@ -29,7 +29,7 @@ interface DatabaseMetaData : Serializable {
   /**
    * @return (cached) meta data
    */
-  fun isSupportedType(type: String): DatabaseSupportedType?
+  fun typeFor(type: JDBCType, precision: IntRange = 1..Int.MAX_VALUE): DatabaseSupportedType?
   val supportedTypes: List<DatabaseSupportedType>
   val databaseMetaData: JdbcDatabaseMetaData
   val databaseType: DatabaseType
