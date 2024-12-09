@@ -1,5 +1,6 @@
 package io.github.guttenbase.connector
 
+import io.github.guttenbase.mapping.ColumnDefinition
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.schema.AutoIncrementValue
@@ -55,18 +56,18 @@ enum class DatabaseType(
   /**
    * To be executed when table DDL script is created
    */
-  fun createColumnType(column: ColumnMetaData): String? {
+  fun createColumnAutoIncrementType(column: ColumnMetaData): String? {
     assert(column.isAutoIncrement) { "$column is no auto increment column" }
 
-    return if (this == POSTGRESQL) {
-      when (column.columnType) {
+    return when (this) {
+      POSTGRESQL -> when (column.columnType) {
         Types.BIGINT -> "BIGSERIAL"
         Types.INTEGER -> "SERIAL"
         Types.SMALLINT -> "SMALLSERIAL"
         else -> "SERIAL"
       }
-    } else {
-      null
+
+      else -> null
     }
   }
 
@@ -85,6 +86,16 @@ enum class DatabaseType(
       .replace(TABLE_NAME, column.tableMetaData.tableName).replace(COLUMN_NAME, column.columnName)
   }
 
+  fun lookupDefaultValueClause(columnDefinition: ColumnDefinition) = when (this) {
+    MYSQL -> if (columnDefinition.type.equals("TIMESTAMP", true)) {
+      " DEFAULT CURRENT_TIMESTAMP"    // Otherwise may result in [42000][1067] Invalid default value for 'CREATED_AT'
+    } else {
+      ""
+    }
+
+    else -> ""
+  }
+
   /**
    * To be executed after table DDL script has run (optionally)
    */
@@ -96,7 +107,8 @@ enum class DatabaseType(
       val startValue = autoIncrementValue.startValue(column)
       val stepValue = autoIncrementValue.stepWidth(column)
 
-      autoincrementColumnStatement.replace(NEXT_VALUE, startValue.toString()).replace(STEP_VALUE, stepValue.toString())
+      autoincrementColumnStatement.replace(NEXT_VALUE, startValue.toString())
+        .replace(STEP_VALUE, stepValue.toString())
         .replace(TABLE_NAME, column.tableMetaData.tableName).replace(COLUMN_NAME, column.columnName)
     } else {
       null

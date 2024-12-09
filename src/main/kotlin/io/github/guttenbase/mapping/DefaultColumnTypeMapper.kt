@@ -7,12 +7,12 @@ import java.sql.Types
 import java.util.*
 
 /**
- * Default uses same data type as source
+ * Map types DB-specifically
  *
  *  &copy; 2012-2034 akquinet tech@spree
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class DefaultColumnTypeMapper : ColumnTypeMapper {
+open class DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   private val mappings = HashMap<DatabaseType, MutableMap<DatabaseType, MutableMap<String, ColumnDefinition>>>()
 
   init {
@@ -42,68 +42,9 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
     createDB2ToMssqlMapping()
   }
 
-  /**
-   * @return target database type including precision and optional not null, autoincrement, and primary key constraint clauses
-   */
-  override fun mapColumnType(
-    column: ColumnMetaData, sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType
-  ): String {
-    val columnDefinition = lookupColumnDefinition(sourceDatabaseType, targetDatabaseType, column)
-      ?: createDefaultColumnDefinition(column, "")
-    val precision = createPrecisionClause(column, columnDefinition.precision)
-    val singlePrimaryKey = column.isPrimaryKey && column.tableMetaData.primaryKeyColumns.size < 2
-    val autoincrementClause =
-      if (column.isAutoIncrement) " " + lookupAutoIncrementClause(column, targetDatabaseType) else ""
-    val notNullClause = if (column.isNullable || singlePrimaryKey) "" else " NOT NULL" // Primary key implies NOT NULL
-    val primaryKeyClause = if (singlePrimaryKey) " PRIMARY KEY" else ""
-    val defaultValueClause = lookupDefaultValueClause(columnDefinition, targetDatabaseType)
-
-    return columnDefinition.type + precision + defaultValueClause + notNullClause + autoincrementClause + primaryKeyClause
-  }
-
-  /**
-   * Override this method if you just want to change the way column types are logically mapped
-   *
-   * @return target database type including precision
-   */
-  @Suppress("SameParameterValue")
-  protected fun createDefaultColumnDefinition(
-    columnMetaData: ColumnMetaData,
-    optionalPrecision: String
-  ): ColumnDefinition {
-    val precision = createPrecisionClause(columnMetaData, optionalPrecision)
-    val defaultColumnType: String = columnMetaData.columnTypeName
-
-    return ColumnDefinition(defaultColumnType, precision)
-  }
-
-  protected fun createPrecisionClause(columnMetaData: ColumnMetaData, optionalPrecision: String): String {
-    return when (columnMetaData.columnType) {
-      Types.CHAR, Types.VARCHAR, Types.VARBINARY -> if (columnMetaData.columnTypeName.uppercase().contains("TEXT")) {
-        "" // TEXT does not support precision
-      } else {
-        val precision = columnMetaData.precision
-
-        if (precision > 0) "($precision)" else ""
-      }
-
-      else -> optionalPrecision
-    }
-  }
-
-  protected fun lookupColumnDefinition(
-    sourceDatabaseType: DatabaseType,
-    targetDatabaseType: DatabaseType,
-    column: ColumnMetaData
+  override fun lookupColumnDefinition(
+    sourceDatabaseType: DatabaseType, targetDatabaseType: DatabaseType, column: ColumnMetaData
   ): ColumnDefinition? {
-    if (column.isAutoIncrement) {
-      val columnType = targetDatabaseType.createColumnType(column)
-
-      if (columnType != null) {
-        return ColumnDefinition(columnType, "")
-      }
-    }
-
     val columnType = column.columnTypeName.uppercase()
     val databaseMatrix = mappings[sourceDatabaseType]
 
@@ -118,21 +59,9 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
     return null
   }
 
-  /**
-   * ID columns may be defined as autoincremented, i.e. every time data is inserted the ID will be incremented autoimatically.
-   * Unfortunately every database has its own way to implement this feature.
-   *
-   * @return the autoincrement clause for the target database
-   */
-  protected fun lookupAutoIncrementClause(column: ColumnMetaData, targetDatabaseType: DatabaseType) =
-    targetDatabaseType.createColumnAutoincrementClause(column)
-
   @JvmOverloads
   fun addMapping(
-    sourceDB: DatabaseType,
-    targetDB: DatabaseType,
-    sourceTypeName: String,
-    targetTypeName: String,
+    sourceDB: DatabaseType, targetDB: DatabaseType, sourceTypeName: String, targetTypeName: String,
     precision: String = ""
   ): DefaultColumnTypeMapper {
     addMappingInternal(sourceDB, targetDB, sourceTypeName, targetTypeName, precision)
@@ -146,23 +75,8 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
     return this
   }
 
-  protected fun lookupDefaultValueClause(columnDefinition: ColumnDefinition, targetDatabaseType: DatabaseType) =
-    when (targetDatabaseType) {
-      MYSQL -> if (columnDefinition.type.equals("TIMESTAMP", true)) {
-        " DEFAULT CURRENT_TIMESTAMP"    // Otherwise may result in [42000][1067] Invalid default value for 'CREATED_AT'
-      } else {
-        ""
-      }
-
-      else -> ""
-    }
-
   private fun addMappingInternal(
-    sourceDB: DatabaseType,
-    targetDB: DatabaseType,
-    sourceTypeName: String,
-    targetTypeName: String,
-    precision: String
+    sourceDB: DatabaseType, targetDB: DatabaseType, sourceTypeName: String, targetTypeName: String, precision: String
   ) {
     val databaseMatrix = mappings.getOrPut(sourceDB) { EnumMap(DatabaseType::class.java) }
     val mapping = databaseMatrix.getOrPut(targetDB) { HashMap() }
@@ -386,6 +300,4 @@ open class DefaultColumnTypeMapper : ColumnTypeMapper {
       }
     }
   }
-
-  data class ColumnDefinition(val type: String, val precision: String)
 }
