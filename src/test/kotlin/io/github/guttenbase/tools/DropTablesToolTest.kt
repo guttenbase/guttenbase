@@ -16,7 +16,6 @@ import java.sql.SQLIntegrityConstraintViolationException
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
 class DropTablesToolTest : AbstractGuttenBaseTest() {
@@ -74,12 +73,12 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Drop all`() {
-    dropALl(HSQLDB)
-    dropALl(H2)
-    dropALl(DERBY)
+    dropAll(HSQLDB)
+    dropAll(H2)
+    dropAll(DERBY)
   }
 
-  private fun dropALl(target: String) {
+  private fun dropAll(target: String) {
     DropTablesTool(connectorRepository).dropAll(target)
 
     assertThat(connectorRepository.getDatabaseMetaData(target).tableMetaData).isEmpty()

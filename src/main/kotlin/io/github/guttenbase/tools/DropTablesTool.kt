@@ -31,7 +31,7 @@ open class DropTablesTool @JvmOverloads constructor(
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val connectionInfo = connectorRepository.getConnectionInfo(connectorId)
     val constraintClause = getConstraintClause(connectionInfo)
-    val existsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.existsClause
+    val existsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.constraintExistsClause
 
     return tableMetaData.map { table ->
       table.importedForeignKeys.map {
@@ -48,7 +48,7 @@ open class DropTablesTool @JvmOverloads constructor(
       getSortedTables(connectorRepository, connectorId), false
     )
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val existsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.existsClause
+    val existsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.indexExistsClause
 
     return tableMetaData.map { table ->
       val schemaPrefix = table.databaseMetaData.schemaPrefix
@@ -66,7 +66,7 @@ open class DropTablesTool @JvmOverloads constructor(
   }
 
   private fun chooseDropIndexClause(index: IndexMetaData) = when (index.tableMetaData.databaseMetaData.databaseType) {
-    MYSQL -> MYSQL_INDEX_DROP
+    MARIADB, MYSQL -> MYSQL_INDEX_DROP
     else -> DEFAULT_INDEX_DROP
   }
 
@@ -77,7 +77,7 @@ open class DropTablesTool @JvmOverloads constructor(
   fun createDropTableStatements(connectorId: String) =
     createTableStatements(
       connectorId,
-      ("DROP TABLE " + connectorRepository.getConnectionInfo(connectorId).databaseType.existsClause).trim(),
+      "DROP TABLE" + (" " + connectorRepository.getConnectionInfo(connectorId).databaseType.tableExistsClause).trimEnd(),
       dropTablesSuffix
     )
 
@@ -115,9 +115,8 @@ open class DropTablesTool @JvmOverloads constructor(
 
   private fun getConstraintClause(connectionInfo: ConnectorInfo): String {
     return when (connectionInfo.databaseType) {
-      MARIADB, MYSQL -> " FOREIGN KEY "
-      POSTGRESQL -> " CONSTRAINT IF EXISTS "
-      else -> " CONSTRAINT "
+      MARIADB, MYSQL -> "FOREIGN KEY"
+      else -> "CONSTRAINT"
     }
   }
 
