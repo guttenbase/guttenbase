@@ -20,6 +20,7 @@ import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
 import io.github.guttenbase.utils.Util.toDate
 import org.slf4j.LoggerFactory
+import java.math.BigDecimal
 import java.sql.*
 import kotlin.math.min
 
@@ -198,18 +199,17 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     }
 
     if (data1 == null && data2 != null || data1 != null && data2 == null) {
-      throw createIncompatibleDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
+      throw createUnequalDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
     } else if (data1 != null && data2 != null && !equalsValue(data1, data2, sourceColumnType)) {
-      throw createIncompatibleDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
+      throw createUnequalDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
     }
   }
 
-  private fun equalsValue(data1: Any, data2: Any, columnType: ColumnType) =
-    if (columnType.isDate()) {
-      data1.toDate() == data2.toDate()
-    } else {
-      data1 == data2
-    }
+  private fun equalsValue(data1: Any, data2: Any, columnType: ColumnType) = when {
+    columnType.isDate() -> data1.toDate() == data2.toDate()
+    columnType == CLASS_BIGDECIMAL -> (data1 as BigDecimal).compareTo(data2 as BigDecimal) == 0 // Ignore scale, if 0
+    else -> data1 == data2
+  }
 
   private fun checkRowCount(
     sourceTableMetaData: TableMetaData,
@@ -267,20 +267,15 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
 
     private fun trim(data: String?): String? = data?.trim { it <= ' ' }
 
-    private fun createIncompatibleDataException(
+    private fun createUnequalDataException(
       tableName: String, index: Int,
       columnType: ColumnType, columnName: String, data1: Any?, data2: Any?
     ) = UnequalDataException(
-      tableName + ": Row "
-          + index
-          + ": Data not equal on column "
-          + columnName
-          + ": \n'"
-          + data1
-          + "'\n vs. \n'"
-          + data2
-          + "'\n, column class = "
-          + columnType.columnClasses
+      """$tableName: Row $index: Data not equal on column $columnName: 
+'$data1' (${data1?.javaClass})
+vs. 
+'$data2' (${data2?.javaClass})
+column class = ${columnType.columnClasses}"""
     )
   }
 }
