@@ -188,7 +188,7 @@ class SchemaScriptCreatorTool(
     for (table in tables) {
       val column = table.getNumericPrimaryKeyColumn()
 
-      if (column != null) {
+      if (column != null && column.isAutoIncrement) {
         val statement = databaseType.createColumnAutoincrementStatement(column)
 
         if (statement != null) {

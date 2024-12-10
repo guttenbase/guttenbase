@@ -28,10 +28,10 @@ class DatabaseTypeTest {
 
   @Test
   fun `Blob clauses`() {
-    assertEquals("CAST (X'", DatabaseType.H2DB.getBlobDataPrefix())
-    assertEquals("0x", DatabaseType.MSSQL.getBlobDataPrefix())
-    assertEquals("' AS BLOB)", DatabaseType.H2DB.getBlobDataSuffix())
-    assertEquals("", DatabaseType.MSSQL.getBlobDataSuffix())
+    assertEquals("CAST (X'", DatabaseType.H2DB.blobDataPrefix)
+    assertEquals("0x", DatabaseType.MSSQL.blobDataPrefix)
+    assertEquals("' AS BLOB)", DatabaseType.H2DB.blobDataSuffix)
+    assertEquals("", DatabaseType.MSSQL.blobDataSuffix)
   }
 
   @Test

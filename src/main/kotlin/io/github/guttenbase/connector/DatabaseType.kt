@@ -116,31 +116,47 @@ enum class DatabaseType(
   /**
    * @return clause to print before the hex-encoded data
    */
-  fun getBlobDataPrefix(): String {
-    val clause = getBlobDataClause()
+  val blobDataPrefix: String
+    get() {
+      val clause = blobDataClause
 
-    return clause.substring(0, clause.indexOf(HEX_VALUE))
-  }
+      return clause.substring(0, clause.indexOf(HEX_VALUE))
+    }
 
   /**
    * @return clause to print after the hex-encoded data
    */
-  fun getBlobDataSuffix(): String {
-    val clause = getBlobDataClause()
+  val blobDataSuffix: String
+    get() {
+      val clause = blobDataClause
 
-    return clause.substring(clause.indexOf(HEX_VALUE) + HEX_VALUE.length)
-  }
+      return clause.substring(clause.indexOf(HEX_VALUE) + HEX_VALUE.length)
+    }
 
-  fun getBlobDataClause(): String {
-    return when (this) {
+  /**
+   * @return clause with template variable to be replaced with actual data
+   */
+  val blobDataClause: String
+    get() = when (this) {
       POSTGRESQL -> """E'\\x$HEX_VALUE'"""
-      SYBASE, MSSQL, MYSQL -> """0x$HEX_VALUE"""
+      SYBASE, MSSQL, MYSQL, MARIADB -> """0x$HEX_VALUE"""
       ORACLE -> """'$HEX_VALUE'"""
       DB2 -> """BLOB(x'$HEX_VALUE')"""
       H2DB, HSQLDB, DERBY -> """CAST (X'$HEX_VALUE' AS BLOB)"""
       else -> """CAST (X'$HEX_VALUE' AS BLOB)""" // Hope for the best...
     }
-  }
+
+  /**
+   * @return escape charcter to wrap column or table names, e.g. if they contain special characters or key words
+   */
+  val escapeCharacter: String
+    get() = when (this) {
+      MYSQL, MARIADB -> "`"
+      else -> "\""
+    }
+
+  @JvmOverloads
+  fun escapeName(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
 
   private fun retrieveAutoIncrementValue(column: ColumnMetaData): AutoIncrementValue {
     val connectorRepository = column.tableMetaData.databaseMetaData.connectorRepository

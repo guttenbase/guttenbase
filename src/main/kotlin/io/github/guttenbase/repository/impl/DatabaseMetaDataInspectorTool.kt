@@ -218,7 +218,8 @@ internal class DatabaseMetaDataInspectorTool(
   private fun updateTableMetaDataWithColumnInformation(
     statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String
   ) {
-    val tableName = escapeTableName(tableMetaData, schemaPrefix)
+    val databaseType = tableMetaData.databaseMetaData.databaseType
+    val tableName = databaseType.escapeName(tableMetaData.tableName, schemaPrefix)
     val columnFilter = connectorRepository.hint<DatabaseColumnFilter>(connectorId)
     val selectSQL = SELECT_NOTHING_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
 
@@ -269,7 +270,8 @@ internal class DatabaseMetaDataInspectorTool(
     val filter = connectorRepository.hint<TableRowCountFilter>(connectorId)
 
     if (filter.accept(tableMetaData)) {
-      val tableName = escapeTableName(tableMetaData, schemaPrefix)
+      val databaseType = tableMetaData.databaseMetaData.databaseType
+      val tableName = databaseType.escapeName(tableMetaData.tableName, schemaPrefix)
       LOG.debug("Retrieving row count for $tableName")
 
       computeRowCount(tableName, tableMetaData, statement)
@@ -278,7 +280,7 @@ internal class DatabaseMetaDataInspectorTool(
 
       if (primaryKeyColumn != null) {
         val maxIdStatement = SELECT_MIN_MAX_ID_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
-          .replace(COLUMN_PLACEHOLDER, primaryKeyColumn.columnName)
+          .replace(COLUMN_PLACEHOLDER, databaseType.escapeName(primaryKeyColumn.columnName))
 
         statement.executeQuery(maxIdStatement).use {
           it.next()
@@ -404,16 +406,6 @@ internal class DatabaseMetaDataInspectorTool(
 
     private fun isPrimitive(clazz: Class<*>) =
       clazz != Void::class.java && (clazz.isPrimitive || clazz == String::class.java)
-
-    private fun escapeTableName(tableMetaData: InternalTableMetaData, schemaPrefix: String): String {
-      val tableName = schemaPrefix + tableMetaData.tableName
-
-      return if (tableName.contains(" ")) {
-        "\"$tableName\""
-      } else {
-        tableName
-      }
-    }
   }
 }
 

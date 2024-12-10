@@ -158,9 +158,9 @@ class ExportPlainTextStatement(sql: String, private val connection: ExportPlainT
 
   override fun setBytes(parameterIndex: Int, x: ByteArray) {
     setValue(parameterIndex) { pw ->
-      pw.print(databaseType.getBlobDataPrefix())
+      pw.print(databaseType.blobDataPrefix)
       pw.print(x.toHex())
-      pw.print(databaseType.getBlobDataSuffix())
+      pw.print(databaseType.blobDataSuffix)
     }
   }
 
@@ -224,9 +224,9 @@ class ExportPlainTextStatement(sql: String, private val connection: ExportPlainT
 
   override fun setBinaryStream(parameterIndex: Int, x: InputStream) {
     setValue(parameterIndex) { pw ->
-      pw.print(databaseType.getBlobDataPrefix())
+      pw.print(databaseType.blobDataPrefix)
       x.forEach { pw.print(it.toHex()) }
-      pw.print(databaseType.getBlobDataSuffix())
+      pw.print(databaseType.blobDataSuffix)
     }
   }
 
@@ -359,6 +359,7 @@ class ExportPlainTextStatement(sql: String, private val connection: ExportPlainT
     throw UnsupportedOperationException("Not implemented")
   }
 
+  @Suppress("RemoveRedundantQualifierName")
   override fun setArray(parameterIndex: Int, x: java.sql.Array?) {
     throw UnsupportedOperationException("Not implemented")
   }
