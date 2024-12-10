@@ -91,7 +91,8 @@ class SchemaScriptCreatorTool(
     val tableName = getTableName(tableMetaData)
     val databaseType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
 
-    return ("CREATE TABLE ${databaseType.notExistsClause} $tableName\n" +
+    val notExistsClause = (databaseType.notExistsClause + " ").trim()
+    return ("CREATE TABLE $notExistsClause$tableName\n" +
         tableMetaData.columnMetaData.joinToString(newline = true) { "  " + createColumn(it) }
         ) + ";"
   }
