@@ -155,6 +155,18 @@ enum class DatabaseType(
       else -> "\""
     }
 
+  val existsClause: String
+    get() = when (this) {
+      POSTGRESQL, MYSQL -> "IF EXISTS"
+      else -> ""
+    }
+
+  val notExistsClause: String
+    get() = when (this) {
+      POSTGRESQL, MYSQL -> "IF NOT EXISTS"
+      else -> ""
+    }
+
   @JvmOverloads
   fun escapeName(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
 

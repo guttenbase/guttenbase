@@ -1,7 +1,6 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.connector.DatabaseType.*
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.hints.TableOrderHint.Companion.getSortedTables
@@ -32,7 +31,7 @@ open class DropTablesTool @JvmOverloads constructor(
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val connectionInfo = connectorRepository.getConnectionInfo(connectorId)
     val constraintClause = getConstraintClause(connectionInfo)
-    val existsClause = chooseExistsClause(connectorRepository.getConnectionInfo(connectorId).databaseType)
+    val existsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.existsClause
 
     return tableMetaData.map { table ->
       table.importedForeignKeys.map {
@@ -49,7 +48,7 @@ open class DropTablesTool @JvmOverloads constructor(
       getSortedTables(connectorRepository, connectorId), false
     )
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val existsClause = chooseExistsClause(connectorRepository.getConnectionInfo(connectorId).databaseType)
+    val existsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.existsClause
 
     return tableMetaData.map { table ->
       val schemaPrefix = table.databaseMetaData.schemaPrefix
@@ -66,12 +65,6 @@ open class DropTablesTool @JvmOverloads constructor(
     }.flatten()
   }
 
-  private fun chooseExistsClause(databaseType: DatabaseType) =
-    when (databaseType) {
-      POSTGRESQL, MYSQL -> " IF EXISTS"
-      else -> ""
-    }
-
   private fun chooseDropIndexClause(index: IndexMetaData) = when (index.tableMetaData.databaseMetaData.databaseType) {
     MYSQL -> MYSQL_INDEX_DROP
     else -> DEFAULT_INDEX_DROP
@@ -83,8 +76,8 @@ open class DropTablesTool @JvmOverloads constructor(
 
   fun createDropTableStatements(connectorId: String) =
     createTableStatements(
-      connectorId, "DROP TABLE"
-          + chooseExistsClause(connectorRepository.getConnectionInfo(connectorId).databaseType),
+      connectorId,
+      ("DROP TABLE " + connectorRepository.getConnectionInfo(connectorId).databaseType.existsClause).trim(),
       dropTablesSuffix
     )
 
@@ -141,6 +134,7 @@ open class DropTablesTool @JvmOverloads constructor(
   companion object {
     private const val DEFAULT_INDEX_DROP = "DROP INDEX @@EXISTS@@ @@FULL_INDEX_NAME@@;"
     private const val MYSQL_INDEX_DROP = "ALTER TABLE @@FULL_TABLE_NAME@@ DROP INDEX @@EXISTS@@ @@FULL_INDEX_NAME@@;"
-    private const val DEFAULT_CONSTRAINT_DROP = "ALTER TABLE @@FULL_TABLE_NAME@@ DROP @@CONSTRAINT@@ @@EXISTS@@ @@FK_NAME@@;"
+    private const val DEFAULT_CONSTRAINT_DROP =
+      "ALTER TABLE @@FULL_TABLE_NAME@@ DROP @@CONSTRAINT@@ @@EXISTS@@ @@FK_NAME@@;"
   }
 }
