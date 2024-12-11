@@ -29,6 +29,7 @@ object Util {
   val ByteArrayClass: Class<*> = ByteArray::class.java
 
   const val DEFAULT_BUFFER_SIZE = 1024 * 4
+  const val ARROW = '\u2192'
 
   @JvmStatic
   fun Any.toDate(): Date = when (this) {

@@ -1,14 +1,16 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.configuration.TargetDatabaseConfiguration
+import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.sql.SQLLexer
-import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 import io.github.guttenbase.utils.Util
+import io.github.guttenbase.utils.Util.ARROW
+import org.slf4j.LoggerFactory
 import java.nio.charset.Charset
 import java.sql.*
-import java.util.*
+import kotlin.Throws
 
 /**
  * Execute given SQL script or single statements separated by given delimiter. Delimiter is ';' by default.
@@ -93,9 +95,20 @@ constructor(
 
             for (sql in sqlStatements) {
               progressIndicator.startExecution(sql)
-              executeSQL(statement, sql)
-              progressIndicator.endExecution(1)
-              progressIndicator.endProcess()
+              try {
+                executeSQL(statement, sql)
+              } catch (e: Exception) {
+                LOG.error(
+                  """|
+                  |Error in "$sql" 
+                  |$ARROW ${e.message}
+                  """.trimMargin(), e
+                )
+                throw e
+              } finally {
+                progressIndicator.endExecution(1)
+                progressIndicator.endProcess()
+              }
             }
 
             if (!connection.autoCommit && targetDatabaseConfiguration.isMayCommit) {
@@ -201,7 +214,6 @@ constructor(
     action.finalize(connection)
   }
 
-  @Throws(SQLException::class)
   private fun executeSQL(statement: Statement, sql: String) {
     progressIndicator.info("Executing: $sql")
 
@@ -264,6 +276,9 @@ constructor(
   }
 
   companion object {
+    @JvmStatic
+    private val LOG = LoggerFactory.getLogger(ScriptExecutorTool::class.java)
+
     val DEFAULT_ENCODING: String = Charset.defaultCharset().name()
   }
 }
