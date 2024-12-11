@@ -89,8 +89,8 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
         for (targetColumnMetaData in mapping.columns) {
           val columnTypeMapping = findMapping(targetConnectorId, sourceColumnMetaData, targetColumnMetaData)
           val sourceValue = columnTypeMapping.sourceColumnType.getValue(rs, columnIndex)
-          val targetValue = columnTypeMapping.columnDataMapper
-            .map(sourceColumnMetaData, targetColumnMetaData, sourceValue)
+          val targetValue =
+            columnTypeMapping.columnDataMapper.map(sourceColumnMetaData, targetColumnMetaData, sourceValue)
           val optionalCloseableObject = columnTypeMapping.targetColumnType.setValue(
             insertStatement, targetColumnIndex++, targetDatabase, targetColumnMetaData.columnType, targetValue
           )

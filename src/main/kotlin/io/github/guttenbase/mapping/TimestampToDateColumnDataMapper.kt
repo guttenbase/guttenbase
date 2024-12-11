@@ -1,7 +1,7 @@
 package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
-import java.util.Date
+import java.sql.Date
 import java.sql.Timestamp
 
 /**

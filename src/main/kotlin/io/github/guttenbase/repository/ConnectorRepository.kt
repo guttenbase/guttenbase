@@ -291,6 +291,6 @@ open class ConnectorRepository {
 
 typealias JdbcDatabaseMetaData = java.sql.DatabaseMetaData
 
-internal inline fun <reified T> ConnectorRepository.hint(connectorId: String): T =
+inline fun <reified T> ConnectorRepository.hint(connectorId: String): T =
   getConnectorHint(connectorId, T::class.java).value
 

@@ -7,10 +7,7 @@ import io.github.guttenbase.meta.ColumnMetaData
 /**
  * By default always just return the same object.
  *
- *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */

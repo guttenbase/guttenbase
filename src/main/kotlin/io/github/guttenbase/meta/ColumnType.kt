@@ -81,28 +81,26 @@ enum class ColumnType(vararg classes: Class<*>) {
   }
 
   @Throws(SQLException::class)
-  private fun getValueFromResultset(resultSet: ResultSet, columnIndex: Int): Any? {
-    return when (this) {
-      CLASS_STRING -> resultSet.getString(columnIndex)
-      CLASS_DOUBLE -> resultSet.getDouble(columnIndex)
-      CLASS_INTEGER -> resultSet.getInt(columnIndex)
-      CLASS_LONG -> resultSet.getLong(columnIndex)
-      CLASS_BLOB -> resultSet.getBlob(columnIndex)
-      CLASS_CLOB -> resultSet.getClob(columnIndex)
-      CLASS_SQLXML -> resultSet.getSQLXML(columnIndex)
-      CLASS_FLOAT -> resultSet.getFloat(columnIndex)
-      CLASS_BOOLEAN -> resultSet.getBoolean(columnIndex)
-      CLASS_BIGDECIMAL -> resultSet.getBigDecimal(columnIndex)
-      CLASS_TIMESTAMP -> resultSet.getTimestamp(columnIndex)
-      CLASS_DATE -> resultSet.getDate(columnIndex)
-      CLASS_SHORT -> resultSet.getShort(columnIndex)
-      CLASS_TIME -> resultSet.getTime(columnIndex)
-      CLASS_DATETIME -> resultSet.getObject(columnIndex, LocalDateTime::class.java)
-      CLASS_OBJECT -> resultSet.getObject(columnIndex)
-      CLASS_BYTE -> resultSet.getByte(columnIndex)
-      CLASS_BYTES -> resultSet.getBytes(columnIndex)
-      else -> throw UnhandledColumnTypeException("Unhandled column type ($this)")
-    }
+  private fun getValueFromResultset(resultSet: ResultSet, columnIndex: Int): Any? = when (this) {
+    CLASS_STRING -> resultSet.getString(columnIndex)
+    CLASS_DOUBLE -> resultSet.getDouble(columnIndex)
+    CLASS_INTEGER -> resultSet.getInt(columnIndex)
+    CLASS_LONG -> resultSet.getLong(columnIndex)
+    CLASS_BLOB -> resultSet.getBlob(columnIndex)
+    CLASS_CLOB -> resultSet.getClob(columnIndex)
+    CLASS_SQLXML -> resultSet.getSQLXML(columnIndex)
+    CLASS_FLOAT -> resultSet.getFloat(columnIndex)
+    CLASS_BOOLEAN -> resultSet.getBoolean(columnIndex)
+    CLASS_BIGDECIMAL -> resultSet.getBigDecimal(columnIndex)
+    CLASS_TIMESTAMP -> resultSet.getTimestamp(columnIndex)
+    CLASS_DATE -> resultSet.getDate(columnIndex)
+    CLASS_SHORT -> resultSet.getShort(columnIndex)
+    CLASS_TIME -> resultSet.getTime(columnIndex)
+    CLASS_DATETIME -> resultSet.getObject(columnIndex, LocalDateTime::class.java)
+    CLASS_OBJECT -> resultSet.getObject(columnIndex)
+    CLASS_BYTE -> resultSet.getByte(columnIndex)
+    CLASS_BYTES -> resultSet.getBytes(columnIndex)
+    else -> throw UnhandledColumnTypeException("Unhandled column type ($this)")
   }
 
   /**
@@ -110,8 +108,7 @@ enum class ColumnType(vararg classes: Class<*>) {
    */
   @Throws(SQLException::class)
   fun setValue(
-    insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData,
-    sqlType: Int, data: Any?
+    insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData, sqlType: Int, data: Any?
   ): Closeable? {
     return if (data == null) {
       insertStatement.setNull(columnIndex, sqlType)
