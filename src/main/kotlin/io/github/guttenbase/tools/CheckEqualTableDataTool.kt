@@ -100,12 +100,13 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     targetConfiguration.beforeSelect(targetConnection, targetConnectorId, targetTableMetaData)
     val resultSet2 = selectStatement2.executeQuery()
     targetConfiguration.afterSelect(targetConnection, targetConnectorId, targetTableMetaData)
-    val orderedSourceColumns: List<ColumnMetaData> = ColumnOrderHint.getSortedColumns(
-      connectorRepository, sourceConnectorId, sourceTableMetaData
-    )
-    val columnMapper: ColumnMapper =
-      connectorRepository.hint<ColumnMapper>(targetConnectorId)
+    val orderedSourceColumns =
+      ColumnOrderHint.getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     var rowIndex = 1
+
+    val primaryKeyColumn = sourceTableMetaData.primaryKeyColumns.firstOrNull()
+    var primaryKey = "<UNKNOWN>"
 
     try {
       while (resultSet1.next() && resultSet2.next() && rowIndex <= numberOfCheckData) {
@@ -122,25 +123,30 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
               ?: throw IllegalStateException("Could not find type mapping for $sourceColumn -> $targetColumn")
             val columnName1 = sourceColumnNameMapper.mapColumnName(sourceColumn, targetTableMetaData)
             val columnName2 = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
-            checkColumnTypeMapping(tableName1, sourceColumn, targetColumn, columnTypeMapping, columnName1, columnName2)
 
-            val sourceColumnType: ColumnType = columnTypeMapping.sourceColumnType
-
-            checkData(
-              sourceConnectorId,
-              targetConnectorId,
+            checkColumnTypeMapping(
               tableName1,
-              resultSet1,
-              resultSet2,
-              rowIndex,
-              targetColumnIndex,
-              sourceColumnIndex,
               sourceColumn,
               targetColumn,
               columnTypeMapping,
               columnName1,
-              sourceColumnType
+              columnName2
             )
+
+            val sourceColumnType: ColumnType = columnTypeMapping.sourceColumnType
+
+            val (value, _) = checkData(
+              primaryKey,
+              sourceConnectorId, targetConnectorId, tableName1,
+              resultSet1, resultSet2, rowIndex,
+              targetColumnIndex, sourceColumnIndex, sourceColumn, targetColumn,
+              columnTypeMapping, columnName1, sourceColumnType
+            )
+
+
+            if (sourceColumn == primaryKeyColumn) {
+              primaryKey = value.toString()
+            }
           }
 
           targetColumnIndex += mapping.columns.size
@@ -156,20 +162,12 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
   }
 
   private fun checkData(
-    sourceConnectorId: String,
-    targetConnectorId: String,
-    tableName1: String,
-    resultSet1: ResultSet,
-    resultSet2: ResultSet,
-    rowIndex: Int,
-    targetColumnIndex: Int,
-    sourceColumnIndex: Int,
-    sourceColumn: ColumnMetaData,
-    columnMetaData2: ColumnMetaData,
-    columnDataMapping: ColumnDataMapping,
-    columnName1: String,
-    sourceColumnType: ColumnType
-  ) {
+    primaryKey: String,
+    sourceConnectorId: String, targetConnectorId: String, tableName: String,
+    resultSet1: ResultSet, resultSet2: ResultSet, rowIndex: Int,
+    targetColumnIndex: Int, sourceColumnIndex: Int, sourceColumn: ColumnMetaData, columnMetaData2: ColumnMetaData,
+    columnDataMapping: ColumnDataMapping, columnName: String, sourceColumnType: ColumnType
+  ): Pair<Any?, Any?> {
     var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
     data1 = columnDataMapping.columnDataMapper.map(sourceColumn, columnMetaData2, data1)
 
@@ -199,9 +197,11 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     }
 
     if (data1 == null && data2 != null || data1 != null && data2 == null) {
-      throw createUnequalDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
+      throw createUnequalDataException(tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2)
     } else if (data1 != null && data2 != null && !equalsValue(data1, data2, sourceColumnType)) {
-      throw createUnequalDataException(tableName1, rowIndex, sourceColumnType, columnName1, data1, data2)
+      throw createUnequalDataException(tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2)
+    } else {
+      return data1 to data2
     }
   }
 
@@ -268,14 +268,15 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     private fun trim(data: String?): String? = data?.trim { it <= ' ' }
 
     private fun createUnequalDataException(
-      tableName: String, index: Int,
+      tableName: String, primaryKey: String, index: Int,
       columnType: ColumnType, columnName: String, data1: Any?, data2: Any?
     ) = UnequalDataException(
-      """$tableName: Row $index: Data not equal on column $columnName: 
-'$data1' (${data1?.javaClass})
-vs. 
-'$data2' (${data2?.javaClass})
-column class = ${columnType.columnClasses}"""
+      """|
+        |$tableName: Row $index, PK '$primaryKey' : Data not equal on column $columnName: 
+        |'$data1' (${data1?.javaClass})
+        |vs. 
+        |'$data2' (${data2?.javaClass})
+        |column class = ${columnType.columnClasses}""".trimMargin()
     )
   }
 }
