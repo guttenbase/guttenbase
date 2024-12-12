@@ -135,7 +135,7 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
 
             val sourceColumnType: ColumnType = columnTypeMapping.sourceColumnType
 
-            val (value, _) = checkData(
+            val (value, _) = checkColumnData(
               primaryKey,
               sourceConnectorId, targetConnectorId, tableName1,
               resultSet1, resultSet2, rowIndex,
@@ -161,7 +161,7 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     LOG.info("Checking data of $tableName1 <--> $tableName2 finished")
   }
 
-  private fun checkData(
+  private fun checkColumnData(
     primaryKey: String,
     sourceConnectorId: String, targetConnectorId: String, tableName: String,
     resultSet1: ResultSet, resultSet2: ResultSet, rowIndex: Int,

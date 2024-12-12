@@ -49,8 +49,8 @@ open class ColumnDataMappingTool(private val connectorRepository: ConnectorRepos
     if (ColumnType.CLASS_UNKNOWN != sourceColumnType && ColumnType.CLASS_UNKNOWN != targetColumnType) {
       val columnDataMapperFactory = connectorRepository.hint<ColumnDataMapperProvider>(targetConnectorId)
       val columnDataMapper = columnDataMapperFactory.findMapping(
-        sourceColumnMetaData, targetColumnMetaData,
-        sourceColumnType, targetColumnType
+        sourceColumnMetaData, targetColumnMetaData, sourceColumnType, targetColumnType,
+        targetColumnMetaData.tableMetaData.databaseMetaData.databaseType
       )
 
       if (columnDataMapper != null) {

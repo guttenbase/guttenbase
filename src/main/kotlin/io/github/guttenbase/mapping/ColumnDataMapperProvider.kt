@@ -1,5 +1,6 @@
 package io.github.guttenbase.mapping
 
+import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 
@@ -21,6 +22,6 @@ interface ColumnDataMapperProvider {
    */
   fun findMapping(
     sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData,
-    sourceColumnType: ColumnType, targetColumnType: ColumnType
+    sourceColumnType: ColumnType, targetColumnType: ColumnType, databaseType: DatabaseType? = null
   ): ColumnDataMapper?
 }
