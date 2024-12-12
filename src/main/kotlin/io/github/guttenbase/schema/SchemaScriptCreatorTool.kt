@@ -204,15 +204,14 @@ class SchemaScriptCreatorTool(
 
   fun createColumn(columnMetaData: ColumnMetaData): String {
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
-    val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val columnTypeMapper = connectorRepository.hint<ColumnTypeMapper>(targetConnectorId)
-    val sourceType = connectorRepository.getDatabaseMetaData(sourceConnectorId)
-    val targetType = connectorRepository.getDatabaseMetaData(targetConnectorId)
+    val sourceDatabase = connectorRepository.getDatabaseMetaData(sourceConnectorId)
+    val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val columnName = columnMapper.mapColumnName(columnMetaData, columnMetaData.tableMetaData)
-    val columnType = columnTypeMapper.mapColumnType(columnMetaData, sourceType, targetType)
+    val columnType = columnTypeMapper.mapColumnType(columnMetaData, sourceDatabase, targetDatabase)
     val maxNameLength = targetMaxNameLength
-    val rawTableName = tableMapper.mapTableName(columnMetaData.tableMetaData, targetDatabaseMetaData)
+    val rawTableName = tableMapper.mapTableName(columnMetaData.tableMetaData, targetDatabase)
 
     if (columnName.length > maxNameLength) {
       throw IncompatibleColumnsException(
