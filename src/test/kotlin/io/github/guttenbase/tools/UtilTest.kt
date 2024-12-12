@@ -19,7 +19,7 @@ internal class UtilTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
     connectorRepository.addConnectionInfo(SOURCE, TestDerbyConnectionInfo())
-    val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = "UTF-8")
+    val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = Charsets.UTF_8)
     scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/ddl/tables-derby.sql")
     System.setProperty("sun.io.serialization.extendedDebugInfo", "true")
   }

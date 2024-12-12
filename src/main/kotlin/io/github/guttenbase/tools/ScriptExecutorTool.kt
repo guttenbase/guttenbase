@@ -10,7 +10,6 @@ import io.github.guttenbase.utils.Util.ARROW
 import org.slf4j.LoggerFactory
 import java.nio.charset.Charset
 import java.sql.*
-import kotlin.Throws
 
 /**
  * Execute given SQL script or single statements separated by given delimiter. Delimiter is ';' by default.
@@ -26,7 +25,7 @@ open class ScriptExecutorTool
 constructor(
   private val connectorRepository: ConnectorRepository,
   private val delimiter: Char = ';',
-  private val encoding: String = DEFAULT_ENCODING
+  private val encoding: Charset = DEFAULT_ENCODING
 ) {
   private lateinit var progressIndicator: ScriptExecutorProgressIndicator
 
@@ -279,7 +278,7 @@ constructor(
     @JvmStatic
     private val LOG = LoggerFactory.getLogger(ScriptExecutorTool::class.java)
 
-    val DEFAULT_ENCODING: String = Charset.defaultCharset().name()
+    val DEFAULT_ENCODING: Charset = Charset.defaultCharset()
   }
 }
 

@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory
 import java.io.*
 import java.net.URL
 import java.net.URLClassLoader
+import java.nio.charset.Charset
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * Collection of utility methods.
@@ -68,7 +68,8 @@ object Util {
    * @return array of strings
    */
   @JvmStatic
-  fun readLinesFromFile(resourceName: String, encoding: String): List<String> {
+  @JvmOverloads
+  fun readLinesFromFile(resourceName: String, encoding: Charset = Charsets.UTF_8): List<String> {
     val stream = getResourceAsStream(resourceName)
 
     return if (stream != null) {
@@ -125,7 +126,7 @@ object Util {
     if (url != null) {
       try {
         return url.openStream()
-      } catch (e: IOException) {
+      } catch (_: IOException) {
         LOG.warn("Can't open stream on $url")
       }
     }
@@ -166,17 +167,16 @@ object Util {
    * @return list of strings
    */
   @JvmStatic
-  fun readLinesFromStream(inputStream: InputStream, encoding: String): List<String> {
+  @JvmOverloads
+  fun readLinesFromStream(inputStream: InputStream, encoding: Charset = Charsets.UTF_8): List<String> {
     val result = ArrayList<String>()
 
     try {
-      val reader = LineNumberReader(InputStreamReader(inputStream, encoding))
-      var line: String?
+      inputStream.bufferedReader(encoding).forEachLine {
+        val line = trim(it)
 
-      while (reader.readLine().also { line = it } != null) {
-        line = trim(line)
         if ("" != line) {
-          result.add(line!!)
+          result.add(line)
         }
       }
       inputStream.close()

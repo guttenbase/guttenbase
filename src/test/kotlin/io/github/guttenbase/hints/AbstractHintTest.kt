@@ -37,7 +37,7 @@ abstract class AbstractHintTest(
       .addConnectorHint(TARGET, LoggingTableCopyProgressIndicatorHint())
       .addConnectorHint(TARGET, LoggingScriptExecutorProgressIndicatorHint())
 
-    val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = "UTF-8")
+    val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = Charsets.UTF_8)
     scriptExecutorTool.executeFileScript(SOURCE, resourceName = sourceTableSchemaScript)
     scriptExecutorTool.executeFileScript(TARGET, resourceName = targetTableSchemaScript)
     scriptExecutorTool.executeFileScript(SOURCE, false, false, dataScript)
