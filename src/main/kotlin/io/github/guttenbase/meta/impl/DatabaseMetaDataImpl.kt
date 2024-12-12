@@ -1,6 +1,7 @@
 package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseSupportedType
 import io.github.guttenbase.meta.InternalDatabaseMetaData
@@ -65,8 +66,14 @@ class DatabaseMetaDataImpl(
     list.add(DatabaseSupportedType(type, jdbcType, precision, nullable))
   }
 
-  override fun typeFor(type: JDBCType, precision: IntRange) =
-    supportedTypeMap[type]?.firstOrNull { it.jdbcType == type && it.precision in precision }
+  override fun typeFor(columnMetaData: ColumnMetaData): DatabaseSupportedType? {
+    val possibleTypes = supportedTypeMap[columnMetaData.jdbcColumnType] ?: listOf<DatabaseSupportedType>()
+
+    // Prefer matching names, because the list may not be properly sorted (MSSQL 🙄)
+    return possibleTypes.firstOrNull {
+      it.typeName.equals(columnMetaData.columnTypeName, true) && columnMetaData.precision <= it.precision
+    } ?: possibleTypes.firstOrNull()
+  }
 
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
 

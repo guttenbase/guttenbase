@@ -29,12 +29,13 @@ interface DatabaseMetaData : Serializable {
   /**
    * @return (cached) meta data
    */
-  fun typeFor(type: JDBCType, precision: IntRange = 1..Int.MAX_VALUE): DatabaseSupportedType?
   val supportedTypes: List<DatabaseSupportedType>
   val databaseMetaData: JdbcDatabaseMetaData
   val databaseType: DatabaseType
   val connectorRepository: ConnectorRepository
   val connectorId: String
+
+  fun typeFor(columnMetaData: ColumnMetaData): DatabaseSupportedType?
 }
 
 data class DatabaseSupportedType(
