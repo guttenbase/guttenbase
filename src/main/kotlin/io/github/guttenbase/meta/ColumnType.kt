@@ -14,7 +14,6 @@ import java.math.BigInteger
 import java.sql.*
 import java.sql.JDBCType.*
 import java.time.LocalDateTime
-import kotlin.Throws
 
 /**
  * Define column type and mapping methods
