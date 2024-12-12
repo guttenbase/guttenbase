@@ -33,7 +33,7 @@ object Util {
 
   @JvmStatic
   fun Any.toDate(): Date = when (this) {
-    is java.sql.Date -> Date(this.time)
+    is java.sql.Date -> this.toDate()
     is java.sql.Time -> Date(this.time)
     is java.sql.Timestamp -> Date(this.time)
     is Date -> this
@@ -47,6 +47,16 @@ object Util {
 
   @JvmStatic
   fun LocalDateTime.toDate(): Date = Date.from(atZone(ZoneId.systemDefault()).toInstant())
+
+  @JvmStatic
+  fun java.sql.Date.toDate(): Date = with(Calendar.getInstance()) {
+    time = this@toDate
+    set(Calendar.HOUR_OF_DAY, 0)
+    set(Calendar.MINUTE, 0)
+    set(Calendar.SECOND, 0)
+    set(Calendar.MILLISECOND, 0)
+    time
+  }
 
   @JvmStatic
   fun Date.toSQLDate() = java.sql.Date(time)
