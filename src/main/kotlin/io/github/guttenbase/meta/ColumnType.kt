@@ -2,6 +2,7 @@ package io.github.guttenbase.meta
 
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.exceptions.UnhandledColumnTypeException
+import io.github.guttenbase.meta.ColumnType.entries
 import io.github.guttenbase.utils.Util
 import io.github.guttenbase.utils.Util.toDate
 import io.github.guttenbase.utils.Util.toSQLDate
@@ -11,8 +12,9 @@ import java.io.Serializable
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.sql.*
-import java.sql.Date
+import java.sql.JDBCType.*
 import java.time.LocalDateTime
+import kotlin.Throws
 
 /**
  * Define column type and mapping methods
@@ -22,44 +24,44 @@ import java.time.LocalDateTime
  * @author M. Dahm
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-enum class ColumnType(vararg classes: Class<*>) {
-  CLASS_UNKNOWN(Void::class.java),
+enum class ColumnType(val jdbcType: JDBCType, vararg classes: Class<*>) {
+  CLASS_UNKNOWN(OTHER, Void::class.java),
 
-  CLASS_STRING(String::class.java, Char::class.java, Character::class.java),
+  CLASS_STRING(VARCHAR, String::class.java, Char::class.java, Character::class.java),
 
-  CLASS_BIGDECIMAL(BigDecimal::class.java),
+  CLASS_BIGDECIMAL(NUMERIC, BigDecimal::class.java),
 
-  CLASS_BLOB(Blob::class.java),
+  CLASS_BLOB(BLOB, Blob::class.java),
 
-  CLASS_CLOB(Clob::class.java),
+  CLASS_CLOB(CLOB, Clob::class.java),
 
-  CLASS_SQLXML(SQLXML::class.java),
+  CLASS_SQLXML(SQLXML, SQLXML::class.java),
 
-  CLASS_OBJECT(Any::class.java, Serializable::class.java, Util.ByteArrayClass),
+  CLASS_OBJECT(JAVA_OBJECT, Any::class.java, Serializable::class.java, Util.ByteArrayClass),
 
-  CLASS_DATE(Date::class.java),
+  CLASS_DATE(DATE, Date::class.java),
 
-  CLASS_TIMESTAMP(Timestamp::class.java),
+  CLASS_TIMESTAMP(TIMESTAMP, Timestamp::class.java),
 
-  CLASS_DATETIME(LocalDateTime::class.java),
+  CLASS_DATETIME(TIMESTAMP, LocalDateTime::class.java),
 
-  CLASS_TIME(Time::class.java),
+  CLASS_TIME(TIME, Time::class.java),
 
-  CLASS_INTEGER(Int::class.java, Integer::class.java),
+  CLASS_INTEGER(INTEGER, Int::class.java, Integer::class.java),
 
-  CLASS_BOOLEAN(Boolean::class.java, java.lang.Boolean::class.java),
+  CLASS_BOOLEAN(BOOLEAN, Boolean::class.java, java.lang.Boolean::class.java),
 
-  CLASS_LONG(Long::class.java, BigInteger::class.java, java.lang.Long::class.java),
+  CLASS_LONG(BIGINT, Long::class.java, BigInteger::class.java, java.lang.Long::class.java),
 
-  CLASS_DOUBLE(Double::class.java, java.lang.Double::class.java),
+  CLASS_DOUBLE(DOUBLE, Double::class.java, java.lang.Double::class.java),
 
-  CLASS_FLOAT(Float::class.java, java.lang.Float::class.java),
+  CLASS_FLOAT(FLOAT, Float::class.java, java.lang.Float::class.java),
 
-  CLASS_BYTE(Byte::class.javaPrimitiveType!!, java.lang.Byte::class.java),
+  CLASS_BYTE(TINYINT, Byte::class.javaPrimitiveType!!, java.lang.Byte::class.java),
 
-  CLASS_BYTES(ByteArray::class.java),
+  CLASS_BYTES(VARBINARY, ByteArray::class.java),
 
-  CLASS_SHORT(Short::class.java, java.lang.Short::class.java);
+  CLASS_SHORT(SMALLINT, Short::class.java, java.lang.Short::class.java);
 
   /**
    * @return classes handled by this type
@@ -149,13 +151,14 @@ enum class ColumnType(vararg classes: Class<*>) {
 
       CLASS_BOOLEAN -> insertStatement.setBoolean(columnIndex, (data as Boolean))
       CLASS_BIGDECIMAL -> insertStatement.setBigDecimal(columnIndex, data as BigDecimal)
+
       CLASS_TIMESTAMP -> insertStatement.setTimestamp(columnIndex, data as Timestamp)
       CLASS_DATE -> insertStatement.setDate(columnIndex, data as Date)
       CLASS_FLOAT -> insertStatement.setFloat(columnIndex, (data as Float))
       CLASS_SHORT -> insertStatement.setShort(columnIndex, (data as Short))
       CLASS_TIME -> insertStatement.setTime(columnIndex, data as Time)
       CLASS_DATETIME -> if (driverSupportsJavaTimeAPI(databaseMetaData)) {
-        // Let the driver choose what it is
+        // Let the driver determine what to do
         insertStatement.setObject(columnIndex, data)
       } else {
         // For older drivers not supporting LocalDateTime directly
