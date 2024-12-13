@@ -178,7 +178,7 @@ enum class ColumnType(val jdbcType: JDBCType, vararg classes: Class<*>) {
   private fun convertToString(data: Any): String = when (data) {
     is String -> data
     is Char -> data.toString()
-    else -> throw IllegalStateException("Whart is this: $data")
+    else -> throw IllegalStateException("This is no string: $data")
   }
 
   private fun driverSupportsJavaTimeAPI(databaseMetaData: DatabaseMetaData) = when {

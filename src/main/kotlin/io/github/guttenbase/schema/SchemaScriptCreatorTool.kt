@@ -28,8 +28,7 @@ class SchemaScriptCreatorTool(
   private val connectorRepository: ConnectorRepository,
   private val sourceConnectorId: String, private val targetConnectorId: String
 ) {
-  private val databaseMetaData: DatabaseMetaData
-    get() = connectorRepository.getDatabaseMetaData(sourceConnectorId)
+  private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(sourceConnectorId) }
 
   fun createTableStatements(): List<String> {
     val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
