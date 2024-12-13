@@ -144,10 +144,13 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
   private fun findMapping(targetConnectorId: String, sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData) =
     ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(sourceColumn, targetConnectorId, targetColumn)
       ?: throw IncompatibleColumnsException(
-        """Columns have incompatible types: ${sourceColumn.columnName}/${sourceColumn.columnTypeName} vs. ${targetColumn.columnName}/${targetColumn.columnTypeName}
-         Please add a mapping using ${DefaultColumnDataMapperProvider::class.java.name}, e.g.
+        """|
+          |Columns have incompatible types: ${sourceColumn.columnName}/${sourceColumn.columnTypeName} 
+          |vs.                              ${targetColumn.columnName}/${targetColumn.columnTypeName}
+          |in table ${sourceColumn.tableMetaData.tableName}
+          |Please add a mapping using ${DefaultColumnDataMapperProvider::class.java.name}
        });
-      """.trimIndent()
+      """.trimMargin()
       )
 
   /**

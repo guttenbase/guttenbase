@@ -2,6 +2,7 @@ package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
+import org.slf4j.LoggerFactory
 
 typealias ColumnDefinitionResolver = (sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData) -> ColumnDefinition?
 
@@ -12,11 +13,21 @@ typealias ColumnDefinitionResolver = (sourceDatabase: DatabaseMetaData, targetDa
  *  &copy; 2012-2034 akquinet tech@spree
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
+  @JvmStatic
+  private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
+
   private val DEFAULT_RESOLVER: ColumnDefinitionResolver = { sourceDatabase, targetDatabase, column ->
     val type = targetDatabase.typeFor(column)
 
     if (type != null) {
-      ColumnDefinition(column, type.typeName, column.precision, column.scale, type.mayUsePrecision)
+      val precision = if (column.precision > type.precision) {
+        LOG.warn("Requested column precision of ${column.precision} for type ${column.jdbcColumnType} is higher than supported by $type")
+        type.precision
+      } else {
+        column.precision
+      }
+
+      ColumnDefinition(column, type.typeName, precision, column.scale, type.mayUsePrecision)
     } else {
       null
     }
