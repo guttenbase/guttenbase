@@ -2,7 +2,6 @@ package io.github.guttenbase.io.github.guttenbase.meta
 
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.connector.DatabaseType
-import io.github.guttenbase.meta.INTEGER_TYPES
 import io.github.guttenbase.meta.impl.ColumnMetaDataImpl
 import io.github.guttenbase.meta.impl.DatabaseMetaDataImpl
 import io.github.guttenbase.meta.impl.TableMetaDataImpl
@@ -11,7 +10,6 @@ import io.github.guttenbase.repository.ConnectorRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.sql.JDBCType.BIGINT
 import java.sql.JDBCType.SMALLINT
 import java.sql.JDBCType.VARCHAR
 import java.sql.Types
