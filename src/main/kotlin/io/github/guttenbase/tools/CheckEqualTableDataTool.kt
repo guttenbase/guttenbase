@@ -117,30 +117,24 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
           val mapping = columnMapper.map(sourceColumn, targetTableMetaData)
 
           for (targetColumn in mapping.columns) {
-            val columnTypeMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
-              sourceColumn, targetConnectorId, targetColumn
-            )
-              ?: throw IllegalStateException("Could not find type mapping for $sourceColumn -> $targetColumn")
+            val columnMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
+              sourceColumn, targetColumn
+            ) ?: throw IllegalStateException("Could not find type mapping for $sourceColumn -> $targetColumn")
             val columnName1 = sourceColumnNameMapper.mapColumnName(sourceColumn, targetTableMetaData)
             val columnName2 = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
 
             checkColumnTypeMapping(
               tableName1,
-              sourceColumn,
-              targetColumn,
-              columnTypeMapping,
+              columnMapping,
               columnName1,
               columnName2
             )
-
-            val sourceColumnType: ColumnType = columnTypeMapping.sourceColumnType
 
             val (value, _) = checkColumnData(
               primaryKey,
               sourceConnectorId, targetConnectorId, tableName1,
               resultSet1, resultSet2, rowIndex,
-              targetColumnIndex, sourceColumnIndex, sourceColumn, targetColumn,
-              columnTypeMapping, columnName1, sourceColumnType
+              targetColumnIndex, sourceColumnIndex, columnMapping, columnName1
             )
 
 
@@ -165,13 +159,15 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
     primaryKey: String,
     sourceConnectorId: String, targetConnectorId: String, tableName: String,
     resultSet1: ResultSet, resultSet2: ResultSet, rowIndex: Int,
-    targetColumnIndex: Int, sourceColumnIndex: Int, sourceColumn: ColumnMetaData, columnMetaData2: ColumnMetaData,
-    columnDataMapping: ColumnDataMapping, columnName: String, sourceColumnType: ColumnType
+    targetColumnIndex: Int, sourceColumnIndex: Int, mapping: ColumnMapping, columnName: String
   ): Pair<Any?, Any?> {
-    var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
-    data1 = columnDataMapping.columnDataMapper.map(sourceColumn, columnMetaData2, data1)
+    val sourceColumnType = mapping.columnDataMapping.sourceColumnType
+    val targetColumnType = mapping.columnDataMapping.targetColumnType
 
-    var data2 = columnDataMapping.targetColumnType.getValue(resultSet2, targetColumnIndex)
+    var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
+    data1 = mapping.columnDataMapping.columnDataMapper.map(mapping, data1)
+
+    var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex)
 
     when (sourceColumnType) {
       CLASS_STRING -> {
@@ -233,22 +229,13 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
 
   private fun checkColumnTypeMapping(
     tableName1: String,
-    sourceColumn: ColumnMetaData,
-    columnMetaData2: ColumnMetaData,
-    columnDataMapping: ColumnDataMapping?,
+    mapping: ColumnMapping?,
     columnName1: String,
     columnName2: String
   ) {
-    if (columnDataMapping == null) {
+    if (mapping == null) {
       throw IncompatibleColumnsException(
-        (tableName1 + ": Columns have incompatible types: "
-            + columnName1
-            + "/"
-            + sourceColumn.columnTypeName
-            ) + " vs. "
-            + columnName2
-            + "/"
-            + columnMetaData2.columnTypeName
+        "$tableName1: Columns have incompatible types: $columnName1 vs. $columnName2"
       )
     }
   }

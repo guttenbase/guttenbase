@@ -2,14 +2,18 @@ package io.github.guttenbase.io.github.guttenbase.meta
 
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.INTEGER_TYPES
 import io.github.guttenbase.meta.impl.ColumnMetaDataImpl
 import io.github.guttenbase.meta.impl.DatabaseMetaDataImpl
 import io.github.guttenbase.meta.impl.TableMetaDataImpl
-import io.github.guttenbase.meta.isNumericType
+import io.github.guttenbase.meta.isIntegerType
 import io.github.guttenbase.repository.ConnectorRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.sql.JDBCType.BIGINT
+import java.sql.JDBCType.SMALLINT
+import java.sql.JDBCType.VARCHAR
 import java.sql.Types
 
 class DatabaseTypeTest {
@@ -19,10 +23,7 @@ class DatabaseTypeTest {
   private val table =
     TableMetaDataImpl(
       DatabaseMetaDataImpl(connectorRepository, "jens", "dbo", HashMap(), DatabaseType.MOCK),
-      "TEST",
-      "TABLE",
-      "",
-      ""
+      "TEST", "TABLE", "", ""
     )
   private val column = ColumnMetaDataImpl(table, Types.BIGINT, "ID", "BIGINT", "INTEGER", false, true, 12, 12)
 
@@ -42,7 +43,7 @@ class DatabaseTypeTest {
 
   @Test
   fun `JDBC type mapping`() {
-    assertThat(Types.VARCHAR.isNumericType()).isFalse()
-    assertThat(Types.BIGINT.isNumericType()).isTrue()
+    assertThat(VARCHAR.isIntegerType()).isFalse()
+    assertThat(SMALLINT.isIntegerType()).isTrue()
   }
 }

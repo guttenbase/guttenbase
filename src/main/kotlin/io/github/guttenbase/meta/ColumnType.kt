@@ -4,8 +4,6 @@ import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.exceptions.UnhandledColumnTypeException
 import io.github.guttenbase.meta.ColumnType.entries
 import io.github.guttenbase.utils.Util
-import io.github.guttenbase.utils.Util.toDate
-import io.github.guttenbase.utils.Util.toSQLDate
 import java.io.Closeable
 import java.io.InputStream
 import java.io.Serializable
@@ -13,38 +11,48 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.sql.*
 import java.sql.JDBCType.*
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 /**
- * Define column type and mapping methods
+ * Define column type and mapping methods. The entries correspond to the available getXXX() methods of a
+ * [ResultSet], e.g. getString()
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-enum class ColumnType(val jdbcType: JDBCType, vararg classes: Class<*>) {
+enum class ColumnType(
+  /**
+   * @return JDBC types corresponding to this type
+   */
+  val jdbcTypes: List<JDBCType>,
+  /**
+   * @return classes handled by this type
+   */
+  val columnClasses: List<Class<*>>
+) {
   CLASS_UNKNOWN(OTHER, Void::class.java),
 
-  CLASS_STRING(VARCHAR, String::class.java, Char::class.java, Character::class.java),
+  CLASS_STRING(STRING_TYPES, String::class.java, Char::class.java, Character::class.java),
 
-  CLASS_BIGDECIMAL(NUMERIC, BigDecimal::class.java),
+  CLASS_BIGDECIMAL(NUMERIC, DECIMAL, BigDecimal::class.java),
 
   CLASS_BLOB(BLOB, Blob::class.java),
 
-  CLASS_CLOB(CLOB, Clob::class.java),
+  CLASS_CLOB(CLOB, NCLOB, Clob::class.java),
 
   CLASS_SQLXML(SQLXML, SQLXML::class.java),
 
-  CLASS_OBJECT(JAVA_OBJECT, Any::class.java, Serializable::class.java, Util.ByteArrayClass),
+  CLASS_OBJECT(BINARY_TYPES, Any::class.java, Serializable::class.java, Util.ByteArrayClass),
 
-  CLASS_DATE(DATE, Date::class.java),
+  CLASS_DATE(DATE, Date::class.java, LocalDate::class.java),
 
-  CLASS_TIMESTAMP(TIMESTAMP, Timestamp::class.java),
+  CLASS_TIMESTAMP(TIMESTAMP, Timestamp::class.java, LocalDateTime::class.java),
 
-  CLASS_DATETIME(TIMESTAMP, LocalDateTime::class.java),
-
-  CLASS_TIME(TIME, Time::class.java),
+  CLASS_TIME(TIME, Time::class.java, LocalTime::class.java),
 
   CLASS_INTEGER(INTEGER, Int::class.java, Integer::class.java),
 
@@ -62,10 +70,26 @@ enum class ColumnType(val jdbcType: JDBCType, vararg classes: Class<*>) {
 
   CLASS_SHORT(SMALLINT, Short::class.java, java.lang.Short::class.java);
 
-  /**
-   * @return classes handled by this type
-   */
-  val columnClasses: List<Class<*>> = listOf(*classes)
+  constructor(jdbcType1: JDBCType, columnClass1: Class<*>) : this(listOf(jdbcType1), listOf(columnClass1))
+
+  constructor(
+    jdbcType1: JDBCType,
+    columnClass1: Class<*>, columnClass2: Class<*>, columnClass3: Class<*>
+  ) : this(listOf(jdbcType1), listOf(columnClass1, columnClass2, columnClass3))
+
+  constructor(
+    jdbcType1: JDBCType,
+    columnClass1: Class<*>, columnClass2: Class<*>
+  ) : this(listOf(jdbcType1), listOf(columnClass1, columnClass2))
+
+  constructor(
+    jdbcTypes: List<JDBCType>,
+    columnClass1: Class<*>, columnClass2: Class<*>, columnClass3: Class<*>
+  ) : this(jdbcTypes, listOf(columnClass1, columnClass2, columnClass3))
+
+  constructor(jdbcType1: JDBCType, jdbcType2: JDBCType, columnClass1: Class<*>) : this(
+    listOf(jdbcType1, jdbcType2), listOf(columnClass1)
+  )
 
   /**
    * Get value from [ResultSet]
@@ -97,7 +121,6 @@ enum class ColumnType(val jdbcType: JDBCType, vararg classes: Class<*>) {
     CLASS_DATE -> resultSet.getDate(columnIndex)
     CLASS_SHORT -> resultSet.getShort(columnIndex)
     CLASS_TIME -> resultSet.getTime(columnIndex)
-    CLASS_DATETIME -> resultSet.getObject(columnIndex, LocalDateTime::class.java)
     CLASS_OBJECT -> resultSet.getObject(columnIndex)
     CLASS_BYTE -> resultSet.getByte(columnIndex)
     CLASS_BYTES -> resultSet.getBytes(columnIndex)
@@ -156,15 +179,6 @@ enum class ColumnType(val jdbcType: JDBCType, vararg classes: Class<*>) {
       CLASS_FLOAT -> insertStatement.setFloat(columnIndex, (data as Float))
       CLASS_SHORT -> insertStatement.setShort(columnIndex, (data as Short))
       CLASS_TIME -> insertStatement.setTime(columnIndex, data as Time)
-      CLASS_DATETIME -> if (driverSupportsJavaTimeAPI(databaseMetaData)) {
-        // Let the driver determine what to do
-        insertStatement.setObject(columnIndex, data)
-      } else {
-        // For older drivers not supporting LocalDateTime directly
-        val sqlDate = data.toDate().toSQLDate()
-
-        insertStatement.setDate(columnIndex, sqlDate)
-      }
 
       CLASS_OBJECT -> insertStatement.setObject(columnIndex, data)
       CLASS_BYTE -> insertStatement.setByte(columnIndex, data as Byte)
@@ -187,36 +201,53 @@ enum class ColumnType(val jdbcType: JDBCType, vararg classes: Class<*>) {
     else -> true
   }
 
-  val isNumber: Boolean
-    get() = Number::class.java.isAssignableFrom(columnClasses[0])
+  val isNumber get() = Number::class.java.isAssignableFrom(columnClasses[0])
 
-  fun isDate() = when (this) {
-    CLASS_TIME, CLASS_TIMESTAMP, CLASS_DATETIME, CLASS_DATE -> true
-    else -> false
-  }
+  fun isDate() = jdbcTypes[0].isDateType()
 
   companion object {
-    private val COLUMN_TYPES: Map<Class<*>, ColumnType> by lazy {
+    private val COLUMN_TYPE_BY_CLASS: Map<Class<*>, ColumnType> by lazy {
       entries.map { ct -> ct.columnClasses.map { it to ct } }.flatten().toMap()
+    }
+
+    private val COLUMN_TYPE_BY_JDBC_TYPE: Map<JDBCType, ColumnType> by lazy {
+      entries.map { ct -> ct.jdbcTypes.map { it to ct } }.flatten().toMap()
     }
 
     /**
      * Map class to [ColumnType].
      */
-    fun valueOf(columnClass: Class<*>) = COLUMN_TYPES[columnClass]
+    @JvmStatic
+    fun valueOf(columnClass: Class<*>) = COLUMN_TYPE_BY_CLASS[columnClass]
       ?: throw UnhandledColumnTypeException("Unhandled column class ${columnClass.name}")
 
     /**
-     * Check if class can be mapped to [ColumnType].
+     * Map type to [ColumnType].
      */
-    fun isSupportedClass(columnClass: Class<*>) = COLUMN_TYPES.containsKey(columnClass)
+    @JvmStatic
+    fun valueOf(type: JDBCType) = COLUMN_TYPE_BY_JDBC_TYPE[type]
+      ?: throw UnhandledColumnTypeException("Unhandled type $type")
+
+    @JvmStatic
+    fun valueOfClassName(className: String) = valueOf(forName(className))
 
     /**
      * Check if class can be mapped to [ColumnType].
      */
-    fun isSupportedClass(className: String) = isSupportedClass(forName(className))
+    @JvmStatic
+    fun Class<*>.isSupportedColumnType() = COLUMN_TYPE_BY_CLASS.containsKey(this)
 
-    fun valueForClass(className: String) = valueOf(forName(className))
+    /**
+     * Check if class can be mapped to [ColumnType].
+     */
+    @JvmStatic
+    fun JDBCType.isSupported() = COLUMN_TYPE_BY_JDBC_TYPE.containsKey(this)
+
+    /**
+     * Check if class can be mapped to [ColumnType].
+     */
+    @JvmStatic
+    fun String.isSupportedColumnType() = forName(this).isSupportedColumnType()
 
     private fun forName(className: String): Class<*> {
       return if ("byte[]" == className) { // Oracle-Bug

@@ -1,6 +1,7 @@
 package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.tools.ColumnMapping
 import java.sql.SQLException
 
 /**
@@ -21,5 +22,5 @@ interface ColumnDataMapper {
    * Map object. Must be able to handle NULL values.
    */
   @Throws(SQLException::class)
-  fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?): Any?
+  fun map(mapping: ColumnMapping, value: Any?): Any?
 }

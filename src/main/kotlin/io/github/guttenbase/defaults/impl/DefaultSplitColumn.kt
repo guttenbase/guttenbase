@@ -2,6 +2,7 @@ package io.github.guttenbase.defaults.impl
 
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
+import io.github.guttenbase.meta.ColumnType.Companion.isSupportedColumnType
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.tools.SplitColumn
 
@@ -24,8 +25,8 @@ open class DefaultSplitColumn : SplitColumn {
       table.columnMetaData.firstOrNull {
         val columnClassName = it.columnClassName
 
-        if (ColumnType.isSupportedClass(columnClassName)) {
-          val columnType = ColumnType.valueForClass(columnClassName)
+        if (columnClassName.isSupportedColumnType()) {
+          val columnType = ColumnType.valueOfClassName(columnClassName)
 
           columnType.isNumber
         } else {

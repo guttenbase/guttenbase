@@ -28,7 +28,7 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
     override fun isApplicable(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData) =
       sourceColumnMetaData.columnName.uppercase().endsWith("NAME")
 
-    override fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?) =
+    override fun map(mapping: ColumnMapping, value: Any?) =
       value.toString() + "_" + loopCounter
   }
 
@@ -36,8 +36,8 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
     override fun isApplicable(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData) =
       sourceColumnMetaData.columnName.uppercase().endsWith("ID")
 
-    override fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?) =
-      value as Long + getOffset(sourceColumnMetaData)
+    override fun map(mapping: ColumnMapping, value: Any?) =
+      value as Long + getOffset(mapping.columnDataMapping.sourceColumnMetaData)
   }
 
   private val maxTableIds = HashMap<TableMetaData, Long>()

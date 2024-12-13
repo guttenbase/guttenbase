@@ -2,7 +2,7 @@ package io.github.guttenbase.meta
 
 import java.io.Serializable
 import java.sql.JDBCType
-import java.sql.Types
+import java.sql.JDBCType.*
 
 /**
  * Information about a table column.
@@ -42,4 +42,16 @@ interface ColumnMetaData : Comparable<ColumnMetaData>, Serializable {
   val referencingColumns: Map<String, List<ColumnMetaData>>
 }
 
-fun Int.isNumericType() = this in listOf(Types.SMALLINT, Types.NUMERIC, Types.DECIMAL, Types.BIGINT, Types.INTEGER)
+val STRING_TYPES = listOf(CHAR, NCHAR, LONGVARCHAR, LONGNVARCHAR, VARCHAR, NVARCHAR)
+val INTEGER_TYPES = listOf(SMALLINT, INTEGER)
+val BLOB_TYPES = listOf(BLOB, CLOB, NCLOB)
+val BINARY_TYPES = listOf(LONGVARBINARY, VARBINARY, ARRAY, BINARY, JAVA_OBJECT)
+val NUMERIC_TYPES = listOf(DOUBLE, FLOAT, NUMERIC, DECIMAL, REAL)
+val DATE_TYPES = listOf(TIME, TIMESTAMP, DATE)
+
+fun JDBCType.isIntegerType() = this in INTEGER_TYPES
+fun JDBCType.isStringType() = this in STRING_TYPES
+fun JDBCType.isBlobType() = this in BLOB_TYPES
+fun JDBCType.isBinaryType() = this in BINARY_TYPES
+fun JDBCType.isNumericType() = this in NUMERIC_TYPES
+fun JDBCType.isDateType() = this in DATE_TYPES

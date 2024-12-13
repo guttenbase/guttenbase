@@ -42,13 +42,8 @@ data class DatabaseSupportedType(
   val typeName: String, val jdbcType: JDBCType, val precision: Int, val nullable: Boolean
 ) : Serializable {
   val mayUsePrecision: Boolean
-    get() = when (jdbcType) {
-      JDBCType.CHAR, JDBCType.NCHAR, JDBCType.LONGVARCHAR, JDBCType.LONGNVARCHAR, JDBCType.LONGVARBINARY,
-      JDBCType.VARCHAR, JDBCType.VARBINARY, JDBCType.NVARCHAR,
-      JDBCType.BLOB, JDBCType.CLOB, JDBCType.NCLOB,
-
-      JDBCType.DOUBLE, JDBCType.FLOAT, JDBCType.NUMERIC, JDBCType.DECIMAL, JDBCType.REAL -> precision > 0
-
-      else -> false
-    }
+    get() =
+      if (jdbcType.isStringType() || jdbcType.isNumericType() || jdbcType.isBlobType() || jdbcType.isBinaryType())
+        precision > 0
+      else false
 }

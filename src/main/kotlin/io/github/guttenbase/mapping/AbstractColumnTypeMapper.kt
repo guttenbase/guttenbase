@@ -16,8 +16,7 @@ abstract class AbstractColumnTypeMapper : ColumnTypeMapper {
   override fun mapColumnType(
     column: ColumnMetaData, sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData
   ): String {
-    val columnDefinition = lookupColumnDefinitionInternal(sourceDatabase, targetDatabase, column)
-      ?: ColumnDefinition(column, column.columnTypeName, column.precision)
+    val columnDefinition = lookupColumnDefinition(column, sourceDatabase, targetDatabase)
     val singlePrimaryKey = column.isPrimaryKey && column.tableMetaData.primaryKeyColumns.size < 2
     val autoincrementClause =
       if (column.isAutoIncrement) " " + targetDatabase.databaseType.createColumnAutoincrementClause(column) else ""
@@ -27,6 +26,11 @@ abstract class AbstractColumnTypeMapper : ColumnTypeMapper {
 
     return columnDefinition.toString() + " $defaultValueClause".trim() + notNullClause + autoincrementClause + primaryKeyClause
   }
+
+  override fun lookupColumnDefinition(
+    column: ColumnMetaData, sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData
+  ) = lookupColumnDefinitionInternal(sourceDatabase, targetDatabase, column)
+    ?: ColumnDefinition(column, column.columnTypeName, column.precision)
 
   private fun lookupColumnDefinitionInternal(
     sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData

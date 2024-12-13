@@ -14,6 +14,7 @@ import io.github.guttenbase.progress.TableCopyProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.ColumnDataMappingTool
+import io.github.guttenbase.tools.ColumnMapping
 import java.io.Closeable
 import java.io.IOException
 import java.sql.Connection
@@ -87,10 +88,10 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
         }
 
         for (targetColumnMetaData in mapping.columns) {
-          val columnTypeMapping = findMapping(targetConnectorId, sourceColumnMetaData, targetColumnMetaData)
+          val columnMapping = findMapping(sourceColumnMetaData, targetColumnMetaData)
+          val columnTypeMapping = columnMapping.columnDataMapping
           val sourceValue = columnTypeMapping.sourceColumnType.getValue(rs, columnIndex)
-          val targetValue =
-            columnTypeMapping.columnDataMapper.map(sourceColumnMetaData, targetColumnMetaData, sourceValue)
+          val targetValue = columnTypeMapping.columnDataMapper.map(columnMapping, sourceValue)
           val optionalCloseableObject = columnTypeMapping.targetColumnType.setValue(
             insertStatement, targetColumnIndex++, targetDatabase, targetColumnMetaData.columnType, targetValue
           )
@@ -141,12 +142,12 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     indicator.debug("Number of data items: $dataItemsCount")
   }
 
-  private fun findMapping(targetConnectorId: String, sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData) =
-    ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(sourceColumn, targetConnectorId, targetColumn)
+  private fun findMapping(sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData): ColumnMapping =
+    ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(sourceColumn, targetColumn)
       ?: throw IncompatibleColumnsException(
         """|
-          |Columns have incompatible types: ${sourceColumn.columnName}/${sourceColumn.columnTypeName} 
-          |vs.                              ${targetColumn.columnName}/${targetColumn.columnTypeName}
+          |Columns have incompatible types: ${sourceColumn.columnName}/${sourceColumn.columnTypeName}, ${sourceColumn.jdbcColumnType}
+          |vs.                              ${targetColumn.columnName}/${targetColumn.columnTypeName}, ${targetColumn.jdbcColumnType} 
           |in table ${sourceColumn.tableMetaData.tableName}
           |Please add a mapping using ${DefaultColumnDataMapperProvider::class.java.name}
        });

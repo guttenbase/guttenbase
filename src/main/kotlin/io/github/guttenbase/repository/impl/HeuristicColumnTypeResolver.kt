@@ -42,11 +42,11 @@ object HeuristicColumnTypeResolver : ColumnTypeResolver {
 
         columnType == "BYTEA" || columnType.startsWith("VARBINARY") -> ColumnType.CLASS_BLOB
 
-        columnType == "DATETIME" -> ColumnType.CLASS_DATETIME
+        columnType == "DATETIME" -> ColumnType.CLASS_TIMESTAMP
 
         columnType.startsWith("TIMESTAMP") -> ColumnType.CLASS_TIMESTAMP
 
-        else -> ColumnType.valueForClass(columnMetaData.columnClassName)
+        else -> ColumnType.valueOfClassName(columnMetaData.columnClassName)
       }
   }
 

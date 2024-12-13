@@ -3,22 +3,22 @@ package io.github.guttenbase.repository.impl
 import io.github.guttenbase.mapping.ColumnTypeResolver
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
-import io.github.guttenbase.meta.ColumnType.Companion.isSupportedColumnType
+import io.github.guttenbase.meta.ColumnType.Companion.isSupported
 
 /**
- * Try to resolve by JDBC class name.
+ * Try to resolve by JDBC type.
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
-object ClassNameColumnTypeResolver : ColumnTypeResolver {
+object JDBCColumnTypeResolver : ColumnTypeResolver {
   /**
    * Try to resolve by JDBC class name.
    */
   override fun getColumnType(columnMetaData: ColumnMetaData): ColumnType {
-    val columnClassName = columnMetaData.columnClassName
+    val type = columnMetaData.jdbcColumnType
 
-    return if (columnClassName.isSupportedColumnType()) ColumnType.valueOfClassName(columnClassName) else ColumnType.CLASS_UNKNOWN
+    return if (type.isSupported()) ColumnType.valueOf(type) else ColumnType.CLASS_UNKNOWN
   }
 }

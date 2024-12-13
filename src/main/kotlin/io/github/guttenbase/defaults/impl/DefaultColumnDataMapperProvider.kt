@@ -7,8 +7,10 @@ import io.github.guttenbase.mapping.ColumnDataMapperProvider
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
+import io.github.guttenbase.tools.ColumnMapping
 import java.math.BigDecimal
 import java.math.MathContext
+import java.math.RoundingMode
 import java.sql.Date
 import java.sql.Timestamp
 
@@ -26,11 +28,10 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
 
   init {
     addMapping(CLASS_TIMESTAMP, CLASS_DATE, TimestampToDateColumnDataMapper)
-    addMapping(CLASS_TIMESTAMP, CLASS_DATETIME, TimestampToDateColumnDataMapper)
     addMapping(CLASS_LONG, CLASS_BIGDECIMAL, LongToBigDecimalColumnDataMapper)
     addMapping(CLASS_BIGDECIMAL, CLASS_LONG, BigDecimalToLongColumnDataMapper)
     addMapping(CLASS_INTEGER, CLASS_BIGDECIMAL, IntToBigDecimalColumnDataMapper)
-    addMapping(CLASS_BIGDECIMAL, CLASS_BIGDECIMAL, MSSQLBigDecimalColumnDataMapper, DatabaseType.MSSQL)
+    addMapping(CLASS_BIGDECIMAL, CLASS_BIGDECIMAL, MSSQLBigDecimalColumnDataMapper)
   }
 
   /**
@@ -66,29 +67,31 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
 }
 
 object LongToBigDecimalColumnDataMapper : ColumnDataMapper {
-  override fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?) =
+  override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is Long) BigDecimal(value) else value
 }
 
 object IntToBigDecimalColumnDataMapper : ColumnDataMapper {
-  override fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?) =
+  override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is Int) BigDecimal(value) else value
 }
 
 object BigDecimalToLongColumnDataMapper : ColumnDataMapper {
-  override fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?) =
+  override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is BigDecimal) value.toLong() else value
 }
 
 object TimestampToDateColumnDataMapper : ColumnDataMapper {
-  override fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?) =
+  override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is Timestamp) Date(value.time) else value
 }
 
 // MSSQL gets confused by non-scaled values
 object MSSQLBigDecimalColumnDataMapper : ColumnDataMapper {
-  override fun map(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData, value: Any?) =
+  override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is BigDecimal)
-      BigDecimal(value.toDouble(), MathContext(sourceColumnMetaData.precision)).setScale(sourceColumnMetaData.scale)
+      BigDecimal(value.toDouble(), MathContext(mapping.columnDefinition.precision))
+        // precision may be smaller and thus cause an java.lang.ArithmeticException: Rounding necessary otherwise
+        .setScale(mapping.columnDefinition.scale, RoundingMode.HALF_DOWN)
     else value
 }

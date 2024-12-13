@@ -1,5 +1,6 @@
 package io.github.guttenbase.mapping
 
+import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 
 
@@ -11,6 +12,8 @@ import io.github.guttenbase.meta.ColumnType
  * @author M. Dahm
  */
 data class ColumnDataMapping(
+  val sourceColumnMetaData: ColumnMetaData,
+  val targetColumnMetaData: ColumnMetaData,
   val sourceColumnType: ColumnType,
   val targetColumnType: ColumnType,
   val columnDataMapper: ColumnDataMapper

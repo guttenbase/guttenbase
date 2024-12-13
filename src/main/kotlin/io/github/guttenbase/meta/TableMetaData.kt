@@ -2,6 +2,7 @@ package io.github.guttenbase.meta
 
 import io.github.guttenbase.repository.TableRowCountFilter
 import java.io.Serializable
+import java.sql.JDBCType.BIGINT
 
 /**
  * Information about a table.
@@ -61,7 +62,7 @@ fun TableMetaData.getNumericPrimaryKeyColumn(): ColumnMetaData? {
   if (primaryKeyColumns.size == 1) {
     val column = primaryKeyColumns[0]
 
-    if (column.columnType.isNumericType()) {
+    if (column.jdbcColumnType.isIntegerType() || column.jdbcColumnType.isNumericType() || column.jdbcColumnType == BIGINT) {
       return column
     }
   }

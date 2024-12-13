@@ -161,7 +161,7 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
       for (targetColumn in targetColumns) {
         val targetColumnName = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
         val columnTypeMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
-          sourceColumn, targetConnectorId, targetColumn
+          sourceColumn, targetColumn
         )
 
         if (columnTypeMapping == null) {
