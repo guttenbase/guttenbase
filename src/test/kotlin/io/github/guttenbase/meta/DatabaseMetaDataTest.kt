@@ -4,9 +4,9 @@ import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
-import io.github.guttenbase.io.github.guttenbase.tools.CopySchemaToolTest.Companion.DERBY
-import io.github.guttenbase.io.github.guttenbase.tools.CopySchemaToolTest.Companion.H2
-import io.github.guttenbase.io.github.guttenbase.tools.CopySchemaToolTest.Companion.HSQLDB
+import io.github.guttenbase.hints.DERBY
+import io.github.guttenbase.hints.H2
+import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseSupportedType
 import io.github.guttenbase.meta.TableMetaData

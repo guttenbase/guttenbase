@@ -4,7 +4,13 @@ import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
-import io.github.guttenbase.tools.*
+import io.github.guttenbase.hints.DERBY
+import io.github.guttenbase.hints.H2
+import io.github.guttenbase.hints.HSQLDB
+import io.github.guttenbase.tools.DropTablesTool
+import io.github.guttenbase.tools.InsertStatementTool
+import io.github.guttenbase.tools.ReadTableDataTool
+import io.github.guttenbase.tools.ScriptExecutorTool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -120,11 +126,5 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
     }
 
     assertThat(data1).hasSize(4)
-  }
-
-  companion object {
-    const val HSQLDB = "HSQLDB"
-    const val H2 = "H2"
-    const val DERBY = "DERBY"
   }
 }

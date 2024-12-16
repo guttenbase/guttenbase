@@ -21,7 +21,7 @@ open class DefaultTableOrderHint : TableOrderHint() {
         assert(table1.databaseMetaData === table2.databaseMetaData)
 
         if (!this@DefaultTableOrderHint::tables.isInitialized) {
-          tables = TableOrderTool().getOrderedTables(table1.databaseMetaData.tableMetaData, true)
+          tables = TableOrderTool(table1.databaseMetaData).orderTables()
         }
 
         val index1 = tables.indexOf(table1)

@@ -7,6 +7,9 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.connector.impl.PropertiesEncryptionTool
 import io.github.guttenbase.connector.impl.PropertiesURLConnectorInfo
 import io.github.guttenbase.connector.impl.URLConnectorInfo
+import io.github.guttenbase.hints.DERBY
+import io.github.guttenbase.hints.H2
+import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.hints.impl.LoggingScriptExecutorProgressIndicatorHint
 import io.github.guttenbase.hints.impl.LoggingTableCopyProgressIndicatorHint
@@ -129,9 +132,6 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   }
 
   companion object {
-    const val DERBY = "DERBY"
-    const val H2 = "H2"
-    const val HSQLDB = "HSQLDB"
     const val PROPS = "PROPS"
     const val ENCRYPTED = "ENCRYPTED"
   }

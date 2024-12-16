@@ -4,8 +4,8 @@ import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.DatabaseType.MARIADB
 import io.github.guttenbase.connector.DatabaseType.MYSQL
 import io.github.guttenbase.hints.TableOrderHint
-import io.github.guttenbase.hints.TableOrderHint.Companion.getSortedTables
 import io.github.guttenbase.mapping.TableMapper
+import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.IndexMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
@@ -26,8 +26,8 @@ open class DropTablesTool @JvmOverloads constructor(
   private val connectorId: String,
   private val dropTablesSuffix: String = ""
 ) {
-  private val tableMetaData
-    get() = TableOrderTool().getOrderedTables(getSortedTables(connectorRepository, connectorId), false)
+  private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(connectorId) }
+  private val tableMetaData get() = TableOrderTool(databaseMetaData).orderTables(false)
 
   fun createDropForeignKeyStatements(): List<String> {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)

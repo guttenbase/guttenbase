@@ -29,9 +29,9 @@ class SchemaScriptCreatorTool(
   private val sourceConnectorId: String, private val targetConnectorId: String
 ) {
   private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(sourceConnectorId) }
+  private val tables get() = TableOrderTool(databaseMetaData).orderTables()
 
   fun createTableStatements(): List<String> {
-    val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
 
     return createTableStatements(tables)
   }
@@ -39,19 +39,12 @@ class SchemaScriptCreatorTool(
   fun createTableStatements(tables: List<TableMetaData>) = tables.map { createTable(it) }
 
   @Suppress("unused")
-  fun createMultiColumnPrimaryKeyStatements(): List<String> {
-    val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
+  fun createMultiColumnPrimaryKeyStatements() = createMultiColumnPrimaryKeyStatements(tables)
 
-    return createMultiColumnPrimaryKeyStatements(tables)
-  }
-
-  fun createMultiColumnPrimaryKeyStatements(tables: List<TableMetaData>): List<String> =
+  fun createMultiColumnPrimaryKeyStatements(tables: List<TableMetaData>) =
     tables.filter { it.primaryKeyColumns.size > 1 }.map { createPrimaryKeyStatement(it, it.primaryKeyColumns) }
 
-  fun createIndexStatements(): List<String> {
-    val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
-    return createIndexStatements(tables)
-  }
+  fun createIndexStatements() = createIndexStatements(tables)
 
   fun createIndexStatements(tables: List<TableMetaData>): List<String> {
     val result = ArrayList<String>()
@@ -81,12 +74,9 @@ class SchemaScriptCreatorTool(
     return result
   }
 
-  fun createForeignKeyStatements(): List<String> {
-    val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
-    return createForeignKeyStatements(tables)
-  }
+  fun createForeignKeyStatements() = createForeignKeyStatements(tables)
 
-  fun createForeignKeyStatements(tables: List<TableMetaData>): List<String> =
+  fun createForeignKeyStatements(tables: List<TableMetaData>) =
     tables.map { it.importedForeignKeys.map { foreignKey -> createForeignKey(foreignKey) } }.flatten()
 
   fun createTable(tableMetaData: TableMetaData): String {
@@ -179,11 +169,7 @@ class SchemaScriptCreatorTool(
     return columnMapper.mapColumnName(referencingColumn, referencingColumn.tableMetaData)
   }
 
-  fun createAutoincrementUpdateStatements(): List<String> {
-    val tables = TableOrderTool().getOrderedTables(databaseMetaData.tableMetaData, true)
-
-    return createAutoincrementUpdateStatements(tables)
-  }
+  fun createAutoincrementUpdateStatements() = createAutoincrementUpdateStatements(tables)
 
   fun createAutoincrementUpdateStatements(tables: List<TableMetaData>): List<String> {
     val result = ArrayList<String>()

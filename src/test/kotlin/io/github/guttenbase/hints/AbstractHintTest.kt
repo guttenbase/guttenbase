@@ -56,5 +56,9 @@ abstract class AbstractHintTest(
   }
 }
 
+const val DERBY = "DERBY"
+const val H2 = "H2"
+const val HSQLDB = "HSQLDB"
+
 const val SOURCE = "SOURCE"
 const val TARGET = "TARGET"

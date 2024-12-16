@@ -1,6 +1,9 @@
 package io.github.guttenbase.tools
 
+import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
+
+private typealias TableNodes = LinkedHashMap<String, TableNode>
 
 /**
  * Topologically sort tables by foreign key constraints, i.e. the foreign keys of a database schema spawn an directed (possibly cyclic!) graph
@@ -13,18 +16,14 @@ import io.github.guttenbase.meta.TableMetaData
  *
  * @author M. Dahm
  */
-open class TableOrderTool {
-  fun getOrderedTables(tableMetaData: List<TableMetaData>, topDown: Boolean = true): List<TableMetaData> {
-    val tableNodes = createGraph(tableMetaData)
-
-    return orderTables(tableNodes, topDown)
-  }
-
-  private fun orderTables(tableNodes: MutableMap<String, TableNode>, topDown: Boolean): List<TableMetaData> {
+class TableOrderTool(private val databaseMetaData: DatabaseMetaData) {
+  @JvmOverloads
+  fun orderTables(topDown: Boolean = true): List<TableMetaData> {
     val result = ArrayList<TableMetaData>()
+    val tableNodes = createGraph(databaseMetaData.tableMetaData)
 
     while (tableNodes.isNotEmpty()) {
-      val tableNode = findMatchingNode(ArrayList(tableNodes.values), topDown)
+      val tableNode = tableNodes.firstNode(topDown)
 
       for (referencingTable in tableNode.referencedByTables) {
         referencingTable.removeReferencedTable(tableNode)
@@ -35,82 +34,82 @@ open class TableOrderTool {
       }
 
       result.add(tableNode.tableMetaData)
-      tableNodes.remove(tableNode.tableMetaData.tableName.uppercase())
+      tableNodes.remove(tableNode)
     }
 
     return result
   }
 
-  private fun findMatchingNode(tableNodes: List<TableNode>, topDown: Boolean) =
-    tableNodes.sortedWith { tn1: TableNode, tn2: TableNode ->
-      if (topDown) {
-        tn1.referencedTables.size - tn2.referencedTables.size
-      } else {
-        tn1.referencedByTables.size - tn2.referencedByTables.size
-      }
-    }[0]
+  private fun TableNodes.remove(table: TableNode) = remove(table.tableMetaData.tableName.uppercase())
 
-  private fun createGraph(tableMetaData: List<TableMetaData>): MutableMap<String, TableNode> {
-    val tableNodes = LinkedHashMap<String, TableNode>()
+  /**
+   * Top-Down: Node with least references to other tables is preferred
+   * Bottom up: Most referenced node wins
+   */
+  private fun TableNodes.firstNode(topDown: Boolean) = values.sortedWith { tn1, tn2 ->
+    if (topDown) {
+      tn1.referencedTables.size - tn2.referencedTables.size
+    } else {
+      tn1.referencedByTables.size - tn2.referencedByTables.size
+    }
+  }.first()
+
+  private fun createGraph(tableMetaData: List<TableMetaData>): TableNodes {
+    val graph = TableNodes()
 
     for (table in tableMetaData) {
       val importedForeignKeys = table.importedForeignKeys
-      val tableNode = getTableNode(tableNodes, table)
+      val tableNode = graph.getTableNode(table)
 
       for (foreignKeyMetaData in importedForeignKeys) {
-        val referencingTable = getTableNode(tableNodes, foreignKeyMetaData.referencingTableMetaData)
-        val referencedTable = getTableNode(tableNodes, foreignKeyMetaData.referencedTableMetaData)
+        val referencingTable = graph.getTableNode(foreignKeyMetaData.referencingTableMetaData)
+        val referencedTable = graph.getTableNode(foreignKeyMetaData.referencedTableMetaData)
 
         assert(tableNode == referencingTable)
 
-        referencingTable.addReferencedTable(referencedTable)
-        referencedTable.addReferencedByTable(referencingTable)
+        if (referencingTable != referencedTable) { // Ignore self-referencing tables
+          referencingTable.addReferencedTable(referencedTable)
+          referencedTable.addReferencedByTable(referencingTable)
+        }
       }
     }
 
-    return tableNodes
+    return graph
+  }
+}
+
+private fun TableNodes.getTableNode(table: TableMetaData) = getOrPut(table.tableName.uppercase()) { TableNode(table) }
+
+private class TableNode(val tableMetaData: TableMetaData) {
+  val referencedTables = LinkedHashSet<TableNode>()
+  val referencedByTables = LinkedHashSet<TableNode>()
+
+  fun addReferencedTable(table: TableNode) {
+    referencedTables.add(table)
   }
 
-  private fun getTableNode(tableNodes: MutableMap<String, TableNode>, table: TableMetaData) =
-    tableNodes.getOrPut(table.tableName.uppercase()) { TableNode(table) }
+  fun removeReferencedTable(table: TableNode) {
+    referencedTables.remove(table)
+  }
 
-  private data class TableNode(val tableMetaData: TableMetaData) {
-    val referencedTables = ArrayList<TableNode>()
-    val referencedByTables = ArrayList<TableNode>()
+  fun addReferencedByTable(table: TableNode) {
+    referencedByTables.add(table)
+  }
 
-    fun addReferencedTable(tableMetaData: TableNode) {
-      referencedTables.add(tableMetaData)
-    }
+  fun removeReferencedByTable(table: TableNode) {
+    referencedByTables.remove(table)
+  }
 
-    fun removeReferencedTable(tableMetaData: TableNode) {
-      referencedTables.remove(tableMetaData)
-    }
+  override fun hashCode() = tableMetaData.hashCode()
 
-    fun addReferencedByTable(tableMetaData: TableNode) {
-      referencedByTables.add(tableMetaData)
-    }
+  override fun equals(other: Any?): Boolean = other is TableNode && tableMetaData == other.tableMetaData
 
-    fun removeReferencedByTable(tableMetaData: TableNode) {
-      referencedByTables.remove(tableMetaData)
-    }
+  override fun toString() = (tableMetaData.tableName +
+      "::referencedTables:" + toString(referencedTables)
+      + ", referencedByTables: " + toString(referencedByTables))
 
-    override fun hashCode() = tableMetaData.hashCode()
-
-    override fun equals(other: Any?): Boolean {
-      val that = other as TableNode
-      return this.tableMetaData == that.tableMetaData
-    }
-
-    override fun toString(): String {
-      return (tableMetaData.tableName + "::referencedTables:"
-          + toString(referencedByTables)
-          + ", referencedByTables: "
-          + toString(referencedByTables))
-    }
-
-    companion object {
-      private fun toString(referencedTables: List<TableNode>) =
-        referencedTables.joinToString(prefix = "[", postfix = "]", transform = { it.tableMetaData.tableName })
-    }
+  companion object {
+    private fun toString(tables: Collection<TableNode>) =
+      tables.joinToString(prefix = "[", postfix = "]", transform = { it.tableMetaData.tableName })
   }
 }
