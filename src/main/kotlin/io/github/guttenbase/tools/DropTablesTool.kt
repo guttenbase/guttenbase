@@ -1,12 +1,12 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.connector.DatabaseType.*
+import io.github.guttenbase.connector.DatabaseType.MARIADB
+import io.github.guttenbase.connector.DatabaseType.MYSQL
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.hints.TableOrderHint.Companion.getSortedTables
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.IndexMetaData
-import io.github.guttenbase.meta.isSynthetic
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.Util
@@ -23,12 +23,13 @@ import java.sql.SQLException
 @Suppress("MemberVisibilityCanBePrivate")
 open class DropTablesTool @JvmOverloads constructor(
   private val connectorRepository: ConnectorRepository,
+  private val connectorId: String,
   private val dropTablesSuffix: String = ""
 ) {
-  fun createDropForeignKeyStatements(connectorId: String): List<String> {
-    val tableMetaData = TableOrderTool().getOrderedTables(
-      getSortedTables(connectorRepository, connectorId), false
-    )
+  private val tableMetaData
+    get() = TableOrderTool().getOrderedTables(getSortedTables(connectorRepository, connectorId), false)
+
+  fun createDropForeignKeyStatements(): List<String> {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val connectionInfo = connectorRepository.getConnectionInfo(connectorId)
     val constraintClause = getConstraintClause(connectionInfo)
@@ -44,10 +45,7 @@ open class DropTablesTool @JvmOverloads constructor(
     }.flatten()
   }
 
-  fun createDropIndexStatements(connectorId: String): List<String> {
-    val tableMetaData = TableOrderTool().getOrderedTables(
-      getSortedTables(connectorRepository, connectorId), false
-    )
+  fun createDropIndexStatements(): List<String> {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val existsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.indexExistsClause
 
@@ -56,13 +54,13 @@ open class DropTablesTool @JvmOverloads constructor(
       val fullTableName = tableMapper.fullyQualifiedTableName(table, table.databaseMetaData)
 
       table.indexes.filter { !it.isPrimaryKeyIndex }.map {
-          val fullIndexName = schemaPrefix + it.indexName
-          val dropIndexClause = chooseDropIndexClause(it)
+        val fullIndexName = schemaPrefix + it.indexName
+        val dropIndexClause = chooseDropIndexClause(it)
 
-          dropIndexClause
-            .replace("@@EXISTS@@", existsClause).replace("@@INDEX_NAME@@", it.indexName)
-            .replace("@@FULL_INDEX_NAME@@", fullIndexName).replace("@@FULL_TABLE_NAME@@", fullTableName)
-        }
+        dropIndexClause
+          .replace("@@EXISTS@@", existsClause).replace("@@INDEX_NAME@@", it.indexName)
+          .replace("@@FULL_INDEX_NAME@@", fullIndexName).replace("@@FULL_TABLE_NAME@@", fullTableName)
+      }
     }.flatten()
   }
 
@@ -71,46 +69,44 @@ open class DropTablesTool @JvmOverloads constructor(
     else -> DEFAULT_INDEX_DROP
   }
 
-  fun createDropAll(connectorId: String) =
-    createDropIndexStatements(connectorId).plus(createDropForeignKeyStatements(connectorId))
-      .plus(createDropTableStatements(connectorId))
+  fun createDropAll() =
+    createDropIndexStatements().plus(createDropForeignKeyStatements())
+      .plus(createDropTableStatements())
 
-  fun createDropTableStatements(connectorId: String) =
+  fun createDropTableStatements() =
     createTableStatements(
-      connectorId,
       "DROP TABLE" + (" " + connectorRepository.getConnectionInfo(connectorId).databaseType.tableExistsClause).trimEnd(),
       dropTablesSuffix
     )
 
-  fun createDeleteTableStatements(connectorId: String) = createTableStatements(connectorId, "DELETE FROM", "")
+  fun createDeleteTableStatements() = createTableStatements("DELETE FROM", "")
 
   @Throws(SQLException::class)
-  fun dropTables(targetId: String) {
-    ScriptExecutorTool(connectorRepository).executeScript(targetId, true, true, createDropTableStatements(targetId))
+  fun dropTables() {
+    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, true, createDropTableStatements())
   }
 
   @Throws(SQLException::class)
-  fun dropAll(targetId: String) {
-    ScriptExecutorTool(connectorRepository).executeScript(targetId, true, true, createDropAll(targetId))
+  fun dropAll() {
+    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, true, createDropAll())
   }
 
   @Throws(SQLException::class)
-  fun clearTables(targetId: String) {
-    ScriptExecutorTool(connectorRepository).executeScript(targetId, true, true, createDeleteTableStatements(targetId))
-  }
-
-  @Throws(SQLException::class)
-  fun dropIndexes(targetId: String) {
-    ScriptExecutorTool(connectorRepository).executeScript(targetId, true, true, createDropIndexStatements(targetId))
-  }
-
-  @Throws(SQLException::class)
-  fun dropForeignKeys(targetId: String) {
+  fun clearTables() {
     ScriptExecutorTool(connectorRepository).executeScript(
-      targetId,
-      true,
-      false,
-      createDropForeignKeyStatements(targetId)
+      connectorId, true, true, createDeleteTableStatements()
+    )
+  }
+
+  @Throws(SQLException::class)
+  fun dropIndexes() {
+    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, true, createDropIndexStatements())
+  }
+
+  @Throws(SQLException::class)
+  fun dropForeignKeys() {
+    ScriptExecutorTool(connectorRepository).executeScript(
+      connectorId, true, false, createDropForeignKeyStatements()
     )
   }
 
@@ -121,8 +117,7 @@ open class DropTablesTool @JvmOverloads constructor(
     }
   }
 
-  private fun createTableStatements(connectorId: String, clausePrefix: String, clauseSuffix: String): List<String> {
-    val tableMetaData = TableOrderTool().getOrderedTables(getSortedTables(connectorRepository, connectorId), false)
+  private fun createTableStatements(clausePrefix: String, clauseSuffix: String): List<String> {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val suffix = if ("" == Util.trim(clauseSuffix)) "" else " $clauseSuffix"
 

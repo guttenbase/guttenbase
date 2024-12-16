@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.guttenbase.meta
 
 import java.io.Serializable

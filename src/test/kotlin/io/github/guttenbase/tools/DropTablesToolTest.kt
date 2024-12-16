@@ -49,7 +49,7 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
 
     assertThat(data1).hasSize(4)
 
-    DropTablesTool(connectorRepository).clearTables(target)
+    DropTablesTool(connectorRepository, target).clearTables()
 
     val data2 = ReadTableDataTool(connectorRepository, target, "FOO_COMPANY").start().use {
       it.readTableData(-1)
@@ -66,7 +66,7 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   }
 
   private fun drop(target: String) {
-    DropTablesTool(connectorRepository).dropTables(target)
+    DropTablesTool(connectorRepository, target).dropTables()
 
     assertThat(connectorRepository.getDatabaseMetaData(target).tableMetaData).isEmpty()
   }
@@ -79,7 +79,7 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   }
 
   private fun dropAll(target: String) {
-    DropTablesTool(connectorRepository).dropAll(target)
+    DropTablesTool(connectorRepository, target).dropAll()
 
     assertThat(connectorRepository.getDatabaseMetaData(target).tableMetaData).isEmpty()
   }
@@ -98,7 +98,7 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
         .execute()
     }
 
-    DropTablesTool(connectorRepository).dropForeignKeys(target)
+    DropTablesTool(connectorRepository, target).dropForeignKeys()
 
     InsertStatementTool(connectorRepository, target).createInsertStatement("FOO_USER_COMPANY")
       .setParameter("USER_ID", 42L).setParameter("ASSIGNED_COMPANY_ID", 4711L)
@@ -113,7 +113,7 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   }
 
   private fun dropIndexes(target: String) {
-    DropTablesTool(connectorRepository).dropIndexes(target)
+    DropTablesTool(connectorRepository, target).dropIndexes()
 
     val data1 = ReadTableDataTool(connectorRepository, target, "FOO_COMPANY").start().use {
       it.readTableData(-1)
