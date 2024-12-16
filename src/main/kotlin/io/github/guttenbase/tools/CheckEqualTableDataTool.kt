@@ -108,13 +108,12 @@ open class CheckEqualTableDataTool(
       ColumnOrderHint.getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     var rowIndex = 1
-
     val primaryKeyColumn = sourceTableMetaData.primaryKeyColumns.firstOrNull()
-    var primaryKey = "<UNKNOWN>"
 
     try {
       while (resultSet1.next() && resultSet2.next() && rowIndex <= numberOfCheckData) {
         var targetColumnIndex = 1
+        var currentID = "<UNKNOWN>"
 
         for (sourceColumnIndex in 1..orderedSourceColumns.size) {
           val sourceColumn = orderedSourceColumns[sourceColumnIndex - 1]
@@ -132,15 +131,14 @@ open class CheckEqualTableDataTool(
             )
 
             val (value, _) = checkColumnData(
-              primaryKey,
+              currentID,
               sourceConnectorId, targetConnectorId, tableName1,
               resultSet1, resultSet2, rowIndex,
               targetColumnIndex, sourceColumnIndex, columnMapping, columnName1
             )
 
-
             if (sourceColumn == primaryKeyColumn) {
-              primaryKey = value.toString()
+              currentID = value.toString()
             }
           }
 

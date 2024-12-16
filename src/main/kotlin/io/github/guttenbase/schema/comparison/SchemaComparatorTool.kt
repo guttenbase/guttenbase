@@ -18,8 +18,10 @@ import io.github.guttenbase.tools.ColumnDataMappingTool
  * Uses [TableOrderHint] to determine order of tables
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class SchemaComparatorTool(val connectorRepository: ConnectorRepository,
-                           private val sourceConnectorId: String, private val targetConnectorId: String) {
+class SchemaComparatorTool(
+  val connectorRepository: ConnectorRepository,
+  private val sourceConnectorId: String, private val targetConnectorId: String
+) {
   private val schemaCompatibilityIssues = SchemaCompatibilityIssues()
 
   /**
@@ -30,7 +32,7 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository,
    * @return List of found issues. If empty the schemas are completely compatible
    */
   fun check(): SchemaCompatibilityIssues {
-    val sourceTables= TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
+    val sourceTables = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
 
@@ -72,9 +74,8 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository,
 
   fun checkEqualIndexes(sourceTable: TableMetaData, targetTable: TableMetaData): SchemaCompatibilityIssues {
     for (sourceIndex in sourceTable.indexes) {
-      targetTable.indexes.firstOrNull {
-        sourceIndex.columnMetaData == it.columnMetaData
-      } ?: schemaCompatibilityIssues.addIssue(MissingIndexIssue("Missing index $sourceIndex", sourceIndex))
+      targetTable.indexes.firstOrNull { sourceIndex.columnMetaData == it.columnMetaData }
+        ?: schemaCompatibilityIssues.addIssue(MissingIndexIssue("Missing index $sourceIndex", sourceIndex))
     }
 
     return schemaCompatibilityIssues

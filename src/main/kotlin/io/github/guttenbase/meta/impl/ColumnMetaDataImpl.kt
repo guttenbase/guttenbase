@@ -57,9 +57,7 @@ class ColumnMetaDataImpl(
 
   override fun hashCode() = columnName.uppercase().hashCode()
 
-  override fun equals(other: Any?): Boolean {
-    return  other is ColumnMetaData && columnName.equals(other.columnName, ignoreCase = true)
-  }
+  override fun equals(other: Any?) = other is ColumnMetaData && columnName.equals(other.columnName, ignoreCase = true)
 
   companion object {
     @Suppress("unused")

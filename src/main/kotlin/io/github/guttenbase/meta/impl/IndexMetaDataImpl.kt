@@ -33,15 +33,10 @@ class IndexMetaDataImpl(
 
   override fun hashCode() = indexName.uppercase().hashCode()
 
-  override fun equals(other: Any?): Boolean {
-    return if (other is IndexMetaData) {
-      indexName.equals(other.indexName, ignoreCase = true)
-    } else {
-      false
-    }
-  }
+  override fun equals(other: Any?) = other is IndexMetaData && indexName.equals(other.indexName, ignoreCase = true)
 
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
   }
 }

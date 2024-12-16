@@ -66,12 +66,11 @@ class ForeignKeyMetaDataImpl(
 
   override fun hashCode() = foreignKeyName.uppercase().hashCode()
 
-  override fun equals(other: Any?): Boolean {
-    val that: ForeignKeyMetaData = other as ForeignKeyMetaData
-    return foreignKeyName.equals(that.foreignKeyName, ignoreCase = true)
-  }
+  override fun equals(other: Any?) =
+    other is ForeignKeyMetaData && foreignKeyName.equals(other.foreignKeyName, ignoreCase = true)
 
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
 
     @JvmStatic

@@ -19,7 +19,11 @@ class TableMetaDataImpl(
   override val tableSchema: String?
 ) : InternalTableMetaData {
   constructor(databaseMetaData: DatabaseMetaData, tableMetaData: TableMetaData) : this(
-    databaseMetaData, tableMetaData.tableName, tableMetaData.tableType, tableMetaData.tableCatalog, tableMetaData.tableSchema
+    databaseMetaData,
+    tableMetaData.tableName,
+    tableMetaData.tableType,
+    tableMetaData.tableCatalog,
+    tableMetaData.tableSchema
   )
 
   /**
@@ -65,7 +69,8 @@ class TableMetaDataImpl(
   /**
    * {@inheritDoc}
    */
-  override fun getColumnMetaData(columnName: String): ColumnMetaData? = columnMap[columnName.uppercase(Locale.getDefault())]
+  override fun getColumnMetaData(columnName: String): ColumnMetaData? =
+    columnMap[columnName.uppercase(Locale.getDefault())]
 
   /**
    * {@inheritDoc}
@@ -113,10 +118,7 @@ class TableMetaDataImpl(
 
   override fun hashCode() = tableName.uppercase().hashCode()
 
-  override fun equals(other: Any?): Boolean {
-    val that: TableMetaData = other as TableMetaData
-    return tableName.equals(that.tableName, ignoreCase = true)
-  }
+  override fun equals(other: Any?) = other is TableMetaData && tableName.equals(other.tableName, ignoreCase = true)
 
   companion object {
     private const val serialVersionUID = 1L

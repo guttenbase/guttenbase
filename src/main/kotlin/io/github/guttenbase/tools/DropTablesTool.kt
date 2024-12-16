@@ -2,6 +2,7 @@ package io.github.guttenbase.tools
 
 import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.DatabaseType.MARIADB
+import io.github.guttenbase.connector.DatabaseType.MSSQL
 import io.github.guttenbase.connector.DatabaseType.MYSQL
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
@@ -38,16 +39,17 @@ open class DropTablesTool @JvmOverloads constructor(
     return tableMetaData.map { table ->
       table.importedForeignKeys.map {
         val fullTableName = tableMapper.fullyQualifiedTableName(table, table.databaseMetaData)
-        DEFAULT_CONSTRAINT_DROP.replace("@@FULL_TABLE_NAME@@", fullTableName)
-          .replace("@@EXISTS@@", existsClause)
-          .replace("@@CONSTRAINT@@", constraintClause).replace("@@FK_NAME@@", it.foreignKeyName)
+
+        DEFAULT_CONSTRAINT_DROP.replace(FULL_TABLE_NAME, fullTableName)
+          .replace(IF_EXISTS, existsClause)
+          .replace(CONSTRAINT, constraintClause).replace(FK_NAME, it.foreignKeyName)
       }
     }.flatten()
   }
 
   fun createDropIndexStatements(): List<String> {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val existsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.indexExistsClause
+    val ifExistsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.indexExistsClause
 
     return tableMetaData.map { table ->
       val schemaPrefix = table.databaseMetaData.schemaPrefix
@@ -55,17 +57,20 @@ open class DropTablesTool @JvmOverloads constructor(
 
       table.indexes.filter { !it.isPrimaryKeyIndex }.map {
         val fullIndexName = schemaPrefix + it.indexName
+        val fullTableAndIndexName = fullTableName + "." + it.indexName
         val dropIndexClause = chooseDropIndexClause(it)
 
         dropIndexClause
-          .replace("@@EXISTS@@", existsClause).replace("@@INDEX_NAME@@", it.indexName)
-          .replace("@@FULL_INDEX_NAME@@", fullIndexName).replace("@@FULL_TABLE_NAME@@", fullTableName)
+          .replace(IF_EXISTS, ifExistsClause).replace(INDEX_NAME, it.indexName)
+          .replace(FULL_INDEX_NAME, fullIndexName).replace(FULL_TABLE_AND_INDEX_NAME, fullTableAndIndexName)
+          .replace(FULL_TABLE_NAME, fullTableName)
       }
     }.flatten()
   }
 
   private fun chooseDropIndexClause(index: IndexMetaData) = when (index.tableMetaData.databaseMetaData.databaseType) {
     MARIADB, MYSQL -> MYSQL_INDEX_DROP
+    MSSQL -> MSSQL_INDEX_DROP
     else -> DEFAULT_INDEX_DROP
   }
 
@@ -127,9 +132,18 @@ open class DropTablesTool @JvmOverloads constructor(
   }
 
   companion object {
-    private const val DEFAULT_INDEX_DROP = "DROP INDEX @@EXISTS@@ @@FULL_INDEX_NAME@@;"
-    private const val MYSQL_INDEX_DROP = "ALTER TABLE @@FULL_TABLE_NAME@@ DROP INDEX @@EXISTS@@ @@FULL_INDEX_NAME@@;"
+    private const val FULL_INDEX_NAME = "@@FULL_INDEX_NAME@@"
+    private const val FULL_TABLE_AND_INDEX_NAME = "@@FULL_TABLE_AND_INDEX_NAME@@"
+    private const val FULL_TABLE_NAME = "@@FULL_TABLE_NAME@@"
+    private const val IF_EXISTS = "@@EXISTS@@"
+    private const val INDEX_NAME = "@@INDEX_NAME@@"
+    private const val CONSTRAINT = "@@CONSTRAINT@@"
+    private const val FK_NAME = "@@FK_NAME@@"
+
+    private const val DEFAULT_INDEX_DROP = "DROP INDEX $IF_EXISTS $FULL_INDEX_NAME;"
+    private const val MSSQL_INDEX_DROP = "DROP INDEX $FULL_TABLE_AND_INDEX_NAME;"
+    private const val MYSQL_INDEX_DROP = "ALTER TABLE $FULL_TABLE_NAME DROP INDEX $IF_EXISTS $FULL_INDEX_NAME;"
     private const val DEFAULT_CONSTRAINT_DROP =
-      "ALTER TABLE @@FULL_TABLE_NAME@@ DROP @@CONSTRAINT@@ @@EXISTS@@ @@FK_NAME@@;"
+      "ALTER TABLE $FULL_TABLE_NAME DROP $CONSTRAINT $IF_EXISTS $FK_NAME;"
   }
 }

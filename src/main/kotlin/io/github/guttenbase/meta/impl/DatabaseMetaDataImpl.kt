@@ -1,11 +1,7 @@
 package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.connector.DatabaseType
-import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.DatabaseMetaData
-import io.github.guttenbase.meta.DatabaseSupportedType
-import io.github.guttenbase.meta.InternalDatabaseMetaData
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
 import java.lang.reflect.Method
@@ -63,7 +59,7 @@ class DatabaseMetaDataImpl(
 
   override fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, nullable: Boolean) {
     val list = supportedTypeMap.computeIfAbsent(jdbcType) { mutableListOf<DatabaseSupportedType>() }
-    list.add(DatabaseSupportedType(type, jdbcType, precision, nullable))
+    list.add(DatabaseSupportedType(type.uppercase(), jdbcType, precision, nullable))
   }
 
   override fun typeFor(columnMetaData: ColumnMetaData): DatabaseSupportedType? {
@@ -71,16 +67,14 @@ class DatabaseMetaDataImpl(
 
     // Prefer matching names, because the list may not be properly sorted (MSSQL 🙄)
     return possibleTypes.firstOrNull {
-      it.typeName.equals(columnMetaData.columnTypeName, true) && columnMetaData.precision <= it.precision
+      it.realTypeName() == columnMetaData.realTypeName() && columnMetaData.precision <= it.precision
     } ?: possibleTypes.firstOrNull()
   }
 
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
 
-  override fun equals(other: Any?): Boolean {
-    val that = other as DatabaseMetaData
-    return databaseType == that.databaseType && schema.equals(that.schema, ignoreCase = true)
-  }
+  override fun equals(other: Any?) = other is DatabaseMetaData &&
+      databaseType == other.databaseType && schema.equals(other.schema, ignoreCase = true)
 
   private fun createMetaDataProxy(properties: Map<String, Any>): JdbcDatabaseMetaData {
     return Proxy.newProxyInstance(
@@ -91,4 +85,14 @@ class DatabaseMetaDataImpl(
   companion object {
     private const val serialVersionUID = 1L
   }
+}
+
+private fun DatabaseSupportedType.realTypeName() = when (val type = typeName.uppercase()) {
+  "VARCHAR2" -> "VARCHAR"
+  else -> type
+}
+
+private fun ColumnMetaData.realTypeName() = when (val type = columnTypeName.uppercase()) {
+  "VARCHAR2" -> "VARCHAR"
+  else -> type
 }
