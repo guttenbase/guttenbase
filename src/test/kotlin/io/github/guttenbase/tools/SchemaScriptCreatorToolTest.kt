@@ -13,6 +13,7 @@ import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.meta.SYNTHETIC_CONSTRAINT_PREFIX
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.meta.impl.*
 import io.github.guttenbase.repository.ConnectorRepository
@@ -105,7 +106,7 @@ class SchemaScriptCreatorToolTest {
 
     val constraintName =
       objectUnderTest.createConstraintName(
-        "FK_",
+        SYNTHETIC_CONSTRAINT_PREFIX,
         "AUFTRAG_STELLUNGNAHME_HALTUNGSTELLUNGNAHME_ZU_HALTUNG_ID_PARENT_ID__ID_",
         1
       )

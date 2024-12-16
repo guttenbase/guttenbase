@@ -132,7 +132,7 @@ class SchemaScriptCreatorTool(
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val tableName = tableMapper.mapTableName(tableMetaData, targetDatabaseMetaData)
     val indexName = createConstraintName(
-      "IDX_", indexMapper.mapIndexName(indexMetaData) + "_" + tableName + "_", counter
+      SYNTHETIC_INDEX_PREFIX, indexMapper.mapIndexName(indexMetaData) + "_" + tableName + "_", counter
     )
 
     return createIndex(indexMetaData, indexName)

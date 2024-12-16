@@ -2,6 +2,8 @@ package io.github.guttenbase.meta
 
 import java.io.Serializable
 
+const val SYNTHETIC_INDEX_PREFIX = "IDX_"
+
 /**
  * Information about index in table.
  *
@@ -19,3 +21,5 @@ interface IndexMetaData : Comparable<IndexMetaData>, Serializable {
   val tableMetaData: TableMetaData
   val isPrimaryKeyIndex: Boolean
 }
+
+fun IndexMetaData.isSynthetic() = indexName.startsWith(SYNTHETIC_INDEX_PREFIX, true)

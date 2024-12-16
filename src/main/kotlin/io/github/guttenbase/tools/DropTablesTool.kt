@@ -6,6 +6,7 @@ import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.hints.TableOrderHint.Companion.getSortedTables
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.IndexMetaData
+import io.github.guttenbase.meta.isSynthetic
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.Util
@@ -43,7 +44,7 @@ open class DropTablesTool @JvmOverloads constructor(
     }.flatten()
   }
 
-  fun createDropIndexesStatements(connectorId: String): List<String> {
+  fun createDropIndexStatements(connectorId: String): List<String> {
     val tableMetaData = TableOrderTool().getOrderedTables(
       getSortedTables(connectorRepository, connectorId), false
     )
@@ -55,13 +56,13 @@ open class DropTablesTool @JvmOverloads constructor(
       val fullTableName = tableMapper.fullyQualifiedTableName(table, table.databaseMetaData)
 
       table.indexes.filter { !it.isPrimaryKeyIndex }.map {
-        val fullIndexName = schemaPrefix + it.indexName
-        val dropIndexClause = chooseDropIndexClause(it)
+          val fullIndexName = schemaPrefix + it.indexName
+          val dropIndexClause = chooseDropIndexClause(it)
 
-        dropIndexClause
-          .replace("@@EXISTS@@", existsClause).replace("@@INDEX_NAME@@", it.indexName)
-          .replace("@@FULL_INDEX_NAME@@", fullIndexName).replace("@@FULL_TABLE_NAME@@", fullTableName)
-      }
+          dropIndexClause
+            .replace("@@EXISTS@@", existsClause).replace("@@INDEX_NAME@@", it.indexName)
+            .replace("@@FULL_INDEX_NAME@@", fullIndexName).replace("@@FULL_TABLE_NAME@@", fullTableName)
+        }
     }.flatten()
   }
 
@@ -71,7 +72,7 @@ open class DropTablesTool @JvmOverloads constructor(
   }
 
   fun createDropAll(connectorId: String) =
-    createDropIndexesStatements(connectorId).plus(createDropForeignKeyStatements(connectorId))
+    createDropIndexStatements(connectorId).plus(createDropForeignKeyStatements(connectorId))
       .plus(createDropTableStatements(connectorId))
 
   fun createDropTableStatements(connectorId: String) =
@@ -100,7 +101,7 @@ open class DropTablesTool @JvmOverloads constructor(
 
   @Throws(SQLException::class)
   fun dropIndexes(targetId: String) {
-    ScriptExecutorTool(connectorRepository).executeScript(targetId, true, false, createDropIndexesStatements(targetId))
+    ScriptExecutorTool(connectorRepository).executeScript(targetId, true, true, createDropIndexStatements(targetId))
   }
 
   @Throws(SQLException::class)

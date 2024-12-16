@@ -99,7 +99,7 @@ internal class DatabaseMetaDataInspectorTool(
         val pkColumnName = resultSet.getStringNotNull("PKCOLUMN_NAME")
         val fkTableName = resultSet.getStringNotNull("FKTABLE_NAME")
         val fkColumnName = resultSet.getStringNotNull("FKCOLUMN_NAME")
-        val fkName = resultSet.getString("FK_NAME") ?: "FK_UNKNOWN_$fkColumnName"
+        val fkName = resultSet.getString("FK_NAME") ?: "${SYNTHETIC_CONSTRAINT_PREFIX}UNKNOWN_$fkColumnName"
         val pkTableMetaData = databaseMetaData.getTableMetaData(pkTableName) as InternalTableMetaData?
         val fkTableMetaData = databaseMetaData.getTableMetaData(fkTableName) as InternalTableMetaData?
 
@@ -154,7 +154,7 @@ internal class DatabaseMetaDataInspectorTool(
       while (resultSet.next()) {
         val nonUnique = resultSet.getBoolean("NON_UNIQUE")
         val columnName = resultSet.getString("COLUMN_NAME")
-        val indexName = resultSet.getString("INDEX_NAME") ?: "IDX_UNKNOWN_$columnName"
+        val indexName = resultSet.getString("INDEX_NAME") ?: "${SYNTHETIC_INDEX_PREFIX}UNKNOWN_$columnName"
         val ascOrDesc = resultSet.getString("ASC_OR_DESC")
 
         if (columnName != null) {
