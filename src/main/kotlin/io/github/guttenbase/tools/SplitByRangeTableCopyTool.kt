@@ -23,8 +23,10 @@ import kotlin.math.min
  *  &copy; 2012-2034 akquinet tech@spree
  *
  */
-open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
-  AbstractTableCopyTool(connectorRepository) {
+open class SplitByRangeTableCopyTool(
+  connectorRepository: ConnectorRepository, sourceConnectorId: String, targetConnectorId: String
+) :
+  AbstractTableCopyTool(connectorRepository, sourceConnectorId, targetConnectorId) {
   /**
    * Copy data with multiple VALUES-tuples per batch statement.
    *
@@ -32,11 +34,16 @@ open class SplitByRangeTableCopyTool(connectorRepository: ConnectorRepository) :
    */
   @Throws(SQLException::class)
   override fun copyTable(
-    sourceConnectorId: String, sourceConnection: Connection,
-    sourceDatabaseConfiguration: SourceDatabaseConfiguration, sourceTableMetaData: TableMetaData,
-    sourceTableName: String, targetConnectorId: String, targetConnection: Connection,
-    targetDatabaseConfiguration: TargetDatabaseConfiguration, targetTableMetaData: TableMetaData,
-    targetTableName: String, numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
+    sourceConnection: Connection,
+    sourceDatabaseConfiguration: SourceDatabaseConfiguration,
+    sourceTableMetaData: TableMetaData,
+    sourceTableName: String,
+    targetConnection: Connection,
+    targetDatabaseConfiguration: TargetDatabaseConfiguration,
+    targetTableMetaData: TableMetaData,
+    targetTableName: String,
+    numberOfRowsPerBatch: Int,
+    useMultipleValuesClauses: Boolean
   ) {
     val insertStatementCreator = InsertStatementCreator(connectorRepository, targetConnectorId)
     val insertStatementFiller = InsertStatementFiller(connectorRepository, targetConnectorId)

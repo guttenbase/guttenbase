@@ -6,9 +6,7 @@ import io.github.guttenbase.defaults.impl.DefaultColumnMapper
 import io.github.guttenbase.defaults.impl.DefaultTableMapper
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.IncompatibleTablesException
-import io.github.guttenbase.hints.CaseConversionMode
-import io.github.guttenbase.hints.ColumnMapperHint
-import io.github.guttenbase.hints.TableMapperHint
+import io.github.guttenbase.hints.*
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
@@ -142,8 +140,6 @@ class SchemaScriptCreatorToolTest {
   }
 
   companion object {
-    const val SOURCE = "source"
-    const val TARGET = "target"
     const val TABLE = "My_Table"
     const val SCHEMA_NAME = "schemaName"
 

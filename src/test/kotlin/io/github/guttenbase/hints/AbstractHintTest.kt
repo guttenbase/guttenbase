@@ -45,10 +45,10 @@ abstract class AbstractHintTest(
 
   @Test
   fun testTableCopy() {
-    val issues = SchemaComparatorTool(connectorRepository).check(SOURCE, TARGET)
+    val issues = SchemaComparatorTool(connectorRepository, SOURCE, TARGET).check()
     Assertions.assertThat(issues.isSevere).`as`(issues.toString()).isFalse()
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, TARGET)
-    CheckEqualTableDataTool(connectorRepository).checkTableData(SOURCE, TARGET)
+    DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables()
+    CheckEqualTableDataTool(connectorRepository, SOURCE, TARGET).checkTableData()
     executeChecks()
   }
 

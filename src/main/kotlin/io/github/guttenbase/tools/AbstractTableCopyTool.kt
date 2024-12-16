@@ -23,14 +23,17 @@ import java.sql.SQLException
  * Hint is used by [io.github.guttenbase.hints.MaxNumberOfDataItemsHint] to determine maximum number of data items in INSERT statement
  * Hint is used by [TableOrderHint] to determine order of tables
  */
-abstract class AbstractTableCopyTool(protected val connectorRepository: ConnectorRepository) {
+abstract class AbstractTableCopyTool(
+  protected val connectorRepository: ConnectorRepository,
+  protected val sourceConnectorId: String, protected val targetConnectorId: String
+) {
   protected lateinit var progressIndicator: TableCopyProgressIndicator
 
   /**
    * Copy tables from source to target.
    */
   @Throws(SQLException::class)
-  fun copyTables(sourceConnectorId: String, targetConnectorId: String) {
+  fun copyTables() {
     progressIndicator = connectorRepository.hint<TableCopyProgressIndicator>(targetConnectorId)
     progressIndicator.initializeIndicator()
 
@@ -82,15 +85,22 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
         )
       }
 
-        sourceDatabaseConfiguration.beforeTableCopy(sourceConnection, sourceConnectorId, sourceTableMetaData)
+      sourceDatabaseConfiguration.beforeTableCopy(sourceConnection, sourceConnectorId, sourceTableMetaData)
       targetDatabaseConfiguration.beforeTableCopy(targetConnection, targetConnectorId, targetTableMetaData)
 
       progressIndicator.startCopyTable(sourceTableName, sourceTableMetaData.filteredRowCount, targetTableName)
 
       copyTable(
-        sourceConnectorId, sourceConnection, sourceDatabaseConfiguration, sourceTableMetaData, sourceTableName,
-        targetConnectorId, targetConnection, targetDatabaseConfiguration, targetTableMetaData, targetTableName,
-        numberOfRowsPerBatch, useMultipleValuesClauses
+        sourceConnection,
+        sourceDatabaseConfiguration,
+        sourceTableMetaData,
+        sourceTableName,
+        targetConnection,
+        targetDatabaseConfiguration,
+        targetTableMetaData,
+        targetTableName,
+        numberOfRowsPerBatch,
+        useMultipleValuesClauses
       )
 
       sourceDatabaseConfiguration.afterTableCopy(sourceConnection, sourceConnectorId, sourceTableMetaData)
@@ -117,10 +127,15 @@ abstract class AbstractTableCopyTool(protected val connectorRepository: Connecto
 
   @Throws(SQLException::class)
   protected abstract fun copyTable(
-    sourceConnectorId: String, sourceConnection: Connection,
-    sourceDatabaseConfiguration: SourceDatabaseConfiguration, sourceTableMetaData: TableMetaData,
-    sourceTableName: String, targetConnectorId: String, targetConnection: Connection,
-    targetDatabaseConfiguration: TargetDatabaseConfiguration, targetTableMetaData: TableMetaData,
-    targetTableName: String, numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
+    sourceConnection: Connection,
+    sourceDatabaseConfiguration: SourceDatabaseConfiguration,
+    sourceTableMetaData: TableMetaData,
+    sourceTableName: String,
+    targetConnection: Connection,
+    targetDatabaseConfiguration: TargetDatabaseConfiguration,
+    targetTableMetaData: TableMetaData,
+    targetTableName: String,
+    numberOfRowsPerBatch: Int,
+    useMultipleValuesClauses: Boolean
   )
 }

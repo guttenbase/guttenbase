@@ -23,7 +23,6 @@ import java.sql.Blob
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
-import kotlin.Throws
 import kotlin.math.min
 
 /**
@@ -37,9 +36,12 @@ import kotlin.math.min
  * Hint is used by [ColumnOrderHint] to determine column order
  * Hint is used by [TableOrderHint] to determine order of tables
  */
-open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRepository) {
+open class CheckEqualTableDataTool(
+  private val connectorRepository: ConnectorRepository,
+  private val sourceConnectorId: String, private val targetConnectorId: String
+) {
   @Throws(SQLException::class)
-  fun checkTableData(sourceConnectorId: String, targetConnectorId: String) {
+  fun checkTableData() {
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
     val numberOfCheckData =
       connectorRepository.hint<NumberOfCheckedTableData>(sourceConnectorId).numberOfCheckedTableData
@@ -126,10 +128,7 @@ open class CheckEqualTableDataTool(private val connectorRepository: ConnectorRep
             val columnName2 = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
 
             checkColumnTypeMapping(
-              tableName1,
-              columnMapping,
-              columnName1,
-              columnName2
+              tableName1, columnMapping, columnName1, columnName2
             )
 
             val (value, _) = checkColumnData(

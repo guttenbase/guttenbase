@@ -12,15 +12,14 @@ import io.github.guttenbase.tools.ColumnDataMappingTool
 /**
  * Will check two schemas for compatibility and report found issues.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
- * Hint is used by [TableOrderHint] to determine order of tables
+ * Uses [TableOrderHint] to determine order of tables
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
+class SchemaComparatorTool(val connectorRepository: ConnectorRepository,
+                           private val sourceConnectorId: String, private val targetConnectorId: String) {
   private val schemaCompatibilityIssues = SchemaCompatibilityIssues()
 
   /**
@@ -30,9 +29,9 @@ class SchemaComparatorTool(val connectorRepository: ConnectorRepository) {
    * @param targetConnectorId
    * @return List of found issues. If empty the schemas are completely compatible
    */
-  fun check(sourceConnectorId: String, targetConnectorId: String): SchemaCompatibilityIssues {
-    val sourceTables: List<TableMetaData> = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
-    val tableMapper: TableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
+  fun check(): SchemaCompatibilityIssues {
+    val sourceTables= TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
 
     checkEqualTables(sourceTables, targetDatabase, tableMapper)

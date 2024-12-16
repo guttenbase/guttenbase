@@ -5,18 +5,20 @@ import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.export.ExportDumpConnectorInfo
 import io.github.guttenbase.export.ImportDumpConnectionInfo
-import io.github.guttenbase.tools.*
-import org.junit.jupiter.api.Assertions.*
+import io.github.guttenbase.hints.SOURCE
+import io.github.guttenbase.hints.TARGET
+import io.github.guttenbase.tools.CheckEqualTableDataTool
+import io.github.guttenbase.tools.DefaultTableCopyTool
+import io.github.guttenbase.tools.ScriptExecutorTool
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
-
 
 /**
  * Create a dump of the source database
  *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -35,25 +37,23 @@ class ExportDumpTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Export and Import data from file`() {
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, EXPORT)
+    DefaultTableCopyTool(connectorRepository, SOURCE, EXPORT).copyTables()
 
     val file = File(ZIP_FILE)
 
     assertTrue(file.exists())
     assertTrue(file.length() > 100)
 
-    DefaultTableCopyTool(connectorRepository).copyTables(IMPORT, TARGET)
+    DefaultTableCopyTool(connectorRepository, IMPORT, TARGET).copyTables()
 
-    CheckEqualTableDataTool(connectorRepository).checkTableData(SOURCE, TARGET)
+    CheckEqualTableDataTool(connectorRepository, SOURCE, TARGET).checkTableData()
 
     file.delete()
   }
 
   companion object {
     private const val ZIP_FILE = "./target/dump.zip"
-    const val SOURCE = "SOURCE"
     const val IMPORT = "IMPORT"
     const val EXPORT = "EXPORT"
-    const val TARGET = "TARGET"
   }
 }

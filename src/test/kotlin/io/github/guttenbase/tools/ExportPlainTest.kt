@@ -3,6 +3,8 @@ package io.github.guttenbase.io.github.guttenbase.tools
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.export.plain.ExportPlainTextConnectorInfo
+import io.github.guttenbase.hints.SOURCE
+import io.github.guttenbase.hints.TARGET
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.CheckEqualTableDataTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
@@ -40,16 +42,16 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Export SQL data`() {
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, SCRIPT)
+    DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
     val dataScript = File(FILE).readLines(UTF_8)
     assertThat(dataScript).contains("	(3, 'Häagen daß', 'Y');")
 
-    val ddlScript = CopySchemaTool(connectorRepository).createDDLScript(SOURCE, SCRIPT)
+    val ddlScript = CopySchemaTool(connectorRepository, SOURCE, SCRIPT).createDDLScript()
 
     ScriptExecutorTool(connectorRepository).executeScript(TARGET, true, true, ddlScript)
     ScriptExecutorTool(connectorRepository).executeScript(TARGET, true, true, dataScript)
 
-    CheckEqualTableDataTool(connectorRepository).checkTableData(SOURCE, TARGET)
+    CheckEqualTableDataTool(connectorRepository, SOURCE, TARGET).checkTableData()
   }
 
   @Test
@@ -58,7 +60,7 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
     val compressedInfo = ExportPlainTextConnectorInfo(sourceDatabase, FILE, "", UTF_8, true)
     connectorRepository.addConnectionInfo(COMPRESSED, compressedInfo)
 
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, COMPRESSED)
+    DefaultTableCopyTool(connectorRepository, SOURCE, COMPRESSED).copyTables()
     val contentType = Files.probeContentType(File(FILE).toPath())
 
     assertThat(contentType).isEqualTo("application/x-gzip-compressed")
@@ -70,7 +72,7 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
     val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(sourceDatabase, FILE, "", ISO_8859_1)
     connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
 
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, SCRIPT)
+    DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
 
     val dataScriptUtf8 = File(FILE).readLines(UTF_8)
     val dataScriptIso = File(FILE).readLines(ISO_8859_1)
@@ -82,9 +84,7 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
   companion object {
     private const val FILE = "./target/dump.sql"
 
-    const val SOURCE = "SOURCE"
     const val SCRIPT = "SCRIPT"
     const val COMPRESSED = "COMPRESSED"
-    const val TARGET = "TARGET"
   }
 }

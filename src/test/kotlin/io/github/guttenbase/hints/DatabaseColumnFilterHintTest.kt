@@ -12,9 +12,7 @@ import org.junit.jupiter.api.Test
 /**
  * Filters column when inquiring the data base.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -45,9 +43,5 @@ class DatabaseColumnFilterHintTest : AbstractGuttenBaseTest() {
     assertNotNull(tableMetaData)
     assertNotNull(tableMetaData!!.getColumnMetaData("USERNAME"))
     assertNull(tableMetaData.getColumnMetaData("PASSWORD"))
-  }
-
-  companion object {
-    const val SOURCE = "SOURCE"
   }
 }

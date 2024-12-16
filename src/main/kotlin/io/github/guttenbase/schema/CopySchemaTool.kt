@@ -11,8 +11,9 @@ import java.sql.SQLException
  *
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class CopySchemaTool(private val connectorRepository: ConnectorRepository) {
-  fun createDDLScript(sourceConnectorId: String, targetConnectorId: String): List<String> {
+class CopySchemaTool(private val connectorRepository: ConnectorRepository,
+                     private val sourceConnectorId: String, private val targetConnectorId: String) {
+  fun createDDLScript(): List<String> {
     val schemaScriptCreatorTool = SchemaScriptCreatorTool(connectorRepository, sourceConnectorId, targetConnectorId)
 
     return listOf(
@@ -25,8 +26,8 @@ class CopySchemaTool(private val connectorRepository: ConnectorRepository) {
   }
 
   @Throws(SQLException::class)
-  fun copySchema(sourceConnectorId: String, targetConnectorId: String) {
-    val ddlScript = createDDLScript(sourceConnectorId, targetConnectorId)
+  fun copySchema() {
+    val ddlScript = createDDLScript()
 
     ScriptExecutorTool(connectorRepository).executeScript(targetConnectorId, lines = ddlScript)
   }

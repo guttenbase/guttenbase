@@ -58,7 +58,10 @@ class SchemaScriptCreatorTool(
 
     for (tableMetaData in tables) {
       var counter = 1
-      val issues = SchemaComparatorTool(connectorRepository).checkDuplicateIndexes(tableMetaData)
+      val issues =
+        SchemaComparatorTool(connectorRepository, sourceConnectorId, targetConnectorId).checkDuplicateIndexes(
+          tableMetaData
+        )
       val conflictedIndexes: List<IndexMetaData> = issues.compatibilityIssues
         .filter { it.compatibilityIssueType === SchemaCompatibilityIssueType.DUPLICATE_INDEX }
         .map { (it as DuplicateIndexIssue).indexMetaData }

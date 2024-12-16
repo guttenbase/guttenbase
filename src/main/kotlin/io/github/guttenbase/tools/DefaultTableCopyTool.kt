@@ -19,7 +19,10 @@ import java.sql.SQLException
  *
  * @author M. Dahm
  */
-open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : AbstractTableCopyTool(connectorRepository) {
+open class DefaultTableCopyTool(
+  connectorRepository: ConnectorRepository, sourceConnectorId: String, targetConnectorId: String
+) :
+  AbstractTableCopyTool(connectorRepository, sourceConnectorId, targetConnectorId) {
   /**
    * Copy data with multiple VALUES-tuples per batch statement.
    *
@@ -27,11 +30,16 @@ open class DefaultTableCopyTool(connectorRepository: ConnectorRepository) : Abst
    */
   @Throws(SQLException::class)
   override fun copyTable(
-    sourceConnectorId: String, sourceConnection: Connection,
-    sourceDatabaseConfiguration: SourceDatabaseConfiguration, sourceTableMetaData: TableMetaData,
-    sourceTableName: String, targetConnectorId: String, targetConnection: Connection,
-    targetDatabaseConfiguration: TargetDatabaseConfiguration, targetTableMetaData: TableMetaData,
-    targetTableName: String, numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
+    sourceConnection: Connection,
+    sourceDatabaseConfiguration: SourceDatabaseConfiguration,
+    sourceTableMetaData: TableMetaData,
+    sourceTableName: String,
+    targetConnection: Connection,
+    targetDatabaseConfiguration: TargetDatabaseConfiguration,
+    targetTableMetaData: TableMetaData,
+    targetTableName: String,
+    numberOfRowsPerBatch: Int,
+    useMultipleValuesClauses: Boolean
   ) {
     val sourceRowCount = sourceTableMetaData.filteredRowCount
     val selectStatement = SelectStatementCreator(connectorRepository, sourceConnectorId)

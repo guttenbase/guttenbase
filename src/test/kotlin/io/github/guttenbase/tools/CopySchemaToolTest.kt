@@ -86,8 +86,8 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   }
 
   private fun test(target: String) {
-    CopySchemaTool(connectorRepository).copySchema(SOURCE, target)
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, target)
+    CopySchemaTool(connectorRepository, SOURCE, target).copySchema()
+    DefaultTableCopyTool(connectorRepository, SOURCE, target).copyTables()
 
     val databaseMetaData = connectorRepository.getDatabaseMetaData(target)
     val tableMetaData = databaseMetaData.getTableMetaData("FOO_COMPANY")!!

@@ -19,7 +19,6 @@ import java.sql.SQLException
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
 class TableRowDataFilterTest : AbstractGuttenBaseTest() {
@@ -49,13 +48,13 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testExpectExeptionIfNumberOfRowsPerBatchAllowsMultipleValuesClauses() {
-   assertThrows<SQLException> {  DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, TARGET) }
+   assertThrows<SQLException> {  DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables() }
   }
 
   @Test
   fun testOmitData() {
     connectorRepository.addConnectorHint(TARGET, DisableMultipleNumberOfRowsPerBatchHint())
-    DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, TARGET)
+    DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables()
 
     val sourceTable = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_COMPANY")!!
     val targetTable = connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_COMPANY")!!

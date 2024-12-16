@@ -62,7 +62,7 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
     loopCounter = 0
 
     while (loopCounter < MAX_LOOP) {
-      DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, TARGET)
+      DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables()
       loopCounter++
     }
 
@@ -101,7 +101,5 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
 
   companion object {
     private const val MAX_LOOP = 5
-    const val SOURCE = "SOURCE"
-    const val TARGET = "TARGET"
   }
 }
