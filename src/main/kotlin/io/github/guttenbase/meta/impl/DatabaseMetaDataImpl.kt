@@ -87,12 +87,13 @@ class DatabaseMetaDataImpl(
   }
 }
 
-private fun DatabaseSupportedType.realTypeName() = when (val type = typeName.uppercase()) {
+private fun String.realTypeName() = when (this.uppercase()) {
   "VARCHAR2" -> "VARCHAR"
-  else -> type
+  "CHARACTER" -> "CHAR"
+  "CHARACTER VARYING" -> "VARCHAR"
+  else -> this
 }
 
-private fun ColumnMetaData.realTypeName() = when (val type = columnTypeName.uppercase()) {
-  "VARCHAR2" -> "VARCHAR"
-  else -> type
-}
+private fun DatabaseSupportedType.realTypeName() = typeName.realTypeName()
+
+private fun ColumnMetaData.realTypeName() =  columnTypeName.realTypeName()

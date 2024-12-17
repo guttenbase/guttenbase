@@ -139,6 +139,7 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
     mapDBspecificTypeToStandardType(H2DB, "LONGTEXT", "CLOB")
     mapDBspecificTypeToStandardType(H2DB, "LONGBLOB", "BLOB")
     mapDBspecificTypeToStandardType(H2DB, "BINARY LARGE OBJECT", "BLOB")
+    mapDBspecificTypeToStandardType(HSQLDB, "CHARACTER", "CHAR")
   }
 
   private fun createDerbySpecificMappings() {
@@ -197,6 +198,8 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
     mapDBspecificTypeToStandardType(MSSQL, "UNIQUEIDENTIFIER", "CHAR", 36)
 
     mapStandardTypeToDBspecificType(MSSQL, "BOOLEAN", "BIT")
+    mapStandardTypeToDBspecificType(MSSQL, "BLOB", "IMAGE")
+    mapStandardTypeToDBspecificType(MSSQL, "CLOB", "TEXT")
   }
 
   private fun mapDBspecificTypeToStandardType(
