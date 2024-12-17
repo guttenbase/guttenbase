@@ -27,7 +27,10 @@ class SelectStatementCreator(connectorRepository: ConnectorRepository, connector
           else -> column1.compareTo(column2)
         }
       }
-      .map { columnMapper.mapColumnName(it, tableMetaData) }
+      .map {
+        val rawColumnName = columnMapper.mapColumnName(it, tableMetaData)
+        tableMetaData.databaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+      }
 
     return if (columns.isEmpty()) "" else "ORDER BY " + columns.joinToString()
   }
