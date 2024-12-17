@@ -41,8 +41,9 @@ class SchemaScriptCreatorTool(
   @Suppress("unused")
   fun createMultiColumnPrimaryKeyStatements() = createMultiColumnPrimaryKeyStatements(tables)
 
-  fun createMultiColumnPrimaryKeyStatements(tables: List<TableMetaData>) =
-    tables.filter { it.primaryKeyColumns.size > 1 }.map { createPrimaryKeyStatement(it, it.primaryKeyColumns) }
+  fun createMultiColumnPrimaryKeyStatements(tables: List<TableMetaData>) = tables
+    .filter { it.primaryKeyColumns.size > 1 }
+    .map { createPrimaryKeyStatement(it, it.primaryKeyColumns) }
 
   fun createIndexStatements() = createIndexStatements(tables)
 
@@ -51,11 +52,9 @@ class SchemaScriptCreatorTool(
 
     for (tableMetaData in tables) {
       var counter = 1
-      val issues =
-        SchemaComparatorTool(connectorRepository, sourceConnectorId, targetConnectorId).checkDuplicateIndexes(
-          tableMetaData
-        )
-      val conflictedIndexes: List<IndexMetaData> = issues.compatibilityIssues
+      val issues = SchemaComparatorTool(connectorRepository, sourceConnectorId, targetConnectorId)
+        .checkDuplicateIndexes(tableMetaData)
+      val conflictedIndexes = issues.compatibilityIssues
         .filter { it.compatibilityIssueType === SchemaCompatibilityIssueType.DUPLICATE_INDEX }
         .map { (it as DuplicateIndexIssue).indexMetaData }
 
@@ -76,8 +75,8 @@ class SchemaScriptCreatorTool(
 
   fun createForeignKeyStatements() = createForeignKeyStatements(tables)
 
-  fun createForeignKeyStatements(tables: List<TableMetaData>) =
-    tables.map { it.importedForeignKeys.map { foreignKey -> createForeignKey(foreignKey) } }.flatten()
+  fun createForeignKeyStatements(tables: List<TableMetaData>) = tables
+    .map { it.importedForeignKeys.map { foreignKey -> createForeignKey(foreignKey) } }.flatten()
 
   fun createTable(tableMetaData: TableMetaData): String {
     val tableName = getTableName(tableMetaData)
@@ -115,7 +114,10 @@ class SchemaScriptCreatorTool(
     val pkName = createConstraintName("PK_", tableName, "")
 
     return "ALTER TABLE $qualifiedTableName ADD CONSTRAINT $pkName PRIMARY KEY " +
-        primaryKeyColumns.joinToString { columnMapper.mapColumnName(it, tableMetaData) } + ";"
+        primaryKeyColumns.joinToString {
+          val rawColumnName = columnMapper.mapColumnName(it, tableMetaData)
+          targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+        } + ";"
   }
 
   private fun createIndex(indexMetaData: IndexMetaData, counter: Int): String {
@@ -138,15 +140,18 @@ class SchemaScriptCreatorTool(
   }
 
   private fun createIndex(indexMetaData: IndexMetaData, indexName: String): String {
-    val targetDatabaseMetaData: DatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
+    val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val tableMetaData = indexMetaData.tableMetaData
     val unique = if (indexMetaData.isUnique) " UNIQUE " else " "
 
-    return ("CREATE" + unique + "INDEX " + indexName + " ON " + tableMapper.fullyQualifiedTableName(
-      tableMetaData, targetDatabaseMetaData
-    )) + indexMetaData.columnMetaData.joinToString { columnMapper.mapColumnName(it, tableMetaData) } + ";"
+    return ("CREATE" + unique + "INDEX " + indexName + " ON "
+        + tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)) +
+        indexMetaData.columnMetaData.joinToString {
+          val rawColumnName = columnMapper.mapColumnName(it, tableMetaData)
+          targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+        } + ";"
   }
 
   fun createForeignKey(foreignKeyMetaData: ForeignKeyMetaData): String {
@@ -165,8 +170,9 @@ class SchemaScriptCreatorTool(
 
   private fun getColumnName(referencingColumn: ColumnMetaData): String {
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
+    val rawColumnName = columnMapper.mapColumnName(referencingColumn, referencingColumn.tableMetaData)
 
-    return columnMapper.mapColumnName(referencingColumn, referencingColumn.tableMetaData)
+    return referencingColumn.tableMetaData.databaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
   }
 
   fun createAutoincrementUpdateStatements() = createAutoincrementUpdateStatements(tables)
