@@ -3,7 +3,7 @@
 ## 4.0.1
 
 - Complete refactoring of column type mapping algorithm: Use values supplied as supported types by the JDBC data base meta data.
-The old implementation is still available as "LegacyColumnTypeMapper"
+The old code is still available in "ProprietaryColumnDefinitionResolver"
 - Breaking changes in API, simplifications and optimizations
 - Many small code improvements and new tests
 - Bug fixes
