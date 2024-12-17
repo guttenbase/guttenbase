@@ -62,16 +62,8 @@ public class MassDataProducerTest extends AbstractGuttenBaseTest
     new ScriptExecutorTool(_connectorRepository).executeFileScript(TARGET, "/ddl/tables-hsqldb.sql");
     new ScriptExecutorTool(_connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql");
 
-    _connectorRepository.addConnectorHint(TARGET, new DefaultColumnDataMapperProviderHint()
-    {
-      @Override
-      protected void addMappings(final DefaultColumnDataMapperProvider columnDataMapperFactory)
-      {
-        super.addMappings(columnDataMapperFactory);
-        columnDataMapperFactory.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, _nameDataMapper);
-        columnDataMapperFactory.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_LONG, _idDataMapper);
-      }
-    });
+    DefaultColumnDataMapperProvider.INSTANCE.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, _nameDataMapper);
+    DefaultColumnDataMapperProvider.INSTANCE.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_LONG, _idDataMapper);
 
     computeMaximumIds();
   }

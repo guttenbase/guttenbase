@@ -34,9 +34,9 @@ In many cases, that's it!
   connectorRepository.addConnectionInfo("MySql", new AevMySqlConnectionInfo());
   connectorRepository.addConnectionInfo("Postgresql", new AevPostgresqlConnectionInfo());
 
-  new CheckSchemaCompatibilityTool(connectorRepository).checkTableConfiguration("MySql", "Postgresql");
-  new DefaultTableCopyTool(connectorRepository).copyTables("MySql", "Postgresql");
-  new CheckEqualTableDataTool(connectorRepository).checkTableData("MySql", "Postgresql");
+  new SchemaComparatorTool(connectorRepository, "MySql", "Postgresql").checkTableConfiguration();
+  new DefaultTableCopyTool(connectorRepository, "MySql", "Postgresql").copyTables();
+  new CheckEqualTableDataTool(connectorRepository, "MySql", "Postgresql").checkTableData();
 ```
 
 # Core features

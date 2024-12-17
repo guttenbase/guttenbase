@@ -13,12 +13,8 @@ A: Oracle chose for some reason to treat empty strings as NULL (See discussion i
 
 There is a way to get around this using a DefaultColumnDataMapperProviderHint:
 
-connectorRepository.addConnectorHint(TARGET, new DefaultColumnDataMapperProviderHint() {
-protected void addMappings(final DefaultColumnDataMapperProvider columnDataMapperFactory) {
-super.addMappings(columnDataMapperFactory);
-
 ```java
-columnDataMapperFactory.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, new ColumnDataMapper() {
+DefaultColumnDataMapperProvider.INSTANCE.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, new ColumnDataMapper() {
         public boolean isApplicable(final ColumnMetaData sourceColumnMetaData, final ColumnMetaData targetColumnMetaData)
                 throws SQLException {
             return sourceColumnMetaData.getColumnName().equalsIgnoreCase("MY_COLUMN");

@@ -33,7 +33,7 @@ To start using framework guttenbase in a Maven project, just add the following d
 <dependency>
     <groupId>io.github.guttenbase</groupId>
     <artifactId>guttenbase</artifactId>
-    <version>3.2.0</version>
+    <version>4.0.1</version>
 </dependency>
 ```
 
@@ -91,15 +91,15 @@ warnings.
 4. Check if the data has been correctly transfered.
 
 ```java
-new CopySchemaTool(connectorRepository).copySchema(SOURCE, TARGET);
-final SchemaCompatibilityIssues schemaCompatibilityIssues = new SchemaComparatorTool(connectorRepository).check(SOURCE, TARGET);
+new CopySchemaTool(connectorRepository, SOURCE, TARGET).copySchema();
+final SchemaCompatibilityIssues schemaCompatibilityIssues = new SchemaComparatorTool(connectorRepository, SOURCE, TARGET).check();
 
 if (schemaCompatibilityIssues.isSevere()) {
   throw new SQLException(schemaCompatibilityIssues.toString());
 }
 
-new DefaultTableCopyTool(connectorRepository).copyTables(SOURCE, TARGET);
-new CheckEqualTableDataTool(connectorRepository).checkTableData(SOURCE, TARGET);
+new DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables();
+new CheckEqualTableDataTool(connectorRepository, SOURCE, TARGET).checkTableData();
 ```
 In many cases, that's it!
 
@@ -163,14 +163,8 @@ in migration process. The following examples show how to use the hint. First, yo
 method addMapping(). Then, you have to register the data mapper. The rest will be done automatically.
 
 ```java
-connectorRepository.addConnectorHint(TARGET, new DefaultColumnDataMapperProviderHint() {
-    @Override
-    protected void addMappings(final DefaultColumnDataMapperProvider columnDataMapperFactory) {
-      super.addMappings(columnDataMapperFactory);
-      columnDataMapperFactory.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_STRING, ...);
-      columnDataMapperFactory.addMapping(ColumnType.CLASS_BIGDECIMAL, ColumnType.CLASS_STRING, ...);
-    }
-});
+  DefaultColumnDataMapperProvider.INSTANCE.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_STRING, ...);
+  DefaultColumnDataMapperProvider.INSTANCE.addMapping(ColumnType.CLASS_BIGDECIMAL, ColumnType.CLASS_STRING, ...);
 ```
 
 ## ColumnMapperHint
@@ -209,30 +203,7 @@ Different databases use different data types. That's why the column data types a
 ColumnTypeMapperHint.
 
 ```java
-connectorRepository.addConnectorHint(TARGET, new ColumnTypeMapperHint()
-{
-    @Override
-    public ColumnTypeMapper getValue() {
-      return new DefaultColumnTypeMapper()
-          .addMapping(DatabaseType.GENERIC, DatabaseType.GENERIC, "BIGINT", "INTEGER");
-    }
-});
-```
-
-## ColumnTypeResolverListHint
-
-Determine the mapping strategies. To specify multiple mapping strategies for different column types, use ColumnTypeResolverListHint. This
-hint allows you to perform some heuristic checks on given column type. The example will check column type name and determine what Java
-type is appropriate in this case. For example: if the declared type of the column contains any of the strings "CHAR" or "TEXT" then the
-column type is identified as a string.
-
-```java
-connectorRepository.addConnectorHint(SOURCE, new ColumnTypeResolverListHint() {
-    @Override
-    public ColumnTypeResolverList getValue() {
-        return () -> Arrays.asList(new HeuristicColumnTypeResolver(), new ClassNameColumnTypeResolver());
-    }
-}
+DefaultColumnDataMapperProvider.INSTANCE.addMapping(DatabaseType.GENERIC, DatabaseType.GENERIC, "BIGINT", "INTEGER");
 ```
 
 ## DatabaseColumnFilterHint

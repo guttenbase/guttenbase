@@ -39,8 +39,8 @@ connectorRepository.addConnectionInfo(CONNECTOR_ID1, new MySqlConnectionInfo())
   .addConnectionInfo(IMPORT, new ImportDumpConnectionInfo(DATA_JAR));
 ...
 // Export data to JAR
-new DefaultTableCopyTool(_connectorRepository).copyTables(CONNECTOR_ID1, EXPORT);
+new DefaultTableCopyTool(_connectorRepository, CONNECTOR_ID1, EXPORT).copyTables();
 ...
 // Import data from JAR
-new DefaultTableCopyTool(_connectorRepository).copyTables(IMPORT, CONNECTOR_ID2);
+new DefaultTableCopyTool(_connectorRepository, IMPORT, CONNECTOR_ID2).copyTables();
 ```

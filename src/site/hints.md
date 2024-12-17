@@ -28,14 +28,14 @@ The way tools operate is configured by hints. There is [quite a number of hints]
 Regard only tables starting with "tdm_":
 
 ```java
-public class TdmTableFilterHint extends RepositoryTableFilterHint {
+public class MyTableFilterHint extends RepositoryTableFilterHint {
     public RepositoryTableFilter getValue() {
         return new RepositoryTableFilter() {
             public boolean accept(final TableMetaData table) {
               final String lowerCase = table.getTableName().toLowerCase();
-              return lowerCase.startsWith("tdm_");
+              return lowerCase.startsWith("my_");
     }};
 }}
 ...
-connectorRepository.addConnectorHint(SOURCE, new TdmTableFilterHint());
+connectorRepository.addConnectorHint(SOURCE, new MyTableFilterHint());
 ```

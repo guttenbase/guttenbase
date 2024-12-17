@@ -38,6 +38,8 @@ interface DatabaseMetaData : Serializable {
   fun typeFor(columnMetaData: ColumnMetaData): DatabaseSupportedType?
 }
 
+const val PRECISION_PLACEHOLDER = "()"
+
 data class DatabaseSupportedType(
   val typeName: String, val jdbcType: JDBCType, val precision: Int, val nullable: Boolean
 ) : Serializable {
@@ -45,5 +47,5 @@ data class DatabaseSupportedType(
     get() =
       if (jdbcType.isStringType() || jdbcType.isNumericType() || jdbcType.isBlobType() || jdbcType.isBinaryType())
         precision > 0
-      else false
+      else typeName.contains(PRECISION_PLACEHOLDER)
 }

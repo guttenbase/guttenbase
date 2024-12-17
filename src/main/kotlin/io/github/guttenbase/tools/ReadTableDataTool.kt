@@ -22,7 +22,7 @@ import java.sql.SQLException
 open class ReadTableDataTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String,
-  private val tableMetaData: TableMetaData
+  private val tableMetaData: TableMetaData,
 ) : AutoCloseable {
   constructor(connectorRepository: ConnectorRepository, connectorId: String, tableName: String) : this(
     connectorRepository, connectorId,

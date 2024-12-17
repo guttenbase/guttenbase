@@ -44,12 +44,14 @@ interface ColumnMetaData : Comparable<ColumnMetaData>, Serializable {
 
 val STRING_TYPES = listOf(CHAR, NCHAR, LONGVARCHAR, LONGNVARCHAR, VARCHAR, NVARCHAR)
 val INTEGER_TYPES = listOf(SMALLINT, INTEGER)
+val REAL_TYPES = listOf(DOUBLE, FLOAT)
 val BLOB_TYPES = listOf(BLOB, CLOB, NCLOB)
 val BINARY_TYPES = listOf(LONGVARBINARY, VARBINARY, ARRAY, BINARY, JAVA_OBJECT)
-val NUMERIC_TYPES = listOf(DOUBLE, FLOAT, NUMERIC, DECIMAL, REAL)
+val NUMERIC_TYPES = listOf(NUMERIC, DECIMAL, REAL)
 val DATE_TYPES = listOf(TIME, TIMESTAMP, DATE)
 
 fun JDBCType.isIntegerType() = this in INTEGER_TYPES
+fun JDBCType.isRealType() = this in REAL_TYPES
 fun JDBCType.isStringType() = this in STRING_TYPES
 fun JDBCType.isBlobType() = this in BLOB_TYPES
 fun JDBCType.isBinaryType() = this in BINARY_TYPES

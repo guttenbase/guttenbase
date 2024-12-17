@@ -18,9 +18,9 @@ class CopySchemaTool(private val connectorRepository: ConnectorRepository,
 
     return listOf(
       schemaScriptCreatorTool.createTableStatements(),
+      schemaScriptCreatorTool.createMultiColumnPrimaryKeyStatements(),
       schemaScriptCreatorTool.createForeignKeyStatements(),
       schemaScriptCreatorTool.createIndexStatements(),
-      schemaScriptCreatorTool.createMultiColumnPrimaryKeyStatements(),
       schemaScriptCreatorTool.createAutoincrementUpdateStatements()
     ).flatten()
   }

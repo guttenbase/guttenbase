@@ -2,6 +2,7 @@ package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.meta.PRECISION_PLACEHOLDER
 
 /**
  * Default uses same data type as source
@@ -56,19 +57,30 @@ data class ColumnDefinition(
   val precision: Int = 0, val scale: Int = 0,
   val usePrecision: Boolean = false
 ) {
-  override fun toString(): String {
-    val result = StringBuilder(targetType)
+  val precisionClause: String
+    get() {
+      val precisionClause = StringBuilder()
 
-    if (usePrecision) {
-      result.append("($precision")
+      if (usePrecision) {
+        precisionClause.append("($precision")
 
-      if (scale > 0) {
-        result.append(", $scale")
+        if (scale > 0) {
+          precisionClause.append(", $scale")
+        }
+
+        precisionClause.append(")")
       }
 
-      result.append(")")
+      return precisionClause.toString()
     }
 
-    return result.toString()
+  override fun toString(): String {
+    val result = if (!targetType.contains(PRECISION_PLACEHOLDER) && usePrecision) {
+      targetType + PRECISION_PLACEHOLDER
+    } else {
+      targetType
+    }
+
+    return result.replace(PRECISION_PLACEHOLDER, precisionClause)
   }
 }

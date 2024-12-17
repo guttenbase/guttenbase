@@ -4,6 +4,7 @@
 
 - Complete refactoring of column type mapping algorithm: Use values supplied as supported types by the JDBC data base meta data.
 The old implementation is still available as "LegacyColumnTypeMapper"
+- Breaking changes in API, simplifications and optimizations
 - Many small code improvements and new tests
 - Bug fixes
 - Internally tested schema and data migrations between many DB, such as DB2, MySQL, PostgreSQL, MSSQL, Oracle

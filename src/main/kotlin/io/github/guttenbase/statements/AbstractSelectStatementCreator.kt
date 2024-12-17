@@ -26,9 +26,7 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
    */
   @Throws(SQLException::class)
   fun createSelectStatement(
-    connection: Connection,
-    tableName: String,
-    tableMetaData: TableMetaData
+    connection: Connection, tableName: String, tableMetaData: TableMetaData
   ): PreparedStatement {
     val resultSetParameters = connectorRepository.hint<ResultSetParameters>(connectorId)
     val columns = ColumnOrderHint.getSortedColumns(connectorRepository, connectorId, tableMetaData)
