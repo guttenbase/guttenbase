@@ -58,9 +58,6 @@ object Util {
     time
   }
 
-  @JvmStatic
-  fun Date.toSQLDate() = java.sql.Date(time)
-
   /**
    * Read all non-empty lines for File and remove and trim them.
    *
@@ -298,6 +295,8 @@ object Util {
       return os.contains("win")
     }
 
+  private fun String.trimColumn() = trim { it.isWhitespace() || it in listOf<Char>('"', '`') }
+
   /**
    * @return uppercased list of columns in SELECT statement
    */
@@ -310,7 +309,7 @@ object Util {
       throw GuttenBaseException("Cannot parse statement: No SELECT clause $sql")
     }
 
-    var column: String = stringTokenizer.nextToken()
+    var column = stringTokenizer.nextToken().trimColumn()
 
     while (stringTokenizer.hasMoreTokens()) {
       if ("FROM".equals(column, ignoreCase = true)) {
@@ -319,7 +318,7 @@ object Util {
         result.add(column.uppercase(Locale.getDefault()))
       }
 
-      column = stringTokenizer.nextToken()
+      column = stringTokenizer.nextToken().trimColumn()
     }
 
     throw GuttenBaseException("Cannot parse statement missing FROM clause: $sql")

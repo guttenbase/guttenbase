@@ -12,8 +12,6 @@ import java.sql.*
 import java.sql.Array
 import java.sql.Date
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 /**
  * Special [ResultSet] that reads data from the given stream. Only few inherited getter methods have a meaningful
@@ -52,7 +50,7 @@ class ImportDumpResultSet(
     val columnMetaData = origTableMetaData.columnMetaData.sortedWith(DefaultColumnComparator())
 
     for (originalColumnIndex in columnMetaData.indices) {
-      val column: String = columnMetaData[originalColumnIndex].columnName.uppercase()
+      val column = columnMetaData[originalColumnIndex].columnName.uppercase()
       val columnIndex = selectedColumns.indexOf(column)
 
       if (columnIndex >= 0) {
@@ -68,9 +66,7 @@ class ImportDumpResultSet(
 
     if (hasNext) // Prefetch current row
     {
-      for (i in 0 until origTableMetaData.columnCount) {
-        currentRow.add(readObject())
-      }
+      (0 until origTableMetaData.columnCount).forEach { currentRow.add(readObject()) }
     }
 
     return hasNext
