@@ -63,41 +63,41 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
       targetDatabaseConfiguration.beforeNewRow(targetConnection, targetConnectorId, targetTableMetaData)
 
       for (columnIndex in 1..sourceColumns.size) {
-        val sourceColumnMetaData = sourceColumns[columnIndex - 1]
-        val mapping = columnMapper.map(sourceColumnMetaData, targetTableMetaData)
+        val sourceColumn = sourceColumns[columnIndex - 1]
+        val mapping = columnMapper.map(sourceColumn, targetTableMetaData)
 
         if (mapping.columns.isEmpty()) {
           if (mapping.isEmptyColumnListOk) {
-            indicator.warn("Dropping column $sourceColumnMetaData")
+            indicator.warn("Dropping column $sourceColumn")
             // Unused result, but we may have to skip the next data item from an underlying stream implementation
             rs.getObject(columnIndex)
 
-            if (!sourceColumnMetaData.isNullable) {
+            if (!sourceColumn.isNullable) {
               indicator.warn(
                 """
-                $sourceColumnMetaData does not allow null values, but value is ignored for target table.
+                $sourceColumn does not allow null values, but value is ignored for target table.
                 Make sure that the column is omitted during target table creation, too, or has a default value set.
                 """.trimIndent()
               )
             }
           } else {
             throw IncompatibleColumnsException(
-              "Cannot map column $targetTableMetaData:$sourceColumnMetaData: Target column list empty"
+              "Cannot map column $targetTableMetaData:$sourceColumn: Target column list empty"
             )
           }
         }
 
-        for (targetColumnMetaData in mapping.columns) {
-          val columnMapping = findMapping(sourceColumnMetaData, targetColumnMetaData)
+        for (targetColumn in mapping.columns) {
+          val columnMapping = findMapping(sourceColumn, targetColumn)
           val columnTypeMapping = columnMapping.columnDataMapping
           val sourceValue = columnTypeMapping.sourceColumnType.getValue(rs, columnIndex)
           val targetValue = columnTypeMapping.columnDataMapper.map(columnMapping, sourceValue)
           val optionalCloseableObject = columnTypeMapping.targetColumnType.setValue(
-            insertStatement, targetColumnIndex++, targetDatabase, targetColumnMetaData.columnType, targetValue
+            insertStatement, targetColumnIndex++, targetDatabase, targetColumn.columnType, targetValue
           )
 
-          sourceValues[sourceColumnMetaData] = sourceValue
-          targetValues[targetColumnMetaData] = targetValue
+          sourceValues[sourceColumn] = sourceValue
+          targetValues[targetColumn] = targetValue
 
           if (optionalCloseableObject != null) {
             closeables.add(optionalCloseableObject)

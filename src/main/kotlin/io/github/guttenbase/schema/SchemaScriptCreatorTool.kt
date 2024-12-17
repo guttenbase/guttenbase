@@ -196,7 +196,8 @@ class SchemaScriptCreatorTool(
     val columnTypeMapper = connectorRepository.hint<ColumnTypeMapper>(targetConnectorId)
     val sourceDatabase = connectorRepository.getDatabaseMetaData(sourceConnectorId)
     val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
-    val columnName = columnMapper.mapColumnName(columnMetaData, columnMetaData.tableMetaData)
+    val rawColumnName = columnMapper.mapColumnName(columnMetaData, columnMetaData.tableMetaData)
+    val columnName = targetDatabase.databaseType.escapeDatabaseEntity(rawColumnName)
     val columnType = columnTypeMapper.mapColumnType(columnMetaData, sourceDatabase, targetDatabase)
     val maxNameLength = targetMaxNameLength
     val rawTableName = tableMapper.mapTableName(columnMetaData.tableMetaData, targetDatabase)

@@ -7,7 +7,6 @@ import io.github.guttenbase.mapping.TableRowDataFilter
 /**
  * By default, accept all data
  */
-open class DefaultTableRowDataFilterHint : TableRowDataFilterHint() {
-  override val value: TableRowDataFilter
-    get() = TableRowDataFilter { _, _ -> true }
+object DefaultTableRowDataFilterHint : TableRowDataFilterHint() {
+  override val value: TableRowDataFilter get() = TableRowDataFilter { _, _ -> true }
 }

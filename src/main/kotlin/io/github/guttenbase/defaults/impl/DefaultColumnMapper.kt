@@ -7,18 +7,17 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 
 /**
- * By default, return column with same name ignoring case. You may however configure case and escaping the column names explicitely.
+ * By default, return column with same name ignoring case.
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */
 open class DefaultColumnMapper @JvmOverloads constructor(
-  private val caseConversionMode: CaseConversionMode = CaseConversionMode.NONE,
-  private val escapeCharacter: String = ""
+  private val caseConversionMode: CaseConversionMode = CaseConversionMode.NONE
 ) : ColumnMapper {
   override fun mapColumnName(source: ColumnMetaData, targetTableMetaData: TableMetaData): String {
-    return escapeCharacter + caseConversionMode.convert(source.columnName) + escapeCharacter
+    return caseConversionMode.convert(source.columnName)
   }
 
   override fun map(source: ColumnMetaData, targetTableMetaData: TableMetaData): ColumnMapperResult {

@@ -26,7 +26,11 @@ abstract class AbstractStatementCreator(
   protected val indicator = connectorRepository.hint<TableCopyProgressIndicator>(connectorId)
 
   protected open fun createColumnClause(columns: List<ColumnMetaData>) =
-    columns.joinToString(separator = ", ", transform = { columnMapper.mapColumnName(it, it.tableMetaData) })
+    columns.joinToString(separator = ", ", transform = {
+      val rawColumnName = columnMapper.mapColumnName(it, it.tableMetaData)
+
+      it.tableMetaData.databaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+    })
 
   protected open fun createWhereClause(tableMetaData: TableMetaData): String = ""
 

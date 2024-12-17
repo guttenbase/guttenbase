@@ -219,7 +219,7 @@ internal class DatabaseMetaDataInspectorTool(
     statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String
   ) {
     val databaseType = tableMetaData.databaseMetaData.databaseType
-    val tableName = databaseType.escapeName(tableMetaData.tableName, schemaPrefix)
+    val tableName = databaseType.escapeDatabaseEntity(tableMetaData.tableName, schemaPrefix)
     val columnFilter = connectorRepository.hint<DatabaseColumnFilter>(connectorId)
     val selectSQL = SELECT_NOTHING_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
 
@@ -271,7 +271,7 @@ internal class DatabaseMetaDataInspectorTool(
 
     if (filter.accept(tableMetaData)) {
       val databaseType = tableMetaData.databaseMetaData.databaseType
-      val tableName = databaseType.escapeName(tableMetaData.tableName, schemaPrefix)
+      val tableName = databaseType.escapeDatabaseEntity(tableMetaData.tableName, schemaPrefix)
       LOG.debug("Retrieving row count for $tableName")
 
       computeRowCount(tableName, tableMetaData, statement)
@@ -280,7 +280,7 @@ internal class DatabaseMetaDataInspectorTool(
 
       if (primaryKeyColumn != null) {
         val maxIdStatement = SELECT_MIN_MAX_ID_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
-          .replace(COLUMN_PLACEHOLDER, databaseType.escapeName(primaryKeyColumn.columnName))
+          .replace(COLUMN_PLACEHOLDER, databaseType.escapeDatabaseEntity(primaryKeyColumn.columnName))
 
         statement.executeQuery(maxIdStatement).use {
           it.next()

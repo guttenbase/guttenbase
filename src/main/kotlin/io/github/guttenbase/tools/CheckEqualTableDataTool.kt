@@ -1,6 +1,7 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.configuration.SourceDatabaseConfiguration
+import io.github.guttenbase.connector.DatabaseType.ORACLE
 import io.github.guttenbase.connector.DatabaseType.POSTGRESQL
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.TableConfigurationException
@@ -10,6 +11,7 @@ import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
+import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
 import io.github.guttenbase.meta.TableMetaData
@@ -155,7 +157,8 @@ open class CheckEqualTableDataTool(
               currentID,
               sourceConnectorId, targetConnectorId, tableName1,
               resultSet1, resultSet2, rowIndex,
-              targetColumnIndex, sourceColumnIndex, columnMapping, columnName1
+              targetColumnIndex, sourceColumnIndex, columnMapping, columnName1,
+              sourceColumn, targetColumn
             )
 
             if (sourceColumn == primaryKeyColumn) {
@@ -177,13 +180,15 @@ open class CheckEqualTableDataTool(
 
   private fun checkColumnData(
     primaryKey: String,
-    sourceConnectorId: String, targetConnectorId: String, tableName: String,
-    resultSet1: ResultSet, resultSet2: ResultSet, rowIndex: Int,
-    targetColumnIndex: Int, sourceColumnIndex: Int, mapping: ColumnMapping, columnName: String
+    sourceConnectorId: String, targetConnectorId: String,
+    tableName: String, resultSet1: ResultSet, resultSet2: ResultSet,
+    rowIndex: Int, targetColumnIndex: Int, sourceColumnIndex: Int,
+    mapping: ColumnMapping, columnName: String,
+    sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData
   ): Pair<Any?, Any?> {
     val sourceColumnType = mapping.columnDataMapping.sourceColumnType
     val targetColumnType = mapping.columnDataMapping.targetColumnType
-
+    val targetDatabaseType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
     var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
     data1 = mapping.columnDataMapping.columnDataMapper.map(mapping, data1)
 
@@ -212,13 +217,28 @@ open class CheckEqualTableDataTool(
       else -> {}
     }
 
-    if (data1 == null && data2 != null || data1 != null && data2 == null) {
-      throw createUnequalDataException(tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2)
-    } else if (data1 != null && data2 != null && !equalsValue(data1, data2, sourceColumnType)) {
-      throw createUnequalDataException(tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2)
-    } else {
-      return data1 to data2
+    when {
+      data1 == null && data2 != null -> throw createUnequalDataException(
+        tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2, sourceColumn, targetColumn
+      )
+
+      data1 != null && data2 == null -> {
+        // Oracle has a weird concept of empty strings
+        // https://stackoverflow.com/questions/13278773/null-vs-empty-string-in-oracle
+        if (data1 is String && targetDatabaseType != ORACLE) {
+          throw createUnequalDataException(
+            tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2, sourceColumn, targetColumn
+          )
+        }
+      }
+
+      data1 != null && data2 != null && !equalsValue(data1, data2, sourceColumnType) ->
+        throw createUnequalDataException(
+          tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2, sourceColumn, targetColumn
+        )
     }
+
+    return data1 to data2
   }
 
   private fun equalsValue(data1: Any, data2: Any, columnType: ColumnType) = when {
@@ -248,10 +268,7 @@ open class CheckEqualTableDataTool(
   }
 
   private fun checkColumnTypeMapping(
-    tableName1: String,
-    mapping: ColumnMapping?,
-    columnName1: String,
-    columnName2: String
+    tableName1: String, mapping: ColumnMapping?, columnName1: String, columnName2: String
   ) {
     if (mapping == null) {
       throw IncompatibleColumnsException(
@@ -275,14 +292,16 @@ open class CheckEqualTableDataTool(
     private fun trim(data: String?): String? = data?.trim { it <= ' ' }
 
     private fun createUnequalDataException(
-      tableName: String, primaryKey: String, index: Int,
-      columnType: ColumnType, columnName: String, data1: Any?, data2: Any?
+      tableName: String, primaryKey: String,
+      index: Int, columnType: ColumnType, columnName: String,
+      data1: Any?, data2: Any?,
+      sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData
     ) = UnequalDataException(
       """|
-        |$tableName: Row $index, PK '$primaryKey' : Data not equal on column $columnName: 
-        |'$data1' (${data1?.javaClass})
+        |Table $tableName: Row $index, PK '$primaryKey' : Data not equal on column $columnName: 
+        |'$data1' (${data1?.javaClass}) ${sourceColumn.columnTypeName}/${sourceColumn.jdbcColumnType}
         |vs. 
-        |'$data2' (${data2?.javaClass})
+        |'$data2' (${data2?.javaClass}) ${targetColumn.columnTypeName}/${targetColumn.jdbcColumnType}
         |column class = ${columnType.columnClasses}""".trimMargin()
     )
   }

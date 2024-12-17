@@ -66,9 +66,8 @@ class DatabaseMetaDataImpl(
     val possibleTypes = supportedTypeMap[columnMetaData.jdbcColumnType] ?: listOf<DatabaseSupportedType>()
 
     // Prefer matching names, because the list may not be properly sorted (MSSQL 🙄)
-    return possibleTypes.firstOrNull {
-      it.realTypeName() == columnMetaData.realTypeName() && columnMetaData.precision <= it.precision
-    } ?: possibleTypes.firstOrNull()
+    return possibleTypes.firstOrNull { it.realTypeName() == columnMetaData.realTypeName() }
+      ?: possibleTypes.maxByOrNull { it.precision }
   }
 
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
@@ -96,4 +95,4 @@ private fun String.realTypeName() = when (this.uppercase()) {
 
 private fun DatabaseSupportedType.realTypeName() = typeName.realTypeName()
 
-private fun ColumnMetaData.realTypeName() =  columnTypeName.realTypeName()
+private fun ColumnMetaData.realTypeName() = columnTypeName.realTypeName()

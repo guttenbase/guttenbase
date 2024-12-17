@@ -10,10 +10,8 @@ import io.github.guttenbase.export.zip.ZipImporter
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
-open class DefaultImporterFactoryHint : ImporterFactoryHint() {
- override val value: ImporterFactory
-    get() = ImporterFactory { ZipImporter() }
+object DefaultImporterFactoryHint : ImporterFactoryHint() {
+  override val value: ImporterFactory get() = ImporterFactory { ZipImporter() }
 }

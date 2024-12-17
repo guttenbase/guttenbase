@@ -180,7 +180,7 @@ enum class DatabaseType(
     }
 
   @JvmOverloads
-  fun escapeName(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
+  fun escapeDatabaseEntity(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
 
   private fun retrieveAutoIncrementValue(column: ColumnMetaData): AutoIncrementValue {
     val connectorRepository = column.tableMetaData.databaseMetaData.connectorRepository

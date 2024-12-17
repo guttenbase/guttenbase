@@ -4,6 +4,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.connector.DatabaseType.*
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
+import org.slf4j.LoggerFactory
 import java.util.*
 
 /**
@@ -13,6 +14,9 @@ import java.util.*
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
+  @JvmStatic
+  private val LOG = LoggerFactory.getLogger(ProprietaryColumnDefinitionResolver::class.java)
+
   private val mappings = HashMap<DatabaseType, MutableMap<DatabaseType, MutableMap<String, TemplateColumnDefinition>>>()
 
   init {
@@ -43,7 +47,14 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
         val mapping = databaseMapping[columnType]
 
         if (mapping != null) {
-          return ColumnDefinition(column, mapping.targetType, mapping.precision, mapping.scale, mapping.usePrecision)
+          val precision = if (column.precision > mapping.precision) {
+            LOG.warn("Requested column precision of ${column.precision} for type ${column.jdbcColumnType} is higher than supported by ${mapping.targetType}")
+            mapping.precision
+          } else {
+            column.precision
+          }
+
+          return ColumnDefinition(column, mapping.targetType, precision, mapping.scale, mapping.usePrecision)
         }
       }
     }
@@ -133,6 +144,9 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
     mapDBspecificTypeToStandardType(ORACLE, "BLOB", "LONGBLOB") // MEDIUMBLOB
     mapDBspecificTypeToStandardType(ORACLE, "NUMBER", "NUMERIC") //YEAR
     mapDBspecificTypeToStandardType(ORACLE, "NUMBER(5, 0)", "SMALLINT")
+
+    mapStandardTypeToDBspecificType(ORACLE, "BINARY", "RAW", 3999)
+    mapStandardTypeToDBspecificType(ORACLE, "DOUBLE", "DOUBLE PRECISION")
   }
 
   private fun createH2SpecificMappings() {

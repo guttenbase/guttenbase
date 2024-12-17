@@ -1,5 +1,6 @@
 package io.github.guttenbase.hints.impl
 
+import io.github.guttenbase.defaults.impl.DefaultColumnMapper
 import io.github.guttenbase.hints.ColumnMapperHint
 import io.github.guttenbase.mapping.ColumnMapper
 
@@ -8,10 +9,8 @@ import io.github.guttenbase.mapping.ColumnMapper
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
-open class DefaultColumnMapperHint(private val columnMapper: ColumnMapper) : ColumnMapperHint() {
-  override val value: ColumnMapper
-    get() = columnMapper
+object DefaultColumnMapperHint : ColumnMapperHint() {
+  override val value: ColumnMapper get() = DefaultColumnMapper()
 }

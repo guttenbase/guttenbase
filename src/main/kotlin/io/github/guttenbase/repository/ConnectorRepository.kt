@@ -251,15 +251,15 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultMaxNumberOfDataItemsHint())
     addConnectorHint(connectorId, DefaultSplitColumnHint())
     addConnectorHint(connectorId, DefaultEntityTableCheckerHint())
-    addConnectorHint(connectorId, DefaultExporterFactoryHint())
-    addConnectorHint(connectorId, DefaultImporterFactoryHint())
+    addConnectorHint(connectorId, DefaultExporterFactoryHint)
+    addConnectorHint(connectorId, DefaultImporterFactoryHint)
     addConnectorHint(connectorId, DefaultZipExporterClassResourcesHint())
     addConnectorHint(connectorId, DefaultColumnDataMapperProviderHint())
     addConnectorHint(connectorId, DefaultTableOrderHint())
     addConnectorHint(connectorId, DefaultColumnOrderHint())
     addConnectorHint(connectorId, DefaultAutoIncrementValueHint())
     addConnectorHint(connectorId, DefaultTableMapperHint())
-    addConnectorHint(connectorId, DefaultColumnMapperHint(createColumnMapperHint(connectorInfo)))
+    addConnectorHint(connectorId, DefaultColumnMapperHint)
     addConnectorHint(connectorId, DefaultRepositoryColumnFilterHint())
     addConnectorHint(connectorId, DefaultExportDumpExtraInformationHint())
     addConnectorHint(connectorId, DefaultImportDumpExtraInformationHint())
@@ -269,7 +269,7 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultColumnTypeMapperHint())
     addConnectorHint(connectorId, DefaultSelectWhereClauseHint())
     addConnectorHint(connectorId, DefaultTableRowCountFilterHint())
-    addConnectorHint(connectorId, DefaultTableRowDataFilterHint())
+    addConnectorHint(connectorId, DefaultTableRowDataFilterHint)
     addConnectorHint(connectorId, object : IndexMapperHint() {
       override val value: IndexMapper get() = IndexMapper { fixName(it.indexName) }
     })
@@ -279,14 +279,6 @@ open class ConnectorRepository {
   }
 
   private fun fixName(name: String) = name.uppercase().replace('-', '_')
-
-  private fun createColumnMapperHint(connectorInfo: ConnectorInfo): ColumnMapper {
-    return when (connectorInfo.databaseType) {
-      MYSQL, MARIADB -> DefaultColumnMapper(CaseConversionMode.NONE, "`")
-      POSTGRESQL -> DefaultColumnMapper(CaseConversionMode.NONE, "\"")
-      else -> DefaultColumnMapper()
-    }
-  }
 }
 
 typealias JdbcDatabaseMetaData = java.sql.DatabaseMetaData

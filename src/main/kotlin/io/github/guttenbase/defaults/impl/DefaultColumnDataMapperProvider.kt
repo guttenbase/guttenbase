@@ -4,6 +4,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider.addMapping
 import io.github.guttenbase.mapping.ColumnDataMapper
 import io.github.guttenbase.mapping.ColumnDataMapperProvider
+import io.github.guttenbase.mapping.ColumnDefinition
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
@@ -31,7 +32,9 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_LONG, CLASS_BIGDECIMAL, LongToBigDecimalColumnDataMapper)
     addMapping(CLASS_BIGDECIMAL, CLASS_LONG, BigDecimalToLongColumnDataMapper)
     addMapping(CLASS_INTEGER, CLASS_BIGDECIMAL, IntToBigDecimalColumnDataMapper)
-    addMapping(CLASS_BIGDECIMAL, CLASS_BIGDECIMAL, MSSQLBigDecimalColumnDataMapper)
+    addMapping(CLASS_BIGDECIMAL, CLASS_BIGDECIMAL, BigDecimalColumnDataMapper)
+    addMapping(CLASS_DOUBLE, CLASS_BIGDECIMAL, DoubleToBigDecimalColumnDataMapper)
+    addMapping(CLASS_BIGDECIMAL, CLASS_DOUBLE, BigDecimalToDoubleColumnDataMapper)
   }
 
   /**
@@ -81,17 +84,31 @@ object BigDecimalToLongColumnDataMapper : ColumnDataMapper {
     if (value is BigDecimal) value.toLong() else value
 }
 
+object BigDecimalToDoubleColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value is BigDecimal) value.toDouble() else value
+}
+
 object TimestampToDateColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is Timestamp) Date(value.time) else value
 }
 
-// MSSQL gets confused by non-scaled values
-object MSSQLBigDecimalColumnDataMapper : ColumnDataMapper {
+object BigDecimalColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is BigDecimal)
-      BigDecimal(value.toDouble(), MathContext(mapping.columnDefinition.precision))
-        // precision may be smaller and thus cause an java.lang.ArithmeticException: Rounding necessary otherwise
-        .setScale(mapping.columnDefinition.scale, RoundingMode.HALF_DOWN)
+      value.toDouble().toBigDecimal(mapping.columnDefinition)
     else value
 }
+
+object DoubleToBigDecimalColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value is Double)
+      value.toBigDecimal(mapping.columnDefinition)
+    else value
+}
+
+private fun Double.toBigDecimal(mapping: ColumnDefinition): BigDecimal =
+  BigDecimal(this, MathContext(mapping.precision))
+    // precision may be smaller and thus cause an java.lang.ArithmeticException: Rounding necessary otherwise
+    .setScale(mapping.scale, RoundingMode.HALF_DOWN)
