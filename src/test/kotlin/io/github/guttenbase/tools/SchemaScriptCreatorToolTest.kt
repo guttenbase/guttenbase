@@ -69,22 +69,22 @@ class SchemaScriptCreatorToolTest {
     val createStatement = tableStatements[0]
 
     assertThat(createStatement).startsWith("CREATE TABLE schemaName.MY_TABLE")
-    assertThat(createStatement).contains("ID BIGINT IDENTITY")
-    assertThat(createStatement).contains("NAME VARCHAR(100) NOT NULL")
+    assertThat(createStatement).contains(""""ID" BIGINT IDENTITY""")
+    assertThat(createStatement).contains(""""NAME" VARCHAR(100) NOT NULL""")
 
     val indexStatements = objectUnderTest.createIndexStatements()
     assertEquals(2, indexStatements.size)
     val indexStatement = indexStatements[0]
 
-    assertThat(indexStatement).startsWith("CREATE UNIQUE INDEX IDX_NAME_IDX2_MY_TABLE2_1 ON schemaName.MY_TABLE")
-    assertThat(indexStatement).contains("NAME")
+    assertThat(indexStatement).startsWith("""CREATE UNIQUE INDEX IDX_NAME_IDX2_MY_TABLE2_1 ON schemaName.MY_TABLE""")
+    assertThat(indexStatement).contains(""""NAME"""")
 
     val foreignKeyStatements = objectUnderTest.createForeignKeyStatements()
     assertEquals(1, foreignKeyStatements.size)
     val foreignKeyStatement = foreignKeyStatements[0].uppercase()
 
     assertThat(foreignKeyStatement).startsWith("ALTER TABLE SCHEMANAME.MY_TABLE1 ADD CONSTRAINT FK_")
-    assertThat(foreignKeyStatement).endsWith("REFERENCES SCHEMANAME.MY_TABLE2(NAME);")
+    assertThat(foreignKeyStatement).endsWith("""REFERENCES SCHEMANAME.MY_TABLE2("NAME");""")
   }
 
   @Test
@@ -93,9 +93,9 @@ class SchemaScriptCreatorToolTest {
     assertEquals(2, tableStatements.size)
     val createStatement = tableStatements[0]
 
-    assertThat(createStatement).startsWith("CREATE TABLE schemaName.MY_TABLE")
-    assertThat(createStatement).contains("ID BIGINT IDENTITY(1, 1) PRIMARY KEY")
-    assertThat(createStatement).contains("NAME VARCHAR(100) NOT NULL")
+    assertThat(createStatement).startsWith("""CREATE TABLE schemaName.MY_TABLE""")
+      .contains(""""ID" BIGINT IDENTITY(1, 1) PRIMARY KEY""")
+      .contains(""""NAME" VARCHAR(100) NOT NULL""")
   }
 
   @Test
@@ -119,7 +119,7 @@ class SchemaScriptCreatorToolTest {
     val sql = objectUnderTest.createForeignKey(foreignKeyMetaData)
 
     assertEquals(
-      "ALTER TABLE schemaName.MY_TABLE1 ADD CONSTRAINT FK_NAME FOREIGN KEY (NAME) REFERENCES schemaName.MY_TABLE2(NAME);",
+      """ALTER TABLE schemaName.MY_TABLE1 ADD CONSTRAINT FK_NAME FOREIGN KEY ("NAME") REFERENCES schemaName.MY_TABLE2("NAME");""",
       sql
     )
   }
@@ -127,7 +127,7 @@ class SchemaScriptCreatorToolTest {
   @Test
   fun createColumn() {
     val sql = objectUnderTest.addTableColumn(databaseMetaData.tableMetaData[0].columnMetaData[1])
-    assertEquals("ALTER TABLE schemaName.MY_TABLE1 ADD NAME VARCHAR(100) NOT NULL;", sql)
+    assertEquals("""ALTER TABLE schemaName.MY_TABLE1 ADD "NAME" VARCHAR(100) NOT NULL;""", sql)
   }
 
   @Test
@@ -136,7 +136,7 @@ class SchemaScriptCreatorToolTest {
     val index = databaseMetaData.tableMetaData[0].getIndexesContainingColumn(columnMetaData)[0]
     val sql = objectUnderTest.createIndex(index)
 
-    assertEquals("CREATE UNIQUE INDEX NAME_IDX1 ON schemaName.MY_TABLE1(NAME);", sql)
+    assertEquals("""CREATE UNIQUE INDEX NAME_IDX1 ON schemaName.MY_TABLE1("NAME");""", sql)
   }
 
   companion object {
@@ -209,12 +209,10 @@ class SchemaScriptCreatorToolTest {
     fun updateRepository(repository: ConnectorRepository) {
       repository.addConnectionInfo(SOURCE, MockConnectionInfo()).addConnectionInfo(TARGET, MockConnectionInfo())
         .addConnectorHint(TARGET, object : TableMapperHint() {
-          override val value: TableMapper
-            get() = DefaultTableMapper(CaseConversionMode.UPPER)
+          override val value: TableMapper get() = DefaultTableMapper(CaseConversionMode.UPPER)
         })
       repository.addConnectorHint(TARGET, object : ColumnMapperHint() {
-        override val value: ColumnMapper
-          get() = DefaultColumnMapper(CaseConversionMode.UPPER, "")
+        override val value: ColumnMapper get() = DefaultColumnMapper(CaseConversionMode.UPPER)
       })
     }
   }
