@@ -336,9 +336,10 @@ internal class DatabaseMetaDataInspectorTool(
           JDBCType.OTHER
         }
         val precision = resultSet.getInt("PRECISION")
+        val scale = resultSet.getInt("MAXIMUM_SCALE")
         val nullable = resultSet.getBoolean("NULLABLE")
 
-        databaseMetaData.addSupportedType(typeName, jdbcType, precision, nullable)
+        databaseMetaData.addSupportedType(typeName, jdbcType, precision,scale, nullable)
       }
     }
   }

@@ -53,7 +53,7 @@ class ColumnMetaDataImpl(
   override operator fun compareTo(other: ColumnMetaData) =
     columnName.uppercase().compareTo(other.columnName.uppercase())
 
-  override fun toString() = "$tableMetaData:$columnName:$columnTypeName"
+  override fun toString() = "$tableMetaData:$columnName:$columnTypeName:$jdbcColumnType"
 
   override fun hashCode() = columnName.uppercase().hashCode()
 

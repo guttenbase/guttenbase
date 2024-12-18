@@ -15,5 +15,5 @@ import java.sql.JDBCType
 internal interface InternalDatabaseMetaData : DatabaseMetaData {
   fun addTable(tableMetaData: TableMetaData)
   fun removeTable(tableMetaData: TableMetaData)
-  fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, nullable: Boolean)
+  fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, scale: Int, nullable: Boolean)
 }

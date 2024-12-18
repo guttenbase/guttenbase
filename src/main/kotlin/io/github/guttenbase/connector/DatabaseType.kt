@@ -1,10 +1,18 @@
 package io.github.guttenbase.connector
 
-import io.github.guttenbase.mapping.ColumnDefinition
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.mapping.ColumnTypeDefinition
+import io.github.guttenbase.meta.DatabaseColumnType
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.schema.AutoIncrementValue
 import java.sql.Types
+
+// Placeholders to be replaced in templates
+private const val HEX_VALUE = "@@HEX_VALUE@@"
+private const val NEXT_VALUE = "@@NEXT_VALUE@@"
+private const val STEP_VALUE = "@@STEP_VALUE@@"
+private const val TABLE_NAME = "@@TABLE_NAME@@"
+private const val COLUMN_NAME = "@@COLUMN_NAME@@"
 
 /**
  * Bundle knowledge about well-known data bases
@@ -56,10 +64,10 @@ enum class DatabaseType(
   /**
    * To be executed when table DDL script is created
    */
-  fun createColumnAutoIncrementType(column: ColumnMetaData): String? {
+  fun createColumnAutoIncrementType(column: ColumnMetaData): DatabaseColumnType? {
     assert(column.isAutoIncrement) { "$column is no auto increment column" }
 
-    return when (this) {
+    val typeName = when (this) {
       POSTGRESQL -> when (column.columnType) {
         Types.BIGINT -> "BIGSERIAL"
         Types.INTEGER -> "SERIAL"
@@ -68,6 +76,12 @@ enum class DatabaseType(
       }
 
       else -> null
+    }
+
+    return if (typeName != null) {
+      DatabaseColumnType(typeName, column.jdbcColumnType)
+    } else {
+      null
     }
   }
 
@@ -89,8 +103,8 @@ enum class DatabaseType(
       .replace(TABLE_NAME, column.tableMetaData.tableName).replace(COLUMN_NAME, column.columnName)
   }
 
-  fun createDefaultValueClause(columnDefinition: ColumnDefinition): String? =
-    if (this == MYSQL && columnDefinition.targetType.equals("TIMESTAMP", true)) {
+  fun createDefaultValueClause(columnDefinition: ColumnTypeDefinition): String? =
+    if (this == MYSQL && columnDefinition.typeName.equals("TIMESTAMP", true)) {
       "DEFAULT CURRENT_TIMESTAMP"    // Otherwise may result in [42000][1067] Invalid default value for 'CREATED_AT'
     } else null
 
@@ -189,10 +203,3 @@ enum class DatabaseType(
     return connectorRepository.hint<AutoIncrementValue>(connectorId)
   }
 }
-
-// Placeholders to be replaced in string
-private const val HEX_VALUE = "@@HEX_VALUE@@"
-private const val NEXT_VALUE = "@@NEXT_VALUE@@"
-private const val STEP_VALUE = "@@STEP_VALUE@@"
-private const val TABLE_NAME = "@@TABLE_NAME@@"
-private const val COLUMN_NAME = "@@COLUMN_NAME@@"

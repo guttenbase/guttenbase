@@ -4,7 +4,7 @@ import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider.addMapping
 import io.github.guttenbase.mapping.ColumnDataMapper
 import io.github.guttenbase.mapping.ColumnDataMapperProvider
-import io.github.guttenbase.mapping.ColumnDefinition
+import io.github.guttenbase.mapping.ColumnTypeDefinition
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
@@ -35,6 +35,7 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_BIGDECIMAL, CLASS_BIGDECIMAL, BigDecimalColumnDataMapper)
     addMapping(CLASS_DOUBLE, CLASS_BIGDECIMAL, DoubleToBigDecimalColumnDataMapper)
     addMapping(CLASS_BIGDECIMAL, CLASS_DOUBLE, BigDecimalToDoubleColumnDataMapper)
+    addMapping(CLASS_OBJECT, CLASS_DOUBLE, BigDecimalToDoubleColumnDataMapper)
   }
 
   /**
@@ -97,18 +98,18 @@ object TimestampToDateColumnDataMapper : ColumnDataMapper {
 object BigDecimalColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is BigDecimal)
-      value.toDouble().toBigDecimal(mapping.columnDefinition)
+      value.toDouble().toBigDecimal(mapping.columnTypeDefinition)
     else value
 }
 
 object DoubleToBigDecimalColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is Double)
-      value.toBigDecimal(mapping.columnDefinition)
+      value.toBigDecimal(mapping.columnTypeDefinition)
     else value
 }
 
-private fun Double.toBigDecimal(mapping: ColumnDefinition): BigDecimal =
+private fun Double.toBigDecimal(mapping: ColumnTypeDefinition): BigDecimal =
   BigDecimal(this, MathContext(mapping.precision))
     // precision may be smaller and thus cause an java.lang.ArithmeticException: Rounding necessary otherwise
     .setScale(mapping.scale, RoundingMode.HALF_DOWN)

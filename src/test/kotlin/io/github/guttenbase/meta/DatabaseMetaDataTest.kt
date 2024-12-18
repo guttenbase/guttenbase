@@ -8,7 +8,7 @@ import io.github.guttenbase.hints.DERBY
 import io.github.guttenbase.hints.H2
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.DatabaseSupportedType
+import io.github.guttenbase.meta.DatabaseColumnType
 import io.github.guttenbase.meta.TableMetaData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -51,9 +51,9 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     val derby = connectorRepository.getDatabaseMetaData(DERBY)
     assertEquals("Apache Derby Embedded JDBC Driver", derby.databaseMetaData.driverName)
     assertThat(derby.supportedTypes).contains(
-      DatabaseSupportedType("VARCHAR", VARCHAR, 32672, true),
-      DatabaseSupportedType("BIGINT", BIGINT, 19, true),
-      DatabaseSupportedType("BLOB", BLOB, 2147483647, true)
+      DatabaseColumnType("VARCHAR", VARCHAR, 32672, 0, true),
+      DatabaseColumnType("BIGINT", BIGINT, 19, 0, true),
+      DatabaseColumnType("BLOB", BLOB, 2147483647, 0, true)
     )
     assertThat(derby.typeFor(MyColumn(VARCHAR))).extracting { it?.typeName }.isEqualTo("VARCHAR")
     assertThat(derby.typeFor(MyColumn(BLOB))).extracting { it?.typeName }.isEqualTo("BLOB")
@@ -62,9 +62,9 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     val h2 = connectorRepository.getDatabaseMetaData(H2)
     assertEquals("H2 JDBC Driver", h2.databaseMetaData.driverName)
     assertThat(h2.supportedTypes).contains(
-      DatabaseSupportedType("CHARACTER VARYING", VARCHAR, 1000000000, true),
-      DatabaseSupportedType("BIGINT", BIGINT, 64, true),
-      DatabaseSupportedType("BINARY LARGE OBJECT", BLOB, 2147483647, true)
+      DatabaseColumnType("CHARACTER VARYING", VARCHAR, 1000000000, 0, true),
+      DatabaseColumnType("BIGINT", BIGINT, 64, 0, true),
+      DatabaseColumnType("BINARY LARGE OBJECT", BLOB, 2147483647, 0, true)
     )
     assertThat(h2.typeFor(MyColumn(VARCHAR))).extracting { it?.typeName }.isEqualTo("CHARACTER VARYING")
     assertThat(h2.typeFor(MyColumn(BLOB))).extracting { it?.typeName }.isEqualTo("BINARY LARGE OBJECT")
@@ -73,9 +73,9 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     val hsqldb = connectorRepository.getDatabaseMetaData(HSQLDB)
     assertEquals("HSQL Database Engine Driver", hsqldb.databaseMetaData.driverName)
     assertThat(hsqldb.supportedTypes).contains(
-      DatabaseSupportedType("VARCHAR", VARCHAR, 2147483647, true),
-      DatabaseSupportedType("BIGINT", BIGINT, 64, true),
-      DatabaseSupportedType("BLOB", BLOB, 2147483647, true)
+      DatabaseColumnType("VARCHAR", VARCHAR, 2147483647, 0, true),
+      DatabaseColumnType("BIGINT", BIGINT, 64, 0, true),
+      DatabaseColumnType("BLOB", BLOB, 2147483647, 0, true)
     )
     assertThat(hsqldb.typeFor(MyColumn(VARCHAR))).extracting { it?.typeName }.isEqualTo("VARCHAR")
     assertThat(hsqldb.typeFor(MyColumn(BLOB))).extracting { it?.typeName }.isEqualTo("BLOB")

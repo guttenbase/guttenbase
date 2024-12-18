@@ -3,7 +3,7 @@ package io.github.guttenbase.tools
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapper
 import io.github.guttenbase.mapping.ColumnDataMapperProvider
 import io.github.guttenbase.mapping.ColumnDataMapping
-import io.github.guttenbase.mapping.ColumnDefinition
+import io.github.guttenbase.mapping.ColumnTypeDefinition
 import io.github.guttenbase.mapping.ColumnTypeMapper
 import io.github.guttenbase.mapping.ColumnTypeResolver
 import io.github.guttenbase.meta.ColumnMetaData
@@ -91,4 +91,4 @@ open class ColumnDataMappingTool(private val connectorRepository: ConnectorRepos
   }
 }
 
-data class ColumnMapping(val columnDataMapping: ColumnDataMapping, val columnDefinition: ColumnDefinition)
+data class ColumnMapping(val columnDataMapping: ColumnDataMapping, val columnTypeDefinition: ColumnTypeDefinition)

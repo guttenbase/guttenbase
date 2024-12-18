@@ -33,13 +33,13 @@ class DatabaseMetaDataImpl(
     databaseMetaData.databaseType
   )
 
-  override val supportedTypes: List<DatabaseSupportedType> get() = supportedTypeMap.values.flatten()
+  override val supportedTypes: List<DatabaseColumnType> get() = supportedTypeMap.values.flatten()
 
   override val schema = schema.trim { it <= ' ' }
 
   private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()
 
-  private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseSupportedType>>()
+  private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseColumnType>>()
 
   override val databaseMetaData get() = createMetaDataProxy(databaseProperties)
 
@@ -57,17 +57,17 @@ class DatabaseMetaDataImpl(
     tableMetaDataMap.remove(tableMetaData.tableName.uppercase())
   }
 
-  override fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, nullable: Boolean) {
-    val list = supportedTypeMap.computeIfAbsent(jdbcType) { mutableListOf<DatabaseSupportedType>() }
-    list.add(DatabaseSupportedType(type.uppercase(), jdbcType, precision, nullable))
+  override fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, scale: Int, nullable: Boolean) {
+    val list = supportedTypeMap.computeIfAbsent(jdbcType) { mutableListOf<DatabaseColumnType>() }
+    list.add(DatabaseColumnType(type.uppercase(), jdbcType, precision, scale, nullable))
   }
 
-  override fun typeFor(columnMetaData: ColumnMetaData): DatabaseSupportedType? {
-    val possibleTypes = supportedTypeMap[columnMetaData.jdbcColumnType] ?: listOf<DatabaseSupportedType>()
+  override fun typeFor(columnMetaData: ColumnMetaData): DatabaseColumnType? {
+    val possibleTypes = supportedTypeMap[columnMetaData.jdbcColumnType] ?: listOf<DatabaseColumnType>()
 
     // Prefer matching names, because the list may not be properly sorted (MSSQL 🙄)
     return possibleTypes.firstOrNull { it.realTypeName() == columnMetaData.realTypeName() }
-      ?: possibleTypes.maxByOrNull { it.precision }
+      ?: possibleTypes.maxByOrNull { it.maxPrecision }
   }
 
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
@@ -93,6 +93,6 @@ private fun String.realTypeName() = when (this.uppercase()) {
   else -> this
 }
 
-private fun DatabaseSupportedType.realTypeName() = typeName.realTypeName()
+private fun DatabaseColumnType.realTypeName() = typeName.realTypeName()
 
 private fun ColumnMetaData.realTypeName() = columnTypeName.realTypeName()

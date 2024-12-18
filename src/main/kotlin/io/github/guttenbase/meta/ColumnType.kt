@@ -46,7 +46,7 @@ enum class ColumnType(
 
   CLASS_SQLXML(SQLXML, SQLXML::class.java),
 
-  CLASS_OBJECT(BINARY_TYPES, Any::class.java, Serializable::class.java, Util.ByteArrayClass),
+  CLASS_OBJECT(OBJECT_TYPES, Any::class.java, Serializable::class.java),
 
   CLASS_DATE(DATE, Date::class.java, LocalDate::class.java),
 
@@ -56,7 +56,7 @@ enum class ColumnType(
 
   CLASS_INTEGER(INTEGER, Int::class.java, Integer::class.java),
 
-  CLASS_BOOLEAN(BOOLEAN, Boolean::class.java, java.lang.Boolean::class.java),
+  CLASS_BOOLEAN(BOOLEAN_TYPES, Boolean::class.java, java.lang.Boolean::class.java),
 
   CLASS_LONG(BIGINT, Long::class.java, BigInteger::class.java, java.lang.Long::class.java),
 
@@ -66,26 +66,29 @@ enum class ColumnType(
 
   CLASS_BYTE(TINYINT, Byte::class.javaPrimitiveType!!, java.lang.Byte::class.java),
 
-  CLASS_BYTES(VARBINARY, ByteArray::class.java),
+  CLASS_BYTES(BINARY_TYPES, Util.ByteArrayClass),
 
   CLASS_SHORT(SMALLINT, Short::class.java, java.lang.Short::class.java);
 
   constructor(jdbcType1: JDBCType, columnClass1: Class<*>) : this(listOf(jdbcType1), listOf(columnClass1))
 
   constructor(
-    jdbcType1: JDBCType,
-    columnClass1: Class<*>, columnClass2: Class<*>, columnClass3: Class<*>
+    jdbcType1: JDBCType, columnClass1: Class<*>, columnClass2: Class<*>, columnClass3: Class<*>
   ) : this(listOf(jdbcType1), listOf(columnClass1, columnClass2, columnClass3))
 
   constructor(
-    jdbcType1: JDBCType,
-    columnClass1: Class<*>, columnClass2: Class<*>
+    jdbcType1: JDBCType, columnClass1: Class<*>, columnClass2: Class<*>
   ) : this(listOf(jdbcType1), listOf(columnClass1, columnClass2))
 
   constructor(
     jdbcTypes: List<JDBCType>,
     columnClass1: Class<*>, columnClass2: Class<*>, columnClass3: Class<*>
   ) : this(jdbcTypes, listOf(columnClass1, columnClass2, columnClass3))
+
+  constructor(jdbcTypes: List<JDBCType>, columnClass1: Class<*>) : this(jdbcTypes, listOf(columnClass1))
+
+  constructor(jdbcTypes: List<JDBCType>, columnClass1: Class<*>, columnClass2: Class<*>)
+      : this(jdbcTypes, listOf(columnClass1, columnClass2))
 
   constructor(jdbcType1: JDBCType, jdbcType2: JDBCType, columnClass1: Class<*>) : this(
     listOf(jdbcType1, jdbcType2), listOf(columnClass1)

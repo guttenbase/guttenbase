@@ -13,5 +13,5 @@ interface ColumnTypeMapper {
    */
   fun mapColumnType(column: ColumnMetaData, sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData): String
 
-  fun lookupColumnDefinition(column: ColumnMetaData, sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData): ColumnDefinition
+  fun lookupColumnDefinition(column: ColumnMetaData, sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData): ColumnTypeDefinition
 }

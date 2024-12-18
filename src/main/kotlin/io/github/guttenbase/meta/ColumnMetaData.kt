@@ -46,7 +46,9 @@ val STRING_TYPES = listOf(CHAR, NCHAR, LONGVARCHAR, LONGNVARCHAR, VARCHAR, NVARC
 val INTEGER_TYPES = listOf(SMALLINT, INTEGER)
 val REAL_TYPES = listOf(DOUBLE, FLOAT)
 val BLOB_TYPES = listOf(BLOB, CLOB, NCLOB)
-val BINARY_TYPES = listOf(LONGVARBINARY, VARBINARY, ARRAY, BINARY, JAVA_OBJECT)
+val OBJECT_TYPES = listOf(ARRAY, JAVA_OBJECT)
+val BINARY_TYPES = listOf(LONGVARBINARY, VARBINARY, BINARY, BIT)
+val BOOLEAN_TYPES = listOf(BOOLEAN, BIT)
 val NUMERIC_TYPES = listOf(NUMERIC, DECIMAL, REAL)
 val DATE_TYPES = listOf(TIME, TIMESTAMP, DATE)
 
@@ -57,3 +59,4 @@ fun JDBCType.isBlobType() = this in BLOB_TYPES
 fun JDBCType.isBinaryType() = this in BINARY_TYPES
 fun JDBCType.isNumericType() = this in NUMERIC_TYPES
 fun JDBCType.isDateType() = this in DATE_TYPES
+val JDBCType.supportsPrecisionClause get() = isStringType() || isNumericType() || isBlobType() || isBinaryType()
