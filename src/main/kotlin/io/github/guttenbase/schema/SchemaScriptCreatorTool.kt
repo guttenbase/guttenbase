@@ -31,10 +31,7 @@ class SchemaScriptCreatorTool(
   private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(sourceConnectorId) }
   private val tables get() = TableOrderTool(databaseMetaData).orderTables()
 
-  fun createTableStatements(): List<String> {
-
-    return createTableStatements(tables)
-  }
+  fun createTableStatements() = createTableStatements(tables)
 
   fun createTableStatements(tables: List<TableMetaData>) = tables.map { createTable(it) }
 

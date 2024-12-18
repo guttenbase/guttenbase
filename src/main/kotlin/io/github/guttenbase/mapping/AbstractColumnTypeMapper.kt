@@ -21,7 +21,7 @@ abstract class AbstractColumnTypeMapper : ColumnTypeMapper {
     val autoincrementClause =
       if (column.isAutoIncrement) " " + targetDatabase.databaseType.createColumnAutoincrementClause(column) else ""
     val notNullClause = if (column.isNullable || singlePrimaryKey) "" else " NOT NULL" // Primary key implies NOT NULL
-    val primaryKeyClause = if (singlePrimaryKey) " PRIMARY KEY" else ""
+    val primaryKeyClause = if (singlePrimaryKey) " PRIMARY KEY NOT NULL" else ""
     val defaultValueClause = targetDatabase.databaseType.createDefaultValueClause(columnDefinition) ?: ""
 
     return columnDefinition.toString() + " $defaultValueClause".trim() + notNullClause + autoincrementClause + primaryKeyClause

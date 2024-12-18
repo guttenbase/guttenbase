@@ -7,7 +7,7 @@ package io.github.guttenbase.progress
  *
  * @author M. Dahm
  */
-class TimingProgressIndicator : TableCopyProgressIndicator {
+object TimingProgressIndicator : TableCopyProgressIndicator {
   private var startTotalTime: Long = 0
   private var startProcessTime: Long = 0
   private var startExecutionTime: Long = 0

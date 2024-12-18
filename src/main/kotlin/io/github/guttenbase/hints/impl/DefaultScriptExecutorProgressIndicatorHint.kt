@@ -12,7 +12,7 @@ import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
  *
  * @author M. Dahm
  */
-open class DefaultScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
+object DefaultScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
   override val value: ScriptExecutorProgressIndicator
     get() = ScriptExecutorProgressBarIndicator()
 }

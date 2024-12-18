@@ -5,7 +5,6 @@ import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseColumnType
-import io.github.guttenbase.meta.supportsPrecisionClause
 import org.slf4j.LoggerFactory
 import java.sql.JDBCType
 import java.util.*
@@ -17,9 +16,6 @@ import java.util.*
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
-  @JvmStatic
-  private val LOG = LoggerFactory.getLogger(ProprietaryColumnDefinitionResolver::class.java)
-
   private val mappings = HashMap<DatabaseType, MutableMap<DatabaseType, MutableMap<String, DatabaseColumnType>>>()
 
   init {
@@ -47,16 +43,9 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
         val mapping = databaseMapping[columnType]
 
         if (mapping != null) {
-          val precision = if (column.precision > mapping.maxPrecision) {
-            LOG.warn("Requested column precision of ${column.precision} for type ${column.jdbcColumnType} is higher than supported by ${mapping.typeName}")
-            mapping.maxPrecision
-          } else {
-            column.precision
-          }
+          val precision = computePrecision(column, mapping)
 
-          return ColumnTypeDefinition(
-            column, mapping.typeName, precision, column.scale, column.jdbcColumnType.supportsPrecisionClause && precision > 0
-          )
+          return ColumnTypeDefinition(column, mapping.typeName, precision, column.scale)
         }
       }
     }

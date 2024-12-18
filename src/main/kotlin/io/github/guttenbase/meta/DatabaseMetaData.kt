@@ -40,8 +40,11 @@ interface DatabaseMetaData : Serializable {
 const val PRECISION_PLACEHOLDER = "()"
 
 data class DatabaseColumnType(
-  val typeName: String, val jdbcType: JDBCType, val maxPrecision: Int = 0, val maxScale: Int = 0, val nullable: Boolean = true
+  val typeName: String,
+  val jdbcType: JDBCType,
+  val maxPrecision: Int = 0,
+  val maxScale: Int = 0,
+  val nullable: Boolean = true
 ) : Serializable {
-  val supportsPrecisionClause: Boolean
-    get() = (jdbcType.supportsPrecisionClause && maxPrecision > 0) || typeName.contains(PRECISION_PLACEHOLDER)
+  val estimatedEffectiveMaxPrecision: Int get() = (maxPrecision * 0.95).toInt()
 }

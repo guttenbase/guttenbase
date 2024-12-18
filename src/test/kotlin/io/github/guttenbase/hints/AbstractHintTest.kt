@@ -32,10 +32,10 @@ abstract class AbstractHintTest(
       .addConnectionInfo(TARGET, TestHsqlConnectionInfo())
 
     // Prefer logging for tests
-    connectorRepository.addConnectorHint(SOURCE, LoggingTableCopyProgressIndicatorHint())
-      .addConnectorHint(SOURCE, LoggingScriptExecutorProgressIndicatorHint())
-      .addConnectorHint(TARGET, LoggingTableCopyProgressIndicatorHint())
-      .addConnectorHint(TARGET, LoggingScriptExecutorProgressIndicatorHint())
+    connectorRepository.addConnectorHint(SOURCE, LoggingTableCopyProgressIndicatorHint)
+      .addConnectorHint(SOURCE, LoggingScriptExecutorProgressIndicatorHint)
+      .addConnectorHint(TARGET, LoggingTableCopyProgressIndicatorHint)
+      .addConnectorHint(TARGET, LoggingScriptExecutorProgressIndicatorHint)
 
     val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = Charsets.UTF_8)
     scriptExecutorTool.executeFileScript(SOURCE, resourceName = sourceTableSchemaScript)

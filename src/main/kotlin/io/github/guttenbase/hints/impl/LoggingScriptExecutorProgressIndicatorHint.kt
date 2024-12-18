@@ -11,7 +11,7 @@ import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
  *
  * @author M. Dahm
  */
-open class LoggingScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
+object LoggingScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
   override val value: ScriptExecutorProgressIndicator
-    get() = LoggingScriptExecutorProgressIndicator()
+    get() = LoggingScriptExecutorProgressIndicator
 }

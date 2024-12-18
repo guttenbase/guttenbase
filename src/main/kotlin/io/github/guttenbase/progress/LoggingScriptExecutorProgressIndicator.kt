@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
  *
  * @author M. Dahm
  */
-class LoggingScriptExecutorProgressIndicator : ScriptExecutorProgressIndicator {
-  private val timingDelegate = TimingProgressIndicator()
+object LoggingScriptExecutorProgressIndicator : ScriptExecutorProgressIndicator {
+  private val timingDelegate = TimingProgressIndicator
 
   override fun initializeIndicator() {
     timingDelegate.initializeIndicator()
@@ -53,8 +53,6 @@ class LoggingScriptExecutorProgressIndicator : ScriptExecutorProgressIndicator {
     throw UnsupportedOperationException()
   }
 
-  companion object {
-    @JvmStatic
-    private val LOG = LoggerFactory.getLogger(LoggingScriptExecutorProgressIndicator::class.java)
-  }
+  @JvmStatic
+  private val LOG = LoggerFactory.getLogger(LoggingScriptExecutorProgressIndicator::class.java)
 }

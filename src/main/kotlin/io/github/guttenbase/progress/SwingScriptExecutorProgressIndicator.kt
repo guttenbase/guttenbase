@@ -19,7 +19,7 @@ import javax.swing.JDialog
 class SwingScriptExecutorProgressIndicator : ScriptExecutorProgressIndicator {
   private val panel = ScriptExecutorProgressIndicatorPanel()
   private val dialog = JDialog()
-  private val timingDelegate = TimingProgressIndicator()
+  private val timingDelegate = TimingProgressIndicator
   private val text = StringBuilder()
   private var timerDaemonThread: TimerDaemonThread? = null
 

@@ -1,8 +1,8 @@
 package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.meta.DatabaseColumnType
 import io.github.guttenbase.meta.DatabaseMetaData
-import io.github.guttenbase.meta.supportsPrecisionClause
 import org.slf4j.LoggerFactory
 
 fun interface ColumnDefinitionResolver {
@@ -20,9 +20,6 @@ fun interface ColumnDefinitionResolver {
  *  &copy; 2012-2034 akquinet tech@spree
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
-  @JvmStatic
-  private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
-
   private val DEFAULT_RESOLVER: ColumnDefinitionResolver = object : ColumnDefinitionResolver {
     override fun resolve(
       sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
@@ -30,16 +27,9 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
       val type = targetDatabase.typeFor(column)
 
       return if (type != null) {
-        val precision = if (column.precision > type.maxPrecision) {
-          LOG.warn("Requested column precision of ${column.precision} for type ${column.jdbcColumnType} is higher than supported by $type")
-          type.maxPrecision
-        } else {
-          column.precision
-        }
+        val precision = computePrecision(column, type)
 
-        ColumnTypeDefinition(
-          column, type.typeName, precision, column.scale, type.supportsPrecisionClause && precision > 0
-        )
+        ColumnTypeDefinition(column, type.typeName, precision, column.scale)
       } else {
         null
       }
@@ -63,7 +53,19 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   }
 
   private fun createDefaultColumnDefinition(column: ColumnMetaData) = ColumnTypeDefinition(
-    column, column.columnTypeName, column.precision, column.scale,
-    column.jdbcColumnType.supportsPrecisionClause && column.precision > 0
+    column, column.columnTypeName, column.precision, column.scale
   )
 }
+
+private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
+
+internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType) =
+  if (column.precision > type.estimatedEffectiveMaxPrecision) {
+    LOG.warn(
+      """Requested column precision of ${column.precision} for type ${column.jdbcColumnType} 
+      is higher than ${type.estimatedEffectiveMaxPrecision} supported by $type""".trimIndent()
+    )
+    type.estimatedEffectiveMaxPrecision
+  } else {
+    column.precision
+  }

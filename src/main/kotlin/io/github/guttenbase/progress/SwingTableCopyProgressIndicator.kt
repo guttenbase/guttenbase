@@ -10,16 +10,14 @@ import javax.swing.JDialog
 /**
  * Swing UI for table copy
  *
- *
  *  &copy; 2013-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
 class SwingTableCopyProgressIndicator : TableCopyProgressIndicator {
   private val panel = TableCopyProgressIndicatorPanel()
   private val dialog = JDialog()
-  private val timingDelegate = TimingProgressIndicator()
+  private val timingDelegate = TimingProgressIndicator
   private val text = StringBuilder()
   private var timerDaemonThread: TimerDaemonThread? = null
 

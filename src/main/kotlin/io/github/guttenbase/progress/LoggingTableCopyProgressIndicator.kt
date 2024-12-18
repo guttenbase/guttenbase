@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
  * @author M. Dahm
  */
 class LoggingTableCopyProgressIndicator : TableCopyProgressIndicator {
-  private val timingDelegate = TimingProgressIndicator()
+  private val timingDelegate = TimingProgressIndicator
 
   override fun initializeIndicator() {
     timingDelegate.initializeIndicator()

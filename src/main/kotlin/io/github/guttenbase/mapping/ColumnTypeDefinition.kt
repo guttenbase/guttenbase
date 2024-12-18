@@ -2,6 +2,7 @@ package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.PRECISION_PLACEHOLDER
+import io.github.guttenbase.meta.supportsPrecisionClause
 
 /**
  * Definition of column type as used in target DB
@@ -9,9 +10,11 @@ import io.github.guttenbase.meta.PRECISION_PLACEHOLDER
  *  &copy; 2012-2034 akquinet tech@spree
  */
 data class ColumnTypeDefinition(
-  val sourceColumn: ColumnMetaData, val typeName: String,
-  val precision: Int = 0, val scale: Int = 0, val usePrecision: Boolean = false
+  val sourceColumn: ColumnMetaData, val typeName: String, val precision: Int = 0, val scale: Int = 0
 ) {
+  val usePrecision = sourceColumn.jdbcColumnType.supportsPrecisionClause && precision > 0
+      || typeName.contains(PRECISION_PLACEHOLDER)
+
   val precisionClause: String
     get() {
       val precisionClause = StringBuilder()

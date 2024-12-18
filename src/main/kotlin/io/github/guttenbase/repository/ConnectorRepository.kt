@@ -262,7 +262,7 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultExportDumpExtraInformationHint())
     addConnectorHint(connectorId, DefaultImportDumpExtraInformationHint())
     addConnectorHint(connectorId, DefaultTableCopyProgressIndicatorHint())
-    addConnectorHint(connectorId, DefaultScriptExecutorProgressIndicatorHint())
+    addConnectorHint(connectorId, DefaultScriptExecutorProgressIndicatorHint)
     addConnectorHint(connectorId, DefaultRefreshTargetConnectionHint())
     addConnectorHint(connectorId, DefaultColumnTypeMapperHint())
     addConnectorHint(connectorId, DefaultSelectWhereClauseHint())
