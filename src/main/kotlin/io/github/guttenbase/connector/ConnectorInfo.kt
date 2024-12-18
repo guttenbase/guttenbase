@@ -1,5 +1,6 @@
 package io.github.guttenbase.connector
 
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import java.io.Serializable
 

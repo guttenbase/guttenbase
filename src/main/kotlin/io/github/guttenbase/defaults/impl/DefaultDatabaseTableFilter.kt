@@ -1,6 +1,6 @@
 package io.github.guttenbase.defaults.impl
 
-import io.github.guttenbase.connector.DatabaseType.*
+import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.DatabaseTableFilter

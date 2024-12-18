@@ -1,7 +1,7 @@
 package io.github.guttenbase.export
 
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import java.net.URL
 
@@ -23,6 +23,7 @@ data class ImportDumpConnectionInfo(val path: URL) : ConnectorInfo {
     ImportDumpConnector(connectorRepository, connectorId, this)
 
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
   }
 }

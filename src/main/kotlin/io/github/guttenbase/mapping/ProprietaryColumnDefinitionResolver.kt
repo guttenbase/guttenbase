@@ -1,8 +1,8 @@
 package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.connector.DatabaseType
-import io.github.guttenbase.connector.DatabaseType.*
+import io.github.guttenbase.meta.DatabaseType
+import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseColumnType
 import io.github.guttenbase.meta.supportsPrecisionClause
@@ -161,7 +161,7 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
     sourceDB: DatabaseType, sourceTypeName: String, targetTypeName: String, type: JDBCType,
     maxPrecision: Int = 0, places: Int = 0
   ) {
-    DatabaseType.entries.forEach {
+    entries.forEach {
       if (it != sourceDB) {
         addMapping(sourceDB, it, sourceTypeName, targetTypeName, type, maxPrecision, places)
       }
@@ -172,7 +172,7 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
     targetDB: DatabaseType, sourceTypeName: String, targetTypeName: String, type: JDBCType,
     maxPrecision: Int = 0, places: Int = 0
   ) {
-    DatabaseType.entries.forEach {
+    entries.forEach {
       if (it != targetDB) {
         addMapping(it, targetDB, sourceTypeName, targetTypeName, type, maxPrecision, places)
       }

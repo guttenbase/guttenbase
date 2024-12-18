@@ -1,7 +1,7 @@
 package io.github.guttenbase.hints
 
 import io.github.guttenbase.configuration.DefaultSourceDatabaseConfiguration
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.TableMetaData
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

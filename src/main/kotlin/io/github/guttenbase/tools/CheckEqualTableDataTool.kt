@@ -1,8 +1,8 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.configuration.SourceDatabaseConfiguration
-import io.github.guttenbase.connector.DatabaseType.ORACLE
-import io.github.guttenbase.connector.DatabaseType.POSTGRESQL
+import io.github.guttenbase.meta.DatabaseType.ORACLE
+import io.github.guttenbase.meta.DatabaseType.POSTGRESQL
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.TableConfigurationException
 import io.github.guttenbase.exceptions.UnequalDataException

@@ -1,6 +1,5 @@
 package io.github.guttenbase.meta
 
-import io.github.guttenbase.connector.DatabaseType
 import io.github.guttenbase.meta.impl.ColumnMetaDataImpl
 import io.github.guttenbase.meta.impl.DatabaseMetaDataImpl
 import io.github.guttenbase.meta.impl.TableMetaDataImpl

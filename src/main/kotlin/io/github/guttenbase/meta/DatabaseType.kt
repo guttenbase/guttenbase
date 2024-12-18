@@ -1,8 +1,6 @@
-package io.github.guttenbase.connector
+package io.github.guttenbase.meta
 
-import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.mapping.ColumnTypeDefinition
-import io.github.guttenbase.meta.DatabaseColumnType
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.schema.AutoIncrementValue
 import java.sql.Types
@@ -67,21 +65,15 @@ enum class DatabaseType(
   fun createColumnAutoIncrementType(column: ColumnMetaData): DatabaseColumnType? {
     assert(column.isAutoIncrement) { "$column is no auto increment column" }
 
-    val typeName = when (this) {
-      POSTGRESQL -> when (column.columnType) {
+    return when (this) {
+      POSTGRESQL -> DatabaseColumnType(when (column.columnType) {
         Types.BIGINT -> "BIGSERIAL"
         Types.INTEGER -> "SERIAL"
         Types.SMALLINT -> "SMALLSERIAL"
         else -> "SERIAL"
-      }
+      }, column.jdbcColumnType)
 
       else -> null
-    }
-
-    return if (typeName != null) {
-      DatabaseColumnType(typeName, column.jdbcColumnType)
-    } else {
-      null
     }
   }
 

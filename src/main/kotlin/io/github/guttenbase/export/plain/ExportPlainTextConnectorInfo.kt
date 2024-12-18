@@ -1,7 +1,7 @@
 package io.github.guttenbase.export.plain
 
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.io.FileOutputStream

@@ -1,7 +1,7 @@
 package io.github.guttenbase.connector.impl
 
 import io.github.guttenbase.connector.Connector
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import java.io.File
 import java.io.InputStream

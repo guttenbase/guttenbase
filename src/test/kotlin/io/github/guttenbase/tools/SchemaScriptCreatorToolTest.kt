@@ -1,7 +1,7 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.configuration.MockConnectionInfo
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.defaults.impl.DefaultColumnMapper
 import io.github.guttenbase.defaults.impl.DefaultTableMapper
 import io.github.guttenbase.exceptions.IncompatibleColumnsException

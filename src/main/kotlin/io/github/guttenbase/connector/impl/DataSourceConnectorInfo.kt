@@ -1,7 +1,7 @@
 package io.github.guttenbase.connector.impl
 
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import javax.sql.DataSource
 
@@ -28,6 +28,7 @@ open class DataSourceConnectorInfo(
     DataSourceConnector(connectorRepository, connectorId, this)
 
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
   }
 }

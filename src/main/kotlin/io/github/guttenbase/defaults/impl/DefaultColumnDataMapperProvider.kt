@@ -1,6 +1,6 @@
 package io.github.guttenbase.defaults.impl
 
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider.addMapping
 import io.github.guttenbase.mapping.ColumnDataMapper
 import io.github.guttenbase.mapping.ColumnDataMapperProvider

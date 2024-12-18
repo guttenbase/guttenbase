@@ -1,6 +1,6 @@
 package io.github.guttenbase.configuration
 
-import io.github.guttenbase.connector.DatabaseType
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.connector.impl.URLConnectorInfoImpl
 import java.io.File
 

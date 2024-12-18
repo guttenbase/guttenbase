@@ -1,7 +1,7 @@
 package io.github.guttenbase.repository.impl
 
-import io.github.guttenbase.connector.DatabaseType
-import io.github.guttenbase.connector.DatabaseType.*
+import io.github.guttenbase.meta.DatabaseType
+import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.mapping.ColumnTypeResolver
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType

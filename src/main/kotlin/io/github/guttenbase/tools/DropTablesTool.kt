@@ -1,9 +1,9 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.connector.DatabaseType.MARIADB
-import io.github.guttenbase.connector.DatabaseType.MSSQL
-import io.github.guttenbase.connector.DatabaseType.MYSQL
+import io.github.guttenbase.meta.DatabaseType.MARIADB
+import io.github.guttenbase.meta.DatabaseType.MSSQL
+import io.github.guttenbase.meta.DatabaseType.MYSQL
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.DatabaseMetaData

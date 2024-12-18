@@ -3,10 +3,7 @@ package io.github.guttenbase.repository
 import io.github.guttenbase.configuration.*
 import io.github.guttenbase.connector.Connector
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.connector.DatabaseType
-import io.github.guttenbase.connector.DatabaseType.*
 import io.github.guttenbase.connector.GuttenBaseException
-import io.github.guttenbase.defaults.impl.DefaultColumnMapper
 import io.github.guttenbase.defaults.impl.DefaultDatabaseForeignKeyFilter
 import io.github.guttenbase.defaults.impl.DefaultDatabaseIndexFilter
 import io.github.guttenbase.export.ExportDumpDatabaseConfiguration
@@ -15,10 +12,11 @@ import io.github.guttenbase.export.plain.ExportPlainTextConnectorInfo
 import io.github.guttenbase.export.zip.DefaultZipExporterClassResourcesHint
 import io.github.guttenbase.hints.*
 import io.github.guttenbase.hints.impl.*
-import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.ForeignKeyMapper
 import io.github.guttenbase.mapping.IndexMapper
-import io.github.guttenbase.meta.*
+import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.meta.DatabaseType
+import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.InternalTableMetaData
 import java.sql.SQLException
@@ -51,7 +49,7 @@ open class ConnectorRepository {
    */
   open fun addConnectionInfo(connectorId: String, connectionInfo: ConnectorInfo): ConnectorRepository {
     connectionInfoMap[connectorId] = connectionInfo
-    initDefaultHints(connectorId, connectionInfo)
+    initDefaultHints(connectorId)
     return this
   }
 
@@ -233,7 +231,7 @@ open class ConnectorRepository {
     addTargetDatabaseConfiguration(MS_ACCESS, MsAccessTargetDatabaseConfiguration(this))
   }
 
-  private fun initDefaultHints(connectorId: String, connectorInfo: ConnectorInfo) {
+  private fun initDefaultHints(connectorId: String) {
     addConnectorHint(connectorId, DefaultRepositoryTableFilterHint())
     addConnectorHint(connectorId, DefaultDatabaseTableFilterHint())
     addConnectorHint(connectorId, DefaultDatabaseColumnFilterHint())
