@@ -69,22 +69,20 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     setTableForeignKeys(connection, connectorId, tableMetaData, true)
   }
 
-  @Throws(SQLException::class)
   private fun setTableForeignKeys(
-    connection: Connection, connectorId: String, tableMetaDatas: List<TableMetaData>,
-    enable: Boolean
+    connection: Connection, connectorId: String, tableMetaDatas: List<TableMetaData>, enable: Boolean
   ) {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-
-    for (tableMetaData in tableMetaDatas) {
-      val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+    val sqls = tableMetaDatas.map {
+      val tableName = tableMapper.fullyQualifiedTableName(it, it.databaseMetaData)
       val flag = if (enable) " CHECK CONSTRAINT ALL" else " NOCHECK CONSTRAINT ALL"
 
-      executeSQL(connection, "ALTER TABLE $tableName$flag")
+      "ALTER TABLE $tableName$flag"
     }
+
+    executeSQL(connection, *sqls.toTypedArray())
   }
 
-  @Throws(SQLException::class)
   private fun setIdentityInsert(
     connection: Connection, connectorId: String, enable: Boolean,
     tableMetaData: TableMetaData

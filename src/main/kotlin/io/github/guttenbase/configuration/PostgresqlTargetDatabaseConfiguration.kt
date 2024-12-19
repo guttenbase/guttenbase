@@ -51,11 +51,13 @@ open class PostgresqlTargetDatabaseConfiguration(connectorRepository: ConnectorR
     connection: Connection, connectorId: String, tableMetaDatas: List<TableMetaData>,
     enable: Boolean
   ) {
-    for (tableMetaData in tableMetaDatas) {
-      val tableNameMapper = connectorRepository.hint<TableMapper>(connectorId)
-      val tableName = tableNameMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+    val tableNameMapper = connectorRepository.hint<TableMapper>(connectorId)
+    val sqls = tableMetaDatas.map {
+      val tableName = tableNameMapper.fullyQualifiedTableName(it, it.databaseMetaData)
 
-      executeSQL(connection, "ALTER TABLE " + tableName + (if (enable) " ENABLE " else " DISABLE ") + "TRIGGER ALL;")
+      "ALTER TABLE " + tableName + (if (enable) " ENABLE " else " DISABLE ") + "TRIGGER ALL;"
     }
+
+    executeSQL(connection, *sqls.toTypedArray())
   }
 }

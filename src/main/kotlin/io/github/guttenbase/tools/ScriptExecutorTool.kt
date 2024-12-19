@@ -110,7 +110,7 @@ constructor(
               }
             }
 
-            if (!connection.autoCommit && targetDatabaseConfiguration.isMayCommit) {
+            if (targetDatabaseConfiguration.isMayCommit) {
               connection.commit()
             }
 

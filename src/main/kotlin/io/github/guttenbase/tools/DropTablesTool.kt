@@ -74,9 +74,8 @@ open class DropTablesTool @JvmOverloads constructor(
     else -> DEFAULT_INDEX_DROP
   }
 
-  fun createDropAll() =
-    createDropIndexStatements().plus(createDropForeignKeyStatements())
-      .plus(createDropTableStatements())
+  fun createDropAll() = createDropIndexStatements().plus(createDropForeignKeyStatements())
+    .plus(createDropTableStatements())
 
   fun createDropTableStatements() =
     createTableStatements(

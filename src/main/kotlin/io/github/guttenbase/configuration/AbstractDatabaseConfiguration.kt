@@ -4,7 +4,6 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import org.slf4j.LoggerFactory
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * Abstract base implementation of data base configuration.
@@ -14,16 +13,18 @@ import java.sql.SQLException
  * @author M. Dahm
  */
 @Suppress("SqlSourceToSinkFlow")
-abstract class AbstractDatabaseConfiguration(protected val connectorRepository: ConnectorRepository) : DatabaseConfiguration {
+abstract class AbstractDatabaseConfiguration(protected val connectorRepository: ConnectorRepository) :
+  DatabaseConfiguration {
   /**
    * Execute single statement.
    */
-  @Throws(SQLException::class)
-  protected fun executeSQL(connection: Connection, sql: String) {
-    LOG.debug("Executing: $sql")
-
+  protected fun executeSQL(connection: Connection, vararg sqls: String) {
     connection.createStatement().use {
-      it.execute(sql)
+      for (sql in sqls) {
+        LOG.info("Executing: $sql")
+
+        it.execute(sql)
+      }
     }
   }
 
