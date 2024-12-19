@@ -218,7 +218,7 @@ constructor(
 
     if (statement.execute(sql)) {
       statement.resultSet.use { resultSet ->
-        readMapFromResultSet(statement.connection, resultSet) { _: Connection, map: RESULT_MAP ->
+        readMapFromResultSet(statement.connection, resultSet) { _, map: RESULT_MAP ->
           progressIndicator.info("Query result: $map")
         }
       }

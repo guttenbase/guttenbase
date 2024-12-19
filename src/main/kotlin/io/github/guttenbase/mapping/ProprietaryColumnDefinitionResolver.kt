@@ -5,7 +5,6 @@ import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseColumnType
-import org.slf4j.LoggerFactory
 import java.sql.JDBCType
 import java.util.*
 
@@ -27,7 +26,7 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
     createMssqlSpecificMappings()
 
     createMysqlSpecificMappings()
-    createMysqlToDB2Mapping()
+    createDB2Mappings()
   }
 
   override fun resolve(
@@ -119,13 +118,14 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
     mapDBspecificTypeToStandardType(DERBY, "LONGBLOB", "BLOB", JDBCType.BLOB)
   }
 
-  private fun createMysqlToDB2Mapping() {
-    mapDBspecificTypeToStandardType(MYSQL, "LONGTEXT", "VARCHAR", JDBCType.VARCHAR, 4000) //CHAR(254)
-    mapDBspecificTypeToStandardType(MYSQL, "LONGBLOB", "BLOB", JDBCType.BLOB) //CLOB (2G)
-    mapDBspecificTypeToStandardType(MYSQL, "DECIMAL", "DECIMAL", JDBCType.DECIMAL, 16) //CLOB (2G)
+  private fun createDB2Mappings() {
+    mapStandardTypeToDBspecificType(DB2, "NUMBER", "DECIMAL", JDBCType.DECIMAL, 31, 5)
   }
 
   private fun createMysqlSpecificMappings() {
+    mapDBspecificTypeToStandardType(MYSQL, "LONGTEXT", "VARCHAR", JDBCType.VARCHAR, 4000) //CHAR(254)
+    mapDBspecificTypeToStandardType(MYSQL, "LONGBLOB", "BLOB", JDBCType.BLOB) //CLOB (2G)
+    mapDBspecificTypeToStandardType(MYSQL, "DECIMAL", "DECIMAL", JDBCType.DECIMAL, 16) //CLOB (2G)
     mapDBspecificTypeToStandardType(MYSQL, "YEAR", "NUMBER", JDBCType.NUMERIC)
     mapDBspecificTypeToStandardType(MYSQL, "SMALLINT UNSIGNED", "INTEGER", JDBCType.INTEGER)
     mapDBspecificTypeToStandardType(MYSQL, "INTEGER UNSIGNED", "BIGINT", JDBCType.BIGINT)

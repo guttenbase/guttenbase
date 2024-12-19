@@ -36,14 +36,20 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
     }
   }
 
-  private val resolvers = mutableListOf<ColumnDefinitionResolver>(DEFAULT_RESOLVER, ProprietaryColumnDefinitionResolver)
+  private val resolvers = mutableListOf<ColumnDefinitionResolver>(
+    DEFAULT_RESOLVER, ProprietaryColumnDefinitionResolver,
+    // Finally return something equivalent
+    ColumnDefinitionResolver { _, _, column ->
+      ColumnTypeDefinition(column, column.columnTypeName, column.precision, column.scale)
+    }
+  )
 
   override fun lookupColumnDefinition(
     sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
   ) = resolvers.asSequence()
     .map { it.resolve(sourceDatabase, targetDatabase, column) }
     .firstOrNull { it != null }
-    ?: createDefaultColumnDefinition(column)
+    ?: throw IllegalStateException("No column definition found for $column")
 
   /**
    * Add custom resolver which is preferred over existing resolvers
@@ -51,10 +57,6 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   fun addColumnDefinitionResolver(resolver: ColumnDefinitionResolver) {
     resolvers.add(0, resolver)
   }
-
-  private fun createDefaultColumnDefinition(column: ColumnMetaData) = ColumnTypeDefinition(
-    column, column.columnTypeName, column.precision, column.scale
-  )
 }
 
 private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
