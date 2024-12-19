@@ -12,7 +12,10 @@ import io.github.guttenbase.tools.ColumnMapping
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
+import java.sql.Blob
+import java.sql.Clob
 import java.sql.Date
+import java.sql.Time
 import java.sql.Timestamp
 
 typealias CDM = Pair<DatabaseType?, ColumnDataMapper>
@@ -29,6 +32,12 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
 
   init {
     addMapping(CLASS_TIMESTAMP, CLASS_DATE, TimestampToDateColumnDataMapper)
+    addMapping(CLASS_TIMESTAMP, CLASS_TIME, TimestampToTimeColumnDataMapper)
+    addMapping(CLASS_TIME, CLASS_TIMESTAMP, TimeToTimestampColumnDataMapper)
+    addMapping(CLASS_TIME, CLASS_DATE, TimeToDateColumnDataMapper)
+    addMapping(CLASS_DATE, CLASS_TIME, DateToTimeColumnDataMapper)
+    addMapping(CLASS_DATE, CLASS_TIMESTAMP, DateToTimestampColumnDataMapper)
+
     addMapping(CLASS_LONG, CLASS_BIGDECIMAL, LongToBigDecimalColumnDataMapper)
     addMapping(CLASS_BIGDECIMAL, CLASS_LONG, BigDecimalToLongColumnDataMapper)
     addMapping(CLASS_INTEGER, CLASS_BIGDECIMAL, IntToBigDecimalColumnDataMapper)
@@ -36,6 +45,10 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_DOUBLE, CLASS_BIGDECIMAL, DoubleToBigDecimalColumnDataMapper)
     addMapping(CLASS_BIGDECIMAL, CLASS_DOUBLE, BigDecimalToDoubleColumnDataMapper)
     addMapping(CLASS_OBJECT, CLASS_DOUBLE, BigDecimalToDoubleColumnDataMapper)
+    addMapping(CLASS_SHORT, CLASS_BIGDECIMAL, ShortToBigDecimalColumnDataMapper)
+
+    addMapping(CLASS_BLOB, CLASS_BYTES, BlobDataMapper)
+    addMapping(CLASS_CLOB, CLASS_STRING, ClobDataMapper)
   }
 
   /**
@@ -80,6 +93,11 @@ object IntToBigDecimalColumnDataMapper : ColumnDataMapper {
     if (value is Int) BigDecimal(value) else value
 }
 
+object ShortToBigDecimalColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value is Short) BigDecimal(value.toInt()) else value
+}
+
 object BigDecimalToLongColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is BigDecimal) value.toLong() else value
@@ -95,6 +113,31 @@ object TimestampToDateColumnDataMapper : ColumnDataMapper {
     if (value is Timestamp) Date(value.time) else value
 }
 
+object TimeToDateColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value is Time) Date(value.time) else value
+}
+
+object DateToTimeColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value is java.util.Date) Time(value.time) else value
+}
+
+object DateToTimestampColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value is java.util.Date) Timestamp(value.time) else value
+}
+
+object TimeToTimestampColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value is Time) Timestamp(value.time) else value
+}
+
+object TimestampToTimeColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value is Timestamp) Time(value.time) else value
+}
+
 object BigDecimalColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
     if (value is BigDecimal)
@@ -107,6 +150,17 @@ object DoubleToBigDecimalColumnDataMapper : ColumnDataMapper {
     if (value is Double)
       value.toBigDecimal(mapping.columnTypeDefinition)
     else value
+}
+
+object BlobDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    // Use BLOB directly in order to avoid reading the complete data into memory
+    value as? Blob ?: value
+}
+
+object ClobDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    value as? Clob ?: value
 }
 
 private fun Double.toBigDecimal(mapping: ColumnTypeDefinition): BigDecimal =

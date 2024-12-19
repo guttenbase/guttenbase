@@ -109,7 +109,7 @@ open class ConnectorRepository {
 
       databaseMetaData
     } catch (e: SQLException) {
-      throw GuttenBaseException("getDatabaseMetaData", e)
+      throw GuttenBaseException("DatabaseMetaData:$connectorId", e)
     }
   }
 

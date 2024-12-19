@@ -152,7 +152,23 @@ enum class ColumnType(
     var result: Closeable? = null
 
     when (this) {
-      CLASS_STRING -> insertStatement.setString(columnIndex, convertToString(data))
+      CLASS_STRING -> when (data) {
+        is String -> insertStatement.setString(columnIndex, data)
+        is Char -> insertStatement.setString(columnIndex, data.toString())
+        is Clob -> {
+          if (databaseMetaData.databaseType == DatabaseType.POSTGRESQL) { // Workaround for PostgreSQL
+            data.characterStream.use {
+              insertStatement.setString(columnIndex, it.readText())
+            }
+          } else {
+            result = data.characterStream
+            insertStatement.setClob(columnIndex, data.characterStream)
+          }
+        }
+
+        else -> throw IllegalStateException("This is no string data: ${data.javaClass}")
+      }
+
       CLASS_INTEGER -> insertStatement.setInt(columnIndex, (data as Int))
       CLASS_LONG -> insertStatement.setLong(columnIndex, (data as Long))
       CLASS_DOUBLE -> insertStatement.setDouble(columnIndex, (data as Double))
@@ -185,17 +201,26 @@ enum class ColumnType(
 
       CLASS_OBJECT -> insertStatement.setObject(columnIndex, data)
       CLASS_BYTE -> insertStatement.setByte(columnIndex, data as Byte)
-      CLASS_BYTES -> insertStatement.setBytes(columnIndex, data as ByteArray)
-      else -> throw UnhandledColumnTypeException("Unhandled column type ($this)")
+      CLASS_BYTES -> when (data) {
+        is ByteArray -> insertStatement.setBytes(columnIndex, data)
+        is Blob -> {
+          if (databaseMetaData.databaseType == DatabaseType.POSTGRESQL) { // Workaround for PostgreSQL
+            data.binaryStream.use {
+              insertStatement.setBytes(columnIndex, it.readAllBytes())
+            }
+          } else {
+            result = data.binaryStream
+            insertStatement.setBlob(columnIndex, data.binaryStream)
+          }
+        }
+
+        else -> throw IllegalStateException("This is no byte array: ${data.javaClass}")
+      }
+
+      else -> throw UnhandledColumnTypeException("setStatementValue: Unhandled column type ($this)")
     }
 
     return result
-  }
-
-  private fun convertToString(data: Any): String = when (data) {
-    is String -> data
-    is Char -> data.toString()
-    else -> throw IllegalStateException("This is no string: $data")
   }
 
   private fun driverSupportsJavaTimeAPI(databaseMetaData: DatabaseMetaData) = when {

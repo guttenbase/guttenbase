@@ -335,11 +335,17 @@ internal class DatabaseMetaDataInspectorTool(
         } catch (_: IllegalArgumentException) {
           JDBCType.OTHER
         }
-        val precision = resultSet.getInt("PRECISION")
+        val prec = resultSet.getInt("PRECISION")
         val scale = resultSet.getInt("MAXIMUM_SCALE")
         val nullable = resultSet.getBoolean("NULLABLE")
+        val precision = if (jdbcType == JDBCType.CHAR && prec == 0) {
+          LOG.warn("Fixing wrong precision for CHAR type on ${databaseMetaData.databaseType}")
+          255
+        } else {
+          prec
+        }
 
-        databaseMetaData.addSupportedType(typeName, jdbcType, precision,scale, nullable)
+        databaseMetaData.addSupportedType(typeName, jdbcType, precision, scale, nullable)
       }
     }
   }

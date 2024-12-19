@@ -95,6 +95,7 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
 
     mapStandardTypeToDBspecificType(POSTGRESQL, "VARBINARY", "BYTEA", JDBCType.VARBINARY)
     mapStandardTypeToDBspecificType(POSTGRESQL, "BLOB", "BYTEA", JDBCType.BLOB)
+    mapStandardTypeToDBspecificType(POSTGRESQL, "CLOB", "TEXT", JDBCType.LONGVARCHAR)
   }
 
   private fun createOracleSpecificMappings() {
@@ -142,8 +143,8 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
     mapDBspecificTypeToStandardType(MSSQL, "UNIQUEIDENTIFIER", "CHAR", JDBCType.CHAR, 36)
 
     mapStandardTypeToDBspecificType(MSSQL, "BOOLEAN", "BIT", JDBCType.BOOLEAN)
-    mapStandardTypeToDBspecificType(MSSQL, "BLOB", "IMAGE", JDBCType.BLOB)//2147483647
-    mapStandardTypeToDBspecificType(MSSQL, "CLOB", "TEXT", JDBCType.CLOB)
+    mapStandardTypeToDBspecificType(MSSQL, "BLOB", "IMAGE", JDBCType.BLOB)
+    mapStandardTypeToDBspecificType(MSSQL, "CLOB", "VARCHAR(MAX)", JDBCType.LONGVARCHAR) // TEXT
   }
 
   private fun mapDBspecificTypeToStandardType(
