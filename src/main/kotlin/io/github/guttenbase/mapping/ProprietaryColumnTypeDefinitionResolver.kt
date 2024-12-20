@@ -132,6 +132,7 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     mapDBspecificTypeToStandardType(MYSQL, "SMALLINT UNSIGNED", "INTEGER", JDBCType.INTEGER)
     mapDBspecificTypeToStandardType(MYSQL, "INTEGER UNSIGNED", "BIGINT", JDBCType.BIGINT)
     mapDBspecificTypeToStandardType(MYSQL, "INT UNSIGNED", "BIGINT", JDBCType.BIGINT)
+    mapStandardTypeToDBspecificType(MYSQL, "NUMBER", "NUMERIC", JDBCType.NUMERIC, 65)
 
     mapStandardTypeToDBspecificType(MYSQL, "CLOB", "LONGTEXT", JDBCType.LONGVARCHAR)
 //    mapStandardTypeToDBspecificType(MYSQL, "BLOB", "LONGTEXT", JDBCType.LONGVARCHAR, 2147483647)

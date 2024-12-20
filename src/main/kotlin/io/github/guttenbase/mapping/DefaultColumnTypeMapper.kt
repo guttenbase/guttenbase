@@ -63,7 +63,7 @@ private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
 
 internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType) =
   if (column.precision > type.estimatedEffectiveMaxPrecision) {
-    LOG.warn("""
+    LOG.debug("""
       Requested column precision of ${column.precision} for type ${column.jdbcColumnType} 
       is higher than ${type.estimatedEffectiveMaxPrecision} supported by $type
     """.trimIndent()
