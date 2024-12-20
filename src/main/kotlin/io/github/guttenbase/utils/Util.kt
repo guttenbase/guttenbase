@@ -11,6 +11,7 @@ import java.nio.charset.Charset
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 /**
@@ -30,6 +31,14 @@ object Util {
 
   const val DEFAULT_BUFFER_SIZE = 1024 * 4
   const val ARROW = '\u2192'
+
+  @JvmStatic
+  fun Date.toLocalDateTime(): LocalDateTime = toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+
+  @JvmStatic
+  fun LocalDateTime.roundToWholeSeconds(): LocalDateTime {
+    return this.plusNanos(500000000).truncatedTo(ChronoUnit.SECONDS)
+  }
 
   @JvmStatic
   fun Any.toDate(): Date = when (this) {

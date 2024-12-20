@@ -5,7 +5,7 @@ import io.github.guttenbase.meta.DatabaseColumnType
 import io.github.guttenbase.meta.DatabaseMetaData
 import org.slf4j.LoggerFactory
 
-fun interface ColumnDefinitionResolver {
+fun interface ColumnTypeDefinitionResolver {
   fun resolve(
     sourceDatabase: DatabaseMetaData,
     targetDatabase: DatabaseMetaData,
@@ -20,7 +20,7 @@ fun interface ColumnDefinitionResolver {
  *  &copy; 2012-2034 akquinet tech@spree
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
-  private val DEFAULT_RESOLVER: ColumnDefinitionResolver = object : ColumnDefinitionResolver {
+  private val DEFAULT_RESOLVER: ColumnTypeDefinitionResolver = object : ColumnTypeDefinitionResolver {
     override fun resolve(
       sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
     ): ColumnTypeDefinition? {
@@ -36,10 +36,10 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
     }
   }
 
-  private val resolvers = mutableListOf<ColumnDefinitionResolver>(
-    DEFAULT_RESOLVER, ProprietaryColumnDefinitionResolver,
+  private val resolvers = mutableListOf<ColumnTypeDefinitionResolver>(
+    DEFAULT_RESOLVER, ProprietaryColumnTypeDefinitionResolver,
     // Finally return at least something equivalent
-    ColumnDefinitionResolver { _, _, column ->
+    ColumnTypeDefinitionResolver { _, _, column ->
       ColumnTypeDefinition(column, column.columnTypeName, column.precision, column.scale)
     }
   )
@@ -54,7 +54,7 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   /**
    * Add custom resolver which is preferred over existing resolvers
    */
-  fun addColumnDefinitionResolver(resolver: ColumnDefinitionResolver) {
+  fun addColumnTypeDefinitionResolver(resolver: ColumnTypeDefinitionResolver) {
     resolvers.add(0, resolver)
   }
 }
@@ -63,11 +63,12 @@ private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
 
 internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType) =
   if (column.precision > type.estimatedEffectiveMaxPrecision) {
-    LOG.warn(
-      """Requested column precision of ${column.precision} for type ${column.jdbcColumnType} 
-      is higher than ${type.estimatedEffectiveMaxPrecision} supported by $type""".trimIndent()
+    LOG.warn("""
+      Requested column precision of ${column.precision} for type ${column.jdbcColumnType} 
+      is higher than ${type.estimatedEffectiveMaxPrecision} supported by $type
+    """.trimIndent()
     )
-    type.estimatedEffectiveMaxPrecision
+    type.maxPrecision
   } else {
     column.precision
   }

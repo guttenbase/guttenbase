@@ -157,19 +157,19 @@ class SchemaScriptCreatorTool(
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val tableMetaData = foreignKeyMetaData.referencingTableMetaData
     val qualifiedTableName = tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
 
     return (("ALTER TABLE " + qualifiedTableName + " ADD CONSTRAINT " + fkMapper.mapForeignKeyName(foreignKeyMetaData) + " FOREIGN KEY "
-        + foreignKeyMetaData.referencingColumns.joinToString { getColumnName(it) }
+        + foreignKeyMetaData.referencingColumns.joinToString {
+      val rawColumnName = columnMapper.mapColumnName(it, it.tableMetaData)
+      targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+    }
         ) + " REFERENCES "
         + tableMapper.fullyQualifiedTableName(foreignKeyMetaData.referencedTableMetaData, targetDatabaseMetaData)
-        + foreignKeyMetaData.referencedColumns.joinToString { getColumnName(it) }) + ";"
-  }
-
-  private fun getColumnName(referencingColumn: ColumnMetaData): String {
-    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
-    val rawColumnName = columnMapper.mapColumnName(referencingColumn, referencingColumn.tableMetaData)
-
-    return referencingColumn.tableMetaData.databaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+        + foreignKeyMetaData.referencedColumns.joinToString {
+      val rawColumnName = columnMapper.mapColumnName(it, it.tableMetaData)
+      targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+    }) + ";"
   }
 
   fun createAutoincrementUpdateStatements() = createAutoincrementUpdateStatements(tables)

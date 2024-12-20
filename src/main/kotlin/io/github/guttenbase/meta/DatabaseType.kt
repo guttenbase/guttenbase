@@ -163,19 +163,19 @@ enum class DatabaseType(
 
   val tableExistsClause: String
     get() = when (this) {
-      H2DB, HSQLDB, POSTGRESQL, MYSQL -> "IF EXISTS"
+      H2DB, HSQLDB, POSTGRESQL, MARIADB, MYSQL -> "IF EXISTS"
       else -> ""
     }
 
   val indexExistsClause: String
     get() = when (this) {
-      H2DB, HSQLDB, POSTGRESQL, MYSQL -> "IF EXISTS"
+      H2DB, HSQLDB, POSTGRESQL -> "IF EXISTS"
       else -> ""
     }
 
   val constraintExistsClause: String
     get() = when (this) {
-      H2DB, POSTGRESQL, MYSQL -> "IF EXISTS"
+      H2DB, POSTGRESQL -> "IF EXISTS"
       else -> ""
     }
 

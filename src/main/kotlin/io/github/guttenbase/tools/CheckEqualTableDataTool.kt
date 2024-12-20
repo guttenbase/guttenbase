@@ -1,8 +1,6 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.configuration.SourceDatabaseConfiguration
-import io.github.guttenbase.meta.DatabaseType.ORACLE
-import io.github.guttenbase.meta.DatabaseType.POSTGRESQL
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.TableConfigurationException
 import io.github.guttenbase.exceptions.UnequalDataException
@@ -14,12 +12,16 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
+import io.github.guttenbase.meta.DatabaseType.ORACLE
+import io.github.guttenbase.meta.DatabaseType.POSTGRESQL
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
 import io.github.guttenbase.utils.Util.ARROW
+import io.github.guttenbase.utils.Util.roundToWholeSeconds
 import io.github.guttenbase.utils.Util.toDate
+import io.github.guttenbase.utils.Util.toLocalDateTime
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.sql.Blob
@@ -243,7 +245,9 @@ open class CheckEqualTableDataTool(
   }
 
   private fun equalsValue(data1: Any, data2: Any, columnType: ColumnType) = when {
-    columnType.isDate() -> data1.toDate() == data2.toDate()
+    columnType.isDate() -> data1.toDate().toLocalDateTime().roundToWholeSeconds() ==
+        data2.toDate().toLocalDateTime().roundToWholeSeconds()
+
     columnType == CLASS_BIGDECIMAL -> (data1 as BigDecimal).compareTo(data2 as BigDecimal) == 0 // Ignore scale, if 0
     else -> data1 == data2
   }

@@ -46,5 +46,5 @@ data class DatabaseColumnType(
   val maxScale: Int = 0,
   val nullable: Boolean = true
 ) : Serializable {
-  val estimatedEffectiveMaxPrecision: Int get() = (maxPrecision * 0.95).toInt()
+  val estimatedEffectiveMaxPrecision: Int get() = if (!jdbcType.isDateType()) (maxPrecision * 0.95).toInt() else maxPrecision
 }

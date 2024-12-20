@@ -14,7 +14,7 @@ import java.util.*
  *  &copy; 2012-2034 akquinet tech@spree
  */
 @Suppress("MemberVisibilityCanBePrivate")
-object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
+object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
   private val mappings = HashMap<DatabaseType, MutableMap<DatabaseType, MutableMap<String, DatabaseColumnType>>>()
 
   init {
@@ -56,7 +56,7 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
   fun addMapping(
     sourceDB: DatabaseType, targetDB: DatabaseType, sourceTypeName: String, targetTypeName: String,
     type: JDBCType, maxPrecision: Int = 0, places: Int = 0
-  ): ProprietaryColumnDefinitionResolver {
+  ): ProprietaryColumnTypeDefinitionResolver {
     addMappingInternal(sourceDB, targetDB, sourceTypeName, targetTypeName, type, maxPrecision, places)
 
     if (sourceDB === MYSQL) {

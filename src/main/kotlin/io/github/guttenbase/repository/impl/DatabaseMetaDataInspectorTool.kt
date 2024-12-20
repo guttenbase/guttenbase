@@ -338,6 +338,9 @@ internal class DatabaseMetaDataInspectorTool(
         val prec = resultSet.getInt("PRECISION")
         val scale = resultSet.getInt("MAXIMUM_SCALE")
         val nullable = resultSet.getBoolean("NULLABLE")
+
+        // "precision" gives you only a hint what the type really may hold, unfortunately
+        // You can only make an educated guess later on
         val precision = if (jdbcType == JDBCType.CHAR && prec == 0) {
           LOG.warn("Fixing wrong precision for CHAR type on ${databaseMetaData.databaseType}")
           255
