@@ -65,8 +65,11 @@ class DatabaseMetaDataImpl(
   override fun typeFor(columnMetaData: ColumnMetaData): DatabaseColumnType? {
     val possibleTypes = supportedTypeMap[columnMetaData.jdbcColumnType] ?: listOf<DatabaseColumnType>()
 
-    // Prefer matching names, because the list may not be properly sorted (MSSQL 🙄)
+    // 1. Prefer matching names, because the list may not be properly sorted (MSSQL 🙄)
+    // 2. Prefer standard types over proprietary types
+    // 3. Prefer types with highest precision
     return possibleTypes.firstOrNull { it.realTypeName() == columnMetaData.realTypeName() }
+      ?: possibleTypes.firstOrNull { it.realTypeName() in STANDARD_TYPES }
       ?: possibleTypes.maxByOrNull { it.maxPrecision }
   }
 

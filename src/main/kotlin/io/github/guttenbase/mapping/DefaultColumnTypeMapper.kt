@@ -38,7 +38,7 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
 
   private val resolvers = mutableListOf<ColumnDefinitionResolver>(
     DEFAULT_RESOLVER, ProprietaryColumnDefinitionResolver,
-    // Finally return something equivalent
+    // Finally return at least something equivalent
     ColumnDefinitionResolver { _, _, column ->
       ColumnTypeDefinition(column, column.columnTypeName, column.precision, column.scale)
     }

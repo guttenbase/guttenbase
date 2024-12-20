@@ -24,7 +24,7 @@ abstract class AbstractColumnTypeMapper : ColumnTypeMapper {
     val primaryKeyClause = if (singlePrimaryKey) " PRIMARY KEY NOT NULL" else ""
     val defaultValueClause = targetDatabase.databaseType.createDefaultValueClause(columnDefinition) ?: ""
 
-    return columnDefinition.toString() + " $defaultValueClause".trim() + notNullClause + autoincrementClause + primaryKeyClause
+    return "$columnDefinition$defaultValueClause$notNullClause$autoincrementClause$primaryKeyClause"
   }
 
   override fun lookupColumnDefinition(

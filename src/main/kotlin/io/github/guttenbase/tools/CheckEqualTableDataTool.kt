@@ -18,6 +18,7 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
+import io.github.guttenbase.utils.Util.ARROW
 import io.github.guttenbase.utils.Util.toDate
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
@@ -145,7 +146,7 @@ open class CheckEqualTableDataTool(
           for (targetColumn in mapping.columns) {
             val columnMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
               sourceColumn, targetColumn
-            ) ?: throw IllegalStateException("Could not find type mapping for $sourceColumn -> $targetColumn")
+            ) ?: throw IllegalStateException("Could not find type mapping for $sourceColumn $ARROW $targetColumn")
             val columnName1 = sourceColumnNameMapper.mapColumnName(sourceColumn, targetTableMetaData)
             val columnName2 = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
 

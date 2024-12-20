@@ -124,13 +124,17 @@ object ProprietaryColumnDefinitionResolver : ColumnDefinitionResolver {
   }
 
   private fun createMysqlSpecificMappings() {
-    mapDBspecificTypeToStandardType(MYSQL, "LONGTEXT", "VARCHAR", JDBCType.VARCHAR, 4000) //CHAR(254)
-    mapDBspecificTypeToStandardType(MYSQL, "LONGBLOB", "BLOB", JDBCType.BLOB) //CLOB (2G)
-    mapDBspecificTypeToStandardType(MYSQL, "DECIMAL", "DECIMAL", JDBCType.DECIMAL, 16) //CLOB (2G)
+    mapDBspecificTypeToStandardType(MYSQL, "LONGTEXT", "VARCHAR", JDBCType.VARCHAR, 2147483647)
+    mapDBspecificTypeToStandardType(MYSQL, "MEDIUMTEXT", "VARCHAR", JDBCType.VARCHAR, 16777215)
+    mapDBspecificTypeToStandardType(MYSQL, "LONGBLOB", "BLOB", JDBCType.BLOB)
+    mapDBspecificTypeToStandardType(MYSQL, "DECIMAL", "DECIMAL", JDBCType.DECIMAL, 16)
     mapDBspecificTypeToStandardType(MYSQL, "YEAR", "NUMBER", JDBCType.NUMERIC)
     mapDBspecificTypeToStandardType(MYSQL, "SMALLINT UNSIGNED", "INTEGER", JDBCType.INTEGER)
     mapDBspecificTypeToStandardType(MYSQL, "INTEGER UNSIGNED", "BIGINT", JDBCType.BIGINT)
     mapDBspecificTypeToStandardType(MYSQL, "INT UNSIGNED", "BIGINT", JDBCType.BIGINT)
+
+    mapStandardTypeToDBspecificType(MYSQL, "CLOB", "LONGTEXT", JDBCType.LONGVARCHAR)
+//    mapStandardTypeToDBspecificType(MYSQL, "BLOB", "LONGTEXT", JDBCType.LONGVARCHAR, 2147483647)
   }
 
   private fun createMssqlSpecificMappings() {

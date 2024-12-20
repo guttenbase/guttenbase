@@ -97,7 +97,7 @@ enum class DatabaseType(
 
   fun createDefaultValueClause(columnDefinition: ColumnTypeDefinition): String? =
     if (this == MYSQL && columnDefinition.typeName.equals("TIMESTAMP", true)) {
-      "DEFAULT CURRENT_TIMESTAMP"    // Otherwise may result in [42000][1067] Invalid default value for 'CREATED_AT'
+      " DEFAULT CURRENT_TIMESTAMP"    // Otherwise may result in [42000][1067] Invalid default value for 'CREATED_AT'
     } else null
 
   /**
