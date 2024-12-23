@@ -1,8 +1,18 @@
 package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.PRECISION_PLACEHOLDER
 import io.github.guttenbase.meta.supportsPrecisionClause
+
+/**
+ * Resolve column type definition for given column and database type.
+ */
+fun interface ColumnTypeDefinitionResolver {
+  fun resolve(
+    sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
+  ): ColumnTypeDefinition?
+}
 
 /**
  * Definition of column type as used in target DB

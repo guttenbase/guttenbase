@@ -9,7 +9,7 @@ import java.sql.JDBCType
 import java.util.*
 
 /**
- * Heuristic mapping of proprietary DB types
+ * Try to resolve types using heuristic mapping of proprietary DB types
  *
  *  &copy; 2012-2034 akquinet tech@spree
  */

@@ -5,40 +5,19 @@ import io.github.guttenbase.meta.DatabaseColumnType
 import io.github.guttenbase.meta.DatabaseMetaData
 import org.slf4j.LoggerFactory
 
-fun interface ColumnTypeDefinitionResolver {
-  fun resolve(
-    sourceDatabase: DatabaseMetaData,
-    targetDatabase: DatabaseMetaData,
-    column: ColumnMetaData
-  ): ColumnTypeDefinition?
-}
-
 /**
- * By default, try to map via supported types in DB. You may, however, add "overrides" that return a
- * custom [ColumnTypeDefinition] in special cases that have to be resolved manually.
+ * This class maintains a list of [ColumnTypeDefinitionResolver]s and asks thema one after another to
+ * create a [ColumnTypeDefinition] for a given column and database type.
+ *
+ * Users may add custom [ColumnTypeDefinitionResolver]s in special cases that need to be resolved manually.
  *
  *  &copy; 2012-2034 akquinet tech@spree
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
-  private val DEFAULT_RESOLVER: ColumnTypeDefinitionResolver = object : ColumnTypeDefinitionResolver {
-    override fun resolve(
-      sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
-    ): ColumnTypeDefinition? {
-      val type = targetDatabase.typeFor(column)
-
-      return if (type != null) {
-        val precision = computePrecision(column, type)
-
-        ColumnTypeDefinition(column, type.typeName, precision, column.scale)
-      } else {
-        null
-      }
-    }
-  }
-
   private val resolvers = mutableListOf<ColumnTypeDefinitionResolver>(
-    DEFAULT_RESOLVER, ProprietaryColumnTypeDefinitionResolver,
-    // Finally return at least something equivalent
+    ProprietaryColumnTypeDefinitionResolver, DatabaseColumnTypeDefinitionResolver,
+
+    // Finally, we copy the original definition from the column as the last resort
     ColumnTypeDefinitionResolver { _, _, column ->
       ColumnTypeDefinition(column, column.columnTypeName, column.precision, column.scale)
     }
@@ -52,7 +31,7 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
     ?: throw IllegalStateException("No column definition found for $column")
 
   /**
-   * Add custom resolver which is preferred over existing resolvers
+   * Add custom resolver which is preferred over existing resolvers, i.e. it will be called first
    */
   fun addColumnTypeDefinitionResolver(resolver: ColumnTypeDefinitionResolver) {
     resolvers.add(0, resolver)
@@ -63,7 +42,8 @@ private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
 
 internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType) =
   if (column.precision > type.estimatedEffectiveMaxPrecision) {
-    LOG.debug("""
+    LOG.debug(
+      """
       Requested column precision of ${column.precision} for type ${column.jdbcColumnType} 
       is higher than ${type.estimatedEffectiveMaxPrecision} supported by $type
     """.trimIndent()
@@ -72,3 +52,4 @@ internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType) 
   } else {
     column.precision
   }
+
