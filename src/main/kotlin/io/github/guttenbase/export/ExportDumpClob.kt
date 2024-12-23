@@ -15,11 +15,11 @@ open class ExportDumpClob(inputStream: InputStream) : AbstractExportDumpObject(i
   // Serialization
   protected constructor() : this(ByteArrayInputStream(ByteArray(0)))
 
-  override fun getAsciiStream()= getBinaryStream()
+  override fun getAsciiStream() = getBinaryStream()
 
-  override fun getCharacterStream()= InputStreamReader(getBinaryStream())
+  override fun getCharacterStream() = InputStreamReader(getBinaryStream())
 
-  override fun getCharacterStream(pos: Long, length: Long)=InputStreamReader(getBinaryStream(pos, length))
+  override fun getCharacterStream(pos: Long, length: Long) = InputStreamReader(getBinaryStream(pos, length))
 
   override fun getSubString(pos: Long, length: Int): String {
     throw UnsupportedOperationException()
@@ -54,6 +54,7 @@ open class ExportDumpClob(inputStream: InputStream) : AbstractExportDumpObject(i
   }
 
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
   }
 }

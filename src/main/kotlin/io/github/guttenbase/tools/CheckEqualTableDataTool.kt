@@ -12,6 +12,7 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.DatabaseType.ORACLE
 import io.github.guttenbase.meta.DatabaseType.POSTGRESQL
 import io.github.guttenbase.meta.TableMetaData
@@ -25,6 +26,7 @@ import io.github.guttenbase.utils.Util.toLocalDateTime
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.sql.Blob
+import java.sql.Clob
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -191,34 +193,14 @@ open class CheckEqualTableDataTool(
   ): Pair<Any?, Any?> {
     val sourceColumnType = mapping.columnDataMapping.sourceColumnType
     val targetColumnType = mapping.columnDataMapping.targetColumnType
+    val sourceDatabaseType = connectorRepository.getDatabaseMetaData(sourceConnectorId).databaseType
     val targetDatabaseType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
     var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
-    data1 = mapping.columnDataMapping.columnDataMapper.map(mapping, data1)
-
     var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex)
 
-    when (sourceColumnType) {
-      CLASS_STRING -> {
-        val connectionInfo1 = connectorRepository.getConnectionInfo(sourceConnectorId)
-        val connectionInfo2 = connectorRepository.getConnectionInfo(targetConnectorId)
-
-        // See http://www.postgresql.org/docs/8.3/static/datatype-character.html
-        if (POSTGRESQL == connectionInfo1.databaseType || POSTGRESQL == connectionInfo2.databaseType) {
-          data1 = trim(data1 as String?)
-          data2 = trim(data2 as String?)
-        }
-      }
-
-      CLASS_BLOB -> {
-        val blob1 = data1 as Blob?
-        val blob2 = data2 as Blob?
-
-        data1 = createStringFromBlob(blob1)
-        data2 = createStringFromBlob(blob2)
-      }
-
-      else -> {}
-    }
+    data1 = mapping.columnDataMapping.columnDataMapper.map(mapping, data1)
+    data1 = convertData(sourceColumnType, sourceDatabaseType, data1)
+    data2 = convertData(targetColumnType, targetDatabaseType, data2)
 
     when {
       data1 == null && data2 != null -> throw createUnequalDataException(
@@ -244,6 +226,34 @@ open class CheckEqualTableDataTool(
     return data1 to data2
   }
 
+  private fun convertData(
+    columnType: ColumnType, databaseType: DatabaseType, data: Any?
+  ): Any? = when (columnType) {
+    CLASS_STRING -> {
+      // See http://www.postgresql.org/docs/8.3/static/datatype-character.html
+      if (POSTGRESQL == databaseType) {
+        trim(data as String?)
+      } else if (data is Clob) {
+        createStringFromClob(data)
+      } else {
+        data
+      }
+    }
+
+    CLASS_CLOB -> {
+      val clob = data as Clob?
+      createStringFromClob(clob)
+    }
+
+    CLASS_BLOB -> {
+      val blob = data as Blob?
+      createStringFromBlob(blob)
+    }
+
+    else -> data
+  }
+
+
   private fun equalsValue(data1: Any, data2: Any, columnType: ColumnType) = when {
     columnType.isDate() -> data1.toDate().toLocalDateTime().roundToWholeSeconds() ==
         data2.toDate().toLocalDateTime().roundToWholeSeconds()
@@ -254,6 +264,7 @@ open class CheckEqualTableDataTool(
       else// if (data1 is Long && data2 is Long)
         data1 == data2
     }
+
     else -> data1 == data2
   }
 
@@ -296,6 +307,9 @@ open class CheckEqualTableDataTool(
     @Throws(SQLException::class)
     private fun createStringFromBlob(blob: Blob?): String? =
       if (blob == null) null else String(blob.getBytes(1, min(blob.length(), 1000).toInt()))
+
+    @Throws(SQLException::class)
+    private fun createStringFromClob(clob: Clob?): String? = clob?.characterStream?.readText()
 
     private fun trim(data: String?): String? = data?.trim { it <= ' ' }
 

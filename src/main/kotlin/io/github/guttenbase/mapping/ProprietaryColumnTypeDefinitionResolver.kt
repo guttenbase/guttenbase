@@ -169,8 +169,9 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     addSourceTypeMapping(ORACLE, "VARCHAR2", "VARCHAR", VARCHAR)
     addSourceTypeMapping(ORACLE, "RAW", "BIT", BIT) //TINYBLOB
 
-    addSourceTypeMapping(ORACLE, "NUMBER", "BIGINT", BIGINT)
-    addMapping(ORACLE, H2DB, "NUMBER", "BIGINT", BIGINT, 0, 0) // H2 does not support BIGINT with precision
+//    addSourceTypeMapping(ORACLE, "NUMBER", "DECIMAL", DECIMAL)
+    addSourceTypeMapping(ORACLE, "NUMBER", "BIGINT", BIGINT, 0, 0)
+//    addMapping(ORACLE, H2DB, "NUMBER", "BIGINT", BIGINT, 0, 0) // H2 does not support BIGINT with precision
 
     // For some reason, Oracle return JDBC type TIMESTAMP for DATE columns??
     addSourceTypeMapping(ORACLE, "DATE") { _, _, column ->
@@ -180,6 +181,7 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     addTargetTypeMapping(ORACLE, "BINARY", "RAW", BINARY, 4000)
     addTargetTypeMapping(ORACLE, "DOUBLE", "DOUBLE PRECISION", DOUBLE)
     addTargetTypeMapping(ORACLE, "BLOB", "BLOB", BLOB)
+    addTargetTypeMapping(ORACLE, "CLOB", "CLOB", CLOB)
   }
 
   private fun createH2SpecificMappings() {
@@ -195,10 +197,21 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
   private fun createDerbySpecificMappings() {
     addSourceTypeMapping(DERBY, "LONGTEXT", "CLOB", CLOB)
     addSourceTypeMapping(DERBY, "LONGBLOB", "BLOB", BLOB)
+
+//    addMapping(ORACLE, DERBY, "NUMBER", "BIGINT", BIGINT, 0, 0) // DERBY does not support BIGINT with precision
   }
 
+  // https://www.ibm.com/docs/en/iis/11.5?topic=dts-db2-data-type-support
   private fun createDB2Mappings() {
     addTargetTypeMapping(DB2, "NUMBER", "DECIMAL", DECIMAL, 31, 5)
+    addTargetTypeMapping(DB2, "VARCHAR") { _, _, column ->
+      if (column.jdbcColumnType == VARCHAR && column.precision > 32000)
+        ColumnTypeDefinition(column, "CLOB") else null
+    }
+    addTargetTypeMapping(DB2, "VARBINARY") { _, _, column ->
+      if (column.jdbcColumnType == VARBINARY && column.precision > 32000)
+        ColumnTypeDefinition(column, "BLOB") else null
+    }
   }
 
   private fun createMysqlSpecificMappings() {
@@ -210,15 +223,16 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     addSourceTypeMapping(MYSQL, "INT UNSIGNED", "BIGINT", BIGINT)
     addSourceTypeMapping(MYSQL, "YEAR", "NUMBER", NUMERIC)
 
-
     addTargetTypeMapping(MYSQL, "CLOB", "LONGTEXT", LONGVARCHAR)
     addTargetTypeMapping(MYSQL, "NUMBER", "NUMERIC", NUMERIC, 65)
 
     addTargetTypeMapping(MYSQL, "VARCHAR") { _, _, column ->
-      if (column.jdbcColumnType == VARCHAR && column.precision > 16300) ColumnTypeDefinition(column, "TEXT", 0, 0) else null
+      if (column.jdbcColumnType == VARCHAR && column.precision > 16300)
+        ColumnTypeDefinition(column, "TEXT", 0, 0) else null
     }
     addTargetTypeMapping(MYSQL, "VARBINARY") { _, _, column ->
-      if (column.jdbcColumnType == VARBINARY && column.precision > 65000) ColumnTypeDefinition(column, "BLOB", 0, 0) else null
+      if (column.jdbcColumnType == VARBINARY && column.precision > 65000)
+        ColumnTypeDefinition(column, "BLOB", 0, 0) else null
     }
   }
 
@@ -230,6 +244,8 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     addSourceTypeMapping(MSSQL, "SMALL DATETIME", "DATE", DATE)
     addSourceTypeMapping(MSSQL, "SMALL MONEY", "NUMBER", NUMERIC, 10, 42)
     addSourceTypeMapping(MSSQL, "UNIQUEIDENTIFIER", "CHAR", CHAR, 36)
+
+//    addMapping(ORACLE, MSSQL, "NUMBER", "BIGINT", BIGINT, 0, 0) // MSSQL does not support BIGINT with precision
 
     addTargetTypeMapping(MSSQL, "BOOLEAN", "BIT", BOOLEAN)
     addTargetTypeMapping(MSSQL, "BLOB", "IMAGE", BLOB)

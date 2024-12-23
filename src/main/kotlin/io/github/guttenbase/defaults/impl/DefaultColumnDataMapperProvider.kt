@@ -50,7 +50,9 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_SHORT, CLASS_BIGDECIMAL, ShortToBigDecimalColumnDataMapper)
 
     addMapping(CLASS_BLOB, CLASS_BYTES, BlobDataMapper)
+    addMapping(CLASS_BYTES, CLASS_BLOB, BytesToBlobDataMapper)
     addMapping(CLASS_CLOB, CLASS_STRING, ClobDataMapper)
+    addMapping(CLASS_STRING, CLASS_CLOB, StringToClobDataMapper)
   }
 
   /**
@@ -164,9 +166,24 @@ object BlobDataMapper : ColumnDataMapper {
     value as? Blob ?: value
 }
 
+object BytesToBlobDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    // Use BLOB directly in order to avoid reading the complete data into memory
+    if (value != null)
+      GBBlob(value as ByteArray)
+    else null
+}
+
 object ClobDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
     value as? Clob ?: value
+}
+
+object StringToClobDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnMapping, value: Any?) =
+    if (value != null)
+      GBClob(value as String)
+    else null
 }
 
 private fun Double.toBigDecimal(mapping: ColumnTypeDefinition): BigDecimal =
