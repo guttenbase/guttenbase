@@ -52,7 +52,7 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, connectorId:
     val columnIndex = columns.indexOfFirst { it.columnName.lowercase() == columnName.lowercase() } + 1
     val columnType = ClassNameColumnTypeResolver.getColumnType(columnMetaData)
 
-    columnType.setValue(statement, columnIndex, database, columnMetaData.columnType, value)
+    columnType.setValue(statement, columnIndex, database, columnMetaData, value)
 
     return this
   }

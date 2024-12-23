@@ -6,6 +6,7 @@ import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseColumnType
 import java.sql.JDBCType
+import java.sql.JDBCType.*
 import java.util.*
 
 /**
@@ -15,11 +16,13 @@ import java.util.*
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
-  private val mappings = HashMap<DatabaseType, MutableMap<DatabaseType, MutableMap<String, DatabaseColumnType>>>()
+  private val mappings =
+    HashMap<DatabaseType, MutableMap<DatabaseType, MutableMap<String, ColumnTypeDefinitionResolver>>>()
 
   init {
     // DB data types to Standard SQL, if possible
     createH2SpecificMappings()
+    createHSQLDBSpecificMappings()
     createDerbySpecificMappings()
     createPostgresSpecificMappings()
     createOracleSpecificMappings()
@@ -29,6 +32,9 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     createDB2Mappings()
   }
 
+  /**
+   * Resolve column type definition for given column and database type by lookup in specified matrix of [ColumnTypeDefinitionResolver]s.
+   */
   override fun resolve(
     sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
   ): ColumnTypeDefinition? {
@@ -39,12 +45,10 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
       val databaseMapping = databaseMatrix[targetDatabase.databaseType]
 
       if (databaseMapping != null) {
-        val mapping = databaseMapping[columnType]
+        val resolver = databaseMapping[columnType]
 
-        if (mapping != null) {
-          val precision = computePrecision(column, mapping)
-
-          return ColumnTypeDefinition(column, mapping.typeName, precision, column.scale)
+        if (resolver != null) {
+          return resolver.resolve(sourceDatabase, targetDatabase, column)
         }
       }
     }
@@ -52,125 +56,183 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     return null
   }
 
-  @JvmOverloads
-  fun addMapping(
+  private fun addMapping(
     sourceDB: DatabaseType, targetDB: DatabaseType, sourceTypeName: String, targetTypeName: String,
-    type: JDBCType, maxPrecision: Int = 0, places: Int = 0
-  ): ProprietaryColumnTypeDefinitionResolver {
-    addMappingInternal(sourceDB, targetDB, sourceTypeName, targetTypeName, type, maxPrecision, places)
+    type: JDBCType, maxPrecision: Int = -1, places: Int = -1
+  ) {
+    addSimpleMapping(sourceDB, targetDB, sourceTypeName, targetTypeName, type, maxPrecision, places)
 
     if (sourceDB === MYSQL) {
-      addMappingInternal(MARIADB, targetDB, sourceTypeName, targetTypeName, type, maxPrecision, places)
+      addSimpleMapping(MARIADB, targetDB, sourceTypeName, targetTypeName, type, maxPrecision, places)
     } else if (targetDB === MYSQL) {
-      addMappingInternal(sourceDB, MARIADB, sourceTypeName, targetTypeName, type, maxPrecision, places)
+      addSimpleMapping(sourceDB, MARIADB, sourceTypeName, targetTypeName, type, maxPrecision, places)
     }
-
-    return this
   }
 
-  private fun addMappingInternal(
+  private fun addSimpleMapping(
     sourceDB: DatabaseType, targetDB: DatabaseType,
     sourceTypeName: String, targetTypeName: String, type: JDBCType,
     maxPrecision: Int, places: Int
   ) {
+    val resolver = ColumnTypeDefinitionResolver { sourceDatabase, targetDatabase, column ->
+      val precision = computePrecision(column, DatabaseColumnType(targetTypeName, type, maxPrecision, places))
+      ColumnTypeDefinition(column, targetTypeName, precision, column.scale)
+    }
+
+    addMappingInternal(sourceDB, targetDB, sourceTypeName, resolver)
+  }
+
+  private fun addMappingInternal(
+    sourceDB: DatabaseType, targetDB: DatabaseType, sourceTypeName: String, resolver: ColumnTypeDefinitionResolver
+  ) {
     val databaseMatrix = mappings.getOrPut(sourceDB) { EnumMap(DatabaseType::class.java) }
     val mapping = databaseMatrix.getOrPut(targetDB) { HashMap() }
 
-    mapping[sourceTypeName] = DatabaseColumnType(targetTypeName, type, maxPrecision, places)
+    mapping[sourceTypeName] = resolver
   }
 
-  private fun createPostgresSpecificMappings() {
-    mapDBspecificTypeToStandardType(POSTGRESQL, "TEXT", "VARCHAR", JDBCType.CLOB, 4000) //CHAR(254)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "BYTEA", "BLOB", JDBCType.BLOB) //CLOB (2G) LONGBLOB
-    mapDBspecificTypeToStandardType(POSTGRESQL, "NUMERIC", "DECIMAL", JDBCType.NUMERIC, 16)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "BIGSERIAL", "BIGINT", JDBCType.BIGINT)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "BYTEA", "LONGBLOB", JDBCType.BLOB)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "DOUBLE PRECISION", "DOUBLE", JDBCType.DOUBLE)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "SMALLSERIAL", "SMALLINT", JDBCType.SMALLINT)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "TEXT", "LONGTEXT", JDBCType.CLOB)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "UUID", "VARCHAR", JDBCType.VARCHAR, 36)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "BPCHAR", "CHAR", JDBCType.CHAR)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "OID", "BLOB", JDBCType.BLOB)
-    mapDBspecificTypeToStandardType(POSTGRESQL, "BYTEA", "BLOB", JDBCType.BLOB)
-
-    mapStandardTypeToDBspecificType(POSTGRESQL, "VARBINARY", "BYTEA", JDBCType.VARBINARY)
-    mapStandardTypeToDBspecificType(POSTGRESQL, "BLOB", "BYTEA", JDBCType.BLOB)
-    mapStandardTypeToDBspecificType(POSTGRESQL, "CLOB", "TEXT", JDBCType.LONGVARCHAR)
-  }
-
-  private fun createOracleSpecificMappings() {
-    mapDBspecificTypeToStandardType(ORACLE, "VARCHAR2", "VARCHAR", JDBCType.VARCHAR)
-    mapDBspecificTypeToStandardType(ORACLE, "RAW", "BIT", JDBCType.BIT) //TINYBLOB
-    mapDBspecificTypeToStandardType(ORACLE, "NUMBER(19, 0)", "BIGINT", JDBCType.BIGINT)
-
-    mapStandardTypeToDBspecificType(ORACLE, "BINARY", "RAW", JDBCType.BINARY, 4000)
-    mapStandardTypeToDBspecificType(ORACLE, "DOUBLE", "DOUBLE PRECISION", JDBCType.DOUBLE)
-  }
-
-  private fun createH2SpecificMappings() {
-    mapDBspecificTypeToStandardType(H2DB, "LONGTEXT", "CLOB", JDBCType.CLOB)
-    mapDBspecificTypeToStandardType(H2DB, "LONGBLOB", "BLOB", JDBCType.BLOB)
-    mapDBspecificTypeToStandardType(H2DB, "BINARY LARGE OBJECT", "BLOB", JDBCType.BLOB)
-    mapDBspecificTypeToStandardType(HSQLDB, "CHARACTER", "CHAR", JDBCType.CHAR)
-  }
-
-  private fun createDerbySpecificMappings() {
-    mapDBspecificTypeToStandardType(DERBY, "LONGTEXT", "CLOB", JDBCType.CLOB)
-    mapDBspecificTypeToStandardType(DERBY, "LONGBLOB", "BLOB", JDBCType.BLOB)
-  }
-
-  private fun createDB2Mappings() {
-    mapStandardTypeToDBspecificType(DB2, "NUMBER", "DECIMAL", JDBCType.DECIMAL, 31, 5)
-  }
-
-  private fun createMysqlSpecificMappings() {
-    mapDBspecificTypeToStandardType(MYSQL, "LONGTEXT", "VARCHAR", JDBCType.VARCHAR, 2147483647)
-    mapDBspecificTypeToStandardType(MYSQL, "MEDIUMTEXT", "VARCHAR", JDBCType.VARCHAR, 16777215)
-    mapDBspecificTypeToStandardType(MYSQL, "LONGBLOB", "BLOB", JDBCType.BLOB)
-    mapDBspecificTypeToStandardType(MYSQL, "DECIMAL", "DECIMAL", JDBCType.DECIMAL, 16)
-    mapDBspecificTypeToStandardType(MYSQL, "YEAR", "NUMBER", JDBCType.NUMERIC)
-    mapDBspecificTypeToStandardType(MYSQL, "SMALLINT UNSIGNED", "INTEGER", JDBCType.INTEGER)
-    mapDBspecificTypeToStandardType(MYSQL, "INTEGER UNSIGNED", "BIGINT", JDBCType.BIGINT)
-    mapDBspecificTypeToStandardType(MYSQL, "INT UNSIGNED", "BIGINT", JDBCType.BIGINT)
-    mapStandardTypeToDBspecificType(MYSQL, "NUMBER", "NUMERIC", JDBCType.NUMERIC, 65)
-
-    mapStandardTypeToDBspecificType(MYSQL, "CLOB", "LONGTEXT", JDBCType.LONGVARCHAR)
-//    mapStandardTypeToDBspecificType(MYSQL, "BLOB", "LONGTEXT", JDBCType.LONGVARCHAR, 2147483647)
-  }
-
-  private fun createMssqlSpecificMappings() {
-    mapDBspecificTypeToStandardType(MSSQL, "NVARCHAR", "VARCHAR", JDBCType.VARCHAR, 255)
-    mapDBspecificTypeToStandardType(MSSQL, "VARBINARY", "BLOB", JDBCType.BLOB)
-    mapDBspecificTypeToStandardType(MSSQL, "BINARY", "BLOB", JDBCType.BLOB)
-    mapDBspecificTypeToStandardType(MSSQL, "MONEY", "NUMBER", JDBCType.NUMERIC, 19, 4)
-    mapDBspecificTypeToStandardType(MSSQL, "SMALL DATETIME", "DATE", JDBCType.DATE)
-    mapDBspecificTypeToStandardType(MSSQL, "SMALL MONEY", "NUMBER", JDBCType.NUMERIC, 10, 42)
-    mapDBspecificTypeToStandardType(MSSQL, "UNIQUEIDENTIFIER", "CHAR", JDBCType.CHAR, 36)
-
-    mapStandardTypeToDBspecificType(MSSQL, "BOOLEAN", "BIT", JDBCType.BOOLEAN)
-    mapStandardTypeToDBspecificType(MSSQL, "BLOB", "IMAGE", JDBCType.BLOB)
-    mapStandardTypeToDBspecificType(MSSQL, "CLOB", "VARCHAR(MAX)", JDBCType.LONGVARCHAR) // TEXT
-  }
-
-  private fun mapDBspecificTypeToStandardType(
-    sourceDB: DatabaseType, sourceTypeName: String, targetTypeName: String, type: JDBCType,
-    maxPrecision: Int = 0, places: Int = 0
+  /**
+   * Add mapping for source type to all other database types
+   */
+  @Suppress("SameParameterValue")
+  private fun addSourceTypeMapping(
+    sourceDB: DatabaseType, sourceTypeName: String, resolver: ColumnTypeDefinitionResolver
   ) {
-    entries.forEach {
+    DatabaseType.entries.forEach {
+      if (it != sourceDB) {
+        addMappingInternal(sourceDB, it, sourceTypeName, resolver)
+      }
+    }
+  }
+
+  /**
+   * Add mapping for target type from other database types
+   */
+  @Suppress("SameParameterValue")
+  private fun addTargetTypeMapping(
+    targetDB: DatabaseType, targetTypeName: String, resolver: ColumnTypeDefinitionResolver
+  ) {
+    DatabaseType.entries.forEach {
+      if (it != targetDB) {
+        addMappingInternal(it, targetDB, targetTypeName, resolver)
+      }
+    }
+  }
+
+  /**
+   * Add mapping for source type to all other database types
+   */
+  private fun addSourceTypeMapping(
+    sourceDB: DatabaseType, sourceTypeName: String, targetTypeName: String, type: JDBCType,
+    maxPrecision: Int = -1, places: Int = -1
+  ) {
+    DatabaseType.entries.forEach {
       if (it != sourceDB) {
         addMapping(sourceDB, it, sourceTypeName, targetTypeName, type, maxPrecision, places)
       }
     }
   }
 
-  private fun mapStandardTypeToDBspecificType(
+  /**
+   * Add mapping for target type from other database types
+   */
+  private fun addTargetTypeMapping(
     targetDB: DatabaseType, sourceTypeName: String, targetTypeName: String, type: JDBCType,
     maxPrecision: Int = 0, places: Int = 0
   ) {
-    entries.forEach {
+    DatabaseType.entries.forEach {
       if (it != targetDB) {
         addMapping(it, targetDB, sourceTypeName, targetTypeName, type, maxPrecision, places)
       }
     }
+  }
+
+  private fun createPostgresSpecificMappings() {
+//    addSourceTypeMapping(POSTGRESQL, "TEXT", "VARCHAR", CLOB, 4000) //CHAR(254)
+//    addSourceTypeMapping(POSTGRESQL, "TEXT", "LONGTEXT", CLOB)
+    addSourceTypeMapping(POSTGRESQL, "BYTEA", "BLOB", BLOB) //CLOB (2G) LONGBLOB
+    addSourceTypeMapping(POSTGRESQL, "NUMERIC", "DECIMAL", NUMERIC, 16)
+    addSourceTypeMapping(POSTGRESQL, "BIGSERIAL", "BIGINT", BIGINT)
+    addSourceTypeMapping(POSTGRESQL, "BYTEA", "LONGBLOB", BLOB)
+    addSourceTypeMapping(POSTGRESQL, "DOUBLE PRECISION", "DOUBLE", DOUBLE)
+    addSourceTypeMapping(POSTGRESQL, "SMALLSERIAL", "SMALLINT", SMALLINT)
+    addSourceTypeMapping(POSTGRESQL, "UUID", "VARCHAR", VARCHAR, 36)
+    addSourceTypeMapping(POSTGRESQL, "BPCHAR", "CHAR", CHAR)
+    addSourceTypeMapping(POSTGRESQL, "OID", "BLOB", BLOB)
+
+    addTargetTypeMapping(POSTGRESQL, "VARBINARY", "BYTEA", VARBINARY)
+    addTargetTypeMapping(POSTGRESQL, "BLOB", "BYTEA", BLOB)
+    addTargetTypeMapping(POSTGRESQL, "CLOB", "TEXT", LONGVARCHAR)
+  }
+
+  private fun createOracleSpecificMappings() {
+    addSourceTypeMapping(ORACLE, "VARCHAR2", "VARCHAR", VARCHAR)
+    addSourceTypeMapping(ORACLE, "RAW", "BIT", BIT) //TINYBLOB
+
+    addSourceTypeMapping(ORACLE, "NUMBER", "BIGINT", BIGINT)
+    addMapping(ORACLE, H2DB, "NUMBER", "BIGINT", BIGINT, 0, 0) // H2 does not support BIGINT with precision
+
+    // For some reason, Oracle return JDBC type TIMESTAMP for DATE columns??
+    addSourceTypeMapping(ORACLE, "DATE") { _, _, column ->
+      if (column.jdbcColumnType == TIMESTAMP) ColumnTypeDefinition(column, "DATE") else null
+    }
+
+    addTargetTypeMapping(ORACLE, "BINARY", "RAW", BINARY, 4000)
+    addTargetTypeMapping(ORACLE, "DOUBLE", "DOUBLE PRECISION", DOUBLE)
+    addTargetTypeMapping(ORACLE, "BLOB", "BLOB", BLOB)
+  }
+
+  private fun createH2SpecificMappings() {
+    addSourceTypeMapping(H2DB, "LONGTEXT", "CLOB", CLOB)
+    addSourceTypeMapping(H2DB, "LONGBLOB", "BLOB", BLOB)
+    addSourceTypeMapping(H2DB, "BINARY LARGE OBJECT", "BLOB", BLOB)
+  }
+
+  private fun createHSQLDBSpecificMappings() {
+    addSourceTypeMapping(HSQLDB, "CHARACTER", "CHAR", CHAR)
+  }
+
+  private fun createDerbySpecificMappings() {
+    addSourceTypeMapping(DERBY, "LONGTEXT", "CLOB", CLOB)
+    addSourceTypeMapping(DERBY, "LONGBLOB", "BLOB", BLOB)
+  }
+
+  private fun createDB2Mappings() {
+    addTargetTypeMapping(DB2, "NUMBER", "DECIMAL", DECIMAL, 31, 5)
+  }
+
+  private fun createMysqlSpecificMappings() {
+    addSourceTypeMapping(MYSQL, "LONGTEXT", "VARCHAR", VARCHAR, 2147483647)
+    addSourceTypeMapping(MYSQL, "MEDIUMTEXT", "VARCHAR", VARCHAR, 16777215)
+    addSourceTypeMapping(MYSQL, "LONGBLOB", "BLOB", BLOB)
+    addSourceTypeMapping(MYSQL, "SMALLINT UNSIGNED", "INTEGER", INTEGER)
+    addSourceTypeMapping(MYSQL, "INTEGER UNSIGNED", "BIGINT", BIGINT)
+    addSourceTypeMapping(MYSQL, "INT UNSIGNED", "BIGINT", BIGINT)
+    addSourceTypeMapping(MYSQL, "YEAR", "NUMBER", NUMERIC)
+
+
+    addTargetTypeMapping(MYSQL, "CLOB", "LONGTEXT", LONGVARCHAR)
+    addTargetTypeMapping(MYSQL, "NUMBER", "NUMERIC", NUMERIC, 65)
+
+    addTargetTypeMapping(MYSQL, "VARCHAR") { _, _, column ->
+      if (column.jdbcColumnType == VARCHAR && column.precision > 16300) ColumnTypeDefinition(column, "TEXT", 0, 0) else null
+    }
+    addTargetTypeMapping(MYSQL, "VARBINARY") { _, _, column ->
+      if (column.jdbcColumnType == VARBINARY && column.precision > 65000) ColumnTypeDefinition(column, "BLOB", 0, 0) else null
+    }
+  }
+
+  private fun createMssqlSpecificMappings() {
+    addSourceTypeMapping(MSSQL, "NVARCHAR", "VARCHAR", VARCHAR, 255)
+//    addSourceTypeMapping(MSSQL, "VARBINARY", "BLOB", BLOB)
+//    addSourceTypeMapping(MSSQL, "BINARY", "BLOB", BLOB)
+    addSourceTypeMapping(MSSQL, "MONEY", "NUMBER", NUMERIC, 19, 4)
+    addSourceTypeMapping(MSSQL, "SMALL DATETIME", "DATE", DATE)
+    addSourceTypeMapping(MSSQL, "SMALL MONEY", "NUMBER", NUMERIC, 10, 42)
+    addSourceTypeMapping(MSSQL, "UNIQUEIDENTIFIER", "CHAR", CHAR, 36)
+
+    addTargetTypeMapping(MSSQL, "BOOLEAN", "BIT", BOOLEAN)
+    addTargetTypeMapping(MSSQL, "BLOB", "IMAGE", BLOB)
+    addTargetTypeMapping(MSSQL, "CLOB", "VARCHAR(MAX)", LONGVARCHAR) // TEXT
   }
 }

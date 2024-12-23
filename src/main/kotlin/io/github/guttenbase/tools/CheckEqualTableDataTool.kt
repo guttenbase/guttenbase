@@ -248,15 +248,18 @@ open class CheckEqualTableDataTool(
     columnType.isDate() -> data1.toDate().toLocalDateTime().roundToWholeSeconds() ==
         data2.toDate().toLocalDateTime().roundToWholeSeconds()
 
-    columnType == CLASS_BIGDECIMAL -> (data1 as BigDecimal).compareTo(data2 as BigDecimal) == 0 // Ignore scale, if 0
+    columnType == CLASS_BIGDECIMAL -> {
+      if (data1 is BigDecimal && data2 is BigDecimal)
+        data1.compareTo(data2) == 0 // Ignore scale, if 0
+      else// if (data1 is Long && data2 is Long)
+        data1 == data2
+    }
     else -> data1 == data2
   }
 
   private fun checkRowCount(
-    sourceTableMetaData: TableMetaData,
-    targetTableMetaData: TableMetaData,
-    tableName1: String,
-    tableName2: String
+    sourceTableMetaData: TableMetaData, targetTableMetaData: TableMetaData,
+    tableName1: String, tableName2: String
   ) {
     if (sourceTableMetaData.filteredRowCount != targetTableMetaData.filteredRowCount) {
       throw UnequalNumberOfRowsException(

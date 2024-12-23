@@ -135,10 +135,10 @@ enum class ColumnType(
    */
   @Throws(SQLException::class)
   fun setValue(
-    insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData, sqlType: Int, data: Any?
+    insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData, column: ColumnMetaData, data: Any?
   ): Closeable? {
     return if (data == null) {
-      insertStatement.setNull(columnIndex, sqlType)
+      insertStatement.setNull(columnIndex, column.columnType)
       null
     } else {
       setStatementValue(insertStatement, columnIndex, databaseMetaData, data)

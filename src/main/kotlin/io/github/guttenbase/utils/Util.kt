@@ -36,9 +36,8 @@ object Util {
   fun Date.toLocalDateTime(): LocalDateTime = toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
 
   @JvmStatic
-  fun LocalDateTime.roundToWholeSeconds(): LocalDateTime {
-    return this.plusNanos(500000000).truncatedTo(ChronoUnit.SECONDS)
-  }
+  fun LocalDateTime.roundToWholeSeconds(): LocalDateTime =
+    (if (this.nano > 0) this.plusNanos(500000000) else this).truncatedTo(ChronoUnit.SECONDS)
 
   @JvmStatic
   fun Any.toDate(): Date = when (this) {

@@ -9,6 +9,8 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
 import io.github.guttenbase.tools.ColumnMapping
+import io.github.guttenbase.utils.Util.toDate
+import io.github.guttenbase.utils.Util.toLocalDateTime
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -110,12 +112,16 @@ object BigDecimalToDoubleColumnDataMapper : ColumnDataMapper {
 
 object TimestampToDateColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
-    if (value is Timestamp) Date(value.time) else value
+    if (value is Timestamp) {
+      Date(value.toLocalDateTime().toLocalDate().toDate().time)
+    } else value
 }
 
 object TimeToDateColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
-    if (value is Time) Date(value.time) else value
+    if (value is Time) {
+      Date(value.toLocalDateTime().toLocalDate().toDate().time)
+    } else value
 }
 
 object DateToTimeColumnDataMapper : ColumnDataMapper {

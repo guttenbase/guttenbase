@@ -40,16 +40,22 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
 
 private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
 
-internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType) =
-  if (column.precision > type.estimatedEffectiveMaxPrecision) {
-    LOG.debug(
-      """
+internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType): Int =
+  when {
+    type.maxPrecision < 0 -> column.precision // Dunno, depends on target database
+
+    column.precision > type.estimatedEffectiveMaxPrecision -> {
+      LOG.debug(
+        """
       Requested column precision of ${column.precision} for type ${column.jdbcColumnType} 
       is higher than ${type.estimatedEffectiveMaxPrecision} supported by $type
     """.trimIndent()
-    )
-    type.maxPrecision
-  } else {
-    column.precision
+      )
+
+      type.maxPrecision
+    }
+
+    else ->
+      column.precision
   }
 

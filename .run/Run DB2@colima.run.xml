@@ -1,0 +1,28 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run DB2@colima" type="docker-deploy" factoryName="docker-image" server-name="docker-colima">
+    <deployment type="docker-image">
+      <settings>
+        <option name="imageTag" value="icr.io/db2_community/db2" />
+        <option name="containerName" value="db2" />
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="50000" />
+              <option name="hostPort" value="15000" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
+        <option name="commandLineOptions" value="--privileged=true --env-file $PROJECT_DIR$/../guttenbase-integration-tests/target/classes/ibmdb2/initdb-scripts/db2.env" />
+        <option name="volumeBindings">
+          <list>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/database" />
+              <option name="hostPath" value="db2_data" />
+            </DockerVolumeBindingImpl>
+          </list>
+        </option>
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
