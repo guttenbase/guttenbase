@@ -6,7 +6,7 @@ import io.github.guttenbase.meta.DatabaseMetaData
 import org.slf4j.LoggerFactory
 
 /**
- * This class maintains a list of [ColumnTypeDefinitionResolver]s and asks thema one after another to
+ * This class maintains a list of [ColumnTypeDefinitionResolver]s and asks them one after another to
  * create a [ColumnTypeDefinition] for a given column and database type.
  *
  * Users may add custom [ColumnTypeDefinitionResolver]s in special cases that need to be resolved manually.
@@ -15,11 +15,12 @@ import org.slf4j.LoggerFactory
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   private val resolvers = mutableListOf<ColumnTypeDefinitionResolver>(
-    ProprietaryColumnTypeDefinitionResolver, DatabaseColumnTypeDefinitionResolver,
+    ProprietaryColumnTypeDefinitionResolver,
+    DatabaseColumnTypeDefinitionResolver,
 
     // Finally, we copy the original definition from the column as the last resort
-    ColumnTypeDefinitionResolver { _, _, column ->
-      ColumnTypeDefinition(column, column.columnTypeName, column.precision, column.scale)
+    ColumnTypeDefinitionResolver { _, targetDatabase, column ->
+      ColumnTypeDefinition(column, targetDatabase, column.columnTypeName, column.precision, column.scale)
     }
   )
 

@@ -61,6 +61,5 @@ fun JDBCType.isBlobType() = this in BLOB_TYPES
 fun JDBCType.isBinaryType() = this in BINARY_TYPES
 fun JDBCType.isNumericType() = this in NUMERIC_TYPES
 fun JDBCType.isDateType() = this in DATE_TYPES
-val JDBCType.supportsPrecisionClause get() = isStringType() || isNumericType() || isBlobType() || isBinaryType()
 
-val STANDARD_TYPES = listOf(VARCHAR.name, CHAR.name, INTEGER.name, BIGINT.name, DECIMAL.name, TIME.name, TIMESTAMP.name)
+val STANDARD_TYPES = listOf(VARCHAR.name, CHAR.name, INTEGER.name, BIGINT.name, DECIMAL.name, DATE.name, TIME.name, TIMESTAMP.name)

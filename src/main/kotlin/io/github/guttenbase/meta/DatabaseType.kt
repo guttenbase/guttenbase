@@ -3,6 +3,7 @@ package io.github.guttenbase.meta
 import io.github.guttenbase.mapping.ColumnTypeDefinition
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.schema.AutoIncrementValue
+import java.sql.JDBCType
 import java.sql.Types
 
 // Placeholders to be replaced in templates
@@ -66,12 +67,14 @@ enum class DatabaseType(
     assert(column.isAutoIncrement) { "$column is no auto increment column" }
 
     return when (this) {
-      POSTGRESQL -> DatabaseColumnType(when (column.columnType) {
-        Types.BIGINT -> "BIGSERIAL"
-        Types.INTEGER -> "SERIAL"
-        Types.SMALLINT -> "SMALLSERIAL"
-        else -> "SERIAL"
-      }, column.jdbcColumnType)
+      POSTGRESQL -> DatabaseColumnType(
+        when (column.columnType) {
+          Types.BIGINT -> "BIGSERIAL"
+          Types.INTEGER -> "SERIAL"
+          Types.SMALLINT -> "SMALLSERIAL"
+          else -> "SERIAL"
+        }, column.jdbcColumnType
+      )
 
       else -> null
     }
@@ -187,6 +190,9 @@ enum class DatabaseType(
 
   @JvmOverloads
   fun escapeDatabaseEntity(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
+
+  fun supportsPrecisionClause(type: JDBCType) =
+    type.isStringType() || type.isNumericType() || type.isBlobType() || type.isBinaryType()
 
   private fun retrieveAutoIncrementValue(column: ColumnMetaData): AutoIncrementValue {
     val connectorRepository = column.tableMetaData.databaseMetaData.connectorRepository

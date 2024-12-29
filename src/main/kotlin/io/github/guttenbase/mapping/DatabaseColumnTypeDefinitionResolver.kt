@@ -17,7 +17,7 @@ object DatabaseColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     return if (type != null) {
       val precision = computePrecision(column, type)
 
-      ColumnTypeDefinition(column, type.typeName, precision, column.scale)
+      ColumnTypeDefinition(column, targetDatabase, type.typeName, precision, column.scale)
     } else {
       null
     }

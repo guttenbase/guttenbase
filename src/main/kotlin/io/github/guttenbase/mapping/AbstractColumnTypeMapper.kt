@@ -38,7 +38,7 @@ abstract class AbstractColumnTypeMapper : ColumnTypeMapper {
       val columnType = targetDatabase.databaseType.createColumnAutoIncrementType(column)
 
       if (columnType != null) {
-        return ColumnTypeDefinition(column, columnType.typeName)
+        return ColumnTypeDefinition(column, targetDatabase, columnType.typeName)
       }
     }
 

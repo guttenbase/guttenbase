@@ -10,7 +10,7 @@ import java.sql.JDBCType.*
 import java.util.*
 
 /**
- * Try to resolve types using heuristic mapping of proprietary DB types
+ * Try to resolve types using heuristic mappings of proprietary DB types
  *
  *  &copy; 2012-2034 akquinet tech@spree
  */
@@ -76,7 +76,7 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
   ) {
     val resolver = ColumnTypeDefinitionResolver { sourceDatabase, targetDatabase, column ->
       val precision = computePrecision(column, DatabaseColumnType(targetTypeName, type, maxPrecision, places))
-      ColumnTypeDefinition(column, targetTypeName, precision, column.scale)
+      ColumnTypeDefinition(column, targetDatabase, targetTypeName, precision, column.scale)
     }
 
     addMappingInternal(sourceDB, targetDB, sourceTypeName, resolver)
@@ -174,8 +174,8 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
 //    addMapping(ORACLE, H2DB, "NUMBER", "BIGINT", BIGINT, 0, 0) // H2 does not support BIGINT with precision
 
     // For some reason, Oracle return JDBC type TIMESTAMP for DATE columns??
-    addSourceTypeMapping(ORACLE, "DATE") { _, _, column ->
-      if (column.jdbcColumnType == TIMESTAMP) ColumnTypeDefinition(column, "DATE") else null
+    addSourceTypeMapping(ORACLE, "DATE") { _, targetDatabase, column ->
+      if (column.jdbcColumnType == TIMESTAMP) ColumnTypeDefinition(column, targetDatabase, "DATE") else null
     }
 
     addTargetTypeMapping(ORACLE, "BINARY", "RAW", BINARY, 4000)
@@ -204,13 +204,13 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
   // https://www.ibm.com/docs/en/iis/11.5?topic=dts-db2-data-type-support
   private fun createDB2Mappings() {
     addTargetTypeMapping(DB2, "NUMBER", "DECIMAL", DECIMAL, 31, 5)
-    addTargetTypeMapping(DB2, "VARCHAR") { _, _, column ->
+    addTargetTypeMapping(DB2, "VARCHAR") { _, targetDatabase, column ->
       if (column.jdbcColumnType == VARCHAR && column.precision > 32000)
-        ColumnTypeDefinition(column, "CLOB") else null
+        ColumnTypeDefinition(column, targetDatabase, "CLOB") else null
     }
-    addTargetTypeMapping(DB2, "VARBINARY") { _, _, column ->
+    addTargetTypeMapping(DB2, "VARBINARY") { _, targetDatabase, column ->
       if (column.jdbcColumnType == VARBINARY && column.precision > 32000)
-        ColumnTypeDefinition(column, "BLOB") else null
+        ColumnTypeDefinition(column, targetDatabase, "BLOB") else null
     }
   }
 
@@ -231,13 +231,13 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
     addTargetTypeMapping(MYSQL, "CLOB", "LONGTEXT", LONGVARCHAR)
     addTargetTypeMapping(MYSQL, "NUMBER", "NUMERIC", NUMERIC, 65)
 
-    addTargetTypeMapping(MYSQL, "VARCHAR") { _, _, column ->
+    addTargetTypeMapping(MYSQL, "VARCHAR") { _, targetDatabase, column ->
       if (column.jdbcColumnType == VARCHAR && column.precision > 16300)
-        ColumnTypeDefinition(column, "TEXT", 0, 0) else null
+        ColumnTypeDefinition(column, targetDatabase, "TEXT", 0, 0) else null
     }
-    addTargetTypeMapping(MYSQL, "VARBINARY") { _, _, column ->
+    addTargetTypeMapping(MYSQL, "VARBINARY") { _, targetDatabase, column ->
       if (column.jdbcColumnType == VARBINARY && column.precision > 65000)
-        ColumnTypeDefinition(column, "BLOB", 0, 0) else null
+        ColumnTypeDefinition(column, targetDatabase, "BLOB", 0, 0) else null
     }
   }
 
