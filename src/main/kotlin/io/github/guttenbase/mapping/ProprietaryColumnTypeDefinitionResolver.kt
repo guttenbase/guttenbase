@@ -215,13 +215,18 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
   }
 
   private fun createMysqlSpecificMappings() {
-    addSourceTypeMapping(MYSQL, "LONGTEXT", "VARCHAR", VARCHAR, 2147483647)
-    addSourceTypeMapping(MYSQL, "MEDIUMTEXT", "VARCHAR", VARCHAR, 16777215)
-    addSourceTypeMapping(MYSQL, "LONGBLOB", "BLOB", BLOB)
+    addSourceTypeMapping(MYSQL, "LONGTEXT", "CLOB", CLOB, 0, 0)
+    addSourceTypeMapping(MYSQL, "MEDIUMTEXT", "CLOB", CLOB, 0, 0)
+    addSourceTypeMapping(MYSQL, "TEXT", "CLOB", CLOB, 0, 0)
+    addSourceTypeMapping(MYSQL, "MEDIUMBLOB", "BLOB", BLOB, 0, 0)
+    addSourceTypeMapping(MYSQL, "LONGBLOB", "BLOB", BLOB, 0, 0)
+    addSourceTypeMapping(MYSQL, "MEDIUMINT UNSIGNED", "INTEGER", INTEGER)
+    addSourceTypeMapping(MYSQL, "TINYINT UNSIGNED", "INTEGER", INTEGER)
     addSourceTypeMapping(MYSQL, "SMALLINT UNSIGNED", "INTEGER", INTEGER)
     addSourceTypeMapping(MYSQL, "INTEGER UNSIGNED", "BIGINT", BIGINT)
     addSourceTypeMapping(MYSQL, "INT UNSIGNED", "BIGINT", BIGINT)
-    addSourceTypeMapping(MYSQL, "YEAR", "NUMBER", NUMERIC)
+    addSourceTypeMapping(MYSQL, "YEAR", "INTEGER", INTEGER)
+//    addSourceTypeMapping(MYSQL, "UUID", "VARCHAR", VARCHAR, 36)
 
     addTargetTypeMapping(MYSQL, "CLOB", "LONGTEXT", LONGVARCHAR)
     addTargetTypeMapping(MYSQL, "NUMBER", "NUMERIC", NUMERIC, 65)
