@@ -16,11 +16,12 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
   override fun resolve(type: ColumnTypeDefinition): ColumnTypeDefinition? =
     when (type.targetDataBase.databaseType) {
       // https://www.ibm.com/docs/en/iis/11.5?topic=dts-db2-data-type-support
-      DB2 -> when (type.jdbcType) {
-        VARCHAR -> if (type.precision > 32000) ColumnTypeDefinition(type, "CLOB", CLOB) else null
-        VARBINARY -> if (type.precision > 32000) ColumnTypeDefinition(type, "BLOB", BLOB) else null
-        else -> null
-      }
+//      DB2 -> when (type.jdbcType) {
+//        LONGVARCHAR -> if (type.precision > 32500) ColumnTypeDefinition(type, "CLOB", CLOB) else null
+//        VARCHAR -> if (type.precision > 32500) ColumnTypeDefinition(type, "CLOB", CLOB) else null
+//        VARBINARY -> if (type.precision > 32500) ColumnTypeDefinition(type, "BLOB", BLOB) else null
+//        else -> null
+//      }
 
       ORACLE -> when (type.jdbcType) {
         // For some reason, Oracle return JDBC type TIMESTAMP for DATE columns??

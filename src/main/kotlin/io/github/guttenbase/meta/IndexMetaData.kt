@@ -23,5 +23,3 @@ interface IndexMetaData : Comparable<IndexMetaData>, Serializable {
   val tableMetaData: TableMetaData
   val isPrimaryKeyIndex: Boolean
 }
-
-fun IndexMetaData.isSynthetic() = indexName.startsWith(SYNTHETIC_INDEX_PREFIX, true)

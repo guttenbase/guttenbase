@@ -5,6 +5,7 @@ import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.sql.SQLLexer
+import io.github.guttenbase.tools.ScriptExecutorTool.Companion.LOG
 import io.github.guttenbase.utils.Util
 import io.github.guttenbase.utils.Util.ARROW
 import org.slf4j.LoggerFactory
@@ -38,9 +39,10 @@ constructor(
     connectorId: String,
     updateSchema: Boolean = true,
     prepareTargetConnection: Boolean = true,
-    resourceName: String
+    resourceName: String,
+    errorHandler: ExceptionHandler = DEFAULT_EXCEPTIONHANDLER,
   ) {
-    executeScript(connectorId, updateSchema, prepareTargetConnection, Util.readLinesFromFile(resourceName, encoding))
+    executeScript(connectorId, updateSchema, prepareTargetConnection, Util.readLinesFromFile(resourceName, encoding), errorHandler)
   }
 
   /**
@@ -49,12 +51,11 @@ constructor(
   @Throws(SQLException::class)
   @JvmOverloads
   fun executeScript(
-    connectorId: String,
-    updateSchema: Boolean = true,
-    prepareTargetConnection: Boolean = true,
+    connectorId: String, updateSchema: Boolean = true, prepareTargetConnection: Boolean = true,
+    errorHandler: ExceptionHandler = DEFAULT_EXCEPTIONHANDLER,
     vararg lines: String
   ) {
-    executeScript(connectorId, updateSchema, prepareTargetConnection, listOf(*lines))
+    executeScript(connectorId, updateSchema, prepareTargetConnection, listOf(*lines), errorHandler)
   }
 
   /**
@@ -70,7 +71,8 @@ constructor(
   @JvmOverloads
   fun executeScript(
     connectorId: String, scriptUpdatesSchema: Boolean = true, prepareTargetConnection: Boolean = true,
-    lines: List<String>
+    lines: List<String>,
+    errorHandler: ExceptionHandler = DEFAULT_EXCEPTIONHANDLER
   ) {
     if (lines.isNotEmpty()) {
       val targetDatabaseConfiguration = connectorRepository.getTargetDatabaseConfiguration(connectorId)
@@ -97,13 +99,7 @@ constructor(
               try {
                 executeSQL(statement, sql)
               } catch (e: Exception) {
-                LOG.error(
-                  """|
-                  |Error in "$sql" 
-                  |$ARROW ${e.message}
-                  """.trimMargin(), e
-                )
-                throw e
+                errorHandler.handle(sql, e)
               } finally {
                 progressIndicator.endExecution(1)
                 progressIndicator.endProcess()
@@ -279,8 +275,30 @@ constructor(
     private val LOG = LoggerFactory.getLogger(ScriptExecutorTool::class.java)
 
     val DEFAULT_ENCODING: Charset = Charset.defaultCharset()
+
+    val DEFAULT_EXCEPTIONHANDLER = ExceptionHandler { sql, e ->
+      LOG.error(
+        """|
+                  |Error in "$sql" 
+                  |$ARROW ${e.message}
+                  """.trimMargin(), e
+      )
+      throw e
+    }
+    val WARNING_EXCEPTIONHANDLER = ExceptionHandler { sql, e ->
+      LOG.warn(
+        """|
+                  |Error in "$sql" 
+                  |$ARROW ${e.message}
+                  """.trimMargin(), e
+      )
+    }
   }
 }
 
 typealias RESULT_MAP = Map<String, Any?>
 typealias RESULT_LIST = List<RESULT_MAP>
+
+fun interface ExceptionHandler {
+  fun handle(sql: String, e: Exception)
+}

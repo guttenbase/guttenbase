@@ -28,9 +28,9 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
   private val mappings = HashMap<String, List<ColumnTypeDefinitionResolver>>()
 
   init {
-    mappings["LONGTEXT"] = listOf(TEXT_RESOLVER, CLOB_RESOLVER)
-    mappings["MEDIUMTEXT"] = listOf(TEXT_RESOLVER, CLOB_RESOLVER)
-    mappings["TEXT"] = listOf(CLOB_RESOLVER)
+    mappings["LONGTEXT"] = listOf(TEXT_RESOLVER, LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
+    mappings["MEDIUMTEXT"] = listOf(TEXT_RESOLVER, LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
+    mappings["TEXT"] = listOf(LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
     mappings["CLOB"] = listOf(LONGTEXT_RESOLVER)
 
     mappings["CHARACTER"] = listOf(CHAR_RESOLVER)
@@ -86,7 +86,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
   override fun resolve(type: ColumnTypeDefinition): ColumnTypeDefinition? {
     val resolvers = mappings[type.typeName] ?: listOf()
 
-    return resolvers.map { it.resolve(type) }.firstOrNull()
+    return resolvers.asSequence().map { it.resolve(type) }.firstOrNull { it != null }
   }
 }
 
@@ -127,6 +127,8 @@ private val NUMERIC_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMERIC", NUMERIC)) }
 private val VARCHAR_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "VARCHAR", VARCHAR)) }
+private val LONGVARCHAR_RESOLVER =
+  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARCHAR", LONGVARCHAR)) }
 private val CHAR_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "CHAR", CHAR)) }
 private val DATE_RESOLVER =

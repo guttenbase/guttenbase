@@ -219,7 +219,7 @@ class SchemaScriptCreatorTool(
   fun addTableColumn(columnMetaData: ColumnMetaData) =
     "ALTER TABLE " + getTableName(columnMetaData.tableMetaData) + " ADD " + createColumn(columnMetaData) + ";"
 
-  fun createConstraintName(prefix: String, preferredName: String?, uniqueId: Any): String {
+  fun createConstraintName(prefix: String, preferredName: String, uniqueId: Any): String {
     val name = StringBuilder(preferredName)
     val maxLength = targetMaxNameLength - prefix.length - uniqueId.toString().length
 
@@ -228,7 +228,13 @@ class SchemaScriptCreatorTool(
       name.deleteCharAt(index)
     }
 
-    return prefix + name + uniqueId
+    val finalName = name.toString()
+
+    return if (finalName.startsWith(prefix, true)) {
+      finalName + uniqueId
+    } else {
+      prefix + finalName + uniqueId
+    }
   }
 
   val targetMaxNameLength: Int

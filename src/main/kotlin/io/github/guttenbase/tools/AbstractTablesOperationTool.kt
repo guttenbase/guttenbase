@@ -43,7 +43,7 @@ abstract class AbstractTablesOperationTool(
     if (isApplicableOnTable(tableMetaData)) {
       val sql = createSql(connectorId, tableMetaData)
 
-      scriptExecutor.executeScript(connectorId, updateSchema, prepareTargetConnection, sql)
+      scriptExecutor.executeScript(connectorId, updateSchema, prepareTargetConnection, listOf(sql))
     }
   }
 
