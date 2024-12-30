@@ -28,23 +28,19 @@ interface DatabaseMetaData : Serializable {
   /**
    * @return (cached) meta data
    */
-  val supportedTypes: List<DatabaseColumnType>
+  val supportedTypes: Map<JDBCType, List<DatabaseSupportedColumnType>>
   val databaseMetaData: JdbcDatabaseMetaData
   val databaseType: DatabaseType
   val connectorRepository: ConnectorRepository
   val connectorId: String
-
-  fun typeFor(columnMetaData: ColumnMetaData): DatabaseColumnType?
 }
 
 const val PRECISION_PLACEHOLDER = "()"
 
-data class DatabaseColumnType(
+data class DatabaseSupportedColumnType(
   val typeName: String,
   val jdbcType: JDBCType,
   val maxPrecision: Int = 0,
   val maxScale: Int = 0,
   val nullable: Boolean = true
-) : Serializable {
-  val estimatedEffectiveMaxPrecision: Int get() = if (!jdbcType.isDateType()) (maxPrecision * 0.95).toInt() else maxPrecision
-}
+) : Serializable

@@ -232,7 +232,7 @@ internal class DatabaseMetaDataInspectorTool(
       val columnCount = meta.columnCount
 
       for (i in 1..columnCount) {
-        val columnTypeName = meta.getColumnTypeName(i)
+        val columnTypeName = meta.getColumnTypeName(i).uppercase()
         val columnType = meta.getColumnType(i)
         val columnName = meta.getColumnName(i)
         val columnClassName = meta.getColumnClassName(i)
@@ -242,14 +242,8 @@ internal class DatabaseMetaDataInspectorTool(
         val scale = meta.getScale(i)
         val column = ColumnMetaDataImpl(
           tableMetaData,
-          columnType,
-          columnName,
-          columnTypeName,
-          columnClassName,
-          isNullable,
-          isAutoIncrement,
-          precision,
-          scale
+          columnType, columnName, columnTypeName, columnClassName,
+          isNullable, isAutoIncrement, precision, scale
         )
 
         if (columnFilter.accept(column)) {
@@ -348,7 +342,7 @@ internal class DatabaseMetaDataInspectorTool(
           prec
         }
 
-        databaseMetaData.addSupportedType(typeName, jdbcType, precision, scale, nullable)
+        databaseMetaData.addSupportedType(typeName.uppercase(), jdbcType, precision, scale, nullable)
       }
     }
   }

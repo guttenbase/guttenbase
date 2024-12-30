@@ -7,38 +7,14 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.hints.DERBY
 import io.github.guttenbase.hints.H2
 import io.github.guttenbase.hints.HSQLDB
-import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.DatabaseColumnType
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseSupportedColumnType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.sql.JDBCType
 import java.sql.JDBCType.*
-import java.sql.Types
 
 class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
-  private class MyColumn(override var jdbcColumnType: JDBCType) : ColumnMetaData {
-    override var columnType = Types.VARCHAR
-
-    override val columnName = "JENS"
-    override val columnTypeName get() = jdbcColumnType.name
-    override val columnClassName: String get() = TODO("Not yet implemented")
-    override val tableMetaData: TableMetaData get() = TODO("Not yet implemented")
-    override val isNullable: Boolean get() = TODO("Not yet implemented")
-    override val isAutoIncrement: Boolean get() = TODO("Not yet implemented")
-    override val precision: Int get() = 1
-    override val scale: Int get() = TODO("Not yet implemented")
-    override val isPrimaryKey: Boolean get() = false
-    override val referencedColumns get() = TODO("Not yet implemented")
-    override val referencingColumns get() = TODO("Not yet implemented")
-
-    override fun compareTo(other: ColumnMetaData): Int {
-      TODO("Not yet implemented")
-    }
-  }
-
   @BeforeEach
   fun setupTables() {
     connectorRepository.addConnectionInfo(DERBY, TestDerbyConnectionInfo())
@@ -49,36 +25,36 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
   @Test
   fun `Inspect database meta data`() {
     val derby = connectorRepository.getDatabaseMetaData(DERBY)
+    val derbyVarchar = DatabaseSupportedColumnType("VARCHAR", VARCHAR, 32672, 0, true)
+
     assertEquals("Apache Derby Embedded JDBC Driver", derby.databaseMetaData.driverName)
-    assertThat(derby.supportedTypes).contains(
-      DatabaseColumnType("VARCHAR", VARCHAR, 32672, 0, true),
-      DatabaseColumnType("BIGINT", BIGINT, 19, 0, true),
-      DatabaseColumnType("BLOB", BLOB, 2147483647, 0, true)
+    assertThat(derby.supportedTypes.values.flatten()).contains(
+      derbyVarchar,
+      DatabaseSupportedColumnType("BIGINT", BIGINT, 19, 0, true),
+      DatabaseSupportedColumnType("BLOB", BLOB, 2147483647, 0, true)
     )
-    assertThat(derby.typeFor(MyColumn(VARCHAR))).extracting { it?.typeName }.isEqualTo("VARCHAR")
-    assertThat(derby.typeFor(MyColumn(BLOB))).extracting { it?.typeName }.isEqualTo("BLOB")
-    assertThat(derby.typeFor(MyColumn(BIGINT))).extracting { it?.typeName }.isEqualTo("BIGINT")
+    assertThat(derby.supportedTypes[VARCHAR]).containsOnly(derbyVarchar)
 
     val h2 = connectorRepository.getDatabaseMetaData(H2)
+    val h2Varchar = DatabaseSupportedColumnType("CHARACTER VARYING", VARCHAR, 1000000000, 0, true)
+
     assertEquals("H2 JDBC Driver", h2.databaseMetaData.driverName)
-    assertThat(h2.supportedTypes).contains(
-      DatabaseColumnType("CHARACTER VARYING", VARCHAR, 1000000000, 0, true),
-      DatabaseColumnType("BIGINT", BIGINT, 64, 0, true),
-      DatabaseColumnType("BINARY LARGE OBJECT", BLOB, 2147483647, 0, true)
+    assertThat(h2.supportedTypes.values.flatten()).contains(
+      h2Varchar,
+      DatabaseSupportedColumnType("BIGINT", BIGINT, 64, 0, true),
+      DatabaseSupportedColumnType("BINARY LARGE OBJECT", BLOB, 2147483647, 0, true)
     )
-    assertThat(h2.typeFor(MyColumn(VARCHAR))).extracting { it?.typeName }.isEqualTo("CHARACTER VARYING")
-    assertThat(h2.typeFor(MyColumn(BLOB))).extracting { it?.typeName }.isEqualTo("BINARY LARGE OBJECT")
-    assertThat(h2.typeFor(MyColumn(BIGINT))).extracting { it?.typeName }.isEqualTo("BIGINT")
+    assertThat(h2.supportedTypes[VARCHAR]).contains(h2Varchar)
 
     val hsqldb = connectorRepository.getDatabaseMetaData(HSQLDB)
+    val hsqldbVarchar = DatabaseSupportedColumnType("VARCHAR", VARCHAR, 2147483647, 0, true)
+
     assertEquals("HSQL Database Engine Driver", hsqldb.databaseMetaData.driverName)
-    assertThat(hsqldb.supportedTypes).contains(
-      DatabaseColumnType("VARCHAR", VARCHAR, 2147483647, 0, true),
-      DatabaseColumnType("BIGINT", BIGINT, 64, 0, true),
-      DatabaseColumnType("BLOB", BLOB, 2147483647, 0, true)
+    assertThat(hsqldb.supportedTypes.values.flatten()).contains(
+      hsqldbVarchar,
+      DatabaseSupportedColumnType("BIGINT", BIGINT, 64, 0, true),
+      DatabaseSupportedColumnType("BLOB", BLOB, 2147483647, 0, true)
     )
-    assertThat(hsqldb.typeFor(MyColumn(VARCHAR))).extracting { it?.typeName }.isEqualTo("VARCHAR")
-    assertThat(hsqldb.typeFor(MyColumn(BLOB))).extracting { it?.typeName }.isEqualTo("BLOB")
-    assertThat(hsqldb.typeFor(MyColumn(BIGINT))).extracting { it?.typeName }.isEqualTo("BIGINT")
+    assertThat(hsqldb.supportedTypes[VARCHAR]).contains(hsqldbVarchar)
   }
 }

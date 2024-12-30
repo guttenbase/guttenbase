@@ -1,8 +1,9 @@
 package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.DatabaseColumnType
+import io.github.guttenbase.meta.DatabaseSupportedColumnType
 import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.meta.isDateType
 import org.slf4j.LoggerFactory
 
 /**
@@ -15,19 +16,32 @@ import org.slf4j.LoggerFactory
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   private val resolvers = mutableListOf<ColumnTypeDefinitionResolver>(
+    // Pass 0: Use user-defined resolvers, if any, see below #addColumnTypeDefinitionResolver()
+
+    // Pass 1: Use heuristic knowledge about the target database to find a matching column type
+    // Databases typically "know" more types than the JDBC driver reports
     ProprietaryColumnTypeDefinitionResolver,
+
+    // Pass 2: Try to find matching column type in target database, i.e. JDBC type and type name match exactly
+    // Should always be true for types like VARCHAR, INTEGER, etc.
+    LookupPreciseMatchResolver,
+
+    // Pass 4: Check know alternatives for given column type
+    AlternateTypeResolver,
+
+    // Pass 5: Try to find the best matching supported column type in the target database
     DatabaseColumnTypeDefinitionResolver,
 
-    // Finally, we copy the original definition from the column as the last resort
-    ColumnTypeDefinitionResolver { _, targetDatabase, column ->
-      ColumnTypeDefinition(column, targetDatabase, column.columnTypeName, column.precision, column.scale)
+    // Pass 6: Finally, we copy the original definition from the column as the last resort
+    ColumnTypeDefinitionResolver {
+      ColumnTypeDefinition(it.sourceColumn, it.targetDataBase, it.sourceColumn.columnTypeName)
     }
   )
 
-  override fun lookupColumnDefinition(
-    sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
+  override fun lookupColumnTypeDefinition(
+    targetDatabase: DatabaseMetaData, column: ColumnMetaData
   ) = resolvers.asSequence()
-    .map { it.resolve(sourceDatabase, targetDatabase, column) }
+    .map { it.resolve(ColumnTypeDefinition(column, targetDatabase, column.columnTypeName)) }
     .firstOrNull { it != null }
     ?: throw IllegalStateException("No column definition found for $column")
 
@@ -41,14 +55,17 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
 
 private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)
 
-internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType): Int =
-  when {
-    type.maxPrecision < 0 -> column.precision // Dunno, depends on target database
+private val DatabaseSupportedColumnType.estimatedEffectiveMaxPrecision: Int
+  get() = if (!jdbcType.isDateType()) (maxPrecision * 0.95).toInt() else maxPrecision
 
-    column.precision > type.estimatedEffectiveMaxPrecision -> {
+internal fun computePrecision(precision: Int, type: DatabaseSupportedColumnType): Int =
+  when {
+    type.maxPrecision < 0 -> precision // Dunno, depends on target database
+
+    precision > type.estimatedEffectiveMaxPrecision -> {
       LOG.debug(
         """
-      Requested column precision of ${column.precision} for type ${column.jdbcColumnType} 
+      Requested column precision of $precision for type ${type.jdbcType} 
       is higher than ${type.estimatedEffectiveMaxPrecision} supported by $type
     """.trimIndent()
       )
@@ -56,7 +73,6 @@ internal fun computePrecision(column: ColumnMetaData, type: DatabaseColumnType):
       type.maxPrecision
     }
 
-    else ->
-      column.precision
+    else -> precision
   }
 

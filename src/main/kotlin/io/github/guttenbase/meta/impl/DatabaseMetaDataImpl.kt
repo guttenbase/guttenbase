@@ -33,13 +33,14 @@ class DatabaseMetaDataImpl(
     databaseMetaData.databaseType
   )
 
-  override val supportedTypes: List<DatabaseColumnType> get() = supportedTypeMap.values.flatten()
+  override val supportedTypes: Map<JDBCType, List<DatabaseSupportedColumnType>>
+    get() = supportedTypeMap.entries.associate { entry -> entry.key to entry.value.toList() }
 
   override val schema = schema.trim { it <= ' ' }
 
   private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()
 
-  private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseColumnType>>()
+  private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseSupportedColumnType>>()
 
   override val databaseMetaData get() = createMetaDataProxy(databaseProperties)
 
@@ -58,19 +59,8 @@ class DatabaseMetaDataImpl(
   }
 
   override fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, scale: Int, nullable: Boolean) {
-    val list = supportedTypeMap.computeIfAbsent(jdbcType) { mutableListOf<DatabaseColumnType>() }
-    list.add(DatabaseColumnType(type.uppercase(), jdbcType, precision, scale, nullable))
-  }
-
-  override fun typeFor(columnMetaData: ColumnMetaData): DatabaseColumnType? {
-    val possibleTypes = supportedTypeMap[columnMetaData.jdbcColumnType] ?: listOf<DatabaseColumnType>()
-
-    // 1. Prefer matching names, because the list may not be properly sorted (MSSQL 🙄)
-    // 2. Prefer standard types over proprietary types
-    // 3. Prefer types with highest precision
-    return possibleTypes.firstOrNull { it.realTypeName() == columnMetaData.realTypeName() }
-      ?: possibleTypes.firstOrNull { it.realTypeName() in STANDARD_TYPES }
-      ?: possibleTypes.maxByOrNull { it.maxPrecision }
+    val list = supportedTypeMap.computeIfAbsent(jdbcType) { mutableListOf<DatabaseSupportedColumnType>() }
+    list.add(DatabaseSupportedColumnType(type.uppercase(), jdbcType, precision, scale, nullable))
   }
 
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
@@ -88,14 +78,3 @@ class DatabaseMetaDataImpl(
     private const val serialVersionUID = 1L
   }
 }
-
-private fun String.realTypeName() = when (this.uppercase()) {
-  "VARCHAR2" -> "VARCHAR"
-  "CHARACTER" -> "CHAR"
-  "CHARACTER VARYING" -> "VARCHAR"
-  else -> this
-}
-
-private fun DatabaseColumnType.realTypeName() = typeName.realTypeName()
-
-private fun ColumnMetaData.realTypeName() = columnTypeName.realTypeName()

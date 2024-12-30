@@ -42,11 +42,11 @@ abstract class AbstractColumnTypeMapper : ColumnTypeMapper {
       }
     }
 
-    return lookupColumnDefinition(sourceDatabase, targetDatabase, column)
+    return lookupColumnTypeDefinition(targetDatabase, column)
   }
 
-  protected abstract fun lookupColumnDefinition(
-    sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
+  protected abstract fun lookupColumnTypeDefinition(
+    targetDatabase: DatabaseMetaData, column: ColumnMetaData
   ): ColumnTypeDefinition
 }
 

@@ -3,14 +3,13 @@ package io.github.guttenbase.mapping
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.PRECISION_PLACEHOLDER
+import java.sql.JDBCType
 
 /**
  * Resolve column type definition for given column and database type.
  */
 fun interface ColumnTypeDefinitionResolver {
-  fun resolve(
-    sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData, column: ColumnMetaData
-  ): ColumnTypeDefinition?
+  fun resolve(type: ColumnTypeDefinition): ColumnTypeDefinition?
 }
 
 /**
@@ -18,13 +17,23 @@ fun interface ColumnTypeDefinitionResolver {
  *
  *  &copy; 2012-2034 akquinet tech@spree
  */
-data class ColumnTypeDefinition(
-  val sourceColumn: ColumnMetaData, val targetDataBase: DatabaseMetaData, val typeName: String, val precision: Int = 0, val scale: Int = 0
+data class ColumnTypeDefinition @JvmOverloads constructor(
+  val sourceColumn: ColumnMetaData,
+  val targetDataBase: DatabaseMetaData,
+  val typeName: String,
+  val jdbcType: JDBCType = sourceColumn.jdbcColumnType,
+  val precision: Int = sourceColumn.precision,
+  val scale: Int = sourceColumn.scale
 ) {
-  val usePrecision = (targetDataBase.databaseType.supportsPrecisionClause(sourceColumn.jdbcColumnType) && precision > 0)
+
+  val databaseType = targetDataBase.databaseType
+  val usePrecision = (databaseType.supportsPrecisionClause(jdbcType) && precision > 0)
       || typeName.contains(PRECISION_PLACEHOLDER)
 
-  val precisionClause: String
+  constructor(type: ColumnTypeDefinition, typeName: String, jdbcType: JDBCType)
+      : this(type.sourceColumn, type.targetDataBase, typeName, jdbcType, type.precision, type.scale)
+
+  private val precisionClause: String
     get() {
       val precisionClause = StringBuilder()
 

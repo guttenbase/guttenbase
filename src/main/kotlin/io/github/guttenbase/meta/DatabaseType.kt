@@ -63,11 +63,11 @@ enum class DatabaseType(
   /**
    * To be executed when table DDL script is created
    */
-  fun createColumnAutoIncrementType(column: ColumnMetaData): DatabaseColumnType? {
+  fun createColumnAutoIncrementType(column: ColumnMetaData): DatabaseSupportedColumnType? {
     assert(column.isAutoIncrement) { "$column is no auto increment column" }
 
     return when (this) {
-      POSTGRESQL -> DatabaseColumnType(
+      POSTGRESQL -> DatabaseSupportedColumnType(
         when (column.columnType) {
           Types.BIGINT -> "BIGSERIAL"
           Types.INTEGER -> "SERIAL"

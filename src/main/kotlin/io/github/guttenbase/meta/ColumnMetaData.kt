@@ -62,4 +62,4 @@ fun JDBCType.isBinaryType() = this in BINARY_TYPES
 fun JDBCType.isNumericType() = this in NUMERIC_TYPES
 fun JDBCType.isDateType() = this in DATE_TYPES
 
-val STANDARD_TYPES = listOf(VARCHAR.name, CHAR.name, INTEGER.name, BIGINT.name, DECIMAL.name, DATE.name, TIME.name, TIMESTAMP.name)
+val STANDARD_TYPES = JDBCType.entries.map { it.name }.toSet()
