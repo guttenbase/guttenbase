@@ -22,16 +22,17 @@ data class ColumnTypeDefinition @JvmOverloads constructor(
   val targetDataBase: DatabaseMetaData,
   val typeName: String,
   val jdbcType: JDBCType = sourceColumn.jdbcColumnType,
+  val usePrecisionClause: Boolean = false,
   val precision: Int = sourceColumn.precision,
   val scale: Int = sourceColumn.scale
 ) {
 
   val databaseType = targetDataBase.databaseType
-  val usePrecision = (databaseType.supportsPrecisionClause(jdbcType) && precision > 0)
+  val usePrecision = (usePrecisionClause && precision > 0)
       || typeName.contains(PRECISION_PLACEHOLDER)
 
   constructor(type: ColumnTypeDefinition, typeName: String, jdbcType: JDBCType)
-      : this(type.sourceColumn, type.targetDataBase, typeName, jdbcType, type.precision, type.scale)
+      : this(type.sourceColumn, type.targetDataBase, typeName, jdbcType, type.usePrecisionClause, type.precision, type.scale)
 
   private val precisionClause: String
     get() {
