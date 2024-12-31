@@ -43,7 +43,6 @@ open class OracleTargetDatabaseConfiguration(connectorRepository: ConnectorRepos
     return TableOrderHint.getSortedTables(connectorRepository, connectorId)
   }
 
-  @Throws(SQLException::class)
   private fun setReferentialIntegrity(
     connection: Connection, connectorId: String, tableMetaDatas: List<TableMetaData>,
     enable: Boolean
@@ -51,7 +50,7 @@ open class OracleTargetDatabaseConfiguration(connectorRepository: ConnectorRepos
     val tablesList = createTablesList(tableMetaDatas)
 
     if (tablesList.isNotBlank()) {
-      val schema: String = connectorRepository.getConnectionInfo(connectorId).schema
+      val schema = connectorRepository.getConnectionInfo(connectorId).schema
 
       /* I want to disable all constraints in tables that reference the tables that I will update. */
       val foreignKeyNames: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(

@@ -86,13 +86,13 @@ open class DropTablesTool(
   fun createDeleteTableStatements() = createTableStatements("DELETE FROM", "")
 
   @Throws(SQLException::class)
-  fun dropTables() {
-    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, true, createDropTableStatements())
+  fun dropTables(prepareTargetConnection: Boolean = true) {
+    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, prepareTargetConnection, createDropTableStatements())
   }
 
   @Throws(SQLException::class)
-  fun dropAll() {
-    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, true, createDropAll())
+  fun dropAll(prepareTargetConnection: Boolean = true) {
+    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, prepareTargetConnection, createDropAll())
   }
 
   @Throws(SQLException::class)
@@ -103,8 +103,8 @@ open class DropTablesTool(
   }
 
   @Throws(SQLException::class)
-  fun dropIndexes() {
-    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, true, createDropIndexStatements())
+  fun dropIndexes(prepareTargetConnection: Boolean = true) {
+    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, prepareTargetConnection, createDropIndexStatements())
   }
 
   @Throws(SQLException::class)

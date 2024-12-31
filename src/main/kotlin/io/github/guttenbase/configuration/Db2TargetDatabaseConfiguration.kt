@@ -4,7 +4,6 @@ import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.tools.ScriptExecutorTool
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * Implementation for IBM DB2 data base.
@@ -23,22 +22,33 @@ open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorReposito
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun initializeTargetConnection(connection: Connection, connectorId: String) {
     loadConstraints(connection, connectorId)
+    setIntegrityChecks(connection, connectorId, false)
     setTableForeignKeys(connection, false)
   }
 
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
     loadConstraints(connection, connectorId)
+    setIntegrityChecks(connection, connectorId, true)
     setTableForeignKeys(connection, true)
   }
 
-  @Throws(SQLException::class)
+  private fun setIntegrityChecks(connection: Connection, connectorId: String, enabled: Boolean) {
+//    val tableMetaDatas = TableOrderHint.getSortedTables(connectorRepository, connectorId)
+//    val schema = connectorRepository.getConnectionInfo(connectorId).schema
+//
+//    val sqls = tableMetaDatas.map {
+//      val tableName = it.tableName
+//      "CALL SYSPROC.ADMIN_CMD('SET INTEGRITY FOR $schema.$tableName IMMEDIATE " + if (enabled) "CHECKED" else "UNCHECKED"+ "')"
+//    }
+//
+//    executeSQL(connection, *sqls.toTypedArray())
+  }
+
   private fun setTableForeignKeys(connection: Connection, enable: Boolean) {
     val sqls = constraintsOfTable.entries.map { e ->
       e.value.map {

@@ -11,6 +11,7 @@ import java.sql.JDBCType.DATE
 import java.sql.JDBCType.DECIMAL
 import java.sql.JDBCType.DOUBLE
 import java.sql.JDBCType.INTEGER
+import java.sql.JDBCType.LONGVARBINARY
 import java.sql.JDBCType.LONGVARCHAR
 import java.sql.JDBCType.NUMERIC
 import java.sql.JDBCType.SMALLINT
@@ -41,16 +42,28 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["NVARCHAR"] = listOf(VARCHAR_RESOLVER)
     mappings["VARCHAR2"] = listOf(VARCHAR_RESOLVER)
 
-    mappings["VARBINARY"] = listOf(BLOB_RESOLVER, IMAGE_RESOLVER, BINARY_RESOLVER)
-    mappings["BLOB"] = listOf(VARBINARY_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, BINARY_RESOLVER)
-    mappings["OID"] = listOf(BLOB_RESOLVER, VARBINARY_RESOLVER, IMAGE_RESOLVER, BINARY_RESOLVER)
-    mappings["BYTEA"] = listOf(BLOB_RESOLVER, IMAGE_RESOLVER, VARBINARY_RESOLVER, BINARY_RESOLVER)
-    mappings["LONGBLOB"] = listOf(BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_RESOLVER, BINARY_RESOLVER)
-    mappings["MEDIUMBLOB"] = listOf(BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_RESOLVER, BINARY_RESOLVER)
-    mappings["SMALLBLOB"] = listOf(BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_RESOLVER, BINARY_RESOLVER)
-    mappings["TINYBLOB"] = listOf(BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_RESOLVER, BINARY_RESOLVER)
-    mappings["BINARY LARGE OBJECT"] = listOf(BLOB_RESOLVER, IMAGE_RESOLVER, VARBINARY_RESOLVER, BINARY_RESOLVER)
-    mappings["BINARY"] = listOf(RAW_RESOLVER, BLOB_RESOLVER, IMAGE_RESOLVER, VARBINARY_RESOLVER)
+    mappings["VARBINARY"] = listOf(BLOB_RESOLVER, IMAGE_RESOLVER, BYTEA_RESOLVER, BINARY_RESOLVER)
+    mappings["BLOB"] = listOf(
+      BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER, VARBINARY_BIT_DATA_RESOLVER,
+      BYTEA_RESOLVER, IMAGE_RESOLVER, BINARY_RESOLVER
+    )
+    mappings["BYTEA"] = listOf(
+      BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER,
+      IMAGE_RESOLVER, VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
+    )
+    mappings["LONGBLOB"] = listOf(
+      BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER,
+      BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
+    )
+    mappings["OID"] =  mappings["LONGBLOB"]!!
+    mappings["MEDIUMBLOB"] = mappings["LONGBLOB"]!!
+    mappings["SMALLBLOB"] = mappings["LONGBLOB"]!!
+    mappings["TINYBLOB"] = mappings["LONGBLOB"]!!
+    mappings["BINARY LARGE OBJECT"] = mappings["LONGBLOB"]!!
+    mappings["BINARY"] = listOf(
+      RAW_RESOLVER, BINARY_RESOLVER,
+      BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_BIT_DATA_RESOLVER
+    )
 
     mappings["DOUBLE PRECISION"] = listOf(DOUBLE_RESOLVER)
     mappings["DOUBLE"] = listOf(DOUBLEPRECISION_RESOLVER)
@@ -96,6 +109,16 @@ private val IMAGE_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "IMAGE", BLOB)) }
 private val BYTEA_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BYTEA", BLOB)) }
+private val VARBINARY_BIT_DATA_RESOLVER =
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(
+      ColumnTypeDefinition(
+        it,
+        "LONG VARCHAR FOR BIT DATA",
+        LONGVARBINARY
+      )
+    )
+  }
 private val TEXT_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TEXT", LONGVARCHAR)) }
 private val LONGTEXT_RESOLVER =
@@ -106,6 +129,8 @@ private val BINARY_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BINARY", BINARY)) }
 private val VARBINARY_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "VARBINARY", VARBINARY)) }
+private val LONGVARBINARY_RESOLVER =
+  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARBINARY", LONGVARBINARY)) }
 private val INTEGER_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INTEGER", INTEGER)) }
 private val SMALLINT_RESOLVER =

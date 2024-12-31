@@ -34,7 +34,6 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
     enableTableForeignKeys(connection, connectorId, getTableMetaData(connectorId))
   }
@@ -42,7 +41,6 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun beforeTableCopy(connection: Connection, connectorId: String, table: TableMetaData) {
     setIdentityInsert(connection, connectorId, true, table)
   }
@@ -50,7 +48,6 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun afterTableCopy(connection: Connection, connectorId: String, table: TableMetaData) {
     setIdentityInsert(connection, connectorId, false, table)
   }
@@ -59,12 +56,10 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     return connectorRepository.getDatabaseMetaData(connectorId).tableMetaData
   }
 
-  @Throws(SQLException::class)
   private fun disableTableForeignKeys(connection: Connection, connectorId: String, tableMetaData: List<TableMetaData>) {
     setTableForeignKeys(connection, connectorId, tableMetaData, false)
   }
 
-  @Throws(SQLException::class)
   private fun enableTableForeignKeys(connection: Connection, connectorId: String, tableMetaData: List<TableMetaData>) {
     setTableForeignKeys(connection, connectorId, tableMetaData, true)
   }
