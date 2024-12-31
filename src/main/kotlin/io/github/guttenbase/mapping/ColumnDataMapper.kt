@@ -19,7 +19,7 @@ interface ColumnDataMapper {
   fun isApplicable(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData): Boolean = true
 
   /**
-   * Map object. Must be able to handle NULL values.
+   * Map object to target DB. Needs to be able to handle NULL values.
    */
   @Throws(SQLException::class)
   fun map(mapping: ColumnMapping, value: Any?): Any?

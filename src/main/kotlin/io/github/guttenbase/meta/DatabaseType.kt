@@ -142,6 +142,12 @@ enum class DatabaseType(
       return clause.substring(clause.indexOf(HEX_VALUE) + HEX_VALUE.length)
     }
 
+  val dropTablesSuffix: String
+    get() = when (this) {
+      H2DB, HSQLDB, POSTGRESQL, MARIADB, ORACLE -> "CASCADE"
+      else -> ""
+    }
+
   /**
    * @return clause with template variable to be replaced with actual data
    */

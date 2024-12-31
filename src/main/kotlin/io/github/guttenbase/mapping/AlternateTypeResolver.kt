@@ -66,7 +66,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["MEDIUMINT"] = listOf(INTEGER_RESOLVER)
     mappings["SMALLINT"] = listOf(INTEGER_RESOLVER)
     mappings["TINYINT"] = listOf(SMALLINT_RESOLVER, INTEGER_RESOLVER)
-    mappings["YEAR"] = listOf(INTEGER_RESOLVER)
+    mappings["YEAR"] = listOf(SMALLINT_RESOLVER, INTEGER_RESOLVER)
 
     mappings["INTEGER UNSIGNED"] = listOf(BIGINT_RESOLVER)
     mappings["INT UNSIGNED"] = listOf(BIGINT_RESOLVER)

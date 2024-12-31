@@ -22,13 +22,13 @@ import java.sql.SQLException
  * Hint is used by [TableOrderHint] to determine order of tables
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class DropTablesTool @JvmOverloads constructor(
+open class DropTablesTool(
   private val connectorRepository: ConnectorRepository,
-  private val connectorId: String,
-  private val dropTablesSuffix: String = ""
+  private val connectorId: String
 ) {
   private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(connectorId) }
   private val tableMetaData get() = TableOrderTool(databaseMetaData).orderTables(false)
+  private val dropTablesSuffix = databaseMetaData.databaseType.dropTablesSuffix
 
   fun createDropForeignKeyStatements(): List<String> {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
