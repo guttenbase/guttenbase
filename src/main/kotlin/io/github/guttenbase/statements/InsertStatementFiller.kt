@@ -10,6 +10,7 @@ import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableRowDataFilter
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.connectorId
 import io.github.guttenbase.progress.TableCopyProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
@@ -41,7 +42,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     useMultipleValuesClauses: Boolean
   ) {
     val sourceColumns = getSortedColumns(connectorRepository, sourceTableMetaData)
-    val targetConnectorId = targetTableMetaData.databaseMetaData.connectorId
+    val targetConnectorId = targetTableMetaData.connectorId
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val filter = connectorRepository.hint<TableRowDataFilter>(targetConnectorId)
     val targetDatabase = targetTableMetaData.databaseMetaData

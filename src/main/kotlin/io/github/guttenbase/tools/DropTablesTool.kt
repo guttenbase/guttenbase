@@ -6,6 +6,7 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.IndexMetaData
+import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.ScriptExecutorTool.Companion.executeScriptWithRetry
@@ -67,7 +68,7 @@ open class DropTablesTool(
     }.flatten()
   }
 
-  private fun chooseDropIndexClause(index: IndexMetaData) = when (index.tableMetaData.databaseMetaData.databaseType) {
+  private fun chooseDropIndexClause(index: IndexMetaData) = when (index.databaseType) {
     MARIADB, MYSQL -> MYSQL_INDEX_DROP
     MSSQL -> MSSQL_INDEX_DROP
     else -> DEFAULT_INDEX_DROP

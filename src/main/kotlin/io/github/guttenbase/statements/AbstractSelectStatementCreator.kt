@@ -3,6 +3,7 @@ package io.github.guttenbase.statements
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.connectorId
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.ResultSetParameters
@@ -51,7 +52,7 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   fun createMappedSelectStatement(
     connection: Connection, sourceTableMetaData: TableMetaData, tableName: String, targetTableMetaData: TableMetaData
   ): PreparedStatement {
-    val targetConnectorId = targetTableMetaData.databaseMetaData.connectorId
+    val targetConnectorId = targetTableMetaData.connectorId
     val resultSetParameters = connectorRepository.hint<ResultSetParameters>(targetConnectorId)
     val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData)
     val sql = createSQL(tableName, targetTableMetaData, columns)

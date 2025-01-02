@@ -8,6 +8,8 @@ import io.github.guttenbase.mapping.ColumnTypeMapper
 import io.github.guttenbase.mapping.ColumnTypeResolver
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
+import io.github.guttenbase.meta.connectorId
+import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.repository.impl.ClassNameColumnTypeResolver
@@ -44,7 +46,7 @@ open class ColumnDataMappingTool(private val connectorRepository: ConnectorRepos
     val dataMapping =
       columnTypeResolvers.map { it.findMapping(sourceColumnMetaData, targetColumnMetaData) }.firstOrNull()
     if (dataMapping != null) {
-      val targetConnectorId = targetColumnMetaData.tableMetaData.databaseMetaData.connectorId
+      val targetConnectorId = targetColumnMetaData.connectorId
 
       val columnDefinition = connectorRepository.hint<ColumnTypeMapper>(targetConnectorId)
         .lookupColumnDefinition(
@@ -63,13 +65,13 @@ open class ColumnDataMappingTool(private val connectorRepository: ConnectorRepos
   ): ColumnDataMapping? {
     val sourceColumnType = getColumnType(sourceColumnMetaData)
     val targetColumnType = getColumnType(targetColumnMetaData)
-    val targetConnectorId = targetColumnMetaData.tableMetaData.databaseMetaData.connectorId
+    val targetConnectorId = targetColumnMetaData.connectorId
 
     if (ColumnType.CLASS_UNKNOWN != sourceColumnType && ColumnType.CLASS_UNKNOWN != targetColumnType) {
       val columnDataMapperFactory = connectorRepository.hint<ColumnDataMapperProvider>(targetConnectorId)
       val columnDataMapper = columnDataMapperFactory.findMapping(
         sourceColumnMetaData, targetColumnMetaData, sourceColumnType, targetColumnType,
-        targetColumnMetaData.tableMetaData.databaseMetaData.databaseType
+        targetColumnMetaData.databaseType
       )
 
       if (columnDataMapper != null) {

@@ -22,3 +22,7 @@ interface ForeignKeyMetaData : Comparable<ForeignKeyMetaData>, Serializable {
   val referencingTableMetaData: TableMetaData
   val referencedTableMetaData: TableMetaData
 }
+
+val ForeignKeyMetaData.databaseType get() = tableMetaData.databaseType
+val ForeignKeyMetaData.connectorId get() = tableMetaData.connectorId
+val ForeignKeyMetaData.connectorRepository get() = tableMetaData.connectorRepository

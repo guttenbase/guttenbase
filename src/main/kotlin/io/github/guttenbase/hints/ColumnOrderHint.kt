@@ -3,6 +3,7 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.mapping.ColumnOrderComparatorFactory
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.connectorId
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 
@@ -28,7 +29,7 @@ abstract class ColumnOrderHint : ConnectorHint<ColumnOrderComparatorFactory> {
     @JvmStatic
     fun getSortedColumns(connectorRepository: ConnectorRepository, tableMetaData: TableMetaData): List<ColumnMetaData> {
       val sourceColumnComparator =
-        connectorRepository.hint<ColumnOrderComparatorFactory>(tableMetaData.databaseMetaData.connectorId).createComparator()
+        connectorRepository.hint<ColumnOrderComparatorFactory>(tableMetaData.connectorId).createComparator()
 
       return tableMetaData.columnMetaData.sortedWith(sourceColumnComparator)
     }

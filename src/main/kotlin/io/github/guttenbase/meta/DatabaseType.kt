@@ -198,17 +198,14 @@ enum class DatabaseType(
 
   @JvmOverloads
   fun escapeDatabaseEntity(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
-//
-//  fun supportsPrecisionClause(type: JDBCType) =
-//    type.isStringType() || type.isNumericType() || type.isBlobType() || type.isBinaryType()
 
   fun supportsPrecisionClause(type: String) =
     type == VARCHAR.name || type == CHAR.name || type == DECIMAL.name || type == NUMERIC.name
-        || type == BINARY.name|| type == VARBINARY.name
+        || type == BINARY.name || type == VARBINARY.name
 
   private fun retrieveAutoIncrementValue(column: ColumnMetaData): AutoIncrementValue {
-    val connectorRepository = column.tableMetaData.databaseMetaData.connectorRepository
-    val connectorId = column.tableMetaData.databaseMetaData.connectorId
+    val connectorRepository = column.connectorRepository
+    val connectorId = column.connectorId
 
     return connectorRepository.hint<AutoIncrementValue>(connectorId)
   }

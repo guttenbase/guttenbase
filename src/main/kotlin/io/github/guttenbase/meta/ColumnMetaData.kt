@@ -65,3 +65,7 @@ fun JDBCType.isNumericType() = this in NUMERIC_TYPES
 fun JDBCType.isDateType() = this in DATE_TYPES
 
 val STANDARD_TYPES = JDBCType.entries.map { it.name }.toSet()
+
+val ColumnMetaData.databaseType get() = tableMetaData.databaseType
+val ColumnMetaData.connectorId get() = tableMetaData.connectorId
+val ColumnMetaData.connectorRepository get() = tableMetaData.connectorRepository

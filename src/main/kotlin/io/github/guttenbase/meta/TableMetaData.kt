@@ -69,3 +69,7 @@ fun TableMetaData.getNumericPrimaryKeyColumn(): ColumnMetaData? {
 
   return null
 }
+
+val TableMetaData.databaseType get() = databaseMetaData.databaseType
+val TableMetaData.connectorId get() = databaseMetaData.connectorId
+val TableMetaData.connectorRepository get() = databaseMetaData.connectorRepository

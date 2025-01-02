@@ -1,10 +1,11 @@
 package io.github.guttenbase.repository.impl
 
-import io.github.guttenbase.meta.DatabaseType
-import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.mapping.ColumnTypeResolver
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
+import io.github.guttenbase.meta.DatabaseType
+import io.github.guttenbase.meta.DatabaseType.*
+import io.github.guttenbase.meta.databaseType
 
 /**
  * Will check column type names and determine what Java type is appropriate.
@@ -21,7 +22,7 @@ object HeuristicColumnTypeResolver : ColumnTypeResolver {
    */
   override fun getColumnType(columnMetaData: ColumnMetaData): ColumnType {
     val columnType = columnMetaData.columnTypeName.uppercase()
-    val databaseType = columnMetaData.tableMetaData.databaseMetaData.databaseType
+    val databaseType = columnMetaData.databaseType
 
     return checkDatabaseSpecificTypes(columnType, databaseType)
       ?: return when {
@@ -53,22 +54,22 @@ object HeuristicColumnTypeResolver : ColumnTypeResolver {
   private fun checkDatabaseSpecificTypes(columnType: String, databaseType: DatabaseType): ColumnType? =
     when (databaseType) {
       POSTGRESQL -> when (columnType) {
-        "BIT" ->  ColumnType.CLASS_STRING
-        "INT8" ->  ColumnType.CLASS_BIGDECIMAL
-        "OID" ->  ColumnType.CLASS_BLOB
-        "BYTEA" ->  ColumnType.CLASS_BYTES
+        "BIT" -> ColumnType.CLASS_STRING
+        "INT8" -> ColumnType.CLASS_BIGDECIMAL
+        "OID" -> ColumnType.CLASS_BLOB
+        "BYTEA" -> ColumnType.CLASS_BYTES
         else -> null
       }
 
       ORACLE -> when (columnType) {
-        "CLOB" ->  ColumnType.CLASS_STRING
-        "TIMESTAMP" ->  ColumnType.CLASS_TIMESTAMP
-        "XMLTYPE" ->  ColumnType.CLASS_SQLXML
+        "CLOB" -> ColumnType.CLASS_STRING
+        "TIMESTAMP" -> ColumnType.CLASS_TIMESTAMP
+        "XMLTYPE" -> ColumnType.CLASS_SQLXML
         else -> null
       }
 
       H2DB -> when (columnType) {
-        "CLOB" ->  ColumnType.CLASS_STRING
+        "CLOB" -> ColumnType.CLASS_STRING
         else -> null
       }
 

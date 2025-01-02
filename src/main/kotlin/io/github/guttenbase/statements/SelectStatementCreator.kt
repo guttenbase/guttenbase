@@ -1,6 +1,7 @@
 package io.github.guttenbase.statements
 
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Types
 
@@ -29,14 +30,15 @@ class SelectStatementCreator(connectorRepository: ConnectorRepository, connector
       }
       .map {
         val rawColumnName = columnMapper.mapColumnName(it, tableMetaData)
-        tableMetaData.databaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+        tableMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
       }
 
     return if (columns.isEmpty()) "" else "ORDER BY " + columns.joinToString()
   }
 }
 
-/** No BLOB or the like for ordering
+/**
+ * BLOB or the like are not applicable for ordering
  */
 private fun Int.comparable(): Boolean = when (this) {
   in Types.BIT..Types.BIGINT -> true

@@ -218,7 +218,7 @@ internal class DatabaseMetaDataInspectorTool(
   private fun updateTableMetaDataWithColumnInformation(
     statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String
   ) {
-    val databaseType = tableMetaData.databaseMetaData.databaseType
+    val databaseType = tableMetaData.databaseType
     val tableName = databaseType.escapeDatabaseEntity(tableMetaData.tableName, schemaPrefix)
     val columnFilter = connectorRepository.hint<DatabaseColumnFilter>(connectorId)
     val selectSQL = SELECT_NOTHING_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
@@ -264,7 +264,7 @@ internal class DatabaseMetaDataInspectorTool(
     val filter = connectorRepository.hint<TableRowCountFilter>(connectorId)
 
     if (filter.accept(tableMetaData)) {
-      val databaseType = tableMetaData.databaseMetaData.databaseType
+      val databaseType = tableMetaData.databaseType
       val tableName = databaseType.escapeDatabaseEntity(tableMetaData.tableName, schemaPrefix)
       LOG.debug("Retrieving row count for $tableName")
 

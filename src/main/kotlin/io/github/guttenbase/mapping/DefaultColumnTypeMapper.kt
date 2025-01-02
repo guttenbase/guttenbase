@@ -3,6 +3,7 @@ package io.github.guttenbase.mapping
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseSupportedColumnType
 import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.meta.isDateType
 import org.slf4j.LoggerFactory
 
@@ -33,20 +34,23 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
     DatabaseColumnTypeDefinitionResolver,
 
     // Pass 6: Finally, we copy the original definition from the column as the last resort
-    ColumnTypeDefinitionResolver {
-      val typeName = it.sourceColumn.columnTypeName
-      val usePrecision = it.targetDatabase.databaseType.supportsPrecisionClause(typeName)
-
-      ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, typeName, it.jdbcType, usePrecision)
-    }
+    ColumnTypeDefinitionResolver { it.toColumnTypeDefinition() }
   )
 
   override fun lookupColumnTypeDefinition(
-    targetDatabase: DatabaseMetaData, column: ColumnMetaData
-  ) = resolvers.asSequence()
-    .map { it.resolve(ColumnTypeDefinition(column, targetDatabase, column.columnTypeName)) }
-    .firstOrNull { it != null }
-    ?: throw IllegalStateException("No column definition found for $column")
+    targetDatabase: DatabaseMetaData, sourceColumn: ColumnMetaData
+  ): ColumnTypeDefinition {
+    val columnTypeDefinition = ColumnTypeDefinition(sourceColumn, targetDatabase, sourceColumn.columnTypeName)
+
+    return if (sourceColumn.databaseType == targetDatabase.databaseType) { // Same DB should have same types
+      columnTypeDefinition.toColumnTypeDefinition()
+    } else {
+      resolvers.asSequence()
+        .map { it.resolve(columnTypeDefinition) }
+        .firstOrNull { it != null }
+        ?: throw IllegalStateException("No column definition found for $sourceColumn")
+    }
+  }
 
   /**
    * Add custom resolver which is preferred over existing resolvers, i.e. it will be called first
@@ -54,6 +58,13 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   fun addColumnTypeDefinitionResolver(resolver: ColumnTypeDefinitionResolver) {
     resolvers.add(0, resolver)
   }
+}
+
+private fun ColumnTypeDefinition.toColumnTypeDefinition(): ColumnTypeDefinition {
+  val typeName = sourceColumn.columnTypeName
+  val usePrecision = targetDatabase.databaseType.supportsPrecisionClause(typeName)
+
+  return ColumnTypeDefinition(sourceColumn, targetDatabase, typeName, jdbcType, usePrecision)
 }
 
 private val LOG = LoggerFactory.getLogger(DefaultColumnTypeMapper::class.java)

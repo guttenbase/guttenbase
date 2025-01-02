@@ -141,13 +141,13 @@ enum class ColumnType(
       insertStatement.setNull(columnIndex, column.columnType)
       null
     } else {
-      setStatementValue(insertStatement, columnIndex, databaseMetaData, data)
+      setStatementValue(insertStatement, column, columnIndex, databaseMetaData, data)
     }
   }
 
   @Throws(SQLException::class)
   private fun setStatementValue(
-    insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData, data: Any
+    insertStatement: PreparedStatement, column: ColumnMetaData, columnIndex: Int, databaseMetaData: DatabaseMetaData, data: Any
   ): Closeable? {
     var result: Closeable? = null
 
@@ -194,7 +194,14 @@ enum class ColumnType(
       CLASS_BIGDECIMAL -> insertStatement.setBigDecimal(columnIndex, data as BigDecimal)
 
       CLASS_TIMESTAMP -> insertStatement.setTimestamp(columnIndex, data as Timestamp)
-      CLASS_DATE -> insertStatement.setDate(columnIndex, data as Date)
+      CLASS_DATE -> {
+        if (column.databaseType == DatabaseType.MYSQL && column.columnTypeName == "YEAR") {
+          insertStatement.setInt(columnIndex, (data as Date).toLocalDate().year)
+        } else {
+          insertStatement.setDate(columnIndex, data as Date)
+        }
+      }
+
       CLASS_FLOAT -> insertStatement.setFloat(columnIndex, (data as Float))
       CLASS_SHORT -> insertStatement.setShort(columnIndex, (data as Short))
       CLASS_TIME -> insertStatement.setTime(columnIndex, data as Time)
