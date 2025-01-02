@@ -259,6 +259,8 @@ open class CheckEqualTableDataTool(
     columnType.isDate() -> data1.toDate().toLocalDateTime().roundToWholeSeconds() ==
         data2.toDate().toLocalDateTime().roundToWholeSeconds()
 
+    data1 is Array<*> -> data1.contentEquals(data2 as Array<*>)
+
     columnType == CLASS_BIGDECIMAL -> {
       if (data1 is BigDecimal && data2 is BigDecimal)
         data1.compareTo(data2) == 0 // Ignore scale, if 0

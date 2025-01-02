@@ -203,7 +203,7 @@ enum class ColumnType(
 
       CLASS_BYTE -> if (databaseMetaData.databaseType == DatabaseType.POSTGRESQL) {
         // Postgres has a weird concept of setting a BIT value
-        insertStatement.setInt(columnIndex, (data  as Byte).toInt())
+        insertStatement.setInt(columnIndex, (data as Byte).toInt())
       } else {
         insertStatement.setByte(columnIndex, data as Byte)
       }

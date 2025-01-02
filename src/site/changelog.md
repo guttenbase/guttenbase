@@ -3,11 +3,12 @@
 ## 4.0.1
 
 - Complete refactoring of column type mapping algorithm: Use values supplied as supported types by the JDBC data base meta data.
-The old code is still available in "ProprietaryColumnDefinitionResolver"
+- Use several passes in type resolution
 - Breaking changes in API, simplifications and optimizations
 - Many small code improvements and new tests
-- Bug fixes
+- Many bug fixes
 - Internally tested schema and data migrations between many DB, such as DB2, MySQL, PostgreSQL, MSSQL, Oracle
+- Introducing PreparedStatementPlaceholderFactory hint to allow for custom placeholder handling in prepared statements
 
 ## 3.4.0
 

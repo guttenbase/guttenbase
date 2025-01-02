@@ -258,6 +258,7 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultAutoIncrementValueHint())
     addConnectorHint(connectorId, DefaultTableMapperHint())
     addConnectorHint(connectorId, DefaultColumnMapperHint)
+    addConnectorHint(connectorId, DefaultPreparedStatementPlaceholderFactoryHint)
     addConnectorHint(connectorId, DefaultRepositoryColumnFilterHint())
     addConnectorHint(connectorId, DefaultExportDumpExtraInformationHint())
     addConnectorHint(connectorId, DefaultImportDumpExtraInformationHint())

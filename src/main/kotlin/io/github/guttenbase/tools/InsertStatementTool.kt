@@ -8,30 +8,30 @@ import io.github.guttenbase.statements.AbstractInsertStatementCreator
 import java.sql.PreparedStatement
 
 @Suppress("MemberVisibilityCanBePrivate")
-class InsertStatementTool(connectorRepository: ConnectorRepository, connectorId: String) :
-  AbstractInsertStatementCreator(connectorRepository, connectorId), AutoCloseable {
+class InsertStatementTool(connectorRepository: ConnectorRepository, targetConnectorId: String) :
+  AbstractInsertStatementCreator(connectorRepository, targetConnectorId), AutoCloseable {
   private var parameters: Int = -1
   private lateinit var statement: PreparedStatement
   private lateinit var columns: List<ColumnMetaData>
   private val columnMap: Map<String, ColumnMetaData> by lazy { columns.associateBy { it.columnName.lowercase() } }
-  private val database: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(connectorId) }
+  private val database: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(targetConnectorId) }
 
   @JvmOverloads
   fun createInsertStatementSQL(
     tableName: String,
     includePrimaryKey: Boolean = true,
   ): String {
-    val tableMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId).getTableMetaData(tableName)
-      ?: throw IllegalStateException("Table $tableName not found")
+    val tableMetaData =
+      connectorRepository.getDatabaseMetaData(this@InsertStatementTool.targetConnectorId).getTableMetaData(tableName)
+        ?: throw IllegalStateException("Table $tableName not found")
     columns = getMappedTargetColumns(tableMetaData, tableMetaData)
       .filter { if (!includePrimaryKey) !it.isPrimaryKey else true }
 
-    if(columns.isEmpty()) {
+    if (columns.isEmpty()) {
       throw IllegalStateException("No matching columns for $tableName")
     }
 
-    return "INSERT INTO " + tableName + " (" + createColumnClause(columns) + ") VALUES\n" +
-        createValueTuples(1, columns.size)
+    return "INSERT INTO " + tableName + " (" + createColumnClause(columns) + ") VALUES\n" + createValueTuples(1, columns)
   }
 
   @JvmOverloads
@@ -39,7 +39,7 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, connectorId:
     tableName: String,
     includePrimaryKey: Boolean = true,
   ): InsertStatementTool {
-    val connection = connectorRepository.createConnector(targetConnectorId).openConnection()
+    val connection = connectorRepository.createConnector(this@InsertStatementTool.targetConnectorId).openConnection()
 
     statement = connection.prepareStatement(createInsertStatementSQL(tableName, includePrimaryKey))
     resetParameters()
