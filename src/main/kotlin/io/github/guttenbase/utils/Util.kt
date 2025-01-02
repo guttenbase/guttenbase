@@ -1,4 +1,5 @@
 @file:JvmName("Util")
+@file:Suppress("unused")
 
 package io.github.guttenbase.utils
 
@@ -44,10 +45,10 @@ object Util {
     (if (this.nano > 0) this.plusNanos(500000000) else this).truncatedTo(ChronoUnit.SECONDS)
 
   @JvmStatic
-  fun LocalDate.toDate(): Date = Date.from(atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
+  fun LocalDate.toDate() = Date.from(atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())!!
 
   @JvmStatic
-  fun LocalDateTime.toDate() = Date.from(atZone(ZoneId.systemDefault()).toInstant())
+  fun LocalDateTime.toDate() = Date.from(atZone(ZoneId.systemDefault()).toInstant())!!
 
   @JvmStatic
   fun java.sql.Time.toDate() = Date(this.time)

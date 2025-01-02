@@ -12,9 +12,7 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
-import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.DatabaseType.ORACLE
-import io.github.guttenbase.meta.DatabaseType.POSTGRESQL
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
@@ -23,19 +21,11 @@ import io.github.guttenbase.utils.Util.LEFT_RIGHT_ARROW
 import io.github.guttenbase.utils.Util.RIGHT_ARROW
 import io.github.guttenbase.utils.Util.roundToWholeSeconds
 import io.github.guttenbase.utils.Util.toDate
-import io.github.guttenbase.utils.Util.toLocalDate
 import io.github.guttenbase.utils.Util.toLocalDateTime
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
-import java.sql.Blob
-import java.sql.Clob
-import java.sql.Connection
-import java.sql.JDBCType
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Time
+import java.sql.*
 import java.util.Date
-import javax.management.openmbean.SimpleType.BIGDECIMAL
 import kotlin.math.min
 
 /**
@@ -52,9 +42,8 @@ import kotlin.math.min
 open class CheckEqualTableDataTool(
   private val connectorRepository: ConnectorRepository,
   private val sourceConnectorId: String, private val targetConnectorId: String,
-  private val trimStrings : Boolean = true
+  private val trimStrings: Boolean = true
 ) {
-  @Throws(SQLException::class)
   fun checkTableData() {
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
     val numberOfCheckData =
@@ -167,10 +156,10 @@ open class CheckEqualTableDataTool(
 
             val (value, _) = checkColumnData(
               currentID,
-              sourceConnectorId, targetConnectorId, tableName1,
-              resultSet1, resultSet2, rowIndex,
-              targetColumnIndex, sourceColumnIndex, columnMapping, columnName1,
-              sourceColumn, targetColumn
+              targetConnectorId, tableName1, resultSet1,
+              resultSet2, rowIndex, targetColumnIndex,
+              sourceColumnIndex, columnMapping, columnName1, sourceColumn,
+              targetColumn
             )
 
             if (sourceColumn == primaryKeyColumn) {
@@ -192,22 +181,21 @@ open class CheckEqualTableDataTool(
 
   private fun checkColumnData(
     primaryKey: String,
-    sourceConnectorId: String, targetConnectorId: String,
-    tableName: String, resultSet1: ResultSet, resultSet2: ResultSet,
-    rowIndex: Int, targetColumnIndex: Int, sourceColumnIndex: Int,
-    mapping: ColumnMapping, columnName: String,
-    sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData
+    targetConnectorId: String, tableName: String,
+    resultSet1: ResultSet, resultSet2: ResultSet, rowIndex: Int,
+    targetColumnIndex: Int, sourceColumnIndex: Int, mapping: ColumnMapping,
+    columnName: String, sourceColumn: ColumnMetaData,
+    targetColumn: ColumnMetaData
   ): Pair<Any?, Any?> {
     val sourceColumnType = mapping.columnDataMapping.sourceColumnType
     val targetColumnType = mapping.columnDataMapping.targetColumnType
-    val sourceDatabaseType = connectorRepository.getDatabaseMetaData(sourceConnectorId).databaseType
     val targetDatabaseType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
     var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
     var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex)
 
     data1 = mapping.columnDataMapping.columnDataMapper.map(mapping, data1)
-    data1 = convertData(sourceColumnType, sourceDatabaseType, data1)
-    data2 = convertData(targetColumnType, targetDatabaseType, data2)
+    data1 = convertData(sourceColumnType, data1)
+    data2 = convertData(targetColumnType, data2)
 
     when {
       data1 == null && data2 != null -> throw createUnequalDataException(
@@ -233,9 +221,7 @@ open class CheckEqualTableDataTool(
     return data1 to data2
   }
 
-  private fun convertData(
-    columnType: ColumnType, databaseType: DatabaseType, data: Any?
-  ): Any? = when (columnType) {
+  private fun convertData(columnType: ColumnType, data: Any?): Any? = when (columnType) {
     CLASS_STRING -> {
       // See http://www.postgresql.org/docs/8.3/static/datatype-character.html
       if (trimStrings) {
@@ -271,7 +257,7 @@ open class CheckEqualTableDataTool(
 
     data1 is Array<*> -> data1.contentEquals(data2 as Array<*>)
 
-    sourceColumn.jdbcColumnType == JDBCType.DECIMAL -> {
+    sourceColumn.jdbcColumnType == JDBCType.DECIMAL || sourceColumn.jdbcColumnType == JDBCType.NUMERIC -> {
       if (data1 is BigDecimal && data2 is BigDecimal)
         data1.compareTo(data2) == 0 // Ignore scale, if 0
       else// if (data1 is Long && data2 is Long)

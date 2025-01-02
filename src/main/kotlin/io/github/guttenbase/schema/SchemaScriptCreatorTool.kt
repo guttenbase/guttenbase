@@ -136,16 +136,19 @@ class SchemaScriptCreatorTool(
     return createIndex(indexMetaData, indexMapper.mapIndexName(indexMetaData))
   }
 
-  private fun createIndex(indexMetaData: IndexMetaData, indexName: String): String {
+  private fun createIndex(index: IndexMetaData, indexName: String): String {
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
+    val databaseType = targetDatabaseMetaData.databaseType
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
-    val tableMetaData = indexMetaData.tableMetaData
-    val unique = if (indexMetaData.isUnique) " UNIQUE " else " "
+    val tableMetaData = index.tableMetaData
+    val unique = if (index.isUnique) " UNIQUE " else " "
+    val containsClob = index.columnMetaData.any { it.jdbcColumnType.isClobType() }
+    val fulltext = if (databaseType == DatabaseType.MYSQL && containsClob) " FULLTEXT " else ""
 
-    return ("CREATE" + unique + "INDEX " + indexName + " ON "
+    return ("CREATE" + unique + fulltext + "INDEX " + indexName + " ON "
         + tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)) +
-        indexMetaData.columnMetaData.joinToString {
+        index.columnMetaData.joinToString {
           val rawColumnName = columnMapper.mapColumnName(it, tableMetaData)
           targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
         } + ";"
