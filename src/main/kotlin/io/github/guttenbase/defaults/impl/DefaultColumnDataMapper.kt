@@ -3,7 +3,6 @@ package io.github.guttenbase.defaults.impl
 import io.github.guttenbase.mapping.ColumnDataMapper
 import io.github.guttenbase.tools.ColumnMapping
 
-
 /**
  * By default always just return the same object.
  *

@@ -44,21 +44,24 @@ object Util {
     (if (this.nano > 0) this.plusNanos(500000000) else this).truncatedTo(ChronoUnit.SECONDS)
 
   @JvmStatic
-  fun Any.toDate(): Date = when (this) {
-    is java.sql.Date -> this.toDate()
-    is java.sql.Time -> Date(this.time)
-    is java.sql.Timestamp -> Date(this.time)
-    is Date -> this
-    is LocalDateTime -> this.toDate()
-    is LocalDate -> this.toDate()
-    else -> throw IllegalStateException("$this:${this.javaClass} is not convertable to Date")
-  }
-
-  @JvmStatic
   fun LocalDate.toDate(): Date = Date.from(atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
 
   @JvmStatic
-  fun LocalDateTime.toDate(): Date = Date.from(atZone(ZoneId.systemDefault()).toInstant())
+  fun LocalDateTime.toDate() = Date.from(atZone(ZoneId.systemDefault()).toInstant())
+
+  @JvmStatic
+  fun java.sql.Time.toDate() = Date(this.time)
+
+  @JvmStatic
+  fun java.sql.Timestamp.toDate() = Date(this.time)
+
+  @JvmStatic
+  fun Date.toDate(): Date = when (this) {
+    is java.sql.Date -> this.toDate()
+    is java.sql.Time ->  this.toDate()
+    is java.sql.Timestamp -> this.toDate()
+    else -> this
+  }
 
   @JvmStatic
   fun java.sql.Date.toDate(): Date = with(Calendar.getInstance()) {

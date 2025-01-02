@@ -23,14 +23,19 @@ import io.github.guttenbase.utils.Util.LEFT_RIGHT_ARROW
 import io.github.guttenbase.utils.Util.RIGHT_ARROW
 import io.github.guttenbase.utils.Util.roundToWholeSeconds
 import io.github.guttenbase.utils.Util.toDate
+import io.github.guttenbase.utils.Util.toLocalDate
 import io.github.guttenbase.utils.Util.toLocalDateTime
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.sql.Blob
 import java.sql.Clob
 import java.sql.Connection
+import java.sql.JDBCType
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.sql.Time
+import java.util.Date
+import javax.management.openmbean.SimpleType.BIGDECIMAL
 import kotlin.math.min
 
 /**
@@ -46,7 +51,8 @@ import kotlin.math.min
  */
 open class CheckEqualTableDataTool(
   private val connectorRepository: ConnectorRepository,
-  private val sourceConnectorId: String, private val targetConnectorId: String
+  private val sourceConnectorId: String, private val targetConnectorId: String,
+  private val trimStrings : Boolean = true
 ) {
   @Throws(SQLException::class)
   fun checkTableData() {
@@ -181,7 +187,7 @@ open class CheckEqualTableDataTool(
       closeEverything(selectStatement1, resultSet1, selectStatement2, resultSet2)
     }
 
-    LOG.info("Checking data of $tableName1 <--> $tableName2 finished")
+    LOG.info("Checking data of $tableName1 $LEFT_RIGHT_ARROW $tableName2 finished")
   }
 
   private fun checkColumnData(
@@ -218,7 +224,7 @@ open class CheckEqualTableDataTool(
         }
       }
 
-      data1 != null && data2 != null && !equalsValue(data1, data2, sourceColumnType) ->
+      data1 != null && data2 != null && !equalsValue(data1, data2, mapping.columnTypeDefinition.sourceColumn) ->
         throw createUnequalDataException(
           tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2, sourceColumn, targetColumn
         )
@@ -232,7 +238,7 @@ open class CheckEqualTableDataTool(
   ): Any? = when (columnType) {
     CLASS_STRING -> {
       // See http://www.postgresql.org/docs/8.3/static/datatype-character.html
-      if (POSTGRESQL == databaseType) {
+      if (trimStrings) {
         trim(data as String?)
       } else if (data is Clob) {
         createStringFromClob(data)
@@ -255,13 +261,17 @@ open class CheckEqualTableDataTool(
   }
 
 
-  private fun equalsValue(data1: Any, data2: Any, columnType: ColumnType) = when {
-    columnType.isDate() -> data1.toDate().toLocalDateTime().roundToWholeSeconds() ==
+  private fun equalsValue(data1: Any, data2: Any, sourceColumn: ColumnMetaData) = when {
+    data1 is Date && data2 is Date -> data1.toDate().toLocalDateTime().roundToWholeSeconds() ==
         data2.toDate().toLocalDateTime().roundToWholeSeconds()
+
+    sourceColumn.columnTypeName == "YEAR" -> (data1 as Number).toInt() == (data2 as Number).toInt()
+
+    data1 is ByteArray -> data1.contentEquals(data2 as ByteArray)
 
     data1 is Array<*> -> data1.contentEquals(data2 as Array<*>)
 
-    columnType == CLASS_BIGDECIMAL -> {
+    sourceColumn.jdbcColumnType == JDBCType.DECIMAL -> {
       if (data1 is BigDecimal && data2 is BigDecimal)
         data1.compareTo(data2) == 0 // Ignore scale, if 0
       else// if (data1 is Long && data2 is Long)

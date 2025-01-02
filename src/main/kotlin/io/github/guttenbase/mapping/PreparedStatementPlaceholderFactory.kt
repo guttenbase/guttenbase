@@ -1,7 +1,6 @@
 package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.TableMetaData
 
 /**
  * Create placeholder for given columnn. In 99,9% percent of the cases you will just return a plain '?'

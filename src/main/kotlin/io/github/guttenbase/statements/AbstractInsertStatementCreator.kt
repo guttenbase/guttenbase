@@ -7,8 +7,6 @@ import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import java.sql.Connection
 import java.sql.PreparedStatement
-import java.sql.SQLException
-import kotlin.Throws
 
 /**
  * Create INSERT statement with multiple VALUES tuples.
@@ -24,7 +22,6 @@ abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepo
   /**
    * Create INSERT statement for the mapped target columns.
    */
-  @Throws(SQLException::class)
   fun createInsertStatement(
     sourceTableMetaData: TableMetaData, targetTableName: String,
     targetTableMetaData: TableMetaData, destConnection: Connection, numberOfRowsPerBatch: Int,
