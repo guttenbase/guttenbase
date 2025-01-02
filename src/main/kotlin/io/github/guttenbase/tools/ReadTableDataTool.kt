@@ -77,7 +77,7 @@ open class ReadTableDataTool(
     val result = ArrayList<Map<String, Any?>>()
     val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(connectorId)
     val orderedSourceColumns = ColumnOrderHint.getSortedColumns(
-      connectorRepository, connectorId, tableMetaData
+      connectorRepository, tableMetaData
     )
 
     if (lines < 0) {

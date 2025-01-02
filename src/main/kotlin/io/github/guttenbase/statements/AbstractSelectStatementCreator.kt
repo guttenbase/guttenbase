@@ -28,8 +28,8 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   fun createSelectStatement(
     connection: Connection, tableName: String, tableMetaData: TableMetaData
   ): PreparedStatement {
-    val resultSetParameters = connectorRepository.hint<ResultSetParameters>(connectorId)
-    val columns = ColumnOrderHint.getSortedColumns(connectorRepository, connectorId, tableMetaData)
+    val resultSetParameters = connectorRepository.hint<ResultSetParameters>(targetConnectorId)
+    val columns = ColumnOrderHint.getSortedColumns(connectorRepository, tableMetaData)
     val sql = createSQL(tableName, tableMetaData, columns)
 
     indicator.debug("Create SELECT statement: $sql")
@@ -46,7 +46,7 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   }
 
   override fun createWhereClause(tableMetaData: TableMetaData) =
-    connectorRepository.hint<SelectWhereClause>(connectorId).getWhereClause(tableMetaData)
+    connectorRepository.hint<SelectWhereClause>(targetConnectorId).getWhereClause(tableMetaData)
 
   /**
    * Create SELECT statement in the target table to retrieve data from the mapped columns. I.e., since the target table
@@ -61,7 +61,7 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   ): PreparedStatement {
     val resultSetParameters =
       connectorRepository.hint<ResultSetParameters>(targetConnectorId)
-    val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
+    val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData)
     val sql = createSQL(tableName, targetTableMetaData, columns)
 
     indicator.debug("Create mapped SELECT statement: $sql")

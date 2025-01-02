@@ -67,8 +67,9 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_CLOB, CLASS_STRING, ClobDataMapper)
     addMapping(CLASS_STRING, CLASS_CLOB, StringToClobDataMapper)
 
-    addMapping(CLASS_BOOLEAN, CLASS_BYTES, ToBitMapper)
-    addMapping(CLASS_BYTES, CLASS_BOOLEAN, ToBooleanMapper)
+    addMapping(CLASS_BYTE, CLASS_BYTE, ToBitMapper)
+    addMapping(CLASS_BOOLEAN, CLASS_BYTE, ToBitMapper)
+    addMapping(CLASS_BYTE, CLASS_BOOLEAN, ToBooleanMapper)
 
   }
 
@@ -221,7 +222,11 @@ object ToBooleanMapper : ColumnDataMapper {
 
 object ToBitMapper : ColumnDataMapper {
   override fun map(mapping: ColumnMapping, value: Any?) =
-    if (value is Boolean) if (value) byteArrayOf(1) else byteArrayOf(0) else value
+    when (value) {
+      is Boolean -> if (value) 1.toByte() else 0.toByte()
+      is Number -> value.toByte()
+      else -> value
+    }
 }
 
 object StringToClobDataMapper : ColumnDataMapper {

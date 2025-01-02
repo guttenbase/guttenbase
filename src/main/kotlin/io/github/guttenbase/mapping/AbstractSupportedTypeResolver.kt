@@ -10,7 +10,6 @@ import io.github.guttenbase.meta.DatabaseSupportedColumnType
 abstract class AbstractSupportedTypeResolver : ColumnTypeDefinitionResolver {
   override fun resolve(type: ColumnTypeDefinition): ColumnTypeDefinition? {
     val possibleTypes = type.targetDatabase.supportedTypes[type.jdbcType] ?: listOf<DatabaseSupportedColumnType>()
-
     val result = match(possibleTypes, type.typeName)
 
     return if (result != null) {

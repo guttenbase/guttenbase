@@ -26,10 +26,9 @@ abstract class ColumnOrderHint : ConnectorHint<ColumnOrderComparatorFactory> {
      * Helper method
      */
     @JvmStatic
-    fun getSortedColumns(connectorRepository: ConnectorRepository, connectorId: String, tableMetaData: TableMetaData)
-        : List<ColumnMetaData> {
+    fun getSortedColumns(connectorRepository: ConnectorRepository, tableMetaData: TableMetaData): List<ColumnMetaData> {
       val sourceColumnComparator =
-        connectorRepository.hint<ColumnOrderComparatorFactory>(connectorId).createComparator()
+        connectorRepository.hint<ColumnOrderComparatorFactory>(tableMetaData.databaseMetaData.connectorId).createComparator()
 
       return tableMetaData.columnMetaData.sortedWith(sourceColumnComparator)
     }

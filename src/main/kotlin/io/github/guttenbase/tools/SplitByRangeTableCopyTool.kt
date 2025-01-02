@@ -78,8 +78,8 @@ open class SplitByRangeTableCopyTool(
         sourceDatabaseConfiguration.afterSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
         targetDatabaseConfiguration.beforeInsert(targetConnection, targetConnectorId, targetTableMetaData)
         val bulkInsert: PreparedStatement = insertStatementCreator.createInsertStatement(
-          sourceConnectorId, sourceTableMetaData,
-          targetTableName, targetTableMetaData, targetConnection, countData.toInt(), useMultipleValuesClauses
+          sourceTableMetaData, targetTableName,
+          targetTableMetaData, targetConnection, countData.toInt(), useMultipleValuesClauses
         )
 
         insertStatementFiller.fillInsertStatementFromResultSet(

@@ -24,7 +24,7 @@ class SplitByColumnSelectMinMaxStatementCreator(connectorRepository: ConnectorRe
     assert(columns.isNotEmpty())
 
     val tableMetaData: TableMetaData = columns[0].tableMetaData
-    val splitColumn: ColumnMetaData = connectorRepository.hint<SplitColumn>(connectorId).getSplitColumn(tableMetaData)
+    val splitColumn: ColumnMetaData = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(tableMetaData)
 
     return "MIN(" + splitColumn.columnName + "), MAX(" + splitColumn.columnName + ")"
   }

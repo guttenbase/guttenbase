@@ -18,13 +18,13 @@ import io.github.guttenbase.tools.SplitColumn
 class SplitByColumnSelectStatementCreator(connectorRepository: ConnectorRepository, connectorId: String) :
   AbstractSelectStatementCreator(connectorRepository, connectorId) {
   override fun createWhereClause(tableMetaData: TableMetaData): String {
-    val splitColumn = connectorRepository.hint<SplitColumn>(connectorId).getSplitColumn(tableMetaData)
+    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(tableMetaData)
 
     return "WHERE " + splitColumn.columnName + " BETWEEN ? AND ?"
   }
 
   override fun createOrderBy(tableMetaData: TableMetaData): String {
-    val splitColumn = connectorRepository.hint<SplitColumn>(connectorId).getSplitColumn(tableMetaData)
+    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(tableMetaData)
 
     return "ORDER BY " + splitColumn.columnName
   }

@@ -134,7 +134,7 @@ open class CheckEqualTableDataTool(
     val resultSet2 = selectStatement2.executeQuery()
     targetConfiguration.afterSelect(targetConnection, targetConnectorId, targetTableMetaData)
     val orderedSourceColumns =
-      ColumnOrderHint.getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
+      ColumnOrderHint.getSortedColumns(connectorRepository, sourceTableMetaData)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     var rowIndex = 1
     val primaryKeyColumn = sourceTableMetaData.primaryKeyColumns.firstOrNull()

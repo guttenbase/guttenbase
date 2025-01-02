@@ -64,7 +64,7 @@ enum class ColumnType(
 
   CLASS_FLOAT(FLOAT, Float::class.java, java.lang.Float::class.java),
 
-  CLASS_BYTE(TINYINT, Byte::class.javaPrimitiveType!!, java.lang.Byte::class.java),
+  CLASS_BYTE(listOf(TINYINT, BIT), Byte::class.javaPrimitiveType!!, java.lang.Byte::class.java),
 
   CLASS_BYTES(BINARY_TYPES, Util.ByteArrayClass),
 
@@ -200,7 +200,14 @@ enum class ColumnType(
       CLASS_TIME -> insertStatement.setTime(columnIndex, data as Time)
 
       CLASS_OBJECT -> insertStatement.setObject(columnIndex, data)
-      CLASS_BYTE -> insertStatement.setByte(columnIndex, data as Byte)
+
+      CLASS_BYTE -> if (databaseMetaData.databaseType == DatabaseType.POSTGRESQL) {
+        // Postgres has a weird concept of setting a BIT value
+        insertStatement.setInt(columnIndex, (data  as Byte).toInt())
+      } else {
+        insertStatement.setByte(columnIndex, data as Byte)
+      }
+
       CLASS_BYTES -> when (data) {
         is ByteArray -> insertStatement.setBytes(columnIndex, data)
         is Blob -> {

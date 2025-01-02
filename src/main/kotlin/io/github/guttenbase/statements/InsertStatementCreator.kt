@@ -9,5 +9,5 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  * @author M. Dahm
  */
-class InsertStatementCreator(connectorRepository: ConnectorRepository, connectorId: String) :
-  AbstractInsertStatementCreator(connectorRepository, connectorId)
+class InsertStatementCreator(connectorRepository: ConnectorRepository, targetConnectorId: String) :
+  AbstractInsertStatementCreator(connectorRepository, targetConnectorId)

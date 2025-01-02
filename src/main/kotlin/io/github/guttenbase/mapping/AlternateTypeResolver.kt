@@ -31,8 +31,8 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
   init {
     mappings["LONGTEXT"] = listOf(TEXT_RESOLVER, LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
     mappings["MEDIUMTEXT"] = listOf(TEXT_RESOLVER, LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
-    mappings["TEXT"] = listOf(LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
-    mappings["CLOB"] = listOf(LONGTEXT_RESOLVER)
+    mappings["TEXT"] = listOf(TEXT_RESOLVER, LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
+    mappings["CLOB"] = listOf(LONGTEXT_RESOLVER, TEXT_RESOLVER)
 
     mappings["CHARACTER"] = listOf(CHAR_RESOLVER)
     mappings["BPCHAR"] = listOf(CHAR_RESOLVER)
@@ -55,7 +55,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
       BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER,
       BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
     )
-    mappings["OID"] =  mappings["LONGBLOB"]!!
+    mappings["OID"] = mappings["LONGBLOB"]!!
     mappings["MEDIUMBLOB"] = mappings["LONGBLOB"]!!
     mappings["SMALLBLOB"] = mappings["LONGBLOB"]!!
     mappings["TINYBLOB"] = mappings["LONGBLOB"]!!
@@ -74,7 +74,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["SMALLSERIAL"] = listOf(SMALLINT_RESOLVER, INTEGER_RESOLVER)
     mappings["TINYSERIAL"] = listOf(TINYINT_RESOLVER, INTEGER_RESOLVER)
     mappings["MEDIUMINT UNSIGNED"] = listOf(INTEGER_RESOLVER)
-    mappings["SMALLINT UNSIGNED"] = listOf(INTEGER_RESOLVER)
+    mappings["SMALLINT UNSIGNED"] = listOf(SMALLINT_RESOLVER, INTEGER_RESOLVER)
     mappings["TINYINT UNSIGNED"] = listOf(SMALLINT_RESOLVER, INTEGER_RESOLVER)
     mappings["MEDIUMINT"] = listOf(INTEGER_RESOLVER)
     mappings["SMALLINT"] = listOf(INTEGER_RESOLVER)
@@ -88,7 +88,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["SMALL MONEY"] = listOf(NUMERIC_RESOLVER)
     mappings["SMALL DATETIME"] = listOf(DATE_RESOLVER)
 
-    mappings["BOOLEAN"] = listOf(BIT_RESOLVER)
+    mappings["BOOLEAN"] = listOf(BOOLEAN_RESOLVER, BIT_RESOLVER)
     mappings["BIT"] = listOf(BOOLEAN_RESOLVER)
     mappings["RAW"] = listOf(BIT_RESOLVER)
   }
@@ -108,7 +108,7 @@ private val BLOB_RESOLVER =
 private val IMAGE_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "IMAGE", BLOB)) }
 private val BYTEA_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BYTEA", BLOB)) }
+  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BYTEA", BINARY)) }
 private val VARBINARY_BIT_DATA_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(
@@ -120,7 +120,10 @@ private val VARBINARY_BIT_DATA_RESOLVER =
     )
   }
 private val TEXT_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TEXT", LONGVARCHAR)) }
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TEXT", LONGVARCHAR))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TEXT", VARCHAR))
+  }
 private val LONGTEXT_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONGTEXT", LONGVARCHAR)) }
 private val CLOB_RESOLVER =
@@ -132,11 +135,19 @@ private val VARBINARY_RESOLVER =
 private val LONGVARBINARY_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARBINARY", LONGVARBINARY)) }
 private val INTEGER_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INTEGER", INTEGER)) }
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INTEGER", INTEGER))
+      ?:LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT4", INTEGER))
+  }
 private val SMALLINT_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "SMALLINT", SMALLINT)) }
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "SMALLINT", SMALLINT))
+      ?:LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", SMALLINT))
+  }
 private val TINYINT_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TINYINT", TINYINT)) }
+  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TINYINT", TINYINT))
+    ?:LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", SMALLINT))
+  }
 private val BIGINT_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIGINT", BIGINT)) }
 private val DECIMAL_RESOLVER = ColumnTypeDefinitionResolver {
@@ -159,7 +170,12 @@ private val CHAR_RESOLVER =
 private val DATE_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DATE", DATE)) }
 private val BOOLEAN_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BOOLEAN", BOOLEAN)) }
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BOOLEAN", BOOLEAN))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BOOL", BOOLEAN))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BOOLEAN", BIT))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BOOL", BIT))
+  }
 private val BIT_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIT", BIT)) }
 private val RAW_RESOLVER =

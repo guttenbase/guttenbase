@@ -34,7 +34,10 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
 
     // Pass 6: Finally, we copy the original definition from the column as the last resort
     ColumnTypeDefinitionResolver {
-      ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, it.sourceColumn.columnTypeName)
+      val typeName = it.sourceColumn.columnTypeName
+      val usePrecision = it.targetDatabase.databaseType.supportsPrecisionClause(typeName)
+
+      ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, typeName, it.jdbcType, usePrecision)
     }
   )
 

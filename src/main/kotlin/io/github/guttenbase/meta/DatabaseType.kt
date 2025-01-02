@@ -40,7 +40,7 @@ enum class DatabaseType(
 
   POSTGRESQL(
     "", // Handled by column type, see below)
-    "SELECT setval('${TABLE_NAME}_id_seq', $NEXT_VALUE, true);"
+    "SELECT setval('${TABLE_NAME}_${COLUMN_NAME}_seq', $NEXT_VALUE, true);"
   ),
   MSSQL("IDENTITY($NEXT_VALUE, 1)"),
 
@@ -95,7 +95,8 @@ enum class DatabaseType(
 
     return autoincrementColumnClause.replace(NEXT_VALUE, startValue.toString())
       .replace(STEP_VALUE, stepValue.toString())
-      .replace(TABLE_NAME, column.tableMetaData.tableName).replace(COLUMN_NAME, column.columnName)
+      .replace(TABLE_NAME, column.tableMetaData.tableName)
+      .replace(COLUMN_NAME, column.columnName)
   }
 
   fun createDefaultValueClause(columnDefinition: ColumnTypeDefinition): String? =
@@ -116,7 +117,8 @@ enum class DatabaseType(
 
       autoincrementColumnStatement.replace(NEXT_VALUE, startValue.toString())
         .replace(STEP_VALUE, stepValue.toString())
-        .replace(TABLE_NAME, column.tableMetaData.tableName).replace(COLUMN_NAME, column.columnName)
+        .replace(TABLE_NAME, column.tableMetaData.tableName)
+        .replace(COLUMN_NAME, column.columnName)
     } else {
       null
     }

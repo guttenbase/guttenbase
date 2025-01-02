@@ -58,9 +58,9 @@ open class DefaultTableCopyTool(
 
     if (numberOfBatches > 0) {
       val batchInsertStatement = insertStatementCreator.createInsertStatement(
-        sourceConnectorId, sourceTableMetaData,
-        targetTableName, targetTableMetaData, targetConnection,
-        numberOfRowsPerBatch, useMultipleValuesClauses
+        sourceTableMetaData, targetTableName,
+        targetTableMetaData, targetConnection, numberOfRowsPerBatch,
+        useMultipleValuesClauses
       )
 
       for (i in 0 until numberOfBatches) {
@@ -87,9 +87,9 @@ open class DefaultTableCopyTool(
 
     if (remainder > 0) {
       val finalInsert = insertStatementCreator.createInsertStatement(
-        sourceConnectorId, sourceTableMetaData,
-        targetTableName, targetTableMetaData, targetConnection,
-        remainder, useMultipleValuesClauses
+        sourceTableMetaData, targetTableName,
+        targetTableMetaData, targetConnection, remainder,
+        useMultipleValuesClauses
       )
 
       insertStatementFiller.fillInsertStatementFromResultSet(

@@ -21,9 +21,9 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, connectorId:
     tableName: String,
     includePrimaryKey: Boolean = true,
   ): String {
-    val tableMetaData = connectorRepository.getDatabaseMetaData(connectorId).getTableMetaData(tableName)
+    val tableMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId).getTableMetaData(tableName)
       ?: throw IllegalStateException("Table $tableName not found")
-    columns = getMappedTargetColumns(tableMetaData, tableMetaData, connectorId)
+    columns = getMappedTargetColumns(tableMetaData, tableMetaData)
       .filter { if (!includePrimaryKey) !it.isPrimaryKey else true }
 
     if(columns.isEmpty()) {
@@ -39,7 +39,7 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, connectorId:
     tableName: String,
     includePrimaryKey: Boolean = true,
   ): InsertStatementTool {
-    val connection = connectorRepository.createConnector(connectorId).openConnection()
+    val connection = connectorRepository.createConnector(targetConnectorId).openConnection()
 
     statement = connection.prepareStatement(createInsertStatementSQL(tableName, includePrimaryKey))
     resetParameters()

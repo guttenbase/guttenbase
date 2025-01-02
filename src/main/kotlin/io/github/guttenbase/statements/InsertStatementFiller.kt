@@ -30,9 +30,9 @@ import java.sql.SQLException
  * @author M. Dahm
  * Hint is used by [ColumnOrderHint] to determine column order
  */
-class InsertStatementFiller(private val connectorRepository: ConnectorRepository, connectorId: String) {
+class InsertStatementFiller(private val connectorRepository: ConnectorRepository, targetConnectorId: String) {
   private val closeables = ArrayList<Closeable>()
-  private val indicator = connectorRepository.hint<TableCopyProgressIndicator>(connectorId)
+  private val indicator = connectorRepository.hint<TableCopyProgressIndicator>(targetConnectorId)
 
   @Throws(SQLException::class)
   fun fillInsertStatementFromResultSet(
@@ -41,7 +41,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     targetDatabaseConfiguration: TargetDatabaseConfiguration, targetConnection: Connection, rs: ResultSet,
     insertStatement: PreparedStatement, numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
   ) {
-    val sourceColumns = getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
+    val sourceColumns = getSortedColumns(connectorRepository, sourceTableMetaData)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val filter = connectorRepository.hint<TableRowDataFilter>(targetConnectorId)
     val targetDatabase = targetTableMetaData.databaseMetaData

@@ -20,10 +20,10 @@ import io.github.guttenbase.repository.hint
  */
 abstract class AbstractStatementCreator(
   protected val connectorRepository: ConnectorRepository,
-  protected val connectorId: String
+  protected val targetConnectorId: String
 ) {
-  protected val columnMapper = connectorRepository.hint<ColumnMapper>(connectorId)
-  protected val indicator = connectorRepository.hint<TableCopyProgressIndicator>(connectorId)
+  protected val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
+  protected val indicator = connectorRepository.hint<TableCopyProgressIndicator>(targetConnectorId)
 
   protected open fun createColumnClause(columns: List<ColumnMetaData>) =
     columns.joinToString(separator = ", ", transform = {
@@ -37,12 +37,10 @@ abstract class AbstractStatementCreator(
   /**
    * Get the list of target columns with appropriate mappings as defined by [io.github.guttenbase.hints.ColumnMapperHint]
    */
-  fun getMappedTargetColumns(
-    sourceTableMetaData: TableMetaData, targetTableMetaData: TableMetaData, sourceConnectorId: String
-  ): List<ColumnMetaData> {
+  fun getMappedTargetColumns(sourceTableMetaData: TableMetaData, targetTableMetaData: TableMetaData): List<ColumnMetaData> {
     // Use same order as in SELECT clause
-    val sourceColumns = getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
-    val columnMapper = connectorRepository.hint<ColumnMapper>(connectorId)
+    val sourceColumns = getSortedColumns(connectorRepository, sourceTableMetaData)
+    val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
 
     return sourceColumns.map {
       val mapping = columnMapper.map(it, targetTableMetaData)

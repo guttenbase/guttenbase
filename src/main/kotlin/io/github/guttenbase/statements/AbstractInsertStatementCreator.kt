@@ -13,22 +13,22 @@ import java.sql.SQLException
  *
  * @author M. Dahm
  */
-abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepository, connectorId: String) :
-  AbstractStatementCreator(connectorRepository, connectorId) {
+abstract class AbstractInsertStatementCreator(connectorRepository: ConnectorRepository, targetConnectorId: String) :
+  AbstractStatementCreator(connectorRepository, targetConnectorId) {
   /**
    * Create INSERT statement for the mapped target columns.
    */
   @Throws(SQLException::class)
   fun createInsertStatement(
-    sourceConnectorId: String, sourceTableMetaData: TableMetaData,
-    targetTableName: String, targetTableMetaData: TableMetaData, destConnection: Connection,
-    numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
+    sourceTableMetaData: TableMetaData, targetTableName: String,
+    targetTableMetaData: TableMetaData, destConnection: Connection, numberOfRowsPerBatch: Int,
+    useMultipleValuesClauses: Boolean
   ): PreparedStatement {
     assert(numberOfRowsPerBatch > 0) { "numberOfValueClauses > 0" }
 
     val numberOfValuesClauses = if (useMultipleValuesClauses) numberOfRowsPerBatch else 1
-    val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData, sourceConnectorId)
-    val insert = "INSERT INTO " + targetTableName + " (" + createColumnClause(columns)+ ")"
+    val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData)
+    val insert = "INSERT INTO " + targetTableName + " (" + createColumnClause(columns) + ")"
     val sql = insert + " VALUES\n" + createValueTuples(numberOfValuesClauses, columns.size)
 
     indicator.debug("Create INSERT statement: $insert")

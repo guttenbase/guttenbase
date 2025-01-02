@@ -130,7 +130,7 @@ class SchemaComparatorTool(
     val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(sourceConnectorId)
     val targetColumnNameMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val tableName = sourceTableMetaData.tableName
-    val sourceColumns = ColumnOrderHint.getSortedColumns(connectorRepository, sourceConnectorId, sourceTableMetaData)
+    val sourceColumns = ColumnOrderHint.getSortedColumns(connectorRepository, sourceTableMetaData)
     val mappedTargetColumns = HashSet<ColumnMetaData>(targetTableMetaData.columnMetaData)
 
     for (sourceColumn in sourceColumns) {

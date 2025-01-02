@@ -27,7 +27,7 @@ class SplitByColumnSelectCountStatementCreator(connectorRepository: ConnectorRep
   override fun createColumnClause(columns: List<ColumnMetaData>) = "COUNT(*)"
 
   override fun createWhereClause(tableMetaData: TableMetaData): String {
-    val splitColumn = connectorRepository.hint<SplitColumn>(connectorId).getSplitColumn(tableMetaData)
+    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(tableMetaData)
 
     return "WHERE " + splitColumn.columnName + " BETWEEN ? AND ?"
   }
