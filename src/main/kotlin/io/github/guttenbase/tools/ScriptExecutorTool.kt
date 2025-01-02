@@ -5,9 +5,8 @@ import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.sql.SQLLexer
-import io.github.guttenbase.tools.ScriptExecutorTool.Companion.LOG
 import io.github.guttenbase.utils.Util
-import io.github.guttenbase.utils.Util.ARROW
+import io.github.guttenbase.utils.Util.RIGHT_ARROW
 import org.slf4j.LoggerFactory
 import java.nio.charset.Charset
 import java.sql.*
@@ -26,54 +25,44 @@ open class ScriptExecutorTool
 constructor(
   private val connectorRepository: ConnectorRepository,
   private val delimiter: Char = ';',
-  private val encoding: Charset = DEFAULT_ENCODING
+  private val encoding: Charset = DEFAULT_ENCODING,
+  private val failureMode: FailureMode = FailureMode.STOP_IMMEDIATE
 ) {
   private lateinit var progressIndicator: ScriptExecutorProgressIndicator
 
   /**
    * Read SQL from file somewhere on class path. Each statement (not line!) must end with a ';'
    */
-  @Throws(SQLException::class)
   @JvmOverloads
   fun executeFileScript(
-    connectorId: String,
-    updateSchema: Boolean = true,
-    prepareTargetConnection: Boolean = true,
-    resourceName: String,
-    errorHandler: ExceptionHandler = DEFAULT_EXCEPTIONHANDLER,
-  ) {
-    executeScript(connectorId, updateSchema, prepareTargetConnection, Util.readLinesFromFile(resourceName, encoding), errorHandler)
-  }
+    connectorId: String, updateSchema: Boolean = true, prepareTargetConnection: Boolean = true, resourceName: String
+  ) = executeScript(
+    connectorId, updateSchema, prepareTargetConnection, Util.readLinesFromFile(resourceName, encoding)
+  )
 
   /**
    * Execute given lines of SQL. Each statement (not line!) must end with a ';'
    */
-  @Throws(SQLException::class)
   @JvmOverloads
   fun executeScript(
-    connectorId: String, updateSchema: Boolean = true, prepareTargetConnection: Boolean = true,
-    errorHandler: ExceptionHandler = DEFAULT_EXCEPTIONHANDLER,
-    vararg lines: String
-  ) {
-    executeScript(connectorId, updateSchema, prepareTargetConnection, listOf(*lines), errorHandler)
-  }
+    connectorId: String, updateSchema: Boolean = true, prepareTargetConnection: Boolean = true, vararg lines: String
+  ) = executeScript(connectorId, updateSchema, prepareTargetConnection, listOf(*lines))
 
   /**
-   * Execute given lines of SQL. Each statement (not line!) must end with a ';'
+   * Execute given lines of SQL. Each statement (not line!) has to end with a ';'
    *
    * @param connectorId
    * @param scriptUpdatesSchema     The script alters the schema, schema information needs to be reloaded
    * @param prepareTargetConnection the target connection is initialized using the appropriate [TargetDatabaseConfiguration]
    * @param lines                   SQL statements ending with ';'
-   * @throws SQLException
+   * @return Execution result containing all failed statements
    */
-  @Throws(SQLException::class)
   @JvmOverloads
   fun executeScript(
-    connectorId: String, scriptUpdatesSchema: Boolean = true, prepareTargetConnection: Boolean = true,
-    lines: List<String>,
-    errorHandler: ExceptionHandler = DEFAULT_EXCEPTIONHANDLER
-  ) {
+    connectorId: String, scriptUpdatesSchema: Boolean = true, prepareTargetConnection: Boolean = true, lines: List<String>
+  ): ExecutionResult {
+    val result = ExecutionResult(this)
+
     if (lines.isNotEmpty()) {
       val targetDatabaseConfiguration = connectorRepository.getTargetDatabaseConfiguration(connectorId)
       val sqlStatements = SQLLexer(lines, delimiter).parse()
@@ -94,15 +83,21 @@ constructor(
 
             progressIndicator.startProcess(sqlStatements.size)
 
+            @Suppress("LocalVariableName")
+            var continue_ = true
+
             for (sql in sqlStatements) {
-              progressIndicator.startExecution(sql)
-              try {
-                executeSQL(statement, sql)
-              } catch (e: Exception) {
-                errorHandler.handle(sql, e)
-              } finally {
-                progressIndicator.endExecution(1)
-                progressIndicator.endProcess()
+              if (continue_) {
+                progressIndicator.startExecution(sql)
+
+                try {
+                  executeSQL(statement, sql)
+                } catch (e: Exception) {
+                  continue_ = result.handle(sql, e)
+                } finally {
+                  progressIndicator.endExecution(1)
+                  progressIndicator.endProcess()
+                }
               }
             }
 
@@ -127,6 +122,8 @@ constructor(
 
       progressIndicator.finalizeIndicator()
     }
+
+    return result
   }
 
   /**
@@ -135,7 +132,6 @@ constructor(
    *
    * @throws SQLException
    */
-  @Throws(SQLException::class)
   fun executeQuery(connectorId: String, sql: String): RESULT_LIST {
     connectorRepository.createConnector(connectorId).use { connector ->
       val connection: Connection = connector.openConnection()
@@ -148,7 +144,6 @@ constructor(
    *
    * @throws SQLException
    */
-  @Throws(SQLException::class)
   fun executeQuery(connectorId: String, sql: String, action: Command) {
     connectorRepository.createConnector(connectorId).use { connector ->
       val connection: Connection = connector.openConnection()
@@ -162,7 +157,6 @@ constructor(
    *
    * @throws SQLException
    */
-  @Throws(SQLException::class)
   fun executeQuery(connection: Connection, sql: String): RESULT_LIST {
     val result: MutableList<RESULT_MAP> = ArrayList()
 
@@ -180,7 +174,6 @@ constructor(
    *
    * @throws SQLException
    */
-  @Throws(SQLException::class)
   fun executeQuery(connection: Connection, sql: String, action: Command) {
     connection.createStatement()
       .use { statement ->
@@ -188,7 +181,6 @@ constructor(
       }
   }
 
-  @Throws(SQLException::class)
   private fun readMapFromResultSet(connection: Connection, resultSet: ResultSet, action: Command) {
     val metaData = resultSet.metaData
     action.initialize(connection)
@@ -224,50 +216,62 @@ constructor(
     }
   }
 
-  fun interface Command {
-    /**
-     * Called before first execution
-     *
-     * @param connection
-     * @throws SQLException
-     */
-    @Throws(SQLException::class)
-    fun initialize(connection: Connection) {
+  class ExecutionResult(private val scriptExecutorTool: ScriptExecutorTool) {
+    private val failedStatements = ArrayList<Pair<String, Exception>>()
+
+    fun handle(sql: String, e: Exception): Boolean {
+      failedStatements.add(sql to e)
+
+      return when (scriptExecutorTool.failureMode) {
+        FailureMode.STOP_IMMEDIATE -> {
+          LOG.error(
+            """|
+                  |Error in "$sql" 
+                  |$RIGHT_ARROW ${e.message}
+                  """.trimMargin(), e
+          )
+
+          throw e
+          false
+        }
+
+        FailureMode.STOP -> {
+          LOG.error(
+            """|
+                  |Error in "$sql" 
+                  |$RIGHT_ARROW ${e.message}
+                  """.trimMargin(), e
+          )
+
+          false
+        }
+
+        FailureMode.CONTINUE -> {
+          LOG.warn(
+            """|
+                  |Error in "$sql" 
+                  |$RIGHT_ARROW ${e.message}
+                  """.trimMargin(), e
+          )
+
+          true
+        }
+      }
     }
 
-    /**
-     * Called after last execution
-     *
-     * @param connection
-     * @throws SQLException
-     */
-    @Throws(SQLException::class)
-    fun finalize(connection: Connection) {
+    fun retry(
+      connectorId: String, scriptUpdatesSchema: Boolean = true, prepareTargetConnection: Boolean = true
+    ): ExecutionResult {
+      var statements = failedStatements.map { "${it.first};" }
+
+      return scriptExecutorTool.executeScript(
+        connectorId, scriptUpdatesSchema, prepareTargetConnection, statements
+      )
     }
 
-    /**
-     * Executed for each row of data
-     *
-     * @param connection
-     * @param data
-     * @throws SQLException
-     */
-    @Throws(SQLException::class)
-    fun execute(connection: Connection, data: RESULT_MAP)
-  }
+    fun failedStatements() = failedStatements.toList()
 
-  abstract class StatementCommand protected constructor(private val sql: String) : Command {
-    protected lateinit var statement: PreparedStatement
-
-    @Throws(SQLException::class)
-    override fun initialize(connection: Connection) {
-      statement = connection.prepareStatement(sql)
-    }
-
-    @Throws(SQLException::class)
-    override fun finalize(connection: Connection) {
-      statement.close()
-    }
+    fun hasFailures() = failedStatements.isNotEmpty()
   }
 
   companion object {
@@ -276,22 +280,20 @@ constructor(
 
     val DEFAULT_ENCODING: Charset = Charset.defaultCharset()
 
-    val DEFAULT_EXCEPTIONHANDLER = ExceptionHandler { sql, e ->
-      LOG.error(
-        """|
-                  |Error in "$sql" 
-                  |$ARROW ${e.message}
-                  """.trimMargin(), e
-      )
-      throw e
-    }
-    val WARNING_EXCEPTIONHANDLER = ExceptionHandler { sql, e ->
-      LOG.warn(
-        """|
-                  |Error in "$sql" 
-                  |$ARROW ${e.message}
-                  """.trimMargin(), e
-      )
+    @JvmStatic
+    fun executeScriptWithRetry(
+      connectorRepository: ConnectorRepository, connectorId: String,
+      prepareTargetConnection: Boolean, retryFailed: Boolean, sqls: List<String>
+    ): ExecutionResult {
+      val failureMode = if (retryFailed) FailureMode.CONTINUE else FailureMode.STOP_IMMEDIATE
+      val scriptExecutorTool = ScriptExecutorTool(connectorRepository, failureMode = failureMode)
+      val result = scriptExecutorTool.executeScript(connectorId, true, prepareTargetConnection, sqls)
+
+      return if (retryFailed && result.hasFailures()) {
+        result.retry(connectorId, true, prepareTargetConnection)
+      } else {
+        result
+      }
     }
   }
 }
@@ -299,6 +301,60 @@ constructor(
 typealias RESULT_MAP = Map<String, Any?>
 typealias RESULT_LIST = List<RESULT_MAP>
 
-fun interface ExceptionHandler {
-  fun handle(sql: String, e: Exception)
+fun interface Command {
+  /**
+   * Called before first execution
+   *
+   * @param connection
+   * @throws SQLException
+   */
+  fun initialize(connection: Connection) {
+  }
+
+  /**
+   * Called after last execution
+   *
+   * @param connection
+   * @throws SQLException
+   */
+  fun finalize(connection: Connection) {
+  }
+
+  /**
+   * Executed for each row of data
+   *
+   * @param connection
+   * @param data
+   * @throws SQLException
+   */
+  fun execute(connection: Connection, data: RESULT_MAP)
+}
+
+abstract class StatementCommand protected constructor(private val sql: String) : Command {
+  protected lateinit var statement: PreparedStatement
+
+  override fun initialize(connection: Connection) {
+    statement = connection.prepareStatement(sql)
+  }
+
+  override fun finalize(connection: Connection) {
+    statement.close()
+  }
+}
+
+enum class FailureMode {
+  /**
+   * Stop execution on first failure and rethrow SQL exception
+   */
+  STOP_IMMEDIATE,
+
+  /**
+   * Stop execution on first failure and return failed statement
+   */
+  STOP,
+
+  /**
+   * Continue execution gathering all failed statements and log warning
+   */
+  CONTINUE
 }

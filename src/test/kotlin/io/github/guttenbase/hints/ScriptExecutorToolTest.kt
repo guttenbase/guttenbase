@@ -2,8 +2,11 @@ package io.github.guttenbase.hints
 
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
+import io.github.guttenbase.tools.FailureMode
 import io.github.guttenbase.tools.RESULT_MAP
 import io.github.guttenbase.tools.ScriptExecutorTool
+import io.github.guttenbase.tools.StatementCommand
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -31,7 +34,24 @@ class ScriptExecutorToolTest : AbstractGuttenBaseTest() {
   }
 
   @Test
-  fun testAction() {
+  fun `retry statements`() {
+    val tool = ScriptExecutorTool(connectorRepository, failureMode = FailureMode.CONTINUE)
+    val result1 = tool.executeScript(
+      TARGET, prepareTargetConnection = false, lines = listOf(
+        "INSERT INTO FOO_USER_ROLES (USER_ID, ROLE_ID) VALUES(1, 42);", // wrong order
+        "INSERT INTO FOO_ROLE (ID, FIXED_ROLE, ROLE_NAME) VALUES(42, 'Y', 'ADMIN');"
+      )
+    )
+
+    assertThat(result1.failedStatements()).hasSize(1)
+    assertThat(result1.failedStatements()[0].second.message).contains("integrity constraint violation")
+
+    val result2 = result1.retry(TARGET)
+    assertThat(result2.failedStatements()).hasSize(0)
+  }
+
+  @Test
+  fun `run statement command`() {
     val nulls1: List<Any?> = objectUnderTest.executeQuery(TARGET, "SELECT * FROM FOO_USER")
       .map { it["PERSONAL_NUMBER"] }.filter { Objects.isNull(it) }
 
@@ -39,7 +59,7 @@ class ScriptExecutorToolTest : AbstractGuttenBaseTest() {
 
     objectUnderTest.executeQuery(
       TARGET, "SELECT * FROM FOO_USER",
-      object : ScriptExecutorTool.StatementCommand("UPDATE FOO_USER SET PERSONAL_NUMBER = ?  WHERE ID = ?") {
+      object : StatementCommand("UPDATE FOO_USER SET PERSONAL_NUMBER = ?  WHERE ID = ?") {
         override fun execute(connection: Connection, data: RESULT_MAP) {
           if (data["PERSONAL_NUMBER"] == null) {
             val id = data["ID"] as Long

@@ -34,7 +34,7 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
 
     // Pass 6: Finally, we copy the original definition from the column as the last resort
     ColumnTypeDefinitionResolver {
-      ColumnTypeDefinition(it.sourceColumn, it.targetDataBase, it.sourceColumn.columnTypeName)
+      ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, it.sourceColumn.columnTypeName)
     }
   )
 

@@ -201,7 +201,8 @@ enum class DatabaseType(
 //    type.isStringType() || type.isNumericType() || type.isBlobType() || type.isBinaryType()
 
   fun supportsPrecisionClause(type: String) =
-    type == VARCHAR.name || type == CHAR.name || type == DECIMAL.name || type == NUMERIC.name || type == BINARY.name
+    type == VARCHAR.name || type == CHAR.name || type == DECIMAL.name || type == NUMERIC.name
+        || type == BINARY.name|| type == VARBINARY.name
 
   private fun retrieveAutoIncrementValue(column: ColumnMetaData): AutoIncrementValue {
     val connectorRepository = column.tableMetaData.databaseMetaData.connectorRepository

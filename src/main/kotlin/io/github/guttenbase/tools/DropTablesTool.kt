@@ -1,15 +1,14 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.connector.ConnectorInfo
-import io.github.guttenbase.meta.DatabaseType.MARIADB
-import io.github.guttenbase.meta.DatabaseType.MSSQL
-import io.github.guttenbase.meta.DatabaseType.MYSQL
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.IndexMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
+import io.github.guttenbase.tools.ScriptExecutorTool.Companion.executeScriptWithRetry
 import io.github.guttenbase.utils.Util
 import java.sql.SQLException
 
@@ -86,13 +85,15 @@ open class DropTablesTool(
   fun createDeleteTableStatements() = createTableStatements("DELETE FROM", "")
 
   @Throws(SQLException::class)
-  fun dropTables(prepareTargetConnection: Boolean = true) {
-    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, prepareTargetConnection, createDropTableStatements())
+  @JvmOverloads
+  fun dropTables(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
+    executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropTableStatements())
   }
 
   @Throws(SQLException::class)
-  fun dropAll(prepareTargetConnection: Boolean = true) {
-    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, prepareTargetConnection, createDropAll())
+  @JvmOverloads
+  fun dropAll(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
+    executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropAll())
   }
 
   @Throws(SQLException::class)
@@ -103,15 +104,15 @@ open class DropTablesTool(
   }
 
   @Throws(SQLException::class)
-  fun dropIndexes(prepareTargetConnection: Boolean = true) {
-    ScriptExecutorTool(connectorRepository).executeScript(connectorId, true, prepareTargetConnection, createDropIndexStatements())
+  @JvmOverloads
+  fun dropIndexes(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
+    executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropIndexStatements())
   }
 
   @Throws(SQLException::class)
-  fun dropForeignKeys() {
-    ScriptExecutorTool(connectorRepository).executeScript(
-      connectorId, true, false, createDropForeignKeyStatements()
-    )
+  @JvmOverloads
+  fun dropForeignKeys(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
+    executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropForeignKeyStatements())
   }
 
   private fun getConstraintClause(connectionInfo: ConnectorInfo): String {

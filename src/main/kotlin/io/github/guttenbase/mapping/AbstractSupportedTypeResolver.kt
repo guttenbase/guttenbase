@@ -9,16 +9,16 @@ import io.github.guttenbase.meta.DatabaseSupportedColumnType
  */
 abstract class AbstractSupportedTypeResolver : ColumnTypeDefinitionResolver {
   override fun resolve(type: ColumnTypeDefinition): ColumnTypeDefinition? {
-    val possibleTypes = type.targetDataBase.supportedTypes[type.jdbcType] ?: listOf<DatabaseSupportedColumnType>()
+    val possibleTypes = type.targetDatabase.supportedTypes[type.jdbcType] ?: listOf<DatabaseSupportedColumnType>()
 
     val result = match(possibleTypes, type.typeName)
 
     return if (result != null) {
       val precision = computePrecision(type.precision, result)
-      val usePrecision = type.targetDataBase.databaseType.supportsPrecisionClause(result.typeName)
+      val usePrecision = type.targetDatabase.databaseType.supportsPrecisionClause(result.typeName)
 
       ColumnTypeDefinition(
-        type.sourceColumn, type.targetDataBase, result.typeName, type.jdbcType,
+        type.sourceColumn, type.targetDatabase, result.typeName, type.jdbcType,
         usePrecision, precision, type.scale
       )
     } else {

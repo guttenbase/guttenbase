@@ -19,20 +19,20 @@ fun interface ColumnTypeDefinitionResolver {
  */
 data class ColumnTypeDefinition @JvmOverloads constructor(
   val sourceColumn: ColumnMetaData,
-  val targetDataBase: DatabaseMetaData,
+  val targetDatabase: DatabaseMetaData,
   val typeName: String,
   val jdbcType: JDBCType = sourceColumn.jdbcColumnType,
   val usePrecisionClause: Boolean = false,
   val precision: Int = sourceColumn.precision,
   val scale: Int = sourceColumn.scale
 ) {
-
-  val databaseType = targetDataBase.databaseType
+  val sourceDatabase get() = sourceColumn.tableMetaData.databaseMetaData
+  val databaseType = targetDatabase.databaseType
   val usePrecision = (usePrecisionClause && precision > 0)
       || typeName.contains(PRECISION_PLACEHOLDER)
 
   constructor(type: ColumnTypeDefinition, typeName: String, jdbcType: JDBCType)
-      : this(type.sourceColumn, type.targetDataBase, typeName, jdbcType, type.usePrecisionClause, type.precision, type.scale)
+      : this(type.sourceColumn, type.targetDatabase, typeName, jdbcType, type.usePrecisionClause, type.precision, type.scale)
 
   private val precisionClause: String
     get() {

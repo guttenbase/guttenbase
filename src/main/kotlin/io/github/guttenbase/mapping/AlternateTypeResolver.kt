@@ -141,7 +141,7 @@ private val BIGINT_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIGINT", BIGINT)) }
 private val DECIMAL_RESOLVER = ColumnTypeDefinitionResolver {
   LookupPreciseMatchResolver.resolve(
-    ColumnTypeDefinition(it.sourceColumn, it.targetDataBase, "DECIMAL", DECIMAL, true, 31, 5)
+    ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, "DECIMAL", DECIMAL, true, 31, 5)
   )
 }
 private val DOUBLEPRECISION_RESOLVER =

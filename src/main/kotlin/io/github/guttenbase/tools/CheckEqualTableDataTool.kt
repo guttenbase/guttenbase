@@ -19,7 +19,8 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
-import io.github.guttenbase.utils.Util.ARROW
+import io.github.guttenbase.utils.Util.LEFT_RIGHT_ARROW
+import io.github.guttenbase.utils.Util.RIGHT_ARROW
 import io.github.guttenbase.utils.Util.roundToWholeSeconds
 import io.github.guttenbase.utils.Util.toDate
 import io.github.guttenbase.utils.Util.toLocalDateTime
@@ -150,7 +151,7 @@ open class CheckEqualTableDataTool(
           for (targetColumn in mapping.columns) {
             val columnMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
               sourceColumn, targetColumn
-            ) ?: throw IllegalStateException("Could not find type mapping for $sourceColumn $ARROW $targetColumn")
+            ) ?: throw IllegalStateException("Could not find type mapping for $sourceColumn $RIGHT_ARROW $targetColumn")
             val columnName1 = sourceColumnNameMapper.mapColumnName(sourceColumn, targetTableMetaData)
             val columnName2 = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
 
@@ -283,7 +284,7 @@ open class CheckEqualTableDataTool(
             + targetTableMetaData.filteredRowCount
       )
     }
-    LOG.info("Checking data of $tableName1 <--> $tableName2 started")
+    LOG.info("Checking data of $tableName1 $LEFT_RIGHT_ARROW $tableName2 started")
   }
 
   private fun checkColumnTypeMapping(

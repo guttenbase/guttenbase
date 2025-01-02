@@ -1,6 +1,6 @@
 package io.github.guttenbase.progress
 
-import io.github.guttenbase.utils.Util.ARROW
+import io.github.guttenbase.utils.Util.RIGHT_ARROW
 import io.github.guttenbase.utils.Util.formatTime
 import org.slf4j.LoggerFactory
 
@@ -22,15 +22,10 @@ class LoggingTableCopyProgressIndicator : TableCopyProgressIndicator {
 
   override fun startCopyTable(sourceTableName: String, rowCount: Int, targetTableName: String) {
     timingDelegate.startCopyTable(sourceTableName, rowCount, targetTableName)
+    val counter = "%03d".format(timingDelegate.itemCounter)
+
     LOG.info(
-      "Copying of " + timingDelegate.sourceTableName
-          + " $ARROW "
-          + timingDelegate.targetTableName
-          + "("
-          + timingDelegate.itemCounter
-          + "/"
-          + rowCount
-          + ") started"
+      """Copying of table #$counter ${timingDelegate.sourceTableName} $RIGHT_ARROW ${timingDelegate.targetTableName} ($rowCount rows) started"""
     )
   }
 
@@ -57,7 +52,7 @@ class LoggingTableCopyProgressIndicator : TableCopyProgressIndicator {
     timingDelegate.endProcess()
     LOG.info(
       "Copying of " + timingDelegate.sourceTableName
-          + " $ARROW "
+          + " $RIGHT_ARROW "
           + timingDelegate.targetTableName
           + " took "
           + formatTime(timingDelegate.elapsedProcessTime)

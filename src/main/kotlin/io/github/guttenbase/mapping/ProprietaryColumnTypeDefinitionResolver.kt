@@ -14,7 +14,15 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
    * Resolve column type definition for given column and database type by lookup in specified matrix of [ColumnTypeDefinitionResolver]s.
    */
   override fun resolve(type: ColumnTypeDefinition): ColumnTypeDefinition? =
-    when (type.targetDataBase.databaseType) {
+    when (type.sourceDatabase.databaseType) {
+      ORACLE -> when (type.jdbcType) {
+        // For some reason, Oracle reports JDBC type TIMESTAMP for DATE columns??
+        TIMESTAMP -> ColumnTypeDefinition(type, "DATE", DATE)
+        else -> null
+      }
+
+      else -> null
+    } ?: when (type.targetDatabase.databaseType) {
       // https://www.ibm.com/docs/en/iis/11.5?topic=dts-db2-data-type-support
 //      DB2 -> when (type.jdbcType) {
 //        LONGVARCHAR -> if (type.precision > 32500) ColumnTypeDefinition(type, "CLOB", CLOB) else null
@@ -23,14 +31,9 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
 //        else -> null
 //      }
 
-      ORACLE -> when (type.jdbcType) {
-        // For some reason, Oracle return JDBC type TIMESTAMP for DATE columns??
-        TIMESTAMP -> ColumnTypeDefinition(type, "DATE", DATE)
-        else -> null
-      }
-
       MSSQL -> when (type.jdbcType) {
         CLOB -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
+        LONGVARCHAR -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
         else -> null
       }
 
