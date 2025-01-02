@@ -9,7 +9,6 @@ import io.github.guttenbase.tools.ResultSetParameters
 import io.github.guttenbase.tools.SelectWhereClause
 import java.sql.Connection
 import java.sql.PreparedStatement
-import java.sql.SQLException
 import kotlin.math.min
 
 /**
@@ -24,25 +23,20 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   /**
    * Create SELECT statement in the source table to retrieve data from the configured source columns.
    */
-  @Throws(SQLException::class)
-  fun createSelectStatement(
-    connection: Connection, tableName: String, tableMetaData: TableMetaData
-  ): PreparedStatement {
+  fun createSelectStatement(connection: Connection, tableName: String, tableMetaData: TableMetaData): PreparedStatement {
     val resultSetParameters = connectorRepository.hint<ResultSetParameters>(targetConnectorId)
     val columns = ColumnOrderHint.getSortedColumns(connectorRepository, tableMetaData)
     val sql = createSQL(tableName, tableMetaData, columns)
 
     indicator.debug("Create SELECT statement: $sql")
 
-    val preparedStatement = connection.prepareStatement(
+    return connection.prepareStatement(
       sql,
       resultSetParameters.getResultSetType(tableMetaData),
       resultSetParameters.getResultSetConcurrency(tableMetaData)
     ).apply {
-      fetchSize = min(resultSetParameters.getFetchSize(tableMetaData), maxRows)
+      this.fetchSize = min(resultSetParameters.getFetchSize(tableMetaData), this.maxRows)
     }
-
-    return preparedStatement
   }
 
   override fun createWhereClause(tableMetaData: TableMetaData) =
@@ -54,13 +48,11 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
    *
    * This is used to check data compatibility by the [io.github.guttenbase.tools.CheckEqualTableDataTool]
    */
-  @Throws(SQLException::class)
   fun createMappedSelectStatement(
-    connection: Connection, sourceTableMetaData: TableMetaData, tableName: String,
-    targetTableMetaData: TableMetaData, sourceConnectorId: String, targetConnectorId: String
+    connection: Connection, sourceTableMetaData: TableMetaData, tableName: String, targetTableMetaData: TableMetaData
   ): PreparedStatement {
-    val resultSetParameters =
-      connectorRepository.hint<ResultSetParameters>(targetConnectorId)
+    val targetConnectorId = targetTableMetaData.databaseMetaData.connectorId
+    val resultSetParameters = connectorRepository.hint<ResultSetParameters>(targetConnectorId)
     val columns = getMappedTargetColumns(sourceTableMetaData, targetTableMetaData)
     val sql = createSQL(tableName, targetTableMetaData, columns)
 

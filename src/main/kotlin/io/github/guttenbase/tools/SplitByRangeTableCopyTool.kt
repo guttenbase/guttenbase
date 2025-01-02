@@ -83,9 +83,8 @@ open class SplitByRangeTableCopyTool(
         )
 
         insertStatementFiller.fillInsertStatementFromResultSet(
-          sourceConnectorId, sourceTableMetaData, targetConnectorId,
-          targetTableMetaData, targetDatabaseConfiguration, targetConnection, resultSet, bulkInsert, countData.toInt(),
-          useMultipleValuesClauses
+          sourceTableMetaData, targetTableMetaData, targetDatabaseConfiguration,
+          targetConnection, resultSet, bulkInsert, countData.toInt(), useMultipleValuesClauses
         )
         bulkInsert.executeBatch()
         if (targetDatabaseConfiguration.isMayCommit) {

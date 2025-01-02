@@ -67,9 +67,8 @@ open class DefaultTableCopyTool(
         progressIndicator.startExecution("Committing")
 
         insertStatementFiller.fillInsertStatementFromResultSet(
-          sourceConnectorId, sourceTableMetaData, targetConnectorId,
-          targetTableMetaData, targetDatabaseConfiguration, targetConnection, resultSet, batchInsertStatement,
-          numberOfRowsPerBatch, useMultipleValuesClauses
+          sourceTableMetaData, targetTableMetaData, targetDatabaseConfiguration,
+          targetConnection, resultSet, batchInsertStatement, numberOfRowsPerBatch, useMultipleValuesClauses
         )
 
         batchInsertStatement.executeBatch()
@@ -93,10 +92,9 @@ open class DefaultTableCopyTool(
       )
 
       insertStatementFiller.fillInsertStatementFromResultSet(
-        sourceConnectorId, sourceTableMetaData, targetConnectorId,
-        targetTableMetaData, targetDatabaseConfiguration, targetConnection,
-        resultSet, finalInsert, remainder,
-        useMultipleValuesClauses
+        sourceTableMetaData, targetTableMetaData, targetDatabaseConfiguration,
+        targetConnection, resultSet, finalInsert,
+        remainder, useMultipleValuesClauses
       )
 
       if (remainder > 1) {

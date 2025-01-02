@@ -127,7 +127,7 @@ open class CheckEqualTableDataTool(
     sourceConfiguration.afterSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
     val selectStatement2 = SelectStatementCreator(connectorRepository, targetConnectorId)
       .createMappedSelectStatement(
-        targetConnection, sourceTableMetaData, tableName2, targetTableMetaData, sourceConnectorId, targetConnectorId
+        targetConnection, sourceTableMetaData, tableName2, targetTableMetaData
       )
     selectStatement2.fetchSize = numberOfCheckData
     targetConfiguration.beforeSelect(targetConnection, targetConnectorId, targetTableMetaData)

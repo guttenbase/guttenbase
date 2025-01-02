@@ -34,14 +34,14 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
   private val closeables = ArrayList<Closeable>()
   private val indicator = connectorRepository.hint<TableCopyProgressIndicator>(targetConnectorId)
 
-  @Throws(SQLException::class)
   fun fillInsertStatementFromResultSet(
-    sourceConnectorId: String, sourceTableMetaData: TableMetaData,
-    targetConnectorId: String, targetTableMetaData: TableMetaData,
-    targetDatabaseConfiguration: TargetDatabaseConfiguration, targetConnection: Connection, rs: ResultSet,
-    insertStatement: PreparedStatement, numberOfRowsPerBatch: Int, useMultipleValuesClauses: Boolean
+    sourceTableMetaData: TableMetaData, targetTableMetaData: TableMetaData,
+    targetDatabaseConfiguration: TargetDatabaseConfiguration, targetConnection: Connection,
+    rs: ResultSet, insertStatement: PreparedStatement, numberOfRowsPerBatch: Int,
+    useMultipleValuesClauses: Boolean
   ) {
     val sourceColumns = getSortedColumns(connectorRepository, sourceTableMetaData)
+    val targetConnectorId = targetTableMetaData.databaseMetaData.connectorId
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val filter = connectorRepository.hint<TableRowDataFilter>(targetConnectorId)
     val targetDatabase = targetTableMetaData.databaseMetaData
