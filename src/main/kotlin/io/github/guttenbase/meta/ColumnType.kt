@@ -38,7 +38,7 @@ enum class ColumnType(
 
   CLASS_STRING(STRING_TYPES, String::class.java, Char::class.java, Character::class.java),
 
-  CLASS_BIGDECIMAL(NUMERIC, DECIMAL, BigDecimal::class.java),
+  CLASS_BIGDECIMAL(listOf(NUMERIC, DECIMAL, REAL), BigDecimal::class.java),
 
   CLASS_BLOB(BLOB, Blob::class.java),
 
@@ -97,7 +97,6 @@ enum class ColumnType(
   /**
    * Get value from [ResultSet]
    */
-  @Throws(SQLException::class)
   fun getValue(resultSet: ResultSet, columnIndex: Int): Any? {
     val result = getValueFromResultset(resultSet, columnIndex)
 
@@ -108,7 +107,6 @@ enum class ColumnType(
     }
   }
 
-  @Throws(SQLException::class)
   private fun getValueFromResultset(resultSet: ResultSet, columnIndex: Int): Any? = when (this) {
     CLASS_STRING -> resultSet.getString(columnIndex)
     CLASS_DOUBLE -> resultSet.getDouble(columnIndex)
@@ -133,7 +131,6 @@ enum class ColumnType(
   /**
    * Set value in [PreparedStatement]
    */
-  @Throws(SQLException::class)
   fun setValue(
     insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData, column: ColumnMetaData, data: Any?
   ): Closeable? {
@@ -145,7 +142,6 @@ enum class ColumnType(
     }
   }
 
-  @Throws(SQLException::class)
   private fun setStatementValue(
     insertStatement: PreparedStatement, column: ColumnMetaData, columnIndex: Int, databaseMetaData: DatabaseMetaData, data: Any
   ): Closeable? {

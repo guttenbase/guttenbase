@@ -10,10 +10,12 @@ import java.sql.JDBCType.CLOB
 import java.sql.JDBCType.DATE
 import java.sql.JDBCType.DECIMAL
 import java.sql.JDBCType.DOUBLE
+import java.sql.JDBCType.FLOAT
 import java.sql.JDBCType.INTEGER
 import java.sql.JDBCType.LONGVARBINARY
 import java.sql.JDBCType.LONGVARCHAR
 import java.sql.JDBCType.NUMERIC
+import java.sql.JDBCType.REAL
 import java.sql.JDBCType.SMALLINT
 import java.sql.JDBCType.TINYINT
 import java.sql.JDBCType.VARBINARY
@@ -66,9 +68,11 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     )
 
     mappings["DOUBLE PRECISION"] = listOf(DOUBLE_RESOLVER)
-    mappings["DOUBLE"] = listOf(DOUBLEPRECISION_RESOLVER)
-    mappings["NUMBER"] = listOf(DECIMAL_RESOLVER, BIGINT_RESOLVER)
-    mappings["NUMERIC"] = listOf(DECIMAL_RESOLVER)
+    mappings["FLOAT"] = listOf(FLOAT_RESOLVER, DOUBLE_RESOLVER)
+    mappings["DOUBLE"] = listOf(DOUBLE_RESOLVER)
+    mappings["NUMBER"] = listOf(FLOAT_RESOLVER, REAL_RESOLVER, NUMERIC_RESOLVER, DECIMAL_RESOLVER, DOUBLE_RESOLVER, BIGINT_RESOLVER)
+    mappings["NUMERIC"] = listOf(NUMERIC_RESOLVER, DECIMAL_RESOLVER)
+    mappings["DECIMAL"] = listOf(DECIMAL_RESOLVER, NUMERIC_RESOLVER)
 
     mappings["BIGSERIAL"] = listOf(BIGINT_RESOLVER)
     mappings["SMALLSERIAL"] = listOf(SMALLINT_RESOLVER, INTEGER_RESOLVER)
@@ -137,16 +141,17 @@ private val LONGVARBINARY_RESOLVER =
 private val INTEGER_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INTEGER", INTEGER))
-      ?:LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT4", INTEGER))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT4", INTEGER))
   }
 private val SMALLINT_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "SMALLINT", SMALLINT))
-      ?:LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", SMALLINT))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", SMALLINT))
   }
 private val TINYINT_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TINYINT", TINYINT))
-    ?:LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", SMALLINT))
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TINYINT", TINYINT))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", SMALLINT))
   }
 private val BIGINT_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIGINT", BIGINT)) }
@@ -155,12 +160,20 @@ private val DECIMAL_RESOLVER = ColumnTypeDefinitionResolver {
     ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, "DECIMAL", DECIMAL, true, 31, 5)
   )
 }
-private val DOUBLEPRECISION_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DOUBLE PRECISION", DOUBLE)) }
 private val DOUBLE_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DOUBLE", DOUBLE)) }
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DOUBLE", DOUBLE))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DOUBLE PRECISION", DOUBLE))
+  }
+private val FLOAT_RESOLVER =
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "FLOAT", DOUBLE))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "FLOAT", FLOAT))
+  }
 private val NUMERIC_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMERIC", NUMERIC)) }
+private val REAL_RESOLVER =
+  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "REAL", REAL)) }
 private val VARCHAR_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "VARCHAR", VARCHAR)) }
 private val LONGVARCHAR_RESOLVER =

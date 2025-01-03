@@ -24,12 +24,11 @@ data class ColumnTypeDefinition @JvmOverloads constructor(
   val jdbcType: JDBCType = sourceColumn.jdbcColumnType,
   val usePrecisionClause: Boolean = false,
   val precision: Int = sourceColumn.precision,
-  val scale: Int = sourceColumn.scale
+  val scale: Int = if (sourceColumn.scale < 0) 8 else sourceColumn.scale // https://forums.oracle.com/ords/apexds/post/number-data-type-s-negative-scale-4474
 ) {
   val sourceDatabase get() = sourceColumn.tableMetaData.databaseMetaData
   val databaseType = targetDatabase.databaseType
-  val usePrecision = (usePrecisionClause && precision > 0)
-      || typeName.contains(PRECISION_PLACEHOLDER)
+  val usePrecision = (usePrecisionClause && precision > 0) || typeName.contains(PRECISION_PLACEHOLDER)
 
   constructor(type: ColumnTypeDefinition, typeName: String, jdbcType: JDBCType)
       : this(type.sourceColumn, type.targetDatabase, typeName, jdbcType, type.usePrecisionClause, type.precision, type.scale)

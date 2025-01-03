@@ -56,7 +56,6 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_LONG, CLASS_BIGDECIMAL, IntToBigDecimalColumnDataMapper)
     addMapping(CLASS_SHORT, CLASS_BIGDECIMAL, IntToBigDecimalColumnDataMapper)
     addMapping(CLASS_INTEGER, CLASS_BIGDECIMAL, IntToBigDecimalColumnDataMapper)
-    addMapping(CLASS_BIGDECIMAL, CLASS_BIGDECIMAL, BigDecimalColumnDataMapper)
     addMapping(CLASS_DOUBLE, CLASS_BIGDECIMAL, DoubleToBigDecimalColumnDataMapper)
 
     addMapping(CLASS_BIGDECIMAL, CLASS_DOUBLE, BigDecimalToDoubleColumnDataMapper)
@@ -236,7 +235,7 @@ object StringToClobDataMapper : ColumnDataMapper {
     else value
 }
 
-private fun Double.toBigDecimal(mapping: ColumnTypeDefinition): BigDecimal =
+internal fun Double.toBigDecimal(mapping: ColumnTypeDefinition): BigDecimal =
   BigDecimal(this, MathContext(mapping.precision))
     // precision may be smaller and thus cause an java.lang.ArithmeticException: Rounding necessary otherwise
     .setScale(mapping.scale, RoundingMode.HALF_DOWN)
