@@ -37,6 +37,12 @@ class ColumnMetaDataImpl(
    */
   override var isPrimaryKey = false
 
+  override var isGenerated = false
+
+  override var columnSize = 0
+
+  override var defaultValue: String? = null
+
   /**
    * / ** {@inheritDoc}
    */

@@ -32,6 +32,9 @@ interface ColumnMetaData : Comparable<ColumnMetaData>, Serializable {
   val precision: Int
   val scale: Int
   val isPrimaryKey: Boolean
+  val isGenerated: Boolean
+  val columnSize: Int
+  val defaultValue: String?
 
   /**
    * @return referenced columns for each foreign key constraint

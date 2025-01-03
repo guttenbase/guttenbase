@@ -70,7 +70,7 @@ class TableMetaDataImpl(
    * {@inheritDoc}
    */
   override fun getColumnMetaData(columnName: String): ColumnMetaData? =
-    columnMap[columnName.uppercase(Locale.getDefault())]
+    columnMap[columnName.uppercase()]
 
   /**
    * {@inheritDoc}

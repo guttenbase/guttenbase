@@ -19,6 +19,7 @@ interface DatabaseTableFilter {
   fun getSchema(databaseMetaData: DatabaseMetaData): String?
   fun getSchemaPattern(databaseMetaData: DatabaseMetaData): String?
   fun getTableNamePattern(databaseMetaData: DatabaseMetaData): String?
+  fun getColumnNamePattern(databaseMetaData: DatabaseMetaData): String?
   fun getTableTypes(databaseMetaData: DatabaseMetaData): Array<String>
 
   /**

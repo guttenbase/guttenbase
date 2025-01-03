@@ -33,6 +33,8 @@ open class DefaultDatabaseTableFilter : DatabaseTableFilter {
 
   override fun getTableNamePattern(databaseMetaData: DatabaseMetaData) = "%"
 
+  override fun getColumnNamePattern(databaseMetaData: DatabaseMetaData)= "%"
+
   override fun getTableTypes(databaseMetaData: DatabaseMetaData) = arrayOf("TABLE")
 
   override fun accept(table: TableMetaData) = when (table.databaseMetaData.databaseType) {

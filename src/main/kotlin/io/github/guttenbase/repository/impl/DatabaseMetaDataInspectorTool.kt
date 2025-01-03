@@ -52,7 +52,7 @@ internal class DatabaseMetaDataInspectorTool(
       for (table in databaseMetaData.tableMetaData) {
         val tableMetaData = table as InternalTableMetaData
 
-        updateTableMetaDataWithColumnInformation(statement, tableMetaData, schemaPrefix)
+        retrieveColumns(statement, tableMetaData, schemaPrefix)
       }
     }
 
@@ -60,6 +60,7 @@ internal class DatabaseMetaDataInspectorTool(
       for (table in databaseMetaData.tableMetaData) {
         val tableMetaData = table as InternalTableMetaData
 
+        updateColumnsTypeInformation(metaData, databaseMetaData, tableMetaData)
         updateColumnsWithPrimaryKeyInformation(metaData, databaseMetaData, tableMetaData)
         updateColumnsWithForeignKeyInformation(metaData, databaseMetaData, tableMetaData)
         updateTableWithIndexInformation(metaData, databaseMetaData, tableMetaData)
@@ -186,11 +187,8 @@ internal class DatabaseMetaDataInspectorTool(
     exportedForeignKeys.map { it.foreignKeyName.uppercase() }.contains(name.uppercase())
         || importedForeignKeys.map { it.foreignKeyName.uppercase() }.contains(name.uppercase())
 
-  @Throws(SQLException::class)
   private fun updateColumnsWithPrimaryKeyInformation(
-    metaData: JdbcDatabaseMetaData,
-    databaseMetaData: DatabaseMetaData,
-    table: TableMetaData
+    metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, table: TableMetaData
   ) {
     LOG.debug("Retrieving primary key information for " + table.tableName)
 
@@ -215,9 +213,35 @@ internal class DatabaseMetaDataInspectorTool(
     }
   }
 
-  private fun updateTableMetaDataWithColumnInformation(
-    statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String
+  private fun updateColumnsTypeInformation(
+    metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, table: TableMetaData
   ) {
+    LOG.debug("Retrieving column type information for " + table.tableName)
+
+    val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
+    val resultSet = metaData.getColumns(
+      tableFilter.getCatalog(databaseMetaData), tableFilter.getSchema(databaseMetaData),
+      table.tableName, tableFilter.getColumnNamePattern(databaseMetaData)
+    )
+
+    resultSet.use {
+      while (resultSet.next()) {
+        val columnName = resultSet.getString("COLUMN_NAME") ?: throw GuttenBaseException("COLUMN_NAME must not be null")
+        val columnSize = resultSet.getInt("COLUMN_SIZE")
+        val defaultValue = resultSet.getString("COLUMN_DEF")
+        val generated = resultSet.getString("IS_GENERATEDCOLUMN") == "YES"
+        val columnMetaData = table.getColumnMetaData(columnName) as InternalColumnMetaData?
+
+        if (columnMetaData != null) {
+          columnMetaData.isGenerated = generated
+          columnMetaData.columnSize = columnSize
+          columnMetaData.defaultValue = defaultValue
+        }
+      }
+    }
+  }
+
+  private fun retrieveColumns(statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String) {
     val databaseType = tableMetaData.databaseType
     val tableName = databaseType.escapeDatabaseEntity(tableMetaData.tableName, schemaPrefix)
     val columnFilter = connectorRepository.hint<DatabaseColumnFilter>(connectorId)
