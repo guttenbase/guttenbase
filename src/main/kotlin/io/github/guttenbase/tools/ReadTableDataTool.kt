@@ -76,9 +76,7 @@ open class ReadTableDataTool(
     var lines = noLines
     val result = ArrayList<Map<String, Any?>>()
     val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(connectorId)
-    val orderedSourceColumns = ColumnOrderHint.getSortedColumns(
-      connectorRepository, tableMetaData
-    )
+    val orderedSourceColumns = ColumnOrderHint.getSortedColumns(connectorRepository, tableMetaData)
 
     if (lines < 0) {
       lines = Int.MAX_VALUE

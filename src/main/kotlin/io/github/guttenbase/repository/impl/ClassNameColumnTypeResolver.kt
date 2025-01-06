@@ -16,9 +16,9 @@ object ClassNameColumnTypeResolver : ColumnTypeResolver {
   /**
    * Try to resolve by JDBC class name.
    */
-  override fun getColumnType(columnMetaData: ColumnMetaData): ColumnType {
+  override fun getColumnType(columnMetaData: ColumnMetaData): ColumnType? {
     val columnClassName = columnMetaData.columnClassName
 
-    return if (columnClassName.isSupportedColumnType()) ColumnType.valueOfClassName(columnClassName) else ColumnType.CLASS_UNKNOWN
+    return if (columnClassName.isSupportedColumnType()) ColumnType.valueOfClassName(columnClassName) else null
   }
 }

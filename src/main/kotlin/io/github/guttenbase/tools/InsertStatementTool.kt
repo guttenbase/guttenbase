@@ -3,7 +3,6 @@ package io.github.guttenbase.tools
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.repository.ConnectorRepository
-import io.github.guttenbase.repository.impl.ClassNameColumnTypeResolver
 import io.github.guttenbase.statements.AbstractInsertStatementCreator
 import java.sql.PreparedStatement
 
@@ -48,11 +47,12 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, targetConnec
   }
 
   fun setParameter(columnName: String, value: Any?): InsertStatementTool {
-    val columnMetaData = columnMap[columnName.lowercase()] ?: throw IllegalStateException("Table $columnName not found")
+    val column = columnMap[columnName.lowercase()] ?: throw IllegalStateException("Table $columnName not found")
     val columnIndex = columns.indexOfFirst { it.columnName.lowercase() == columnName.lowercase() } + 1
-    val columnType = ClassNameColumnTypeResolver.getColumnType(columnMetaData)
+    val columnDataMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(column, column)
+      ?: throw IllegalStateException("Type mapping not found for $column")
 
-    columnType.setValue(statement, columnIndex, database, columnMetaData, value)
+    columnDataMapping.sourceColumnType.setValue(statement, columnIndex, database, column, value)
 
     return this
   }
