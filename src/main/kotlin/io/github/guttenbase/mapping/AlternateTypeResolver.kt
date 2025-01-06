@@ -45,17 +45,17 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["VARCHAR2"] = listOf(VARCHAR_RESOLVER)
 
     mappings["VARBINARY"] = listOf(BLOB_RESOLVER, IMAGE_RESOLVER, BYTEA_RESOLVER, BINARY_RESOLVER)
+    mappings["LONGVARBINARY"] = listOf(BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER)
     mappings["BLOB"] = listOf(
-      BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER, VARBINARY_BIT_DATA_RESOLVER,
-      BYTEA_RESOLVER, IMAGE_RESOLVER, BINARY_RESOLVER
+      BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER, VARBINARY_BIT_DATA_RESOLVER,
+      BINARY_RESOLVER
     )
     mappings["BYTEA"] = listOf(
-      BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER,
-      IMAGE_RESOLVER, VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
+      BLOB_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER, VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
     )
     mappings["LONGBLOB"] = listOf(
-      BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER,
-      BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
+      BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER,
+      VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
     )
     mappings["OID"] = mappings["LONGBLOB"]!!
     mappings["MEDIUMBLOB"] = mappings["LONGBLOB"]!!
@@ -70,7 +70,8 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["DOUBLE PRECISION"] = listOf(DOUBLE_RESOLVER)
     mappings["FLOAT"] = listOf(FLOAT_RESOLVER, DOUBLE_RESOLVER)
     mappings["DOUBLE"] = listOf(DOUBLE_RESOLVER)
-    mappings["NUMBER"] = listOf(FLOAT_RESOLVER, REAL_RESOLVER, NUMERIC_RESOLVER, DECIMAL_RESOLVER, DOUBLE_RESOLVER, BIGINT_RESOLVER)
+    mappings["NUMBER"] =
+      listOf(FLOAT_RESOLVER, REAL_RESOLVER, NUMERIC_RESOLVER, DECIMAL_RESOLVER, DOUBLE_RESOLVER, BIGINT_RESOLVER)
     mappings["NUMERIC"] = listOf(NUMERIC_RESOLVER, DECIMAL_RESOLVER)
     mappings["DECIMAL"] = listOf(DECIMAL_RESOLVER, NUMERIC_RESOLVER)
 
@@ -110,17 +111,16 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
 private val BLOB_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BLOB", BLOB)) }
 private val IMAGE_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "IMAGE", BLOB)) }
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "IMAGE", LONGVARBINARY))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "IMAGE", BLOB))
+  }
 private val BYTEA_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BYTEA", BINARY)) }
 private val VARBINARY_BIT_DATA_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(
-      ColumnTypeDefinition(
-        it,
-        "LONG VARCHAR FOR BIT DATA",
-        LONGVARBINARY
-      )
+      ColumnTypeDefinition(it, "LONG VARCHAR FOR BIT DATA", LONGVARBINARY)
     )
   }
 private val TEXT_RESOLVER =
@@ -137,7 +137,10 @@ private val BINARY_RESOLVER =
 private val VARBINARY_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "VARBINARY", VARBINARY)) }
 private val LONGVARBINARY_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARBINARY", LONGVARBINARY)) }
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONGVARBINARY", LONGVARBINARY))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARBINARY", LONGVARBINARY))
+  }
 private val INTEGER_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INTEGER", INTEGER))
