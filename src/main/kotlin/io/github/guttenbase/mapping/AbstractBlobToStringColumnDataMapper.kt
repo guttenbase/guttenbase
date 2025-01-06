@@ -1,6 +1,5 @@
 package io.github.guttenbase.mapping
 
-import io.github.guttenbase.tools.ColumnMapping
 import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.charset.Charset
@@ -18,7 +17,7 @@ import java.sql.SQLException
 abstract class AbstractBlobToStringColumnDataMapper
 @JvmOverloads constructor(private val charset: Charset = StandardCharsets.UTF_8) : ColumnDataMapper {
   @Throws(SQLException::class)
-  override fun map(mapping: ColumnMapping, value: Any?): Any? {
+  override fun map(mapping: ColumnDataMapping, value: Any?): Any? {
     val blob = value as Blob
 
     try {

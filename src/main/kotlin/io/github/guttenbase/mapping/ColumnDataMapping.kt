@@ -16,5 +16,6 @@ data class ColumnDataMapping(
   val targetColumnMetaData: ColumnMetaData,
   val sourceColumnType: ColumnType,
   val targetColumnType: ColumnType,
-  val columnDataMapper: ColumnDataMapper
+  val columnDataMapper: ColumnDataMapper,
+  val columnTypeDefinition: ColumnTypeDefinition
 )

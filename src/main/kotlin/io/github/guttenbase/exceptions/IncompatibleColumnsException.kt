@@ -17,6 +17,7 @@ import io.github.guttenbase.connector.GuttenBaseException
  */
 class IncompatibleColumnsException(reason: String) : GuttenBaseException(reason) {
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
   }
 }

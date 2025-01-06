@@ -14,5 +14,5 @@ fun interface ColumnTypeResolver {
   /**
    * Tries to map column to a known type.
    */
-  fun getColumnType(columnMetaData: ColumnMetaData): ColumnType
+  fun getColumnType(columnMetaData: ColumnMetaData): ColumnType?
 }

@@ -3,12 +3,13 @@ package io.github.guttenbase.defaults.impl
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider.addMapping
 import io.github.guttenbase.mapping.ColumnDataMapper
 import io.github.guttenbase.mapping.ColumnDataMapperProvider
+import io.github.guttenbase.mapping.ColumnDataMapping
 import io.github.guttenbase.mapping.ColumnTypeDefinition
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.meta.ColumnType.*
 import io.github.guttenbase.meta.DatabaseType
-import io.github.guttenbase.tools.ColumnMapping
+import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.utils.Util.toDate
 import io.github.guttenbase.utils.Util.toLocalDate
 import io.github.guttenbase.utils.Util.toLocalDateTime
@@ -61,7 +62,7 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_BIGDECIMAL, CLASS_DOUBLE, BigDecimalToDoubleColumnDataMapper)
     addMapping(CLASS_OBJECT, CLASS_DOUBLE, BigDecimalToDoubleColumnDataMapper)
 
-    addMapping(CLASS_BLOB, CLASS_BYTES, BlobDataMapper)
+    addMapping(CLASS_BLOB, CLASS_BYTES, DefaultColumnDataMapper)
     addMapping(CLASS_BYTES, CLASS_BLOB, BytesToBlobDataMapper)
     addMapping(CLASS_CLOB, CLASS_STRING, ClobDataMapper)
     addMapping(CLASS_STRING, CLASS_CLOB, StringToClobDataMapper)
@@ -69,18 +70,17 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_BYTE, CLASS_BYTE, ToBitMapper)
     addMapping(CLASS_BOOLEAN, CLASS_BYTE, ToBitMapper)
     addMapping(CLASS_BYTE, CLASS_BOOLEAN, ToBooleanMapper)
-
   }
 
   /**
    * {@inheritDoc}
    */
   override fun findMapping(
-    sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData,
-    sourceColumnType: ColumnType, targetColumnType: ColumnType, databaseType: DatabaseType?
-  ) = findMappings(sourceColumnType, targetColumnType).filter {
-    (it.first == null || it.first == databaseType)
-        && it.second.isApplicable(sourceColumnMetaData, targetColumnMetaData)
+    sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData,
+    sourceColumnType: ColumnType, targetColumnType: ColumnType
+  ): ColumnDataMapper? = findMappings(sourceColumnType, targetColumnType).filter {
+    (it.first == null || it.first == targetColumn.databaseType) // Matching DB type
+        && it.second.isApplicable(sourceColumn, targetColumn)
   }.map { it.second }.firstOrNull()
 
   /**
@@ -105,56 +105,56 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
 }
 
 object ToIntColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Number) value.toInt() else value
 }
 
 object ToShortColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Number) value.toShort() else value
 }
 
 object IntToBigDecimalColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Number) value.toLong().toBigDecimal() else value
 }
 
 object ToLongColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Number) value.toLong() else value
 }
 
 object BigDecimalToDoubleColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is BigDecimal) value.toDouble() else value
 }
 
 object TimestampToDateColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Timestamp) {
       Date(value.toLocalDateTime().toLocalDate().toDate().time)
     } else value
 }
 
 object TimeToDateColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Time) {
       Date(value.toLocalDateTime().toLocalDate().toDate().time)
     } else value
 }
 
 object DateToTimeColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is java.util.Date) Time(value.time) else value
 }
 
 object DateToTimestampColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is java.util.Date) Timestamp(value.time) else value
 }
 
 object DateToIntColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Date) {
       if (mapping.columnTypeDefinition.sourceColumn.columnTypeName == "YEAR")
         value.toDate().toLocalDate().year else value.time.toInt()
@@ -162,7 +162,7 @@ object DateToIntColumnDataMapper : ColumnDataMapper {
 }
 
 object DateToShortColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Date) {
       if (mapping.columnTypeDefinition.sourceColumn.columnTypeName == "YEAR")
         value.toDate().toLocalDate().year.toShort() else value.time.toShort()
@@ -170,37 +170,31 @@ object DateToShortColumnDataMapper : ColumnDataMapper {
 }
 
 object TimeToTimestampColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Time) Timestamp(value.time) else value
 }
 
 object TimestampToTimeColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Timestamp) Time(value.time) else value
 }
 
 object BigDecimalColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is BigDecimal)
       value.toDouble().toBigDecimal(mapping.columnTypeDefinition)
     else value
 }
 
 object DoubleToBigDecimalColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Double)
       value.toBigDecimal(mapping.columnTypeDefinition)
     else value
 }
 
-object BlobDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
-    // Use BLOB directly in order to avoid reading the complete data into memory
-    value as? Blob ?: value
-}
-
 object BytesToBlobDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     // Use BLOB directly in order to avoid reading the complete data into memory
     if (value != null)
       GBBlob(value as ByteArray)
@@ -208,19 +202,19 @@ object BytesToBlobDataMapper : ColumnDataMapper {
 }
 
 object ClobDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     value as? Clob ?: value
 }
 
 object ToBooleanMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
-    if (mapping.columnDataMapping.sourceColumnMetaData.jdbcColumnType == BIT)
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
+    if (mapping.sourceColumnMetaData.jdbcColumnType == BIT)
       (value as ByteArray)[0] != 0.toByte()
     else value
 }
 
 object ToBitMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     when (value) {
       is Boolean -> if (value) 1.toByte() else 0.toByte()
       is Number -> value.toByte()
@@ -229,7 +223,7 @@ object ToBitMapper : ColumnDataMapper {
 }
 
 object StringToClobDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) =
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is String)
       GBClob(value)
     else value

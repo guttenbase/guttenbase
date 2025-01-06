@@ -1,7 +1,7 @@
 package io.github.guttenbase.defaults.impl
 
 import io.github.guttenbase.mapping.ColumnDataMapper
-import io.github.guttenbase.tools.ColumnMapping
+import io.github.guttenbase.mapping.ColumnDataMapping
 
 /**
  * By default always just return the same object.
@@ -10,6 +10,6 @@ import io.github.guttenbase.tools.ColumnMapping
  *
  * @author M. Dahm
  */
-open class DefaultColumnDataMapper : ColumnDataMapper {
-  override fun map(mapping: ColumnMapping, value: Any?) = value
+object DefaultColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnDataMapping, value: Any?) = value
 }

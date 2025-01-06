@@ -6,6 +6,7 @@ import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.MissingDataException
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.hints.ColumnOrderHint.Companion.getSortedColumns
+import io.github.guttenbase.mapping.ColumnDataMapping
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableRowDataFilter
 import io.github.guttenbase.meta.ColumnMetaData
@@ -15,7 +16,6 @@ import io.github.guttenbase.progress.TableCopyProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.ColumnDataMappingTool
-import io.github.guttenbase.tools.ColumnMapping
 import java.io.Closeable
 import java.io.IOException
 import java.sql.Connection
@@ -90,10 +90,9 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
 
         for (targetColumn in mapping.columns) {
           val columnMapping = findMapping(sourceColumn, targetColumn)
-          val columnTypeMapping = columnMapping.columnDataMapping
-          val sourceValue = columnTypeMapping.sourceColumnType.getValue(rs, columnIndex)
-          val targetValue = columnTypeMapping.columnDataMapper.map(columnMapping, sourceValue)
-          val optionalCloseableObject = columnTypeMapping.targetColumnType.setValue(
+          val sourceValue = columnMapping.sourceColumnType.getValue(rs, columnIndex)
+          val targetValue = columnMapping.columnDataMapper.map(columnMapping, sourceValue)
+          val optionalCloseableObject = columnMapping.targetColumnType.setValue(
             insertStatement, targetColumnIndex++, targetDatabase, targetColumn, targetValue
           )
 
@@ -143,7 +142,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
     indicator.debug("Number of data items: $dataItemsCount")
   }
 
-  private fun findMapping(sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData): ColumnMapping =
+  private fun findMapping(sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData): ColumnDataMapping =
     ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(sourceColumn, targetColumn)
       ?: throw IncompatibleColumnsException(
         """|

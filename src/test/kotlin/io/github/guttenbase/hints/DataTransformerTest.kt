@@ -2,22 +2,18 @@ package io.github.guttenbase.hints
 
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider
 import io.github.guttenbase.mapping.ColumnDataMapper
+import io.github.guttenbase.mapping.ColumnDataMapping
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
-import io.github.guttenbase.tools.ColumnMapping
 import io.github.guttenbase.tools.RESULT_LIST
 import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 
-
 /**
  * Test a schema migration where all strings are converted.
  *
- *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -28,7 +24,7 @@ class DataTransformerTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tabl
       override fun isApplicable(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData) =
         sourceColumnMetaData.columnName.uppercase().endsWith("NAME")
 
-      override fun map(mapping: ColumnMapping, value: Any?) = value.toString() + SUFFIX
+      override fun map(mapping: ColumnDataMapping, value: Any?) = value.toString() + SUFFIX
     }
 
     DefaultColumnDataMapperProvider.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, columnDataMapper)

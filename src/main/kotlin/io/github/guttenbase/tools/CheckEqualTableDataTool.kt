@@ -7,6 +7,7 @@ import io.github.guttenbase.exceptions.UnequalDataException
 import io.github.guttenbase.exceptions.UnequalNumberOfRowsException
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.hints.TableOrderHint
+import io.github.guttenbase.mapping.ColumnDataMapping
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
@@ -183,17 +184,17 @@ open class CheckEqualTableDataTool(
     primaryKey: String,
     targetConnectorId: String, tableName: String,
     resultSet1: ResultSet, resultSet2: ResultSet, rowIndex: Int,
-    targetColumnIndex: Int, sourceColumnIndex: Int, mapping: ColumnMapping,
+    targetColumnIndex: Int, sourceColumnIndex: Int, mapping: ColumnDataMapping,
     columnName: String, sourceColumn: ColumnMetaData,
     targetColumn: ColumnMetaData
   ): Pair<Any?, Any?> {
-    val sourceColumnType = mapping.columnDataMapping.sourceColumnType
-    val targetColumnType = mapping.columnDataMapping.targetColumnType
+    val sourceColumnType = mapping.sourceColumnType
+    val targetColumnType = mapping.targetColumnType
     val targetDatabaseType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
     var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
     var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex)
 
-    data1 = mapping.columnDataMapping.columnDataMapper.map(mapping, data1)
+    data1 = mapping.columnDataMapper.map(mapping, data1)
     data1 = convertData(sourceColumnType, data1)
     data2 = convertData(targetColumnType, data2)
 
@@ -286,7 +287,7 @@ open class CheckEqualTableDataTool(
   }
 
   private fun checkColumnTypeMapping(
-    tableName1: String, mapping: ColumnMapping?, columnName1: String, columnName2: String
+    tableName1: String, mapping: ColumnDataMapping?, columnName1: String, columnName2: String
   ) {
     if (mapping == null) {
       throw IncompatibleColumnsException(

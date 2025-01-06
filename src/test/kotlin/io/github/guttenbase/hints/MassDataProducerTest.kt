@@ -5,8 +5,10 @@ import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider
 import io.github.guttenbase.mapping.ColumnDataMapper
+import io.github.guttenbase.mapping.ColumnDataMapping
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.ColumnType
+import io.github.guttenbase.meta.ColumnType.CLASS_LONG
+import io.github.guttenbase.meta.ColumnType.CLASS_STRING
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.*
@@ -20,24 +22,23 @@ import org.junit.jupiter.api.Test
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
 class MassDataProducerTest : AbstractGuttenBaseTest() {
-  private val nameDataMapper: ColumnDataMapper = object : ColumnDataMapper {
+  private val nameDataMapper = object : ColumnDataMapper {
     override fun isApplicable(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData) =
       sourceColumnMetaData.columnName.uppercase().endsWith("NAME")
 
-    override fun map(mapping: ColumnMapping, value: Any?) =
+    override fun map(mapping: ColumnDataMapping, value: Any?) =
       value.toString() + "_" + loopCounter
   }
 
-  private val idDataMapper: ColumnDataMapper = object : ColumnDataMapper {
+  private val idDataMapper = object : ColumnDataMapper {
     override fun isApplicable(sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData) =
       sourceColumnMetaData.columnName.uppercase().endsWith("ID")
 
-    override fun map(mapping: ColumnMapping, value: Any?) =
-      value as Long + getOffset(mapping.columnDataMapping.sourceColumnMetaData)
+    override fun map(mapping: ColumnDataMapping, value: Any?) =
+      value as Long + getOffset(mapping.sourceColumnMetaData)
   }
 
   private val maxTableIds = HashMap<TableMetaData, Long>()
@@ -51,8 +52,8 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
     ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables-h2.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
 
-    DefaultColumnDataMapperProvider.addMapping(ColumnType.CLASS_STRING, ColumnType.CLASS_STRING, nameDataMapper)
-    DefaultColumnDataMapperProvider.addMapping(ColumnType.CLASS_LONG, ColumnType.CLASS_LONG, idDataMapper)
+    DefaultColumnDataMapperProvider.addMapping(CLASS_STRING, CLASS_STRING, nameDataMapper)
+    DefaultColumnDataMapperProvider.addMapping(CLASS_LONG, CLASS_LONG, idDataMapper)
 
     computeMaximumIds()
   }
