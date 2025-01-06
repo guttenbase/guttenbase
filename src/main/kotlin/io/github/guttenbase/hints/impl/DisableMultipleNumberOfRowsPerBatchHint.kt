@@ -12,7 +12,7 @@ import io.github.guttenbase.tools.NumberOfRowsPerBatch
  *
  * @author M. Dahm
  */
-open class DisableMultipleNumberOfRowsPerBatchHint : NumberOfRowsPerBatchHint() {
+object DisableMultipleNumberOfRowsPerBatchHint : NumberOfRowsPerBatchHint() {
   override val value: NumberOfRowsPerBatch
     get() = object : NumberOfRowsPerBatch {
       override fun getNumberOfRowsPerBatch(targetTableMetaData: TableMetaData) = 1

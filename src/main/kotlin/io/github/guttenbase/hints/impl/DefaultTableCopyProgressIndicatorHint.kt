@@ -12,7 +12,7 @@ import io.github.guttenbase.progress.TableCopyProgressIndicator
  *
  * @author M. Dahm
  */
-open class DefaultTableCopyProgressIndicatorHint : TableCopyProgressIndicatorHint() {
+object DefaultTableCopyProgressIndicatorHint : TableCopyProgressIndicatorHint() {
   override val value: TableCopyProgressIndicator
     get() = TableCopyProgressBarIndicator()
 }

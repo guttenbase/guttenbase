@@ -8,7 +8,7 @@ import io.github.guttenbase.repository.TableRowCountFilter
 /**
  * By default compute row count for all tables
  */
-open class DefaultTableRowCountFilterHint : TableRowCountFilterHint() {
+object DefaultTableRowCountFilterHint : TableRowCountFilterHint() {
  override val value: TableRowCountFilter
     get() = DefaultTableRowCountFilter()
 }

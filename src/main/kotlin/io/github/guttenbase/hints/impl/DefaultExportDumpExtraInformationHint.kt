@@ -8,10 +8,9 @@ import io.github.guttenbase.export.ExportDumpExtraInformationHint
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
-open class DefaultExportDumpExtraInformationHint : ExportDumpExtraInformationHint() {
+object DefaultExportDumpExtraInformationHint : ExportDumpExtraInformationHint() {
  override val value: ExportDumpExtraInformation
     get() = ExportDumpExtraInformation {  _,_,_ -> HashMap() }
 }

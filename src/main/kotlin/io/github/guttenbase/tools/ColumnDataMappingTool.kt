@@ -36,33 +36,33 @@ open class ColumnDataMappingTool(private val connectorRepository: ConnectorRepos
    * Returns column type mapping applicable for source and target columns or null if none can be found.
    */
   fun getCommonColumnTypeMapping(
-    sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData
+    sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData
   ): ColumnDataMapping? = columnTypeResolvers.asSequence()
-    .map { findColumnDataMapping(it, sourceColumnMetaData, targetColumnMetaData) }.firstOrNull()
+    .map { findColumnDataMapping(it, sourceColumn, targetColumn) }.firstOrNull()
 
   private fun findColumnDataMapping(
-    resolver: ColumnTypeResolver, sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData
+    resolver: ColumnTypeResolver, sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData
   ): ColumnDataMapping? {
-    val sourceColumnType = resolver.getColumnType(sourceColumnMetaData)
-    val targetColumnType = resolver.getColumnType(targetColumnMetaData)
+    val sourceColumnType = resolver.getColumnType(sourceColumn)
+    val targetColumnType = resolver.getColumnType(targetColumn)
 
     if (null != sourceColumnType && null != targetColumnType) {
-      val targetConnectorId = targetColumnMetaData.connectorId
+      val targetConnectorId = targetColumn.connectorId
       val columnDataMapperFactory = connectorRepository.hint<ColumnDataMapperProvider>(targetConnectorId)
       val columnTypeDefinition = connectorRepository.hint<ColumnTypeMapper>(targetConnectorId)
-        .lookupColumnDefinition(sourceColumnMetaData, targetColumnMetaData.tableMetaData.databaseMetaData)
+        .lookupColumnDefinition(sourceColumn, targetColumn.tableMetaData.databaseMetaData)
       val columnDataMapper = columnDataMapperFactory.findMapping(
-        sourceColumnMetaData, targetColumnMetaData, sourceColumnType, targetColumnType
+        sourceColumn, targetColumn, sourceColumnType, targetColumnType
       )
 
       if (columnDataMapper != null) {
         return ColumnDataMapping(
-          sourceColumnMetaData, targetColumnMetaData, sourceColumnType, targetColumnType, columnDataMapper,
+          sourceColumn, targetColumn, sourceColumnType, targetColumnType, columnDataMapper,
           columnTypeDefinition
         )
-      } else if (sourceColumnType == targetColumnType) {
+      } else if (sourceColumnType == targetColumnType || sourceColumn.columnTypeName == targetColumn.columnTypeName) { // Hope for the best...
         return ColumnDataMapping(
-          sourceColumnMetaData, targetColumnMetaData, sourceColumnType, targetColumnType, DefaultColumnDataMapper,
+          sourceColumn, targetColumn, sourceColumnType, sourceColumnType, DefaultColumnDataMapper,
           columnTypeDefinition
         )
       }

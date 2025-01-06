@@ -14,7 +14,7 @@ import io.github.guttenbase.mapping.TableMapper
  *
  * @author M. Dahm
  */
-open class DefaultTableMapperHint : TableMapperHint() {
+object DefaultTableMapperHint : TableMapperHint() {
  override val value: TableMapper
     get() = DefaultTableMapper()
 }

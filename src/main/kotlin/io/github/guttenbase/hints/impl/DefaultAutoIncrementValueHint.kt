@@ -10,7 +10,7 @@ import io.github.guttenbase.schema.DefaultAutoIncrementValue
  *
  * Using this hint the @see [io.github.guttenbase.mapping.DefaultColumnTypeMapper] generate a clause with the given start value and step factor.
  */
-open class DefaultAutoIncrementValueHint: AutoIncrementValueHint() {
+object DefaultAutoIncrementValueHint: AutoIncrementValueHint() {
   override val value: AutoIncrementValue
     get() = DefaultAutoIncrementValue()
 }

@@ -11,7 +11,7 @@ import io.github.guttenbase.mapping.ColumnDataMapperProvider
  *
  * @author M. Dahm
  */
-open class DefaultColumnDataMapperProviderHint : ColumnDataMapperProviderHint() {
+object DefaultColumnDataMapperProviderHint : ColumnDataMapperProviderHint() {
   override val value: ColumnDataMapperProvider
     get() = DefaultColumnDataMapperProvider
 }

@@ -12,7 +12,7 @@ import io.github.guttenbase.export.zip.ImportDumpExtraInformationHint
  *
  * @author M. Dahm
  */
-open class DefaultImportDumpExtraInformationHint : ImportDumpExtraInformationHint() {
+object DefaultImportDumpExtraInformationHint : ImportDumpExtraInformationHint() {
  override val value: ImportDumpExtraInformation
     get() = ImportDumpExtraInformation {  }
 }

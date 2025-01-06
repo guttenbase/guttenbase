@@ -8,10 +8,9 @@ import io.github.guttenbase.tools.EntityTableChecker
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
-open class DefaultEntityTableCheckerHint : EntityTableCheckerHint() {
+object DefaultEntityTableCheckerHint : EntityTableCheckerHint() {
   override val value: EntityTableChecker
     get() = EntityTableChecker { tableMetaData ->
       for (columnMetaData in tableMetaData.columnMetaData) {

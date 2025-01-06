@@ -7,14 +7,11 @@ import io.github.guttenbase.tools.NumberOfRowsPerBatch
 /**
  * Default number of VALUES clauses is 2000.
  *
- *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
-open class DefaultNumberOfRowsPerBatchHint : NumberOfRowsPerBatchHint() {
- override val value: NumberOfRowsPerBatch
+object DefaultNumberOfRowsPerBatchHint : NumberOfRowsPerBatchHint() {
+  override val value: NumberOfRowsPerBatch
     get() = NumberOfRowsPerBatch { 2000 }
 }

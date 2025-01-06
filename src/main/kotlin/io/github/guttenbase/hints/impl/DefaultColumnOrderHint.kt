@@ -7,13 +7,11 @@ import io.github.guttenbase.mapping.ColumnOrderComparatorFactory
 /**
  * By default order by natural order of column names.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
-open class DefaultColumnOrderHint : ColumnOrderHint() {
+object DefaultColumnOrderHint : ColumnOrderHint() {
   override val value: ColumnOrderComparatorFactory
     get() = ColumnOrderComparatorFactory { DefaultColumnComparator() }
 }

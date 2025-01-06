@@ -53,7 +53,7 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testOmitData() {
-    connectorRepository.addConnectorHint(TARGET, DisableMultipleNumberOfRowsPerBatchHint())
+    connectorRepository.addConnectorHint(TARGET, DisableMultipleNumberOfRowsPerBatchHint)
     DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables()
 
     val sourceTable = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_COMPANY")!!

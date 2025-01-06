@@ -7,13 +7,11 @@ import io.github.guttenbase.progress.TableCopyProgressIndicator
 /**
  * Use UI to show progress.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
-open class SwingTableCopyProgressIndicatorHint : TableCopyProgressIndicatorHint() {
+object SwingTableCopyProgressIndicatorHint : TableCopyProgressIndicatorHint() {
   override val value: TableCopyProgressIndicator
     get() = SwingTableCopyProgressIndicator()
 }

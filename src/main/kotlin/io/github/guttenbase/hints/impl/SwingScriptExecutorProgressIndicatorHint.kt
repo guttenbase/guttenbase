@@ -7,13 +7,11 @@ import io.github.guttenbase.progress.SwingScriptExecutorProgressIndicator
 /**
  * Use UI to show progress.
  *
- *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
-open class SwingScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
+object SwingScriptExecutorProgressIndicatorHint : ScriptExecutorProgressIndicatorHint() {
  override val value: ScriptExecutorProgressIndicator
     get() = SwingScriptExecutorProgressIndicator()
 }

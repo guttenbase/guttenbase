@@ -10,11 +10,9 @@ import io.github.guttenbase.meta.TableMetaData
  * VALUES() clauses for an INSERT statement. The latter method is much faster in most cases, but not all databases support this, so the
  * value must be 1 then.
  *
- *
  * The value also must not be too high so data buffers are not exceeded, especially when the table contains BLOBs.
  *
  *  &copy; 2012-2034 akquinet tech@spree
- *
  *
  * @author M. Dahm
  * @see MaxNumberOfDataItems

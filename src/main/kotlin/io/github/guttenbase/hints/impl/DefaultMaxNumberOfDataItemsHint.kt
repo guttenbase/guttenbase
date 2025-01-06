@@ -13,7 +13,7 @@ import io.github.guttenbase.tools.MaxNumberOfDataItems
  *
  * @author M. Dahm
  */
-open class DefaultMaxNumberOfDataItemsHint : MaxNumberOfDataItemsHint() {
+object DefaultMaxNumberOfDataItemsHint : MaxNumberOfDataItemsHint() {
   override val value: MaxNumberOfDataItems
     get() = MaxNumberOfDataItems { targetTableMetaData ->
       when (targetTableMetaData.databaseType) {

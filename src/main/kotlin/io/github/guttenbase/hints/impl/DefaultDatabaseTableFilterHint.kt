@@ -13,7 +13,7 @@ import io.github.guttenbase.repository.DatabaseTableFilter
  *
  * @author M. Dahm
  */
-open class DefaultDatabaseTableFilterHint : DatabaseTableFilterHint() {
+object DefaultDatabaseTableFilterHint : DatabaseTableFilterHint() {
  override val value: DatabaseTableFilter
     get() = DefaultDatabaseTableFilter()
 }

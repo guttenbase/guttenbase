@@ -9,9 +9,8 @@ import io.github.guttenbase.mapping.DefaultColumnTypeMapper
  *
  *  &copy; 2012-2034 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
-open class DefaultColumnTypeMapperHint : ColumnTypeMapperHint() {
+object DefaultColumnTypeMapperHint : ColumnTypeMapperHint() {
   override val value: ColumnTypeMapper get() = DefaultColumnTypeMapper
 }
