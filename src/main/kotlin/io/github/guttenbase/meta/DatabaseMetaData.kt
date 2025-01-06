@@ -29,6 +29,7 @@ interface DatabaseMetaData : Serializable {
    * @return (cached) meta data
    */
   val supportedTypes: Map<JDBCType, List<DatabaseSupportedColumnType>>
+  val allTypes: List<DatabaseSupportedColumnType>
   val databaseMetaData: JdbcDatabaseMetaData
   val databaseType: DatabaseType
   val connectorRepository: ConnectorRepository
@@ -43,4 +44,6 @@ data class DatabaseSupportedColumnType(
   val maxPrecision: Int = 0,
   val maxScale: Int = 0,
   val nullable: Boolean = true
-) : Serializable
+) : Serializable, Comparable<DatabaseSupportedColumnType> {
+  override fun compareTo(other: DatabaseSupportedColumnType) = typeName.compareTo(other.typeName)
+}

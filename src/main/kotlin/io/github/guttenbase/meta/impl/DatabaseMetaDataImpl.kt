@@ -36,6 +36,9 @@ class DatabaseMetaDataImpl(
   override val supportedTypes: Map<JDBCType, List<DatabaseSupportedColumnType>>
     get() = supportedTypeMap.entries.associate { entry -> entry.key to entry.value.toList() }
 
+  override val allTypes: List<DatabaseSupportedColumnType>
+    get() = supportedTypes.values.flatten().sorted()
+
   override val schema = schema.trim { it <= ' ' }
 
   private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()

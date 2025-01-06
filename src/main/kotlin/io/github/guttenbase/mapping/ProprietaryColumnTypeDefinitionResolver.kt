@@ -38,6 +38,10 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
         CLOB -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
         LONGVARCHAR -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
         else -> null
+      } ?: if (type.typeName == "GEOMETRY") { // Exists, but is not reported by JDBC driver 🙄
+        ColumnTypeDefinition(type, "GEOMETRY", BINARY)
+      } else {
+        null
       }
 
       MYSQL, MARIADB -> when (type.jdbcType) {

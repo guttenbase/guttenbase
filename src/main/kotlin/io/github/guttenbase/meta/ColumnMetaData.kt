@@ -66,6 +66,7 @@ fun JDBCType.isBlobType() = this in BLOB_TYPES
 fun JDBCType.isBinaryType() = this in BINARY_TYPES
 fun JDBCType.isNumericType() = this in NUMERIC_TYPES
 fun JDBCType.isDateType() = this in DATE_TYPES
+fun Int.hasJDBCType(): Boolean = JDBCType.entries.any { it.vendorTypeNumber.toInt() == this.toInt() }
 
 val STANDARD_TYPES = JDBCType.entries.map { it.name }.toSet()
 

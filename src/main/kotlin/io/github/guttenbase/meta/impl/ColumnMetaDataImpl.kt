@@ -3,6 +3,7 @@ package io.github.guttenbase.meta.impl
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.InternalColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.hasJDBCType
 import java.sql.JDBCType
 import java.util.*
 
@@ -30,7 +31,7 @@ class ColumnMetaDataImpl(
     columnMetaData.isNullable, columnMetaData.isAutoIncrement, columnMetaData.precision, columnMetaData.scale
   )
 
-  override val jdbcColumnType: JDBCType = JDBCType.valueOf(columnType)
+  override val jdbcColumnType: JDBCType = if (columnType.hasJDBCType()) JDBCType.valueOf(columnType) else JDBCType.OTHER
 
   /**
    * {@inheritDoc}

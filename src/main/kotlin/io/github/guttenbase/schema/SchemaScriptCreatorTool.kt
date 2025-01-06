@@ -12,6 +12,7 @@ import io.github.guttenbase.schema.comparison.DuplicateIndexIssue
 import io.github.guttenbase.schema.comparison.SchemaComparatorTool
 import io.github.guttenbase.schema.comparison.SchemaCompatibilityIssueType
 import io.github.guttenbase.tools.TableOrderTool
+import org.slf4j.LoggerFactory
 import java.sql.SQLException
 import java.util.*
 import kotlin.math.abs
@@ -28,8 +29,9 @@ class SchemaScriptCreatorTool(
   private val connectorRepository: ConnectorRepository,
   private val sourceConnectorId: String, private val targetConnectorId: String
 ) {
-  private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(sourceConnectorId) }
-  private val tables get() = TableOrderTool(databaseMetaData).orderTables()
+  private val sourcedatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(sourceConnectorId) }
+  private val targetDatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(targetConnectorId) }
+  private val tables get() = TableOrderTool(sourcedatabaseMetaData).orderTables()
 
   fun createTableStatements() = createTableStatements(tables)
 
@@ -60,9 +62,16 @@ class SchemaScriptCreatorTool(
         val columnsFormPrimaryKey =
           columns.map(ColumnMetaData::isPrimaryKey).reduce { a: Boolean, b: Boolean -> a && b }
         val conflictedIndex = conflictedIndexes.contains(indexMetaData)
+        // Most DBs do not support indexes on binary columns
+        val containsBinaryType = columns
+          .any { it.jdbcColumnType.isBinaryType() || it.jdbcColumnType.isBlobType() || it.jdbcColumnType.isClobType() }
 
         if (!columnsFormPrimaryKey && !conflictedIndex) {
-          result.add(createIndex(indexMetaData, counter++))
+          if (containsBinaryType && targetDatabaseMetaData.databaseType != DatabaseType.MYSQL) {
+            LOG.warn("Skipping index ${indexMetaData.indexName} on table ${tableMetaData.tableName} because it contains binary columns")
+          } else {
+            result.add(createIndex(indexMetaData, counter++))
+          }
         }
       }
     }
@@ -269,6 +278,9 @@ class SchemaScriptCreatorTool(
   }
 
   companion object {
+    @JvmStatic
+    private val LOG = LoggerFactory.getLogger(SchemaScriptCreatorTool::class.java)
+
     private val RANDOM = Random()
   }
 }
