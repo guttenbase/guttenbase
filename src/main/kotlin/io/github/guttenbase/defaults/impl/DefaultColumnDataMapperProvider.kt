@@ -208,15 +208,19 @@ object ClobDataMapper : ColumnDataMapper {
 
 object ToBooleanMapper : ColumnDataMapper {
   override fun map(mapping: ColumnDataMapping, value: Any?) =
-    if (mapping.sourceColumnMetaData.jdbcColumnType == BIT)
-      (value as ByteArray)[0] != 0.toByte()
-    else value
+    if (mapping.sourceColumnMetaData.jdbcColumnType == BIT) {
+      when (value) {
+        is ByteArray -> value[0] != BYTE_ZERO
+        is Number -> value.toByte() != BYTE_ZERO
+        else -> value
+      }
+    } else value
 }
 
 object ToBitMapper : ColumnDataMapper {
   override fun map(mapping: ColumnDataMapping, value: Any?) =
     when (value) {
-      is Boolean -> if (value) 1.toByte() else 0.toByte()
+      is Boolean -> if (value) BYTE_ONE else BYTE_ZERO
       is Number -> value.toByte()
       else -> value
     }
@@ -233,3 +237,6 @@ internal fun Double.toBigDecimal(mapping: ColumnTypeDefinition): BigDecimal =
   BigDecimal(this, MathContext(mapping.precision))
     // precision may be smaller and thus cause an java.lang.ArithmeticException: Rounding necessary otherwise
     .setScale(mapping.scale, RoundingMode.HALF_DOWN)
+
+private const val BYTE_ZERO = 0.toByte()
+private const val BYTE_ONE = 1.toByte()

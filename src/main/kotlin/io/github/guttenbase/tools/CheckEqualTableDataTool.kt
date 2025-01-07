@@ -12,7 +12,6 @@ import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
-import io.github.guttenbase.meta.ColumnType.*
 import io.github.guttenbase.meta.DatabaseType.ORACLE
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
@@ -42,8 +41,7 @@ import kotlin.math.min
  */
 open class CheckEqualTableDataTool(
   private val connectorRepository: ConnectorRepository,
-  private val sourceConnectorId: String, private val targetConnectorId: String,
-  private val trimStrings: Boolean = true
+  private val sourceConnectorId: String, private val targetConnectorId: String
 ) {
   fun checkTableData() {
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
@@ -195,8 +193,8 @@ open class CheckEqualTableDataTool(
     var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex)
 
     data1 = mapping.columnDataMapper.map(mapping, data1)
-    data1 = convertData(sourceColumnType, data1)
-    data2 = convertData(targetColumnType, data2)
+    data1 = convertData(data1)
+    data2 = convertData(data2)
 
     when {
       data1 == null && data2 != null -> throw createUnequalDataException(
@@ -222,26 +220,22 @@ open class CheckEqualTableDataTool(
     return data1 to data2
   }
 
-  private fun convertData(columnType: ColumnType, data: Any?): Any? = when (columnType) {
-    CLASS_STRING -> {
+  private fun convertData(data: Any?): Any? = when (data) {
+    is String? -> {
       // See http://www.postgresql.org/docs/8.3/static/datatype-character.html
-      if (trimStrings) {
-        trim(data as String?)
-      } else if (data is Clob) {
-        createStringFromClob(data)
-      } else {
-        data
-      }
+      trim(data)
     }
 
-    CLASS_CLOB -> {
-      val clob = data as Clob?
-      createStringFromClob(clob)
+    is Clob -> {
+      createStringFromClob(data)
     }
 
-    CLASS_BLOB -> {
-      val blob = data as Blob?
-      createStringFromBlob(blob)
+    is ByteArray -> {
+      String(data)
+    }
+
+    is Blob -> {
+      createStringFromBlob(data)
     }
 
     else -> data
@@ -304,11 +298,9 @@ open class CheckEqualTableDataTool(
       closeables.forEach { it.use { } }
     }
 
-    @Throws(SQLException::class)
     private fun createStringFromBlob(blob: Blob?): String? =
       if (blob == null) null else String(blob.getBytes(1, min(blob.length(), 1000).toInt()))
 
-    @Throws(SQLException::class)
     private fun createStringFromClob(clob: Clob?): String? = clob?.characterStream?.readText()
 
     private fun trim(data: String?): String? = data?.trim { it <= ' ' }

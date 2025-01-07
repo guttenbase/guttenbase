@@ -27,7 +27,8 @@ enum class DatabaseType(
    * Unfortunately every database has its own way to implement this feature.
    */
   private val autoincrementColumnClause: String,
-  private val autoincrementColumnStatement: String? = null
+  private val autoincrementColumnStatement: String? = null,
+  private val escapeDatabaseEntities: Boolean = true
 ) {
   // Dummy value
   GENERIC("IDENTITY($NEXT_VALUE, 1)"),
@@ -40,7 +41,8 @@ enum class DatabaseType(
 
   POSTGRESQL(
     "", // Handled by column type, see below)
-    "SELECT setval('${TABLE_NAME}_${COLUMN_NAME}_seq', $NEXT_VALUE, true);"
+    "SELECT setval('${TABLE_NAME}_${COLUMN_NAME}_seq', $NEXT_VALUE, true);",
+    false
   ),
   MSSQL("IDENTITY($NEXT_VALUE, 1)"),
 
@@ -114,11 +116,14 @@ enum class DatabaseType(
       val autoIncrementValue = retrieveAutoIncrementValue(column)
       val startValue = autoIncrementValue.startValue(column)
       val stepValue = autoIncrementValue.stepWidth(column)
+      val mapper: (String) -> String = { if (escapeDatabaseEntities) escapeDatabaseEntity(it) else it }
+      val tableName = mapper.invoke(column.tableMetaData.tableName)
+      val columnName = mapper.invoke(column.columnName)
 
       autoincrementColumnStatement.replace(NEXT_VALUE, startValue.toString())
         .replace(STEP_VALUE, stepValue.toString())
-        .replace(TABLE_NAME, escapeDatabaseEntity(column.tableMetaData.tableName))
-        .replace(COLUMN_NAME, escapeDatabaseEntity(column.columnName))
+        .replace(TABLE_NAME, tableName)
+        .replace(COLUMN_NAME, columnName)
     } else {
       null
     }
@@ -200,7 +205,7 @@ enum class DatabaseType(
   fun escapeDatabaseEntity(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
 
   fun supportsPrecisionClause(type: String) =
-    type == VARCHAR.name || type == CHAR.name || type == DECIMAL.name || type == NUMERIC.name
+    type == VARCHAR.name || type == CHAR.name || type == "CHARACTER" || type == DECIMAL.name || type == NUMERIC.name
         || type == BINARY.name || type == VARBINARY.name
 
   private fun retrieveAutoIncrementValue(column: ColumnMetaData): AutoIncrementValue {

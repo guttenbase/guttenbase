@@ -37,6 +37,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["CLOB"] = listOf(LONGTEXT_RESOLVER, TEXT_RESOLVER)
 
     mappings["CHARACTER"] = listOf(CHAR_RESOLVER)
+    mappings["CHAR"] = listOf(CHAR_RESOLVER)
     mappings["BPCHAR"] = listOf(CHAR_RESOLVER)
     mappings["UNIQUEIDENTIFIER"] = listOf(CHAR_RESOLVER)
     mappings["CHARACTER VARYING"] = listOf(VARCHAR_RESOLVER)
@@ -108,7 +109,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
   }
 }
 
-private val BLOB_RESOLVER =  ColumnTypeDefinitionResolver {
+private val BLOB_RESOLVER = ColumnTypeDefinitionResolver {
   LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BLOB", BLOB))
     ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BINARY LARGE OBJECT", BLOB))
 }
@@ -189,6 +190,7 @@ private val LONGVARCHAR_RESOLVER = ColumnTypeDefinitionResolver {
 }
 private val CHAR_RESOLVER = ColumnTypeDefinitionResolver {
   LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "CHAR", CHAR))
+    ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "CHARACTER", CHAR))
 }
 private val DATE_RESOLVER = ColumnTypeDefinitionResolver {
   LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DATE", DATE))

@@ -7,6 +7,7 @@ import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.databaseType
 import java.sql.JDBCType.BLOB
+import java.sql.JDBCType.CHAR
 
 /**
  * Create (initial) column type definition for given column and database type.
@@ -19,6 +20,11 @@ object ProprietaryColumnTypeDefinitionFactory : ColumnTypeDefinitionFactory {
     ColumnTypeDefinitionFactory { sourceColumn, targetDatabase ->
       if (sourceColumn.databaseType == DatabaseType.MYSQL && sourceColumn.columnTypeName == "GEOMETRY")
         ColumnTypeDefinition(sourceColumn, targetDatabase, "BLOB", BLOB) // Better fit
+      else null
+    },
+    ColumnTypeDefinitionFactory { sourceColumn, targetDatabase ->
+      if (targetDatabase.databaseType == DatabaseType.H2DB && sourceColumn.columnTypeName == "CHAR")
+        ColumnTypeDefinition(sourceColumn, targetDatabase, "CHARACTER", CHAR) // Better fit
       else null
     },
 
