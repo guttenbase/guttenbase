@@ -9,12 +9,9 @@ import io.github.guttenbase.meta.TableMetaData
  * stmt.setFetchSize(100);
 </pre> *
  *
- *
  * &copy; 2012-2044 akquinet tech@spree
  *
- *
  * @author M. Dahm
- * @see MaxNumberOfDataItems
  */
 interface ResultSetParameters {
   fun getFetchSize(tableMetaData: TableMetaData): Int

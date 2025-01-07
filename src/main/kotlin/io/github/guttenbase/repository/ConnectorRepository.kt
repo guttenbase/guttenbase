@@ -243,10 +243,9 @@ open class ConnectorRepository {
       override val value: DatabaseForeignKeyFilter
         get() = DefaultDatabaseForeignKeyFilter()
     })
-    addConnectorHint(connectorId, DefaultNumberOfRowsPerBatchHint)
+    addConnectorHint(connectorId, DefaultBatchInsertionConfigurationHint)
     addConnectorHint(connectorId, DefaultResultSetParametersHint)
     addConnectorHint(connectorId, DefaultNumberOfCheckedTableDataHint)
-    addConnectorHint(connectorId, DefaultMaxNumberOfDataItemsHint)
     addConnectorHint(connectorId, DefaultSplitColumnHint)
     addConnectorHint(connectorId, DefaultEntityTableCheckerHint)
     addConnectorHint(connectorId, DefaultExporterFactoryHint)

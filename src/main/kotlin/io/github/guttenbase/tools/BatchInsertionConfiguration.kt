@@ -15,13 +15,18 @@ import io.github.guttenbase.meta.TableMetaData
  * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
- * @see MaxNumberOfDataItems
  */
-fun interface NumberOfRowsPerBatch {
-  fun getNumberOfRowsPerBatch(targetTableMetaData: TableMetaData): Int
+interface BatchInsertionConfiguration {
+  fun getNumberOfRowsPerBatch(targetTable: TableMetaData): Int
+
+  /**
+   * How many data items may the INSERT statement have in total. I.e., how many '?' placeholders does the database support in a single
+   * statement.
+   */
+  fun getMaxNumberOfDataItems(targetTable: TableMetaData): Int
 
   /**
    * Use VALUES() clauses or [java.sql.PreparedStatement.addBatch] as discussed above
    */
-  fun useMultipleValuesClauses(targetTableMetaData: TableMetaData) = true
+  fun useMultipleValuesClauses(targetTable: TableMetaData) = true
 }

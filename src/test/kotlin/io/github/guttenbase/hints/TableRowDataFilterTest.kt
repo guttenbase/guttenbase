@@ -3,7 +3,7 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
-import io.github.guttenbase.hints.impl.DisableMultipleNumberOfRowsPerBatchHint
+import io.github.guttenbase.hints.impl.DisableMultipleValueBatchInsertionHint
 import io.github.guttenbase.mapping.TableRowDataFilter
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.tools.DefaultTableCopyTool
@@ -53,7 +53,7 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testOmitData() {
-    connectorRepository.addConnectorHint(TARGET, DisableMultipleNumberOfRowsPerBatchHint)
+    connectorRepository.addConnectorHint(TARGET, DisableMultipleValueBatchInsertionHint)
     DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables()
 
     val sourceTable = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_COMPANY")!!

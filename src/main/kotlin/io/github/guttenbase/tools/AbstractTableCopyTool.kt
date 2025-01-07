@@ -19,8 +19,7 @@ import java.sql.SQLException
  *
  *
  * @author M. Dahm
- * Hint is used by [io.github.guttenbase.hints.NumberOfRowsPerBatchHint] to determine number of VALUES clauses in INSERT statement
- * Hint is used by [io.github.guttenbase.hints.MaxNumberOfDataItemsHint] to determine maximum number of data items in INSERT statement
+ * Hint is used by [io.github.guttenbase.hints.BatchInsertionConfigurationHint] to determine number of VALUES clauses in INSERT statement
  * Hint is used by [TableOrderHint] to determine order of tables
  */
 abstract class AbstractTableCopyTool(
@@ -38,8 +37,7 @@ abstract class AbstractTableCopyTool(
     progressIndicator.initializeIndicator()
 
     val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
-    val numberOfRowsPerInsertionHint = connectorRepository.hint<NumberOfRowsPerBatch>(targetConnectorId)
-    val maxNumberOfDataItemsHint = connectorRepository.hint<MaxNumberOfDataItems>(targetConnectorId)
+    val numberOfRowsPerInsertionHint = connectorRepository.hint<BatchInsertionConfiguration>(targetConnectorId)
     val sourceDatabaseConfiguration = connectorRepository.getSourceDatabaseConfiguration(sourceConnectorId)
     val targetDatabaseConfiguration = connectorRepository.getTargetDatabaseConfiguration(targetConnectorId)
     val sourceTableMapper = connectorRepository.hint<TableMapper>(sourceConnectorId)
@@ -61,7 +59,7 @@ abstract class AbstractTableCopyTool(
         ?: throw TableConfigurationException("No matching table for $sourceTableMetaData in target data base!!!")
       val defaultNumberOfRowsPerBatch = numberOfRowsPerInsertionHint.getNumberOfRowsPerBatch(targetTableMetaData)
       val useMultipleValuesClauses = numberOfRowsPerInsertionHint.useMultipleValuesClauses(targetTableMetaData)
-      val maxNumberOfDataItems = maxNumberOfDataItemsHint.getMaxNumberOfDataItems(targetTableMetaData)
+      val maxNumberOfDataItems = numberOfRowsPerInsertionHint.getMaxNumberOfDataItems(targetTableMetaData)
       val sourceTableName = sourceTableMapper.fullyQualifiedTableName(sourceTableMetaData, sourceDatabaseMetaData)
       val targetTableName = targetTableMapper.fullyQualifiedTableName(targetTableMetaData, targetDatabaseMetaData)
       val targetRowCount = targetTableMetaData.filteredRowCount

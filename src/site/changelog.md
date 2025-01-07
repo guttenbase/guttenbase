@@ -9,6 +9,8 @@
 - Many bug fixes
 - Internally tested schema and data migrations between many DB, such as DB2, MySQL, PostgreSQL, MSSQL, Oracle
 - Introducing PreparedStatementPlaceholderFactory hint to allow for custom placeholder handling in prepared statements
+- Removed MaxNumberOfDataItems hint and NumberOfRowsPerBatchHint and merged them into new BatchInsertionConfigurationHint hint
+- Introduced ProprietaryColumnTypeDefinitionFactory to allow for custom column type handling
 
 ## 3.4.0
 
