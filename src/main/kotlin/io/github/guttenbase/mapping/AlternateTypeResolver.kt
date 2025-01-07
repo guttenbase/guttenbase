@@ -160,7 +160,7 @@ private val BIGINT_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIGINT", BIGINT)) }
 private val DECIMAL_RESOLVER = ColumnTypeDefinitionResolver {
   LookupPreciseMatchResolver.resolve(
-    ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, "DECIMAL", DECIMAL, true, 31, 5)
+    ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, "DECIMAL", DECIMAL, true)
   )
 }
 private val DOUBLE_RESOLVER =
@@ -173,18 +173,25 @@ private val FLOAT_RESOLVER =
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "FLOAT", DOUBLE))
       ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "FLOAT", FLOAT))
   }
-private val NUMERIC_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMERIC", NUMERIC)) }
-private val REAL_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "REAL", REAL)) }
-private val VARCHAR_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "VARCHAR", VARCHAR)) }
-private val LONGVARCHAR_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARCHAR", LONGVARCHAR)) }
-private val CHAR_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "CHAR", CHAR)) }
-private val DATE_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DATE", DATE)) }
+private val NUMERIC_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMERIC", NUMERIC))
+    ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMERIC", DECIMAL))
+}
+private val REAL_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "REAL", REAL))
+}
+private val VARCHAR_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "VARCHAR", VARCHAR))
+}
+private val LONGVARCHAR_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARCHAR", LONGVARCHAR))
+}
+private val CHAR_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "CHAR", CHAR))
+}
+private val DATE_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DATE", DATE))
+}
 private val BOOLEAN_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BOOLEAN", BOOLEAN))
@@ -192,7 +199,9 @@ private val BOOLEAN_RESOLVER =
       ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BOOLEAN", BIT))
       ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BOOL", BIT))
   }
-private val BIT_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIT", BIT)) }
-private val RAW_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "RAW", BINARY)) }
+private val BIT_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIT", BIT))
+}
+private val RAW_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "RAW", BINARY))
+}

@@ -39,9 +39,9 @@ A: Well, unfortunately not all DB systems obey the standard and support multiple
 You'll have to limit the number of VALUES clauses to 1 or use the BATCH mode.
 
 ```java
-connectorRepository.addConnectorHint(TARGET, new NumberOfRowsPerInsertionHint() {
-    public NumberOfRowsPerInsertion getValue() {
-        return new NumberOfRowsPerInsertion() {
+connectorRepository.addConnectorHint(TARGET, new BatchInsertionConfigurationHint() {
+    public BatchInsertionConfiguration getValue() {
+        return new DefaultBatchInsertionConfiguration() {
             public boolean useMultipleValuesClauses(final TableMetaData targetTableMetaData) {
                 return false;
             }
@@ -60,13 +60,11 @@ If your database supports a type, say "MONEY", that is unknown to the target dat
 add a new type mapping:
 
 ```java
-connectorRepository.addConnectorHint("EXPORT", new ColumnTypeMapperHint()
-  {
-    @Override
-    public ColumnTypeMapper getValue()
-    {
-      return new DefaultColumnTypeMapper()
-          .addMapping(DatabaseType.MSSL, DatabaseType.MYSQL, "MONEY", "NUMBER", "(19,4)");
+DefaultColumnTypeMapper.INSTANCE.addColumnTypeDefinitionResolver((type) -> {
+    if (type.getSourceColumn().getColumnName().equals("amount")) {
+    return new ColumnTypeDefinition(type.getSourceColumn(), type.getTargetDatabase(), "NUMBER", type.getJdbcType(), true, 19, 4);
+    } else {
+    return null;
     }
-});
+    });
 ```

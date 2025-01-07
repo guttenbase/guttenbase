@@ -14,6 +14,8 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.log2
 
 /**
  * Collection of utility methods.
@@ -59,7 +61,7 @@ object Util {
   @JvmStatic
   fun Date.toDate(): Date = when (this) {
     is java.sql.Date -> this.toDate()
-    is java.sql.Time ->  this.toDate()
+    is java.sql.Time -> this.toDate()
     is java.sql.Timestamp -> this.toDate()
     else -> this
   }
@@ -239,6 +241,24 @@ object Util {
 
   @JvmStatic
   fun Byte.toHex(): String = "%02x".format(this)
+
+  @JvmStatic
+  fun Int.nextPowerOf2(): Int {
+    var v = abs(this) - 1
+
+    v = v or (v shr 1)
+    v = v or (v shr 2)
+    v = v or (v shr 4)
+    v = v or (v shr 8)
+    v = v or (v shr 16)
+    v = v or (v shr 32)
+
+    return v + 1
+  }
+
+  // https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html#GUID-9401BC04-81C4-4CD5-99E7-C5E25C83F608
+  @JvmStatic
+  fun Int.mormalizeNegativeScale() :Int= log2(this.nextPowerOf2().toDouble()).toInt()+1
 
   /**
    * Deserialize from byte array

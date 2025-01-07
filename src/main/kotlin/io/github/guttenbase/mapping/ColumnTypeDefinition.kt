@@ -3,6 +3,7 @@ package io.github.guttenbase.mapping
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.PRECISION_PLACEHOLDER
+import io.github.guttenbase.utils.Util.mormalizeNegativeScale
 import java.sql.JDBCType
 
 /**
@@ -24,7 +25,8 @@ data class ColumnTypeDefinition @JvmOverloads constructor(
   val jdbcType: JDBCType = sourceColumn.jdbcColumnType,
   val usePrecisionClause: Boolean = false,
   val precision: Int = sourceColumn.precision,
-  val scale: Int = if (sourceColumn.scale < 0) 8 else sourceColumn.scale // https://forums.oracle.com/ords/apexds/post/number-data-type-s-negative-scale-4474
+  // https://forums.oracle.com/ords/apexds/post/number-data-type-s-negative-scale-4474
+  val scale: Int = if (sourceColumn.scale < 0) sourceColumn.scale.mormalizeNegativeScale() else sourceColumn.scale
 ) {
   val sourceDatabase get() = sourceColumn.tableMetaData.databaseMetaData
   val databaseType = targetDatabase.databaseType

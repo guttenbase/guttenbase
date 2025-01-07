@@ -7,7 +7,10 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.hints.DERBY
 import io.github.guttenbase.hints.H2
 import io.github.guttenbase.hints.HSQLDB
+import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseSupportedColumnType
+import io.github.guttenbase.tools.ScriptExecutorTool
+import io.github.guttenbase.utils.Util
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -20,7 +23,8 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectionInfo(DERBY, TestDerbyConnectionInfo())
       .addConnectionInfo(H2, TestH2ConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
-  }
+    val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = Charsets.UTF_8)
+    scriptExecutorTool.executeFileScript(DERBY, resourceName = "/ddl/tables-derby.sql")  }
 
   @Test
   fun `Inspect database meta data`() {
@@ -56,5 +60,26 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
       DatabaseSupportedColumnType("BLOB", BLOB, 2147483647, 0, true)
     )
     assertThat(hsqldb.supportedTypes[VARCHAR]).contains(hsqldbVarchar)
+  }
+
+  @Test
+  fun `Copy complex object`() {
+    val data = connectorRepository.getDatabaseMetaData(DERBY)
+    val result = Util.copyObject(DatabaseMetaData::class.java, data)
+
+    assertEquals(data, result)
+    assertEquals("Apache Derby Embedded JDBC Driver", result.databaseMetaData.driverName)
+    assertEquals(data.databaseMetaData.driverName, result.databaseMetaData.driverName)
+    assertEquals(data.tableMetaData, result.tableMetaData)
+
+    val tableMetaData1 = data.getTableMetaData("FOO_USER")!!
+    val tableMetaData2 = result.getTableMetaData("FOO_USER")!!
+    assertEquals(tableMetaData1.columnMetaData, tableMetaData2.columnMetaData)
+
+    val columnMetaData1 = tableMetaData1.getColumnMetaData("ID")!!
+    val columnMetaData2 = tableMetaData2.getColumnMetaData("ID")!!
+    assertEquals(columnMetaData1, columnMetaData2)
+    assertThat(columnMetaData1.referencingColumns).hasSize(2)
+    assertThat(columnMetaData1.referencingColumns).isEqualTo(columnMetaData2.referencingColumns)
   }
 }
