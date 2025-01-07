@@ -95,8 +95,8 @@ enum class DatabaseType(
 
     return autoincrementColumnClause.replace(NEXT_VALUE, startValue.toString())
       .replace(STEP_VALUE, stepValue.toString())
-      .replace(TABLE_NAME, column.tableMetaData.tableName)
-      .replace(COLUMN_NAME, column.columnName)
+      .replace(TABLE_NAME, escapeDatabaseEntity(column.tableMetaData.tableName))
+      .replace(COLUMN_NAME, escapeDatabaseEntity(column.columnName))
   }
 
   fun createDefaultValueClause(columnDefinition: ColumnTypeDefinition): String? =
@@ -117,8 +117,8 @@ enum class DatabaseType(
 
       autoincrementColumnStatement.replace(NEXT_VALUE, startValue.toString())
         .replace(STEP_VALUE, stepValue.toString())
-        .replace(TABLE_NAME, column.tableMetaData.tableName)
-        .replace(COLUMN_NAME, column.columnName)
+        .replace(TABLE_NAME, escapeDatabaseEntity(column.tableMetaData.tableName))
+        .replace(COLUMN_NAME, escapeDatabaseEntity(column.columnName))
     } else {
       null
     }

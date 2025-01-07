@@ -108,8 +108,10 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
   }
 }
 
-private val BLOB_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BLOB", BLOB)) }
+private val BLOB_RESOLVER =  ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BLOB", BLOB))
+    ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BINARY LARGE OBJECT", BLOB))
+}
 private val IMAGE_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "IMAGE", LONGVARBINARY))

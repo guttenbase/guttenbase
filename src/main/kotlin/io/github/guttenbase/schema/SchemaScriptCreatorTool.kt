@@ -155,7 +155,7 @@ class SchemaScriptCreatorTool(
     val containsClob = index.columnMetaData.any { it.jdbcColumnType.isClobType() }
     val fulltext = if (databaseType == DatabaseType.MYSQL && containsClob) " FULLTEXT " else ""
 
-    return ("CREATE" + unique + fulltext + "INDEX " + indexName + " ON "
+    return ("CREATE" + unique + fulltext + "INDEX " + databaseType.escapeDatabaseEntity(indexName) + " ON "
         + tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)) +
         index.columnMetaData.joinToString {
           val rawColumnName = columnMapper.mapColumnName(it, tableMetaData)

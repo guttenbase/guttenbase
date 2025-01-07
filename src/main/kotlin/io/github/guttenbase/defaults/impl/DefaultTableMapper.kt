@@ -21,7 +21,8 @@ open class DefaultTableMapper @JvmOverloads constructor(private val caseConversi
   }
 
   override fun fullyQualifiedTableName(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData) =
-    targetDatabaseMetaData.schemaPrefix + mapTableName(source, targetDatabaseMetaData)
+    targetDatabaseMetaData.schemaPrefix + targetDatabaseMetaData.databaseType
+      .escapeDatabaseEntity(mapTableName(source, targetDatabaseMetaData))
 
   override fun mapTableName(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData) =
     caseConversionMode.convert(source.tableName)
