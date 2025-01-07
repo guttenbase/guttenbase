@@ -5,12 +5,11 @@ import java.util.logging.Level
 /**
  * Type of compatibility issue
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  */
 enum class SchemaCompatibilityIssueType(val severity: Level) {
   MISSING_TABLE(Level.SEVERE),
-  ADDITIONAL_TABLE(Level.INFO),
   MISSING_COLUMN(Level.SEVERE),
   INCOMPATIBLE_COLUMNS(Level.SEVERE),
   DROPPED_COLUMN(Level.WARNING),

@@ -10,7 +10,7 @@ import java.io.*
  * in a loop.
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -107,7 +107,6 @@ abstract class AbstractExportDumpObject(@field:Transient private val inputStream
   }
 
   companion object {
-    private const val serialVersionUID = 1L
     const val DEFAULT_BUFFER_SIZE = 1024 * 1024 * 10
   }
 }

@@ -19,7 +19,7 @@ import java.time.LocalTime
  * Define column type and mapping methods. The entries correspond to the available getXXX() methods of a
  * [ResultSet], e.g. getString()
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

@@ -17,7 +17,7 @@ import kotlin.system.exitProcess
 /**
  * Default tool to start when "executing" the JAR file. It simply displays the file structure.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
@@ -120,8 +120,6 @@ class ZipStartup : JPanel(BorderLayout()) {
   }
 
   companion object {
-    private const val serialVersionUID = 1L
-
     @JvmStatic
     fun main(args: Array<String>) {
       try {

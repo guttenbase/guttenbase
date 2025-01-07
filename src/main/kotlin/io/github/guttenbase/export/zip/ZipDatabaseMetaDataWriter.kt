@@ -2,21 +2,17 @@ package io.github.guttenbase.export.zip
 
 
 import io.github.guttenbase.meta.DatabaseMetaData
-import java.io.IOException
-import java.sql.SQLException
-import kotlin.Throws
 
 /**
  * Write ZIP file entry containing information about data base such as schema or version.
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
 class ZipDatabaseMetaDataWriter : ZipAbstractMetaDataWriter() {
-  @Throws(IOException::class, SQLException::class)
   fun writeDatabaseMetaDataEntry(databaseMetaData: DatabaseMetaData): ZipDatabaseMetaDataWriter {
     setProperty(DATABASE_SCHEMA, databaseMetaData.schema)
     setProperty(DATABASE_NAME, databaseMetaData.databaseMetaData.databaseProductName)

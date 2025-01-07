@@ -9,7 +9,7 @@ import java.util.Comparator.comparingInt
 /**
  * Test a schema migration where column ordering is customized...
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

@@ -9,7 +9,7 @@ import io.github.guttenbase.tools.MaxNumberOfDataItems
 /**
  * Default maximum is 30000.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

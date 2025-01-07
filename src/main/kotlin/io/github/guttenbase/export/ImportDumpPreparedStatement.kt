@@ -17,7 +17,7 @@ import java.util.*
  * [ImportDumpResultSet] object return by [.executeQuery].
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
@@ -291,6 +291,7 @@ class ImportDumpPreparedStatement(
     throw UnsupportedOperationException()
   }
 
+  @Suppress("RemoveRedundantQualifierName")
   override fun setArray(parameterIndex: Int, x: java.sql.Array) {
     throw UnsupportedOperationException()
   }

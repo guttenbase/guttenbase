@@ -6,7 +6,7 @@ import io.github.guttenbase.tools.EntityTableChecker
 /**
  * By default we check if the given table has an primary key column named "ID".
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

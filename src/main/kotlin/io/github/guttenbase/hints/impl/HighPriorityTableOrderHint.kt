@@ -1,13 +1,12 @@
 package io.github.guttenbase.hints.impl
 
 import io.github.guttenbase.mapping.TableOrderComparatorFactory
-import kotlin.Comparator
 
 
 /**
  * Order by natural order of table names with some high priority exceptions ranked first
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

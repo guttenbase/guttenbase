@@ -15,7 +15,7 @@ import io.github.guttenbase.tools.SplitColumn
  * With this statement we count the number of rows that actually will be read for the given chunk.
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.hints.SplitColumnHint]

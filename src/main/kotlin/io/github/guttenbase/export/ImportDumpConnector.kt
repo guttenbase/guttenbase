@@ -12,7 +12,7 @@ import java.sql.SQLException
  * Connection info for importing data from a file.
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  *

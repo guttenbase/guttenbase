@@ -7,7 +7,7 @@ import io.github.guttenbase.meta.TableMetaData
  * Select target column(s) for given source column. Usually, this will a 1:1 relationship. However, there may be situations where
  * you want to duplicate or transform data into multiple columns. You also may want to drop columns from the source database.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

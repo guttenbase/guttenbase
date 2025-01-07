@@ -7,7 +7,7 @@ import java.io.Serializable
 /**
  * Information about connectors, in particular, parameters needed to establish a [java.sql.Connection] to the data base.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

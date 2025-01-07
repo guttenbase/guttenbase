@@ -11,7 +11,7 @@ import java.sql.Connection
  * @author M. Dahm
  * @see [http://stackoverflow.com/questions/421518/is-there-a-way-to-enable-disable-constraints-in-db2-v7](http://stackoverflow.com/questions/421518/is-there-a-way-to-enable-disable-constraints-in-db2-v7)
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  */
 open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :
@@ -24,7 +24,6 @@ open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorReposito
    */
   override fun initializeTargetConnection(connection: Connection, connectorId: String) {
     loadConstraints(connection, connectorId)
-    setIntegrityChecks(connection, connectorId, false)
     setTableForeignKeys(connection, false)
   }
 
@@ -33,11 +32,10 @@ open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorReposito
    */
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
     loadConstraints(connection, connectorId)
-    setIntegrityChecks(connection, connectorId, true)
     setTableForeignKeys(connection, true)
   }
 
-  private fun setIntegrityChecks(connection: Connection, connectorId: String, enabled: Boolean) {
+//  private fun setIntegrityChecks(connection: Connection, connectorId: String, enabled: Boolean) {
 //    val tableMetaDatas = TableOrderHint.getSortedTables(connectorRepository, connectorId)
 //    val schema = connectorRepository.getConnectionInfo(connectorId).schema
 //
@@ -47,7 +45,7 @@ open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorReposito
 //    }
 //
 //    executeSQL(connection, *sqls.toTypedArray())
-  }
+//  }
 
   private fun setTableForeignKeys(connection: Connection, enable: Boolean) {
     val sqls = constraintsOfTable.entries.map { e ->

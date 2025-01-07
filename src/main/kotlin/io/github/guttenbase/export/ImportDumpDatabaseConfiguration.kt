@@ -8,7 +8,7 @@ import java.sql.Connection
 /**
  * Import dump configuration forwards important events to [ImportDumpConnection].
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -19,6 +19,6 @@ class ImportDumpDatabaseConfiguration(connectorRepository: ConnectorRepository) 
   }
 
   override fun afterTableCopy(connection: Connection, connectorId: String, table: TableMetaData) {
-    (connection as ImportDumpConnection).finalizeReadTable(table)
+    (connection as ImportDumpConnection).finalizeReadTable()
   }
 }

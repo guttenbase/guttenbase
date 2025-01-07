@@ -8,7 +8,7 @@ import io.github.guttenbase.tools.SelectWhereClause
  * Default is no WHERE clause.
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm

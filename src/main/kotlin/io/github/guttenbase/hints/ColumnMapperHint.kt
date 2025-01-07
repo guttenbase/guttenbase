@@ -8,7 +8,7 @@ import io.github.guttenbase.mapping.ColumnMapper
  *
  * Alternatively the list may also be empty.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.tools.CheckEqualTableDataTool] to map columns

@@ -9,7 +9,7 @@ import java.sql.Blob
  * Since BLOBs may be quite big. we do not load them into memory completely, but
  * read them in chunks and write the data to the output stream in a loop.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
@@ -40,9 +40,5 @@ open class ExportDumpBlob(inputStream: InputStream) : AbstractExportDumpObject(i
 
   override fun truncate(len: Long) {
     throw UnsupportedOperationException()
-  }
-
-  companion object {
-    private const val serialVersionUID = 1L
   }
 }

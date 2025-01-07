@@ -3,7 +3,7 @@ package io.github.guttenbase.progress
 import javax.swing.JDialog
 
 /**
- * &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -21,7 +21,7 @@ class TimerDaemonThread(private val dialog: JDialog, vararg progressIndicators: 
     while (isActive && dialog.isVisible) {
       try {
         sleep(800L)
-      } catch (ignored: InterruptedException) {
+      } catch (_: InterruptedException) {
       }
       for (progressIndicator in progressIndicators) {
         progressIndicator.updateTimers()

@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.NumberOfRowsPerBatch
 /**
  * Default number of VALUES clauses is 2000.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

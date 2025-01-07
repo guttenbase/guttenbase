@@ -5,7 +5,7 @@ import io.github.guttenbase.meta.ColumnMetaData
 /**
  * Regard which columns when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for columns
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

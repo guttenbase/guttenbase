@@ -6,7 +6,7 @@ import javax.swing.border.EtchedBorder
 import javax.swing.border.TitledBorder
 
 /**
- * &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -104,9 +104,5 @@ class ScriptExecutorProgressIndicatorPanel : JPanel() {
     messages = JTextArea()
     messages.rows = 20
     scrollPane.setViewportView(messages)
-  }
-
-  companion object {
-    private const val serialVersionUID = 1L
   }
 }

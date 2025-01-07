@@ -3,7 +3,7 @@ package io.github.guttenbase.hints
 /**
  * Used to map table names, column names, etc.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

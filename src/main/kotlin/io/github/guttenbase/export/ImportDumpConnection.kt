@@ -11,9 +11,7 @@ import io.github.guttenbase.repository.JdbcDatabaseMetaData
 /**
  * Special "[Connection]" that supports reading data from a stream.
  *
- *
- *  &copy; 2012-2034 akquinet tech@spree
- *
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -26,8 +24,7 @@ class ImportDumpConnection(private val importer: Importer, private val databaseM
     currentTableMetaData = table
   }
 
-  @Suppress("UNUSED_PARAMETER")
-  fun finalizeReadTable(table: TableMetaData) {
+  fun finalizeReadTable() {
   }
 
   /**
@@ -239,6 +236,7 @@ class ImportDumpConnection(private val importer: Importer, private val databaseM
     throw UnsupportedOperationException()
   }
 
+  @Suppress("RemoveRedundantQualifierName")
   override fun createArrayOf(typeName: String, elements: Array<Any>): java.sql.Array {
     throw UnsupportedOperationException()
   }

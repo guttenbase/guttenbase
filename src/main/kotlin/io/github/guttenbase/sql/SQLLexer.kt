@@ -3,11 +3,11 @@ package io.github.guttenbase.sql
 /**
  * Primitive implementation of SQL parser in order to check validity of script.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */
-@Suppress("SameParameterValue", "KotlinConstantConditions")
+@Suppress("SameParameterValue")
 class SQLLexer @JvmOverloads constructor(lines: List<String>, private val delimiter: Char = ';') {
   private val sql = lines.joinToString(separator = "\n", transform = { it.trim() })
   private var currentIndex = 0

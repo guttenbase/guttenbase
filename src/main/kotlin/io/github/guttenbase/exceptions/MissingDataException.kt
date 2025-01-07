@@ -7,13 +7,9 @@ import io.github.guttenbase.connector.GuttenBaseException
  *
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
-class MissingDataException(reason: String) : GuttenBaseException(reason) {
-  companion object {
-    private const val serialVersionUID = 1L
-  }
-}
+class MissingDataException(reason: String) : GuttenBaseException(reason)

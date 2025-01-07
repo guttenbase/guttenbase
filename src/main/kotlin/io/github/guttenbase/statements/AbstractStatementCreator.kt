@@ -13,7 +13,7 @@ import io.github.guttenbase.repository.hint
 /**
  * Contains some helper methods for implementing classes.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.ColumnMapperHint] to map column names

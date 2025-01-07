@@ -10,7 +10,7 @@ import javax.swing.JDialog
 /**
  * Swing UI for table copy
  *
- *  &copy; 2013-2034 akquinet tech@spree
+ * &copy; 2013-2034 akquinet tech@spree
  *
  * @author M. Dahm
  */

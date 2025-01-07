@@ -7,7 +7,7 @@ import java.sql.SQLException
 /**
  * Allow user to add extra informations to the dumped data.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm

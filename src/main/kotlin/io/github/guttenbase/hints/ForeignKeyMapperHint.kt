@@ -5,7 +5,7 @@ import io.github.guttenbase.mapping.ForeignKeyMapper
 /**
  * Map index name
  *
- * &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * Hint is used by [io.github.guttenbase.schema.SchemaScriptCreatorTool] to map index names
  *

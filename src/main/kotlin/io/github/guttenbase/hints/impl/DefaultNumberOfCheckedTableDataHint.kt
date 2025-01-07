@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.NumberOfCheckedTableData
 /**
  * Default number of checked rows is 100.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm

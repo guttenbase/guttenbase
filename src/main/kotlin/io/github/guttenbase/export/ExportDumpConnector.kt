@@ -13,7 +13,7 @@ import java.sql.SQLException
 /**
  * Connection info for exporting database contents to a file.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.export.zip.ExporterFactoryHint] to determine exporter implementation

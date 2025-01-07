@@ -3,7 +3,7 @@ package io.github.guttenbase.progress
 /**
  * Record timings.
  *
- *  &copy; 2013-2020 akquinet tech@spree
+ * &copy; 2013-2020 akquinet tech@spree
  *
  * @author M. Dahm
  */

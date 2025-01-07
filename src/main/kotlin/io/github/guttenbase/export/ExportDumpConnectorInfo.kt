@@ -7,7 +7,7 @@ import io.github.guttenbase.repository.ConnectorRepository
 /**
  * Connection info for exporting data to a file.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm

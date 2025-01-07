@@ -13,7 +13,7 @@ import javax.xml.transform.Source
  * but read them in chunks and write the data to the output stream in a loop.
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
@@ -45,9 +45,5 @@ class ExportDumpSqlXML(inputStream: InputStream) : AbstractExportDumpObject(inpu
 
   override fun <T : Result> setResult(resultClass: Class<T>): T {
     throw UnsupportedOperationException()
-  }
-
-  companion object {
-    private const val serialVersionUID = 1L
   }
 }

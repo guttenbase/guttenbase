@@ -8,7 +8,7 @@ import java.io.IOException
 /**
  * Write ZIP file entry containing information about a table column such as type and name.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm

@@ -11,7 +11,7 @@ import java.util.concurrent.Executor
  * inherited methods have a meaningful implementation, most methods will throw a [UnsupportedOperationException].
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
@@ -275,6 +275,7 @@ class ExportDumpConnection(private val exporter: Exporter) : Connection {
     throw UnsupportedOperationException()
   }
 
+  @Suppress("RemoveRedundantQualifierName")
   override fun createArrayOf(typeName: String, elements: Array<Any>): java.sql.Array {
     throw UnsupportedOperationException()
   }

@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.AbstractTablesOperationTool
 /**
  * Will execute REORG TABLE table;
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

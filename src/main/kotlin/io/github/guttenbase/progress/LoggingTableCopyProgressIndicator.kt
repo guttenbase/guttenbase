@@ -5,7 +5,7 @@ import io.github.guttenbase.utils.Util.formatTime
 import org.slf4j.LoggerFactory
 
 /**
- * &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

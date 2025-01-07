@@ -6,7 +6,7 @@ import io.github.guttenbase.repository.RepositoryTableFilter
 /**
  * This filter is applied when @see [io.github.guttenbase.repository.ConnectorRepository.getDatabaseMetaData] is called.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * Hint is used by [io.github.guttenbase.repository.ConnectorRepository.getDatabaseMetaData] when returning table meta data
  *

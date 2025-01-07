@@ -16,7 +16,7 @@ private const val COLUMN_NAME = "@@COLUMN_NAME@@"
 /**
  * Bundle knowledge about well-known data bases
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

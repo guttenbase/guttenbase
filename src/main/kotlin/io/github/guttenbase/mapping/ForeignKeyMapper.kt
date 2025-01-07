@@ -5,7 +5,7 @@ import io.github.guttenbase.meta.ForeignKeyMetaData
 /**
  * Map foreign key name, since naming conventions may be different in databases, hint is used by [io.github.guttenbase.schema.SchemaScriptCreatorTool]
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

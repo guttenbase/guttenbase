@@ -11,7 +11,7 @@ import java.nio.charset.Charset
 /**
  * Connection info for exporting data to a (optionally compressed) file.
  *
- *  &copy; 2024-2044 akquinet tech@spree
+ * &copy; 2024-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

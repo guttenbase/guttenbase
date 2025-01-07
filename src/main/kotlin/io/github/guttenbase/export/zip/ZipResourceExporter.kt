@@ -4,24 +4,20 @@ package io.github.guttenbase.export.zip
 import org.apache.commons.io.IOUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.IOException
 import java.io.InputStream
-import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import kotlin.collections.HashSet
 
 /**
  * Helper class to add resources to ZIP file.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */
 open class ZipResourceExporter(private val zipOutputStream: ZipOutputStream) {
   private val entries = HashSet<String>()
 
-  @Throws(IOException::class)
   fun addEntry(n: String, inputStream: InputStream) {
     // Escape problems with DOS/Windows in ZIP entries
     val name = n.replace('\\', ZipConstants.PATH_SEPARATOR)

@@ -7,7 +7,7 @@ import java.sql.SQLException
  * Map data contained in a column to some other type. I.e., the target column may have a different type and the
  * INSERT statement arguments thus require some conversion.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

@@ -6,7 +6,7 @@ import java.sql.JDBCType.*
 /**
  * Try to resolve types using heuristic mappings of proprietary DB types
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
@@ -39,7 +39,7 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
         LONGVARCHAR -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
         else -> null
       } ?: if (type.typeName == "GEOMETRY") { // Exists, but is not reported by JDBC driver 🙄
-        ColumnTypeDefinition(type, "GEOMETRY", BINARY)
+        ColumnTypeDefinition(type, "GEOMETRY", LONGVARBINARY)
       } else {
         null
       }

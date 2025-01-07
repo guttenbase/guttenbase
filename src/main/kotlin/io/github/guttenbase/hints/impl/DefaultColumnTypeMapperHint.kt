@@ -7,7 +7,7 @@ import io.github.guttenbase.mapping.DefaultColumnTypeMapper
 /**
  * By default use customizable mapping.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

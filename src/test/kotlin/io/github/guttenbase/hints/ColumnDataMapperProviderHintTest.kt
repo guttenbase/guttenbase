@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 /**
  * Test a schema migration where all BIGINT IDs are converted to UUID strings.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

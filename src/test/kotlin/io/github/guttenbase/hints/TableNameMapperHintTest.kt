@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 /**
  * Test a schema migration where table names contains spaces and thus need to be escaped with double quotes ("")
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

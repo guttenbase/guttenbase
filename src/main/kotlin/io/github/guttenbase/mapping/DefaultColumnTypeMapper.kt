@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
  *
  * Users may add custom [ColumnTypeDefinitionResolver]s in special cases that need to be resolved manually.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   private val resolvers = mutableListOf<ColumnTypeDefinitionResolver>(
@@ -34,20 +34,18 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
     DatabaseColumnTypeDefinitionResolver,
 
     // Pass 6: Finally, we copy the original definition from the column as the last resort
-    ColumnTypeDefinitionResolver { it.toColumnTypeDefinition() }
+    ColumnTypeDefinitionResolver { it.toPreciseColumnTypeDefinition() }
   )
 
   override fun lookupColumnTypeDefinition(
     targetDatabase: DatabaseMetaData, sourceColumn: ColumnMetaData
   ): ColumnTypeDefinition {
-    val columnTypeDefinition = ColumnTypeDefinition(sourceColumn, targetDatabase, sourceColumn.columnTypeName)
+    val initialColumnTypeDefinition = ProprietaryColumnTypeDefinitionFactory.createColumnDefinition(sourceColumn, targetDatabase)
 
     return if (sourceColumn.databaseType == targetDatabase.databaseType) { // Same DB should have same types
-      columnTypeDefinition.toColumnTypeDefinition()
+      initialColumnTypeDefinition.toPreciseColumnTypeDefinition()
     } else {
-      resolvers.asSequence()
-        .map { it.resolve(columnTypeDefinition) }
-        .firstOrNull { it != null }
+      resolvers.asSequence().map { it.resolve(initialColumnTypeDefinition) }.firstOrNull { it != null }
         ?: throw IllegalStateException("No column definition found for $sourceColumn")
     }
   }
@@ -60,7 +58,7 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   }
 }
 
-private fun ColumnTypeDefinition.toColumnTypeDefinition(): ColumnTypeDefinition {
+private fun ColumnTypeDefinition.toPreciseColumnTypeDefinition(): ColumnTypeDefinition {
   val typeName = sourceColumn.columnTypeName
   val usePrecision = targetDatabase.databaseType.supportsPrecisionClause(typeName)
 

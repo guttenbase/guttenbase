@@ -5,7 +5,7 @@ import io.github.guttenbase.mapping.TableMapper
 /**
  * Map tables between source and target
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * Hint is used by [io.github.guttenbase.tools.CheckEqualTableDataTool] to get according table

@@ -18,7 +18,7 @@ private val SQL_TIME_FORMAT = DateTimeFormatter.ofPattern("''HH:mm:ss''")
 /**
  * Connection info for exporting data to a file.
  *
- *  &copy; 2024-2044 akquinet tech@spree
+ * &copy; 2024-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

@@ -20,7 +20,7 @@ import kotlin.math.abs
 /**
  * Create Custom DDL script from given database meta data.
  *
- * 2012-2034 akquinet tech@spree
+ * 2012-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */

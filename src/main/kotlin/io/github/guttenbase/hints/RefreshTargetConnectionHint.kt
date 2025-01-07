@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.RefreshTargetConnection
  * This will cause an OutOfMemoryError eventually.<br></br>
  * To avoid this the connection can be flushed, closed and re-established periodically using this hint.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm

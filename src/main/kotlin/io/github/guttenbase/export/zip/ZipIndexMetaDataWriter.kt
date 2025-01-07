@@ -4,20 +4,17 @@ package io.github.guttenbase.export.zip
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.IndexMetaData
 import io.github.guttenbase.meta.InternalColumnMetaData
-import java.io.IOException
-import kotlin.Throws
 
 /**
  * Write ZIP file entry containing information about a table column index such as name and columns.
  *
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
  */
 class ZipIndexMetaDataWriter : ZipAbstractMetaDataWriter() {
-  @Throws(IOException::class)
   fun writeIndexMetaDataEntry(indexMetaData: IndexMetaData): ZipIndexMetaDataWriter {
     setProperty(INDEX_NAME, indexMetaData.indexName)
     setProperty(ASCENDING, java.lang.String.valueOf(indexMetaData.isAscending))

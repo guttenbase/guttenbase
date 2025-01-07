@@ -7,14 +7,13 @@ import java.sql.*
 import java.util.*
 import java.util.concurrent.Executor
 import java.util.zip.GZIPOutputStream
-import kotlin.collections.ArrayList
 
 typealias TO_STRING = (PrintWriter) -> Unit
 
 /**
  * Connection info for exporting data to a file.
  *
- *  &copy; 2024-2044 akquinet tech@spree
+ * &copy; 2024-2044 akquinet tech@spree
  *
  * @author M. Dahm
  */
@@ -206,6 +205,7 @@ class ExportPlainTextConnection(internal val connector: ExportPlainConnector) : 
     throw UnsupportedOperationException("Not implemented")
   }
 
+  @Suppress("RemoveRedundantQualifierName")
   override fun createArrayOf(typeName: String?, elements: Array<out Any>?): java.sql.Array {
     throw UnsupportedOperationException("Not implemented")
   }

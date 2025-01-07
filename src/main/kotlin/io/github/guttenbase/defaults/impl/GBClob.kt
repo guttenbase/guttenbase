@@ -11,7 +11,7 @@ import java.sql.Clob
  * Since BLOBs may be quite big. we do not load them into memory completely, but
  * read them in chunks and write the data to the output stream in a loop.
  *
- *  &copy; 2012-2034 akquinet tech@spree
+ * &copy; 2012-2044 akquinet tech@spree
  *
  *
  * @author M. Dahm
