@@ -38,7 +38,7 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   )
 
   override fun lookupColumnTypeDefinition(
-    targetDatabase: DatabaseMetaData, sourceColumn: ColumnMetaData
+    sourceColumn: ColumnMetaData, targetDatabase: DatabaseMetaData
   ): ColumnTypeDefinition {
     val initialColumnTypeDefinition = ProprietaryColumnTypeDefinitionFactory.createColumnDefinition(sourceColumn, targetDatabase)
 
@@ -75,7 +75,7 @@ internal fun computePrecision(precision: Int, type: DatabaseSupportedColumnType)
     type.maxPrecision < 0 -> precision // Dunno, depends on target database
 
     precision > type.estimatedEffectiveMaxPrecision -> {
-      LOG.warn(
+      LOG.debug(
         """
       Requested column precision of $precision for type ${type.jdbcType} 
       is higher than ${type.estimatedEffectiveMaxPrecision} supported by $type

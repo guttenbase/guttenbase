@@ -10,5 +10,5 @@ import io.github.guttenbase.meta.DatabaseMetaData
  * &copy; 2012-2044 akquinet tech@spree
  */
 fun interface ColumnTypeDefinitionFactory {
-  fun createColumnDefinition(sourceColumn: ColumnMetaData, targetDatabase: DatabaseMetaData): ColumnTypeDefinition
+  fun createColumnDefinition(sourceColumn: ColumnMetaData, targetDatabase: DatabaseMetaData): ColumnTypeDefinition?
 }
