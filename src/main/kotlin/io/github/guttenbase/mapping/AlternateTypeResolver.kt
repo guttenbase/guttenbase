@@ -71,7 +71,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["FLOAT"] = listOf(FLOAT_RESOLVER, DOUBLE_RESOLVER)
     mappings["DOUBLE"] = listOf(DOUBLE_RESOLVER)
     mappings["NUMBER"] =
-      listOf(FLOAT_RESOLVER, REAL_RESOLVER, NUMERIC_RESOLVER, DECIMAL_RESOLVER, DOUBLE_RESOLVER, BIGINT_RESOLVER)
+      listOf(NUMERIC_RESOLVER, DECIMAL_RESOLVER, DOUBLE_RESOLVER, FLOAT_RESOLVER, REAL_RESOLVER, BIGINT_RESOLVER)
     mappings["NUMERIC"] = listOf(NUMERIC_RESOLVER, DECIMAL_RESOLVER)
     mappings["DECIMAL"] = listOf(DECIMAL_RESOLVER, NUMERIC_RESOLVER)
 
@@ -158,11 +158,6 @@ private val TINYINT_RESOLVER =
   }
 private val BIGINT_RESOLVER =
   ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIGINT", BIGINT)) }
-private val DECIMAL_RESOLVER = ColumnTypeDefinitionResolver {
-  LookupPreciseMatchResolver.resolve(
-    ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, "DECIMAL", DECIMAL, true)
-  )
-}
 private val DOUBLE_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DOUBLE", DOUBLE))
@@ -176,6 +171,10 @@ private val FLOAT_RESOLVER =
 private val NUMERIC_RESOLVER = ColumnTypeDefinitionResolver {
   LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMERIC", NUMERIC))
     ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMERIC", DECIMAL))
+}
+private val DECIMAL_RESOLVER = ColumnTypeDefinitionResolver {
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it.sourceColumn, it.targetDatabase, "DECIMAL", DECIMAL))
+    ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DECIMAL", NUMERIC))
 }
 private val REAL_RESOLVER = ColumnTypeDefinitionResolver {
   LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "REAL", REAL))
