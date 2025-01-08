@@ -18,8 +18,6 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
       ORACLE -> if (type.jdbcType == TIMESTAMP && type.typeName == "DATE") {
         // For some reason, Oracle reports JDBC type TIMESTAMP for DATE columns??
         ColumnTypeDefinition(type, "DATE", DATE) // That type should be present in any DB!
-      } else if (type.typeName == "NUMBER" && type.scale == 0) {
-        ColumnTypeDefinition(type, "BIGINT", BIGINT) // Interpret as integer, otherwise we get a decimal type
       } else {
         null
       }

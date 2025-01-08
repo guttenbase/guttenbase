@@ -17,6 +17,11 @@ import java.sql.JDBCType.*
 object ProprietaryColumnTypeDefinitionFactory : ColumnTypeDefinitionFactory {
   private val resolvers = mutableListOf<ColumnTypeDefinitionFactory>(
     ColumnTypeDefinitionFactory { sourceColumn, targetDatabase ->
+      if (sourceColumn.databaseType == DatabaseType.ORACLE && sourceColumn.columnTypeName ==  "NUMBER" && sourceColumn.scale == 0)
+        ColumnTypeDefinition(sourceColumn, targetDatabase, "BIGINT", BIGINT)
+      else null
+    },
+    ColumnTypeDefinitionFactory { sourceColumn, targetDatabase ->
       if (sourceColumn.databaseType == DatabaseType.MYSQL && sourceColumn.columnTypeName == "GEOMETRY")
         ColumnTypeDefinition(sourceColumn, targetDatabase, "BLOB", BLOB) // Better fit
       else null

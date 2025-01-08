@@ -3,7 +3,6 @@ package io.github.guttenbase.mapping
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseSupportedColumnType
 import io.github.guttenbase.meta.DatabaseMetaData
-import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.meta.isDateType
 import org.slf4j.LoggerFactory
 
@@ -42,12 +41,8 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   ): ColumnTypeDefinition {
     val initialColumnTypeDefinition = ProprietaryColumnTypeDefinitionFactory.createColumnDefinition(sourceColumn, targetDatabase)
 
-    return if (sourceColumn.databaseType == targetDatabase.databaseType) { // Same DB should have same types
-      initialColumnTypeDefinition.toPreciseColumnTypeDefinition()
-    } else {
-      resolvers.asSequence().map { it.resolve(initialColumnTypeDefinition) }.firstOrNull { it != null }
-        ?: throw IllegalStateException("No column definition found for $sourceColumn")
-    }
+    return resolvers.asSequence().map { it.resolve(initialColumnTypeDefinition) }.firstOrNull { it != null }
+      ?: throw IllegalStateException("No column definition found for $sourceColumn")
   }
 
   /**
