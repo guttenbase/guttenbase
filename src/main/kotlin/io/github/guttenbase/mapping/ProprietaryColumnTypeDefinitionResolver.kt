@@ -21,11 +21,19 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
       } else {
         null
       }
+
       else -> null
     } ?: when (type.targetDatabase.databaseType) {
       MSSQL -> when (type.jdbcType) {
         CLOB -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
         LONGVARCHAR -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
+        NUMERIC, DECIMAL -> if (type.scale > 0) {
+          // When using DECIMAL(8, 5), e.g. MSSQL is messing up values by rounding them to wrong values
+          ColumnTypeDefinition(type, "FLOAT", DOUBLE) // Why so ever is a double called "FLOAT" by MSSQL? 🙄
+        } else {
+          ColumnTypeDefinition(type, "INT", INTEGER)
+        }
+
         else -> null
       }
 
@@ -36,7 +44,7 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
       }
 
       ORACLE -> when (type.jdbcType) {
-        DOUBLE -> ColumnTypeDefinition(type, "DOUBLE PRECISION", DOUBLE) //
+        DOUBLE -> ColumnTypeDefinition(type, "DOUBLE PRECISION", DOUBLE)
         else -> null
       }
 
