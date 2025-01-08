@@ -27,8 +27,8 @@
 
         <slf4j.version>2.0.6</slf4j.version>
         <junit5.version>5.9.2</junit5.version>
-        <mockito.version>5.2.0</mockito.version>
-        <mockito.kotlin.version>4.1.0</mockito.kotlin.version>
+        <mockito.version>5.15.2</mockito.version>
+        <mockito.kotlin.version>5.4.0</mockito.kotlin.version>
         <assertj.version>3.24.2</assertj.version>
         <hsqldb.version>2.7.1</hsqldb.version>
         <h2.version>2.2.224</h2.version>

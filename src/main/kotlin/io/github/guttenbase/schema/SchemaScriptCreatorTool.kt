@@ -170,8 +170,9 @@ class SchemaScriptCreatorTool(
     val tableMetaData = foreignKeyMetaData.referencingTableMetaData
     val qualifiedTableName = tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
+    val fkName = targetDatabaseMetaData.databaseType.escapeDatabaseEntity(fkMapper.mapForeignKeyName(foreignKeyMetaData))
 
-    return (("ALTER TABLE " + qualifiedTableName + " ADD CONSTRAINT " + fkMapper.mapForeignKeyName(foreignKeyMetaData) + " FOREIGN KEY "
+    return (("""ALTER TABLE $qualifiedTableName ADD CONSTRAINT $fkName FOREIGN KEY """
         + foreignKeyMetaData.referencingColumns.joinToString {
       val rawColumnName = columnMapper.mapColumnName(it, it.tableMetaData)
       targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)

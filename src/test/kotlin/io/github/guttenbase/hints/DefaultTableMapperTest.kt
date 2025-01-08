@@ -15,13 +15,13 @@ class DefaultTableMapperTest {
     val tableName = TABLE + 1
     val tableMetaData = databaseMetaData.getTableMetaData(tableName)!!
     assertEquals(tableName, DefaultTableMapper().mapTableName(tableMetaData, databaseMetaData))
-    assertEquals("$SCHEMA_NAME.$tableName", DefaultTableMapper().fullyQualifiedTableName(tableMetaData, databaseMetaData))
+    assertEquals("$SCHEMA_NAME.\"$tableName\"", DefaultTableMapper().fullyQualifiedTableName(tableMetaData, databaseMetaData))
     assertEquals(
-      "$SCHEMA_NAME.${tableName.lowercase()}",
+      "$SCHEMA_NAME.\"${tableName.lowercase()}\"",
       DefaultTableMapper(CaseConversionMode.LOWER).fullyQualifiedTableName(tableMetaData, databaseMetaData)
     )
     assertEquals(
-      "$SCHEMA_NAME.${tableName.uppercase()}",
+      "$SCHEMA_NAME.\"${tableName.uppercase()}\"",
       DefaultTableMapper(CaseConversionMode.UPPER).fullyQualifiedTableName(tableMetaData, databaseMetaData)
     )
   }
