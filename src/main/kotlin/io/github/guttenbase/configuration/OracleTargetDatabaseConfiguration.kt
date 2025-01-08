@@ -5,7 +5,6 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.tools.RESULT_LIST
 import io.github.guttenbase.tools.ScriptExecutorTool
-import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.SQLException
 
