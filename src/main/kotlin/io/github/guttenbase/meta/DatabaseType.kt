@@ -208,7 +208,7 @@ enum class DatabaseType(
   fun supportsPrecisionClause(type: String) =
     type.contains("CHAR") || type == DECIMAL.name || type == NUMERIC.name
         || type == BINARY.name || type == VARBINARY.name
-        || (ORACLE == this && type == "VARCHAR2")
+        || (ORACLE == this && (type == "VARCHAR2" || type == "NUMBER"))
 
   private fun retrieveAutoIncrementValue(column: ColumnMetaData): AutoIncrementValue {
     val connectorRepository = column.connectorRepository

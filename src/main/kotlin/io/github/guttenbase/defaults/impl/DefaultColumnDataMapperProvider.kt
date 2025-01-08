@@ -40,7 +40,8 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
 
     addMapping(CLASS_DATE, CLASS_TIME, DateToTimeColumnDataMapper)
     addMapping(CLASS_DATE, CLASS_TIMESTAMP, DateToTimestampColumnDataMapper)
-    addMapping(CLASS_DATE, CLASS_INTEGER, DateToIntColumnDataMapper)
+    addMapping(CLASS_DATE, CLASS_INTEGER, YearToIntColumnDataMapper)
+    addMapping(CLASS_DATE, CLASS_BIGDECIMAL, YearToBigDecimalColumnDataMapper)
     addMapping(CLASS_DATE, CLASS_SHORT, DateToShortColumnDataMapper)
 
     addMapping(CLASS_BYTE, CLASS_SHORT, ToShortColumnDataMapper)
@@ -153,7 +154,7 @@ object DateToTimestampColumnDataMapper : ColumnDataMapper {
     if (value is java.util.Date) Timestamp(value.time) else value
 }
 
-object DateToIntColumnDataMapper : ColumnDataMapper {
+object YearToIntColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Date) {
       if (mapping.columnTypeDefinition.sourceColumn.columnTypeName == "YEAR")
@@ -161,11 +162,19 @@ object DateToIntColumnDataMapper : ColumnDataMapper {
     } else value
 }
 
+object YearToBigDecimalColumnDataMapper : ColumnDataMapper {
+  override fun map(mapping: ColumnDataMapping, value: Any?) =
+    if (value is Date) {
+      val result = YearToIntColumnDataMapper.map(mapping, value) as Int
+      result.toBigDecimal()
+    } else value
+}
+
 object DateToShortColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is Date) {
-      if (mapping.columnTypeDefinition.sourceColumn.columnTypeName == "YEAR")
-        value.toDate().toLocalDate().year.toShort() else value.time.toShort()
+      val result = YearToIntColumnDataMapper.map(mapping, value) as Int
+      result.toShort()
     } else value
 }
 
@@ -208,7 +217,7 @@ object ClobDataMapper : ColumnDataMapper {
 
 object ToBooleanMapper : ColumnDataMapper {
   override fun map(mapping: ColumnDataMapping, value: Any?) =
-    if (mapping.sourceColumnMetaData.jdbcColumnType == BIT) {
+    if (mapping.sourceColumn.jdbcColumnType == BIT) {
       when (value) {
         is ByteArray -> value[0] != BYTE_ZERO
         is Number -> value.toByte() != BYTE_ZERO

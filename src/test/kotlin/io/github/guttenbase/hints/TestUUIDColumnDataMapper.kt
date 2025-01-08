@@ -18,7 +18,7 @@ class TestUUIDColumnDataMapper : ColumnDataMapper {
 
     return if (number != null) {
       val id = number.toLong()
-      val sourceColumnMetaData = mapping.sourceColumnMetaData
+      val sourceColumnMetaData = mapping.sourceColumn
       val iterator = sourceColumnMetaData.referencedColumns.values.iterator()
       val referencedColumn = if (iterator.hasNext()) iterator.next()[0] else sourceColumnMetaData
 

@@ -148,19 +148,25 @@ private val INTEGER_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INTEGER", INTEGER))
       ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT4", INTEGER))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMBER", INTEGER))
   }
 private val SMALLINT_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "SMALLINT", SMALLINT))
       ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", SMALLINT))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMBER", SMALLINT))
   }
 private val TINYINT_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "TINYINT", TINYINT))
-      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", SMALLINT))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "INT2", TINYINT))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMBER", TINYINT))
   }
 private val BIGINT_RESOLVER =
-  ColumnTypeDefinitionResolver { LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIGINT", BIGINT)) }
+  ColumnTypeDefinitionResolver {
+    LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "BIGINT", BIGINT))
+      ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "NUMBER", BIGINT))
+  }
 private val DOUBLE_RESOLVER =
   ColumnTypeDefinitionResolver {
     LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "DOUBLE", DOUBLE))

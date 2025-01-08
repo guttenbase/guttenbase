@@ -38,7 +38,7 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
       sourceColumnMetaData.columnName.uppercase().endsWith("ID")
 
     override fun map(mapping: ColumnDataMapping, value: Any?) =
-      value as Long + getOffset(mapping.sourceColumnMetaData)
+      value as Long + getOffset(mapping.sourceColumn)
   }
 
   private val maxTableIds = HashMap<TableMetaData, Long>()
