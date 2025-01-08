@@ -203,7 +203,7 @@ open class ConnectorRepository {
   private fun initDefaultConfiguration() {
     addSourceDatabaseConfiguration(GENERIC, GenericSourceDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(MOCK, GenericSourceDatabaseConfiguration(this))
-    addSourceDatabaseConfiguration(DB2, Db2SourceDatabaseConfiguration(this))
+    addSourceDatabaseConfiguration(IBMDB2, Db2SourceDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(MSSQL, MsSqlSourceDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(MYSQL, MySqlSourceDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(MARIADB, MariaDbSourceDatabaseConfiguration(this))
@@ -217,7 +217,7 @@ open class ConnectorRepository {
     addSourceDatabaseConfiguration(MS_ACCESS, MsAccessSourceDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(GENERIC, GenericTargetDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(MOCK, GenericTargetDatabaseConfiguration(this))
-    addTargetDatabaseConfiguration(DB2, Db2TargetDatabaseConfiguration(this))
+    addTargetDatabaseConfiguration(IBMDB2, Db2TargetDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(MSSQL, MsSqlTargetDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(MYSQL, MySqlTargetDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(MARIADB, MariaDbTargetDatabaseConfiguration(this))
