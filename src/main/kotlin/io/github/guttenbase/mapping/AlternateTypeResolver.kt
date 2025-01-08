@@ -191,6 +191,7 @@ private val REAL_RESOLVER = ColumnTypeDefinitionResolver {
 
 private val VARCHAR_RESOLVER = ColumnTypeDefinitionResolver {
   LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "VARCHAR", VARCHAR))
+    ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "CHARACTER VARYING", VARCHAR))
 }
 
 private val NVARCHAR_RESOLVER = ColumnTypeDefinitionResolver {
