@@ -18,9 +18,9 @@ private typealias TableNodes = LinkedHashMap<String, TableNode>
  */
 class TableOrderTool(private val databaseMetaData: DatabaseMetaData) {
   @JvmOverloads
-  fun orderTables(topDown: Boolean = true): List<TableMetaData> {
+  fun orderTables(tables: List<TableMetaData> = databaseMetaData.tableMetaData, topDown: Boolean = true): List<TableMetaData> {
     val result = ArrayList<TableMetaData>()
-    val tableNodes = createGraph(databaseMetaData.tableMetaData)
+    val tableNodes = createGraph(tables)
 
     while (tableNodes.isNotEmpty()) {
       val tableNode = tableNodes.firstNode(topDown)
@@ -47,11 +47,21 @@ class TableOrderTool(private val databaseMetaData: DatabaseMetaData) {
    * Bottom up: Most referenced node wins
    */
   private fun TableNodes.firstNode(topDown: Boolean) = values.sortedWith { tn1, tn2 ->
-    if (topDown) {
+    var result = if (topDown) {
       tn1.referencedTables.size - tn2.referencedTables.size
     } else {
       tn1.referencedByTables.size - tn2.referencedByTables.size
     }
+
+    if (result == 0) {
+      if (tn1.referencedTables.contains(tn2)) {
+        result = if (topDown) 1 else -1
+      } else if (tn2.referencedTables.contains(tn1)) {
+        result = if (topDown) -1 else 1
+      }
+    }
+
+    result
   }.first()
 
   private fun createGraph(tableMetaData: List<TableMetaData>): TableNodes {

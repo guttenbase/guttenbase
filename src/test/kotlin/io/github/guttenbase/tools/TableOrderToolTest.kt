@@ -29,18 +29,18 @@ class TableOrderToolTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Proper ordering with self-referencing table`() {
-    assertThat(TableOrderTool(h2DatabaseMetaData).orderTables(true)).hasSize(2)
+    assertThat(TableOrderTool(h2DatabaseMetaData).orderTables(topDown = true)).hasSize(2)
       .extracting<String> { it.tableName }.containsExactly("DEPARTMENTS", "EMPLOYEES")
-    assertThat(TableOrderTool(h2DatabaseMetaData).orderTables(false)).hasSize(2)
+    assertThat(TableOrderTool(h2DatabaseMetaData).orderTables(topDown = false)).hasSize(2)
       .extracting<String> { it.tableName }.containsExactly("EMPLOYEES", "DEPARTMENTS")
   }
 
   @Test
   fun `Proper order`() {
-    assertThat(TableOrderTool(hsqldbDatabaseMetaData).orderTables(true)).hasSize(5)
+    assertThat(TableOrderTool(hsqldbDatabaseMetaData).orderTables(topDown = true)).hasSize(5)
       .extracting<String> { it.tableName }
       .containsExactly("REGIONS", "COUNTRIES", "CITIES", "CURRENCIES", "CURRENCIES_COUNTRIES")
-    assertThat(TableOrderTool(hsqldbDatabaseMetaData).orderTables(false)).hasSize(5)
+    assertThat(TableOrderTool(hsqldbDatabaseMetaData).orderTables(topDown = false)).hasSize(5)
       .extracting<String> { it.tableName }
       .containsExactly("CITIES", "CURRENCIES_COUNTRIES", "COUNTRIES", "REGIONS", "CURRENCIES")
   }

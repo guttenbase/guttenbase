@@ -29,9 +29,9 @@ class SchemaScriptCreatorTool(
   private val connectorRepository: ConnectorRepository,
   private val sourceConnectorId: String, private val targetConnectorId: String
 ) {
-  private val sourcedatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(sourceConnectorId) }
-  private val targetDatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(targetConnectorId) }
-  private val tables get() = TableOrderTool(sourcedatabaseMetaData).orderTables()
+  private val sourceDatabase by lazy { connectorRepository.getDatabaseMetaData(sourceConnectorId) }
+  private val targetDatabase by lazy { connectorRepository.getDatabaseMetaData(targetConnectorId) }
+  private val tables by lazy { TableOrderTool(sourceDatabase).orderTables() }
 
   fun createTableStatements() = createTableStatements(tables)
 
@@ -67,7 +67,7 @@ class SchemaScriptCreatorTool(
           .any { it.jdbcColumnType.isBinaryType() || it.jdbcColumnType.isBlobType() || it.jdbcColumnType.isClobType() }
 
         if (!columnsFormPrimaryKey && !conflictedIndex) {
-          if (containsBinaryType && targetDatabaseMetaData.databaseType != DatabaseType.MYSQL) {
+          if (containsBinaryType && targetDatabase.databaseType != DatabaseType.MYSQL) {
             LOG.warn("Skipping index ${indexMetaData.indexName} on table ${tableMetaData.tableName} because it contains binary columns")
           } else {
             result.add(createIndex(indexMetaData, counter++))

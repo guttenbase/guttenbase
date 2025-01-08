@@ -6,7 +6,6 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * Implementation for MS Server SQL data base.
@@ -22,7 +21,6 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun initializeTargetConnection(connection: Connection, connectorId: String) {
     if (connection.autoCommit) {
       connection.autoCommit = false
@@ -52,9 +50,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     setIdentityInsert(connection, connectorId, false, table)
   }
 
-  private fun getTableMetaData(connectorId: String): List<TableMetaData> {
-    return connectorRepository.getDatabaseMetaData(connectorId).tableMetaData
-  }
+  private fun getTableMetaData(connectorId: String) = connectorRepository.getDatabaseMetaData(connectorId).tableMetaData
 
   private fun disableTableForeignKeys(connection: Connection, connectorId: String, tableMetaData: List<TableMetaData>) {
     setTableForeignKeys(connection, connectorId, tableMetaData, false)
@@ -70,9 +66,9 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val sqls = tableMetaDatas.map {
       val tableName = tableMapper.fullyQualifiedTableName(it, it.databaseMetaData)
-      val flag = if (enable) " CHECK CONSTRAINT ALL" else " NOCHECK CONSTRAINT ALL"
+      val flag = if (enable) "CHECK CONSTRAINT ALL" else "NOCHECK CONSTRAINT ALL"
 
-      "ALTER TABLE $tableName$flag"
+      """ALTER TABLE "$tableName" $flag"""
     }
 
     executeSQL(connection, *sqls.toTypedArray())
@@ -88,7 +84,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     if (hasIdentityColumn(tableMetaData)) {
       val flag = if (enable) "ON" else "OFF"
 
-      executeSQL(connection, "SET IDENTITY_INSERT $tableName $flag")
+      executeSQL(connection, """SET IDENTITY_INSERT "$tableName" $flag""")
     }
   }
 

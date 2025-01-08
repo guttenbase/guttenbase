@@ -21,13 +21,12 @@ import java.sql.SQLException
  * @author M. Dahm
  * Hint is used by [TableOrderHint] to determine order of tables
  */
-@Suppress("MemberVisibilityCanBePrivate")
 open class DropTablesTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String
 ) {
   private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(connectorId) }
-  private val tableMetaData get() = TableOrderTool(databaseMetaData).orderTables(false)
+  private val tableMetaData by lazy { TableOrderTool(databaseMetaData).orderTables(topDown = false) }
   private val dropTablesSuffix = databaseMetaData.databaseType.dropTablesSuffix
 
   fun createDropForeignKeyStatements(): List<String> {
@@ -42,7 +41,8 @@ open class DropTablesTool(
 
         DEFAULT_CONSTRAINT_DROP.replace(FULL_TABLE_NAME, fullTableName)
           .replace(IF_EXISTS, existsClause)
-          .replace(CONSTRAINT, constraintClause).replace(FK_NAME, it.foreignKeyName)
+          .replace(CONSTRAINT, constraintClause)
+          .replace(FK_NAME, databaseMetaData.databaseType.escapeDatabaseEntity(it.foreignKeyName))
       }
     }.flatten()
   }
@@ -113,7 +113,13 @@ open class DropTablesTool(
   @Throws(SQLException::class)
   @JvmOverloads
   fun dropForeignKeys(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
-    executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropForeignKeyStatements())
+    executeScriptWithRetry(
+      connectorRepository,
+      connectorId,
+      prepareTargetConnection,
+      retryFailed,
+      createDropForeignKeyStatements()
+    )
   }
 
   private fun getConstraintClause(connectionInfo: ConnectorInfo): String {
