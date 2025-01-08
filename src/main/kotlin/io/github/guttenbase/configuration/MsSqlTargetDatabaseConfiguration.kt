@@ -68,7 +68,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
       val tableName = tableMapper.fullyQualifiedTableName(it, it.databaseMetaData)
       val flag = if (enable) "CHECK CONSTRAINT ALL" else "NOCHECK CONSTRAINT ALL"
 
-      """ALTER TABLE "$tableName" $flag"""
+      """ALTER TABLE $tableName $flag"""
     }
 
     executeSQL(connection, *sqls.toTypedArray())
