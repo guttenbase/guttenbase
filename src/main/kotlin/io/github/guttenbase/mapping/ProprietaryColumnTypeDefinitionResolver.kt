@@ -21,17 +21,8 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
       } else {
         null
       }
-
       else -> null
     } ?: when (type.targetDatabase.databaseType) {
-      // https://www.ibm.com/docs/en/iis/11.5?topic=dts-db2-data-type-support
-//      DB2 -> when (type.jdbcType) {
-//        LONGVARCHAR -> if (type.precision > 32500) ColumnTypeDefinition(type, "CLOB", CLOB) else null
-//        VARCHAR -> if (type.precision > 32500) ColumnTypeDefinition(type, "CLOB", CLOB) else null
-//        VARBINARY -> if (type.precision > 32500) ColumnTypeDefinition(type, "BLOB", BLOB) else null
-//        else -> null
-//      }
-
       MSSQL -> when (type.jdbcType) {
         CLOB -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
         LONGVARCHAR -> ColumnTypeDefinition(type, "VARCHAR(MAX)", LONGVARCHAR)
