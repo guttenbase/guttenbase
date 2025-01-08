@@ -151,7 +151,8 @@ enum class DatabaseType(
 
   val dropTablesSuffix: String
     get() = when (this) {
-      H2DB, HSQLDB, POSTGRESQL, MARIADB, ORACLE -> "CASCADE"
+      H2DB, HSQLDB, POSTGRESQL, MARIADB -> "CASCADE"
+      ORACLE -> "CASCADE CONSTRAINTS"
       else -> ""
     }
 
@@ -205,8 +206,9 @@ enum class DatabaseType(
   fun escapeDatabaseEntity(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
 
   fun supportsPrecisionClause(type: String) =
-    type == VARCHAR.name || type == CHAR.name || type == "CHARACTER" || type == DECIMAL.name || type == NUMERIC.name
+    type.contains("CHAR") || type == DECIMAL.name || type == NUMERIC.name
         || type == BINARY.name || type == VARBINARY.name
+        || (ORACLE == this && type == "VARCHAR2")
 
   private fun retrieveAutoIncrementValue(column: ColumnMetaData): AutoIncrementValue {
     val connectorRepository = column.connectorRepository

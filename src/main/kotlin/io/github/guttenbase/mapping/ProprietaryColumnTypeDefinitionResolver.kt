@@ -46,6 +46,11 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
         else -> null
       }
 
+      ORACLE -> when (type.jdbcType) {
+        DOUBLE -> ColumnTypeDefinition(type, "DOUBLE PRECISION", DOUBLE) //
+        else -> null
+      }
+
       else -> null
     }
 }

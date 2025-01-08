@@ -95,7 +95,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["SMALL DATETIME"] = listOf(DATE_RESOLVER)
 
     mappings["BOOLEAN"] = listOf(BOOLEAN_RESOLVER, BIT_RESOLVER)
-    mappings["BIT"] = listOf(BOOLEAN_RESOLVER)
+    mappings["BIT"] = listOf(BIT_RESOLVER, BOOLEAN_RESOLVER)
     mappings["RAW"] = listOf(BIT_RESOLVER)
   }
 
