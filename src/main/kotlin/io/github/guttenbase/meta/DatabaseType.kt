@@ -206,7 +206,7 @@ enum class DatabaseType(
   fun escapeDatabaseEntity(name: String, prefix: String = "") = prefix + escapeCharacter + name + escapeCharacter
 
   fun supportsPrecisionClause(type: String) =
-    type.contains("CHAR") || type == DECIMAL.name || type == NUMERIC.name
+    (type.contains("CHAR") && !type.contains(" ")) || type == DECIMAL.name || type == NUMERIC.name
         || type == BINARY.name || type == VARBINARY.name
         || (ORACLE == this && (type == "VARCHAR2" || type == "NUMBER"))
 
