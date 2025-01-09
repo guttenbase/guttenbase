@@ -1,6 +1,7 @@
 package io.github.guttenbase.statements
 
 import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.SplitColumn
@@ -17,15 +18,17 @@ import io.github.guttenbase.tools.SplitColumn
  */
 class SplitByColumnSelectStatementCreator(connectorRepository: ConnectorRepository, connectorId: String) :
   AbstractSelectStatementCreator(connectorRepository, connectorId) {
-  override fun createWhereClause(tableMetaData: TableMetaData): String {
-    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(tableMetaData)
+  override fun createWhereClause(table: TableMetaData): String {
+    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(table)
+    val columnName = table.databaseType.escapeDatabaseEntity(splitColumn.columnName)
 
-    return "WHERE " + splitColumn.columnName + " BETWEEN ? AND ?"
+    return "WHERE $columnName BETWEEN ? AND ?"
   }
 
-  override fun createOrderBy(tableMetaData: TableMetaData): String {
-    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(tableMetaData)
+  override fun createOrderBy(table: TableMetaData): String {
+    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(table)
+    val columnName = table.databaseType.escapeDatabaseEntity(splitColumn.columnName)
 
-    return "ORDER BY " + splitColumn.columnName
+    return "ORDER BY $columnName"
   }
 }

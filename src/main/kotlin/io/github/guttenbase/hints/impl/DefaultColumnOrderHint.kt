@@ -13,5 +13,5 @@ import io.github.guttenbase.mapping.ColumnOrderComparatorFactory
  */
 object DefaultColumnOrderHint : ColumnOrderHint() {
   override val value: ColumnOrderComparatorFactory
-    get() = ColumnOrderComparatorFactory { DefaultColumnComparator() }
+    get() = ColumnOrderComparatorFactory { DefaultColumnComparator }
 }

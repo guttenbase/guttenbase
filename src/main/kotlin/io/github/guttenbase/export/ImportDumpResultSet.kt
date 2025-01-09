@@ -47,7 +47,7 @@ class ImportDumpResultSet(
   }
 
   private fun buildColumnIndexMap(selectedColumns: List<String>) {
-    val columnMetaData = origTableMetaData.columnMetaData.sortedWith(DefaultColumnComparator())
+    val columnMetaData = origTableMetaData.columnMetaData.sortedWith(DefaultColumnComparator)
 
     for (originalColumnIndex in columnMetaData.indices) {
       val column = columnMetaData[originalColumnIndex].columnName.uppercase()

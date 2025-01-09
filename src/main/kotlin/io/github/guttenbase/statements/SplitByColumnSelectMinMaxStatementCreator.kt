@@ -1,7 +1,7 @@
 package io.github.guttenbase.statements
 
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.SplitColumn
@@ -23,9 +23,10 @@ class SplitByColumnSelectMinMaxStatementCreator(connectorRepository: ConnectorRe
   override fun createColumnClause(columns: List<ColumnMetaData>): String {
     assert(columns.isNotEmpty())
 
-    val tableMetaData: TableMetaData = columns[0].tableMetaData
-    val splitColumn: ColumnMetaData = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(tableMetaData)
+    val table = columns[0].tableMetaData
+    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(table)
+    val columnName = table.databaseType.escapeDatabaseEntity(splitColumn.columnName)
 
-    return "MIN(" + splitColumn.columnName + "), MAX(" + splitColumn.columnName + ")"
+    return """MIN($columnName), MAX($columnName)"""
   }
 }

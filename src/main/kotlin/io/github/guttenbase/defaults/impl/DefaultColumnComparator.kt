@@ -10,7 +10,7 @@ import io.github.guttenbase.meta.ColumnMetaData
  *
  * @author M. Dahm
  */
-open class DefaultColumnComparator : Comparator<ColumnMetaData> {
+object DefaultColumnComparator : Comparator<ColumnMetaData> {
   override fun compare(c1: ColumnMetaData, c2: ColumnMetaData) = when {
     c1.isPrimaryKey && !c2.isPrimaryKey -> -1
     !c1.isPrimaryKey && c2.isPrimaryKey -> 1

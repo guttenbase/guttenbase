@@ -61,19 +61,19 @@ open class CheckEqualTableDataTool(
     sourceDatabaseConfiguration1.initializeSourceConnection(connection1, sourceConnectorId)
     sourceDatabaseConfiguration2.initializeSourceConnection(connection2, targetConnectorId)
 
-    for (tableSourceMetaData in sourceTables) {
-      val targetTable = tableMapper.map(tableSourceMetaData, targetDatabase)
-        ?: throw TableConfigurationException("No matching table for $tableSourceMetaData in target data base!!!")
+    for (sourceTable in sourceTables) {
+      val targetTable = tableMapper.map(sourceTable, targetDatabase)
+        ?: throw TableConfigurationException("No matching table for $sourceTable in target data base!!!")
 
-      if (targetTable.primaryKeyColumns.isEmpty()) {
-        LOG.warn("No primary key column found for $targetTable!")
+      if (targetTable.primaryKeyColumns.size != 1) {
+        LOG.warn("No/too many primary key column found for $targetTable!")
 
         if (targetTable.totalRowCount > 200) {
           LOG.warn("Cannot check data on table $targetTable")
         } else {
           LOG.warn("Checking equality for table $targetTable by reading full data")
 
-          val data1 = ReadTableDataTool(connectorRepository, sourceConnectorId, tableSourceMetaData).start().use {
+          val data1 = ReadTableDataTool(connectorRepository, sourceConnectorId, sourceTable).start().use {
             it.readTableData(-1).toSet()
           }
           val data2 = ReadTableDataTool(connectorRepository, targetConnectorId, targetTable).start().use {
@@ -86,7 +86,7 @@ open class CheckEqualTableDataTool(
         }
       } else {
         checkTableData(
-          sourceConnectorId, connection1, sourceDatabaseConfiguration1, tableSourceMetaData, targetConnectorId,
+          sourceConnectorId, connection1, sourceDatabaseConfiguration1, sourceTable, targetConnectorId,
           connection2, sourceDatabaseConfiguration2, targetTable, numberOfCheckData
         )
       }
@@ -100,69 +100,64 @@ open class CheckEqualTableDataTool(
 
   private fun checkTableData(
     sourceConnectorId: String, sourceConnection: Connection,
-    sourceConfiguration: SourceDatabaseConfiguration, sourceTableMetaData: TableMetaData,
+    sourceConfiguration: SourceDatabaseConfiguration, sourceTable: TableMetaData,
     targetConnectorId: String, targetConnection: Connection, targetConfiguration: SourceDatabaseConfiguration,
-    targetTableMetaData: TableMetaData, numberOfCheckData: Int
+    targetTable: TableMetaData, numberOfCheckData: Int
   ) {
     val tableName1 = connectorRepository.hint<TableMapper>(sourceConnectorId)
-      .fullyQualifiedTableName(sourceTableMetaData, sourceTableMetaData.databaseMetaData)
+      .fullyQualifiedTableName(sourceTable, sourceTable.databaseMetaData)
     val tableName2 = connectorRepository.hint<TableMapper>(targetConnectorId)
-      .fullyQualifiedTableName(targetTableMetaData, targetTableMetaData.databaseMetaData)
+      .fullyQualifiedTableName(targetTable, targetTable.databaseMetaData)
     val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(sourceConnectorId)
     val targetColumnNameMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
 
-    checkRowCount(sourceTableMetaData, targetTableMetaData, tableName1, tableName2)
+    checkRowCount(sourceTable, targetTable, tableName1, tableName2)
 
     val selectStatement1 = SelectStatementCreator(connectorRepository, sourceConnectorId)
-      .createSelectStatement(sourceConnection, tableName1, sourceTableMetaData)
+      .createSelectStatement(sourceConnection, tableName1, sourceTable)
     selectStatement1.fetchSize = numberOfCheckData
-    sourceConfiguration.beforeSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
+    sourceConfiguration.beforeSelect(sourceConnection, sourceConnectorId, sourceTable)
     val resultSet1 = selectStatement1.executeQuery()
-    sourceConfiguration.afterSelect(sourceConnection, sourceConnectorId, sourceTableMetaData)
-    val selectStatement2 = SelectStatementCreator(connectorRepository, targetConnectorId)
-      .createMappedSelectStatement(
-        targetConnection, sourceTableMetaData, tableName2, targetTableMetaData
-      )
+    sourceConfiguration.afterSelect(sourceConnection, sourceConnectorId, sourceTable)
+    val selectStatement2 = SelectStatementCreator(connectorRepository, targetConnectorId).createMappedSelectStatement(
+      targetConnection, sourceTable, tableName2, targetTable
+    )
     selectStatement2.fetchSize = numberOfCheckData
-    targetConfiguration.beforeSelect(targetConnection, targetConnectorId, targetTableMetaData)
+    targetConfiguration.beforeSelect(targetConnection, targetConnectorId, targetTable)
     val resultSet2 = selectStatement2.executeQuery()
-    targetConfiguration.afterSelect(targetConnection, targetConnectorId, targetTableMetaData)
-    val orderedSourceColumns =
-      ColumnOrderHint.getSortedColumns(connectorRepository, sourceTableMetaData)
+    targetConfiguration.afterSelect(targetConnection, targetConnectorId, targetTable)
+    val orderedSourceColumns = ColumnOrderHint.getSortedColumns(connectorRepository, sourceTable)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     var rowIndex = 1
-    val primaryKeyColumn = sourceTableMetaData.primaryKeyColumns.firstOrNull()
 
     try {
       while (resultSet1.next() && resultSet2.next() && rowIndex <= numberOfCheckData) {
         var targetColumnIndex = 1
-        var currentID = "<UNKNOWN>"
+        val currentID = StringBuilder()
 
         for (sourceColumnIndex in 1..orderedSourceColumns.size) {
           val sourceColumn = orderedSourceColumns[sourceColumnIndex - 1]
-          val mapping = columnMapper.map(sourceColumn, targetTableMetaData)
+          val mapping = columnMapper.map(sourceColumn, targetTable)
 
           for (targetColumn in mapping.columns) {
             val columnMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
               sourceColumn, targetColumn
             ) ?: throw IllegalStateException("Could not find type mapping for $sourceColumn $RIGHT_ARROW $targetColumn")
-            val columnName1 = sourceColumnNameMapper.mapColumnName(sourceColumn, targetTableMetaData)
-            val columnName2 = targetColumnNameMapper.mapColumnName(targetColumn, targetTableMetaData)
+            val columnName1 = sourceColumnNameMapper.mapColumnName(sourceColumn, targetTable)
+            val columnName2 = targetColumnNameMapper.mapColumnName(targetColumn, targetTable)
 
-            checkColumnTypeMapping(
-              tableName1, columnMapping, columnName1, columnName2
-            )
+            checkColumnTypeMapping(tableName1, columnMapping, columnName1, columnName2)
 
             val (value, _) = checkColumnData(
-              currentID,
+              currentID.toString(),
               targetConnectorId, tableName1, resultSet1,
               resultSet2, rowIndex, targetColumnIndex,
               sourceColumnIndex, columnMapping, columnName1, sourceColumn,
               targetColumn
             )
 
-            if (sourceColumn == primaryKeyColumn) {
-              currentID = value.toString()
+            if (sourceColumn.isPrimaryKey) {
+              currentID.append(":").append(value)
             }
           }
 
