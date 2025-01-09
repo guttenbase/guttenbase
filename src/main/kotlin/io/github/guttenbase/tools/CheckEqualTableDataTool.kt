@@ -44,11 +44,11 @@ open class CheckEqualTableDataTool(
   private val sourceConnectorId: String, private val targetConnectorId: String
 ) {
   fun checkTableData() {
-    val tableSourceMetaDatas = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
+    val sourceTables = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
     val numberOfCheckData =
       connectorRepository.hint<NumberOfCheckedTableData>(sourceConnectorId).numberOfCheckedTableData
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
-    val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
+    val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val sourceDatabaseConfiguration1 = connectorRepository
       .getSourceDatabaseConfiguration(sourceConnectorId)
     val sourceDatabaseConfiguration2 = connectorRepository
@@ -61,33 +61,33 @@ open class CheckEqualTableDataTool(
     sourceDatabaseConfiguration1.initializeSourceConnection(connection1, sourceConnectorId)
     sourceDatabaseConfiguration2.initializeSourceConnection(connection2, targetConnectorId)
 
-    for (tableSourceMetaData in tableSourceMetaDatas) {
-      val tableDestMetaData = tableMapper.map(tableSourceMetaData, targetDatabaseMetaData)
+    for (tableSourceMetaData in sourceTables) {
+      val targetTable = tableMapper.map(tableSourceMetaData, targetDatabase)
         ?: throw TableConfigurationException("No matching table for $tableSourceMetaData in target data base!!!")
 
-      if (tableDestMetaData.primaryKeyColumns.isEmpty()) {
-        LOG.warn("No primary key column found for $tableDestMetaData!")
+      if (targetTable.primaryKeyColumns.isEmpty()) {
+        LOG.warn("No primary key column found for $targetTable!")
 
-        if (tableDestMetaData.totalRowCount > 200) {
-          LOG.warn("Cannot check data on table $tableDestMetaData")
+        if (targetTable.totalRowCount > 200) {
+          LOG.warn("Cannot check data on table $targetTable")
         } else {
-          LOG.warn("Checking equality for table $tableDestMetaData by reading full data")
+          LOG.warn("Checking equality for table $targetTable by reading full data")
 
           val data1 = ReadTableDataTool(connectorRepository, sourceConnectorId, tableSourceMetaData).start().use {
             it.readTableData(-1).toSet()
           }
-          val data2 = ReadTableDataTool(connectorRepository, targetConnectorId, tableDestMetaData).start().use {
+          val data2 = ReadTableDataTool(connectorRepository, targetConnectorId, targetTable).start().use {
             it.readTableData(-1).toSet()
           }
 
           if (data1 != data2) {
-            LOG.warn("Could not validate equality for $tableDestMetaData")
+            LOG.warn("Could not validate equality for $targetTable")
           }
         }
       } else {
         checkTableData(
           sourceConnectorId, connection1, sourceDatabaseConfiguration1, tableSourceMetaData, targetConnectorId,
-          connection2, sourceDatabaseConfiguration2, tableDestMetaData, numberOfCheckData
+          connection2, sourceDatabaseConfiguration2, targetTable, numberOfCheckData
         )
       }
     }
