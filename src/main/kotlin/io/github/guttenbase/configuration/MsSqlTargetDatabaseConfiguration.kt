@@ -84,7 +84,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     if (hasIdentityColumn(tableMetaData)) {
       val flag = if (enable) "ON" else "OFF"
 
-      executeSQL(connection, """SET IDENTITY_INSERT "$tableName" $flag""")
+      executeSQL(connection, """SET IDENTITY_INSERT $tableName $flag""")
     }
   }
 

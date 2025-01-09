@@ -52,6 +52,7 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
     addMapping(CLASS_SHORT, CLASS_LONG, ToLongColumnDataMapper)
     addMapping(CLASS_INTEGER, CLASS_LONG, ToLongColumnDataMapper)
     addMapping(CLASS_BIGDECIMAL, CLASS_LONG, ToLongColumnDataMapper)
+    addMapping(CLASS_BIGDECIMAL, CLASS_INTEGER, ToIntColumnDataMapper)
     addMapping(CLASS_LONG, CLASS_LONG, ToLongColumnDataMapper)
 
     addMapping(CLASS_BYTE, CLASS_BIGDECIMAL, IntToBigDecimalColumnDataMapper)
