@@ -27,7 +27,6 @@ abstract class AbstractConnector(
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun closeConnection() {
     try {
       if (this::connection.isInitialized) {
@@ -51,7 +50,6 @@ abstract class AbstractConnector(
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun retrieveDatabaseMetaData(): DatabaseMetaData {
     val inspector = DatabaseMetaDataInspectorTool(connectorRepository, connectorId)
     val connection = openConnection()

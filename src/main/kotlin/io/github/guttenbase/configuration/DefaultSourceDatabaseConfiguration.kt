@@ -3,7 +3,6 @@ package io.github.guttenbase.configuration
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * (Almost) empty implementation
@@ -18,10 +17,8 @@ open class DefaultSourceDatabaseConfiguration(connectorRepository: ConnectorRepo
   /**
    * Connection is set read only and autocommit is false.
    *
-   *
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun initializeSourceConnection(connection: Connection, connectorId: String) {
     if (connection.autoCommit) {
       connection.autoCommit = false
@@ -34,7 +31,6 @@ open class DefaultSourceDatabaseConfiguration(connectorRepository: ConnectorRepo
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun finalizeSourceConnection(connection: Connection, connectorId: String) {
   }
 

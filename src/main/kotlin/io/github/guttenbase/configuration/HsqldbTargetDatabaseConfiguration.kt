@@ -3,7 +3,6 @@ package io.github.guttenbase.configuration
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Connection
-import java.sql.SQLException
 
 
 /**
@@ -19,7 +18,6 @@ open class HsqldbTargetDatabaseConfiguration(connectorRepository: ConnectorRepos
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun initializeTargetConnection(connection: Connection, connectorId: String) {
     if (connection.autoCommit) {
       connection.autoCommit = false
@@ -31,12 +29,10 @@ open class HsqldbTargetDatabaseConfiguration(connectorRepository: ConnectorRepos
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
     setReferentialIntegrity(connection, true, connectorRepository.getDatabaseMetaData(connectorId))
   }
 
-  @Throws(SQLException::class)
   private fun setReferentialIntegrity(connection: Connection, enable: Boolean, databaseMetaData: DatabaseMetaData) {
     val databaseMajorVersion: Int = databaseMetaData.databaseMetaData.databaseMajorVersion
     val referentialIntegrity = if (enable) "TRUE" else "FALSE"

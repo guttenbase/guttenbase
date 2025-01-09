@@ -32,8 +32,7 @@ open class SplitByRangeTableCopyTool(
    *
    * @throws SQLException
    */
-  @Throws(SQLException::class)
-  override fun copyTable(
+/*!50705 0x0000000001010000003C94579D8B525DC0E860472DDE0D4140*/  override fun copyTable(
     sourceConnection: Connection,
     sourceDatabaseConfiguration: SourceDatabaseConfiguration,
     sourceTableMetaData: TableMetaData,
@@ -110,7 +109,6 @@ open class SplitByRangeTableCopyTool(
     selectStatement.close()
   }
 
-  @Throws(SQLException::class)
   private fun getCurrentCount(countStatement: PreparedStatement, start: Long, end: Long): Long {
     countStatement.setLong(1, start)
     countStatement.setLong(2, end)

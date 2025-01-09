@@ -6,7 +6,6 @@ import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SplitByColumnSelectMinMaxStatementCreator
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * Compute MIN and MAX of given Id-Column
@@ -25,7 +24,6 @@ open class MinMaxIdSelectorTool(private val connectorRepository: ConnectorReposi
   /**
    * Compute MIN and MAX of given Id-Column
    */
-  @Throws(SQLException::class)
   fun computeMinMax(connectorId: String, tableMetaData: TableMetaData) {
     val connector = connectorRepository.createConnector(connectorId)
     val connection: Connection = connector.openConnection()
@@ -37,7 +35,6 @@ open class MinMaxIdSelectorTool(private val connectorRepository: ConnectorReposi
   /**
    * Compute MIN and MAX of given Id-Column using existing connection
    */
-  @Throws(SQLException::class)
   fun computeMinMax(connectorId: String, tableMetaData: TableMetaData, connection: Connection) {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)

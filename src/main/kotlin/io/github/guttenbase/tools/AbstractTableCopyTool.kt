@@ -10,7 +10,6 @@ import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.progress.TableCopyProgressIndicator
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * Copy all tables from one connection to the other.
@@ -31,7 +30,6 @@ abstract class AbstractTableCopyTool(
   /**
    * Copy tables from source to target.
    */
-  @Throws(SQLException::class)
   fun copyTables() {
     progressIndicator = connectorRepository.hint<TableCopyProgressIndicator>(targetConnectorId)
     progressIndicator.initializeIndicator()
@@ -113,7 +111,6 @@ abstract class AbstractTableCopyTool(
     connectorRepository.refreshDatabaseMetaData(targetConnectorId)
   }
 
-  @Throws(SQLException::class)
   protected abstract fun copyTable(
     sourceConnection: Connection,
     sourceDatabaseConfiguration: SourceDatabaseConfiguration,

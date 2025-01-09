@@ -6,7 +6,6 @@ import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.tools.RESULT_LIST
 import io.github.guttenbase.tools.ScriptExecutorTool
 import java.sql.Connection
-import java.sql.SQLException
 
 
 /**
@@ -22,7 +21,6 @@ open class OracleTargetDatabaseConfiguration(connectorRepository: ConnectorRepos
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun initializeTargetConnection(connection: Connection, connectorId: String) {
     if (connection.autoCommit) {
       connection.autoCommit = false
@@ -33,7 +31,6 @@ open class OracleTargetDatabaseConfiguration(connectorRepository: ConnectorRepos
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
     setReferentialIntegrity(connection, connectorId, getTableMetaData(connectorId), true)
   }

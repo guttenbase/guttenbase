@@ -6,7 +6,6 @@ import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * Connection info for importing data from a file.
@@ -30,7 +29,6 @@ class ImportDumpConnector(
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun openConnection(): Connection {
     if (!connectionReady()) {
       try {
@@ -49,7 +47,6 @@ class ImportDumpConnector(
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun retrieveDatabaseMetaData(): DatabaseMetaData {
     // Make sure the information is there
     openConnection()

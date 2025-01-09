@@ -50,7 +50,7 @@ open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorReposito
   private fun setTableForeignKeys(connection: Connection, enable: Boolean) {
     val sqls = constraintsOfTable.entries.map { e ->
       e.value.map {
-        "ALTER TABLE " + schemaName + "." + e.key + " ALTER FOREIGN KEY " + it + if (enable) " ENFORCED" else " NOT ENFORCED"
+        """ALTER TABLE $schemaName."${e.key}" ALTER FOREIGN KEY "$it" """ + if (enable) "ENFORCED" else "NOT ENFORCED"
       }
     }.flatten().plus("COMMIT")
 

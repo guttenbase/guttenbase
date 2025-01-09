@@ -5,7 +5,6 @@ import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
-import java.sql.SQLException
 
 /**
  * Will execute given SQL scriptlet on all tables or single table of given connector. The table name can be referenced with @TABLE@
@@ -23,7 +22,6 @@ abstract class AbstractTablesOperationTool(
 ) {
   protected val scriptExecutor = ScriptExecutorTool(connectorRepository)
 
-  @Throws(SQLException::class)
   @JvmOverloads
   fun executeOnAllTables(connectorId: String, updateSchema: Boolean = true, prepareTargetConnection: Boolean = true) {
     val tables = TableOrderHint.getSortedTables(connectorRepository, connectorId)
@@ -32,7 +30,6 @@ abstract class AbstractTablesOperationTool(
     scriptExecutor.executeScript(connectorId, updateSchema, prepareTargetConnection, statements)
   }
 
-  @Throws(SQLException::class)
   @JvmOverloads
   fun executeOnTable(
     connectorId: String,

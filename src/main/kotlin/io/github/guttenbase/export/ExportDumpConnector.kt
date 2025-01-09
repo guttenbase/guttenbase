@@ -8,7 +8,6 @@ import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.utils.Util
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * Connection info for exporting database contents to a file.
@@ -27,7 +26,6 @@ class ExportDumpConnector(
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun openConnection(): Connection {
     if (!connectionReady()) {
       try {
@@ -49,7 +47,6 @@ class ExportDumpConnector(
    *
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun retrieveDatabaseMetaData(): DatabaseMetaData {
     val data = retrieveSourceDatabaseMetaData()
     val result = Util.copyObject(DatabaseMetaData::class.java, data)

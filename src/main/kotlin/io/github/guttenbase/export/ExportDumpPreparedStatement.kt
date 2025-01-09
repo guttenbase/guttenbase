@@ -88,7 +88,6 @@ class ExportDumpPreparedStatement(private val exporter: Exporter) : PreparedStat
     setObject(parameterIndex, null)
   }
 
-  @Throws(SQLException::class)
   override fun setClob(parameterIndex: Int, clob: Clob?) {
     if (clob != null) {
       setObject(parameterIndex, ExportDumpClob(clob.getAsciiStream()))
@@ -105,7 +104,6 @@ class ExportDumpPreparedStatement(private val exporter: Exporter) : PreparedStat
     flush()
   }
 
-  @Throws(SQLException::class)
   override fun setSQLXML(parameterIndex: Int, xmlObject: SQLXML?) {
     if (xmlObject != null) {
       setObject(parameterIndex, ExportDumpSqlXML(xmlObject.binaryStream))
@@ -121,7 +119,6 @@ class ExportDumpPreparedStatement(private val exporter: Exporter) : PreparedStat
     flush()
   }
 
-  @Throws(SQLException::class)
   override fun setBlob(parameterIndex: Int, x: Blob?) {
     if (x != null) {
       setBlob(parameterIndex, x.binaryStream)

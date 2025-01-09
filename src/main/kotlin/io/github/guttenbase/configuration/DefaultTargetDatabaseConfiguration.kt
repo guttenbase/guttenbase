@@ -3,7 +3,6 @@ package io.github.guttenbase.configuration
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Connection
-import java.sql.SQLException
 
 /**
  * (Almost) empty implementation
@@ -29,7 +28,6 @@ open class DefaultTargetDatabaseConfiguration(connectorRepository: ConnectorRepo
    *
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun initializeTargetConnection(connection: Connection, connectorId: String) {
     if (connection.autoCommit) {
       connection.autoCommit = false
@@ -39,35 +37,30 @@ open class DefaultTargetDatabaseConfiguration(connectorRepository: ConnectorRepo
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
   }
 
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun beforeInsert(connection: Connection, connectorId: String, table: TableMetaData) {
   }
 
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun afterInsert(connection: Connection, connectorId: String, table: TableMetaData) {
   }
 
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun beforeNewRow(connection: Connection, connectorId: String, table: TableMetaData) {
   }
 
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun afterNewRow(connection: Connection, connectorId: String, table: TableMetaData) {
   }
 }

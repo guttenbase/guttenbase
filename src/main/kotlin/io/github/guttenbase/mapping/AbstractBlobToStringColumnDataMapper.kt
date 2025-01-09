@@ -16,7 +16,6 @@ import java.sql.SQLException
  */
 abstract class AbstractBlobToStringColumnDataMapper
 @JvmOverloads constructor(private val charset: Charset = StandardCharsets.UTF_8) : ColumnDataMapper {
-  @Throws(SQLException::class)
   override fun map(mapping: ColumnDataMapping, value: Any?): Any? {
     val blob = value as Blob
 

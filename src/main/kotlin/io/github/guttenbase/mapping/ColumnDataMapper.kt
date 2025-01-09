@@ -1,7 +1,6 @@
 package io.github.guttenbase.mapping
 
 import io.github.guttenbase.meta.ColumnMetaData
-import java.sql.SQLException
 
 /**
  * Map data contained in a column to some other type. I.e., the target column may have a different type and the
@@ -20,6 +19,5 @@ interface ColumnDataMapper {
   /**
    * Map object to target DB. Needs to be able to handle NULL values.
    */
-  @Throws(SQLException::class)
   fun map(mapping: ColumnDataMapping, value: Any?): Any?
 }

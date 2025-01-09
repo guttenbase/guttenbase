@@ -11,7 +11,6 @@ import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.ScriptExecutorTool.Companion.executeScriptWithRetry
 import io.github.guttenbase.utils.Util
-import java.sql.SQLException
 
 /**
  * Will drop tables in given schema. USE WITH CARE!
@@ -85,32 +84,27 @@ open class DropTablesTool(
 
   fun createDeleteTableStatements() = createTableStatements("DELETE FROM", "")
 
-  @Throws(SQLException::class)
   @JvmOverloads
   fun dropTables(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
     executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropTableStatements())
   }
 
-  @Throws(SQLException::class)
   @JvmOverloads
   fun dropAll(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
     executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropAll())
   }
 
-  @Throws(SQLException::class)
   fun clearTables() {
     ScriptExecutorTool(connectorRepository).executeScript(
       connectorId, true, true, createDeleteTableStatements()
     )
   }
 
-  @Throws(SQLException::class)
   @JvmOverloads
   fun dropIndexes(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
     executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropIndexStatements())
   }
 
-  @Throws(SQLException::class)
   @JvmOverloads
   fun dropForeignKeys(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
     executeScriptWithRetry(

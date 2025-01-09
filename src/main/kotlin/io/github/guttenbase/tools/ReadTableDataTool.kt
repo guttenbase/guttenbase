@@ -9,7 +9,7 @@ import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
 import java.sql.ResultSet
-import java.sql.SQLException
+import java.util.*
 
 /**
  * Read data from given table and put into a List of maps where each map contains the columns and values of a single line from
@@ -33,7 +33,6 @@ open class ReadTableDataTool(
   private lateinit var connector: Connector
   private lateinit var resultSet: ResultSet
 
-  @Throws(SQLException::class)
   fun start(): ReadTableDataTool {
     if (!this::connector.isInitialized) {
       val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
@@ -56,7 +55,6 @@ open class ReadTableDataTool(
     return this
   }
 
-  @Throws(SQLException::class)
   fun end() {
     if (this::connector.isInitialized) {
       val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
@@ -71,7 +69,6 @@ open class ReadTableDataTool(
    * @param noLines -1 means read all lines
    * @return list of maps containing table data or null of no more data is available
    */
-  @Throws(SQLException::class)
   fun readTableData(noLines: Int): List<Map<String, Any?>> {
     var lines = noLines
     val result = ArrayList<Map<String, Any?>>()
@@ -85,7 +82,7 @@ open class ReadTableDataTool(
     var rowIndex = 0
 
     while (rowIndex < lines && resultSet.next()) {
-      val rowData = HashMap<String, Any?>()
+      val rowData = TreeMap<String, Any?>()
 
       for (columnIndex in 1..orderedSourceColumns.size) {
         val sourceColumn = orderedSourceColumns[columnIndex - 1]

@@ -28,7 +28,6 @@ open class DefaultTableCopyTool(
    *
    * @throws SQLException
    */
-  @Throws(SQLException::class)
   override fun copyTable(
     sourceConnection: Connection,
     sourceDatabaseConfiguration: SourceDatabaseConfiguration,

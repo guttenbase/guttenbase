@@ -26,7 +26,6 @@ open class URLConnector(
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun openConnection(): Connection {
     if (!connectionReady()) {
       try {

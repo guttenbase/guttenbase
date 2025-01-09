@@ -6,7 +6,6 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import java.sql.Connection
-import java.sql.SQLException
 
 
 /**
@@ -26,7 +25,6 @@ open class PostgresqlTargetDatabaseConfiguration(connectorRepository: ConnectorR
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun initializeTargetConnection(connection: Connection, connectorId: String) {
     if (connection.autoCommit) {
       connection.autoCommit = false
@@ -37,7 +35,6 @@ open class PostgresqlTargetDatabaseConfiguration(connectorRepository: ConnectorR
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
     setReferentialIntegrity(connection, connectorId, getTableMetaData(connectorId), true)
   }
@@ -46,7 +43,6 @@ open class PostgresqlTargetDatabaseConfiguration(connectorRepository: ConnectorR
     return TableOrderHint.getSortedTables(connectorRepository, connectorId)
   }
 
-  @Throws(SQLException::class)
   private fun setReferentialIntegrity(
     connection: Connection, connectorId: String, tableMetaDatas: List<TableMetaData>,
     enable: Boolean

@@ -2,14 +2,11 @@ package io.github.guttenbase.connector.impl
 
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Connection
-import java.sql.SQLException
-
 
 /**
  * Connection info via data source and optional user/password.
  *
  * &copy; 2012-2044 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -22,7 +19,6 @@ open class DataSourceConnector(
   /**
    * {@inheritDoc}
    */
-  @Throws(SQLException::class)
   override fun openConnection(): Connection {
     if (!connectionReady()) {
       connection =
