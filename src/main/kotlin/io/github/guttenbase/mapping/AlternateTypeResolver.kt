@@ -72,7 +72,7 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
     mappings["INTEGER UNSIGNED"] = listOf(BIGINT_RESOLVER)
     mappings["INT UNSIGNED"] = listOf(BIGINT_RESOLVER)
     mappings["INT"] = listOf(BIGINT_RESOLVER)
-    mappings["MONEY"] = listOf(NUMERIC_RESOLVER)
+    mappings["MONEY"] = listOf(NUMERIC_RESOLVER, DECIMAL_RESOLVER, DOUBLE_RESOLVER, FLOAT_RESOLVER)
     mappings["SMALL MONEY"] = listOf(NUMERIC_RESOLVER)
     mappings["SMALL DATETIME"] = listOf(DATE_RESOLVER)
 

@@ -23,8 +23,12 @@ object ProprietaryColumnTypeDefinitionFactory : ColumnTypeDefinitionFactory {
         } else null
 
         MYSQL -> if (sourceColumn.columnTypeName == "GEOMETRY") {
-          ColumnTypeDefinition(sourceColumn, targetDatabase, "BLOB", BLOB) // Better fit
+          ColumnTypeDefinition(sourceColumn, targetDatabase, "BLOB", BLOB)
         } else null
+
+//        MSSQL -> if (sourceColumn.columnTypeName == "MONEY") {
+//          ColumnTypeDefinition(sourceColumn, targetDatabase, "DECIMAL", DECIMAL)
+//        } else null
 
         // https://www.ibm.com/docs/en/iis/11.5?topic=dts-db2-data-type-support
         IBMDB2 -> if (sourceColumn.jdbcColumnType == VARCHAR && sourceColumn.columnTypeName == "VARGRAPHIC") {

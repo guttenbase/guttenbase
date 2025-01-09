@@ -8,6 +8,7 @@ import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
+import java.sql.Connection
 import java.sql.ResultSet
 import java.util.*
 
@@ -35,34 +36,41 @@ open class ReadTableDataTool(
 
   fun start(): ReadTableDataTool {
     if (!this::connector.isInitialized) {
-      val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
       connector = connectorRepository.createConnector(connectorId)
 
-      val connection = connector.openConnection()
-      sourceConfiguration.initializeSourceConnection(connection, connectorId)
-      val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-      val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
-      val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, databaseMetaData)
-      val selectStatement = SelectStatementCreator(connectorRepository, connectorId)
-        .createSelectStatement(connection, tableName, tableMetaData)
-
-      selectStatement.fetchSize = 512
-      sourceConfiguration.beforeSelect(connection, connectorId, tableMetaData)
-      resultSet = selectStatement.executeQuery()
-      sourceConfiguration.afterSelect(connection, connectorId, tableMetaData)
+      start(connector.openConnection())
     }
+
+    return this
+  }
+
+  fun start(connection: Connection): ReadTableDataTool {
+    val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
+    val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
+    val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
+    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, databaseMetaData)
+    val selectStatement = SelectStatementCreator(connectorRepository, connectorId)
+      .createSelectStatement(connection, tableName, tableMetaData)
+
+    selectStatement.fetchSize = 512
+    sourceConfiguration.beforeSelect(connection, connectorId, tableMetaData)
+    resultSet = selectStatement.executeQuery()
+    sourceConfiguration.afterSelect(connection, connectorId, tableMetaData)
 
     return this
   }
 
   fun end() {
     if (this::connector.isInitialized) {
-      val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
-      val connection = connector.openConnection()
-      sourceConfiguration.finalizeSourceConnection(connection, connectorId)
-      resultSet.close()
+      end(connector.openConnection())
       connector.closeConnection()
     }
+  }
+
+  fun end(connection: Connection) {
+    val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
+    sourceConfiguration.finalizeSourceConnection(connection, connectorId)
+    resultSet.close()
   }
 
   /**

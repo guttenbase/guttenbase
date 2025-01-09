@@ -116,12 +116,13 @@ class SchemaScriptCreatorTool(
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
     val qualifiedTableName = tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)
     val tableName = tableMapper.mapTableName(tableMetaData, targetDatabaseMetaData)
-    val pkName = createConstraintName("PK_", tableName, "")
+    val databaseType = targetDatabaseMetaData.databaseType
+    val pkName = databaseType.escapeDatabaseEntity(createConstraintName("PK_", tableName, ""))
 
     return "ALTER TABLE $qualifiedTableName ADD CONSTRAINT $pkName PRIMARY KEY " +
         primaryKeyColumns.joinToString {
           val rawColumnName = columnMapper.mapColumnName(it, tableMetaData)
-          targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
+          databaseType.escapeDatabaseEntity(rawColumnName)
         } + ";"
   }
 

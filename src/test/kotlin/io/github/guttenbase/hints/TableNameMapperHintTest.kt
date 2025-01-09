@@ -20,8 +20,7 @@ class TableNameMapperHintTest :
         get() = TestTableNameMapper()
     })
     connectorRepository.addConnectorHint(TARGET, object : TableMapperHint() {
-      override val value: TableMapper
-        get() = TestTableNameMapper()
+      override val value: TableMapper get() = TestTableNameMapper()
     })
   }
 }

@@ -66,7 +66,6 @@ internal class DatabaseMetaDataInspectorTool(
         updateTableWithIndexInformation(metaData, databaseMetaData, tableMetaData)
       }
     } catch (e: Exception) {
-      // Some drivers such as JdbcOdbcBridge do not support this
       LOG.warn("Could not update additional schema information", e)
     }
 
@@ -80,18 +79,18 @@ internal class DatabaseMetaDataInspectorTool(
   }
 
   private fun updateColumnsWithForeignKeyInformation(
-    metaData: JdbcDatabaseMetaData,
-    databaseMetaData: DatabaseMetaData,
-    table: TableMetaData
+    metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, table: TableMetaData
   ) {
-    LOG.debug("Retrieving foreign key information for " + table.tableName)
+    val tableName = table.tableName()
+
+    LOG.debug("Retrieving foreign key information for $tableName")
 
     val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
     val fkFilter = connectorRepository.hint<DatabaseForeignKeyFilter>(connectorId)
     val resultSet = metaData.getExportedKeys(
       tableFilter.getCatalog(databaseMetaData),
       tableFilter.getSchemaPattern(databaseMetaData),
-      table.tableName
+      tableName
     )
 
     resultSet.use {
@@ -141,13 +140,15 @@ internal class DatabaseMetaDataInspectorTool(
     metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData,
     table: InternalTableMetaData
   ) {
-    LOG.debug("Retrieving index information for " + table.tableName)
+    val tableName = table.tableName()
+
+    LOG.debug("Retrieving index information for $tableName")
 
     val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
     val indexFilter = connectorRepository.hint<DatabaseIndexFilter>(connectorId)
     val resultSet = metaData.getIndexInfo(
       tableFilter.getCatalog(databaseMetaData),
-      tableFilter.getSchema(databaseMetaData), table.tableName, false,
+      tableFilter.getSchema(databaseMetaData), tableName, false,
       true
     )
 
@@ -190,12 +191,14 @@ internal class DatabaseMetaDataInspectorTool(
   private fun updateColumnsWithPrimaryKeyInformation(
     metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, table: TableMetaData
   ) {
-    LOG.debug("Retrieving primary key information for " + table.tableName)
+    val tableName = table.tableName()
+
+    LOG.debug("Retrieving primary key information for {}", table)
 
     val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
     val resultSet = metaData.getPrimaryKeys(
       tableFilter.getCatalog(databaseMetaData),
-      tableFilter.getSchema(databaseMetaData), table.tableName
+      tableFilter.getSchema(databaseMetaData), tableName
     )
 
     resultSet.use {
@@ -213,15 +216,20 @@ internal class DatabaseMetaDataInspectorTool(
     }
   }
 
+  private fun TableMetaData.tableName() = // && databaseType == DatabaseType.ORACLE
+    if (tableName.contains(" ")) databaseType.escapeDatabaseEntity(tableName) else tableName
+
   private fun updateColumnsTypeInformation(
     metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, table: TableMetaData
   ) {
-    LOG.debug("Retrieving column type information for " + table.tableName)
+    val tableName = table.tableName()
+
+    LOG.debug("Retrieving column type information for $tableName")
 
     val tableFilter = connectorRepository.hint<DatabaseTableFilter>(connectorId)
     val resultSet = metaData.getColumns(
       tableFilter.getCatalog(databaseMetaData), tableFilter.getSchema(databaseMetaData),
-      table.tableName, tableFilter.getColumnNamePattern(databaseMetaData)
+      tableName, tableFilter.getColumnNamePattern(databaseMetaData)
     )
 
     resultSet.use {
@@ -280,21 +288,17 @@ internal class DatabaseMetaDataInspectorTool(
   private fun createWhereClause(tableMetaData: TableMetaData) =
     connectorRepository.hint<SelectWhereClause>(connectorId).getWhereClause(tableMetaData)
 
-  private fun enrichTableMetaData(
-    statement: Statement,
-    tableMetaData: InternalTableMetaData,
-    schemaPrefix: String
-  ) {
+  private fun enrichTableMetaData(statement: Statement, table: InternalTableMetaData, schemaPrefix: String) {
     val filter = connectorRepository.hint<TableRowCountFilter>(connectorId)
 
-    if (filter.accept(tableMetaData)) {
-      val databaseType = tableMetaData.databaseType
-      val tableName = databaseType.escapeDatabaseEntity(tableMetaData.tableName, schemaPrefix)
+    if (filter.accept(table)) {
+      val databaseType = table.databaseType
+      val tableName = databaseType.escapeDatabaseEntity(table.tableName, schemaPrefix)
       LOG.debug("Retrieving row count for $tableName")
 
-      computeRowCount(tableName, tableMetaData, statement)
+      computeRowCount(tableName, table, statement)
 
-      val primaryKeyColumn = tableMetaData.getNumericPrimaryKeyColumn()
+      val primaryKeyColumn = table.getNumericPrimaryKeyColumn()
 
       if (primaryKeyColumn != null) {
         val maxIdStatement = SELECT_MIN_MAX_ID_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
@@ -302,23 +306,19 @@ internal class DatabaseMetaDataInspectorTool(
 
         statement.executeQuery(maxIdStatement).use {
           it.next()
-          tableMetaData.minId = it.getLong(1)
-          tableMetaData.maxId = it.getLong(2)
+          table.minId = it.getLong(1)
+          table.maxId = it.getLong(2)
         }
       }
     } else {
-      tableMetaData.totalRowCount = filter.defaultRowCount(tableMetaData)
-      tableMetaData.filteredRowCount = filter.defaultRowCount(tableMetaData)
-      tableMetaData.minId = filter.defaultMinId(tableMetaData)
-      tableMetaData.maxId = filter.defaultMaxId(tableMetaData)
+      table.totalRowCount = filter.defaultRowCount(table)
+      table.filteredRowCount = filter.defaultRowCount(table)
+      table.minId = filter.defaultMinId(table)
+      table.maxId = filter.defaultMaxId(table)
     }
   }
 
-  private fun computeRowCount(
-    tableName: String,
-    tableMetaData: InternalTableMetaData,
-    statement: Statement
-  ) {
+  private fun computeRowCount(tableName: String, tableMetaData: InternalTableMetaData, statement: Statement) {
     val countAllSQL = SELECT_COUNT_STATEMENT.replace(TABLE_PLACEHOLDER, tableName)
     val filterClause = createWhereClause(tableMetaData).trim { it <= ' ' }
     val countFilteredSQL = SELECT_COUNT_STATEMENT.replace(TABLE_PLACEHOLDER, tableName) + " " + filterClause

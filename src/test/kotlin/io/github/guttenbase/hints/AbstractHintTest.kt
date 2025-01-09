@@ -9,7 +9,7 @@ import io.github.guttenbase.schema.comparison.SchemaComparatorTool
 import io.github.guttenbase.tools.CheckEqualTableDataTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
 import io.github.guttenbase.tools.ScriptExecutorTool
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -46,7 +46,8 @@ abstract class AbstractHintTest(
   @Test
   fun testTableCopy() {
     val issues = SchemaComparatorTool(connectorRepository, SOURCE, TARGET).check()
-    Assertions.assertThat(issues.isSevere).`as`(issues.toString()).isFalse()
+
+    assertThat(issues.isSevere).`as`(issues.toString()).isFalse()
     DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables()
     CheckEqualTableDataTool(connectorRepository, SOURCE, TARGET).checkTableData()
     executeChecks()

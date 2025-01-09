@@ -74,12 +74,10 @@ open class CheckEqualTableDataTool(
         } else {
           LOG.warn("Checking equality for table $targetTable by reading full data")
 
-          val data1 = ReadTableDataTool(connectorRepository, sourceConnectorId, sourceTable).start().use {
-            it.readTableData(-1).toSet()
-          }
-          val data2 = ReadTableDataTool(connectorRepository, targetConnectorId, targetTable).start().use {
-            it.readTableData(-1).toSet()
-          }
+          val data1 = ReadTableDataTool(connectorRepository, sourceConnectorId, sourceTable)
+            .start(connection1).readTableData(-1).toSet()
+          val data2 = ReadTableDataTool(connectorRepository, targetConnectorId, targetTable).start(connection2)
+            .readTableData(-1).toSet()
 
           if (data1 != data2) {
             LOG.warn("Could not validate equality for $targetTable")

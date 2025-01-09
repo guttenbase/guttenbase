@@ -7,6 +7,7 @@ import io.github.guttenbase.meta.TableMetaData
 class TestTableMapper : DefaultTableMapper() {
   override fun map(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData): TableMetaData {
     val tableName = source.tableName.uppercase().replace("Ö", "O").replace("Ä", "A").replace("Ü", "U")
-    return targetDatabaseMetaData.getTableMetaData(tableName)!!
+      .replace(" ", "_")
+    return targetDatabaseMetaData.getTableMetaData(tableName)?: throw IllegalStateException("$tableName not found")
   }
 }
