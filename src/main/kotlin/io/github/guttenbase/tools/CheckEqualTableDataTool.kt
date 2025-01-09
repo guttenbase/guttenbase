@@ -41,7 +41,8 @@ import kotlin.math.min
  */
 open class CheckEqualTableDataTool(
   private val connectorRepository: ConnectorRepository,
-  private val sourceConnectorId: String, private val targetConnectorId: String
+  private val sourceConnectorId: String, private val targetConnectorId: String,
+  private val maxRowCountCheck: Int = 300
 ) {
   fun checkTableData() {
     val sourceTables = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
@@ -68,7 +69,7 @@ open class CheckEqualTableDataTool(
       if (targetTable.primaryKeyColumns.size != 1) {
         LOG.warn("No/too many primary key column found for $targetTable!")
 
-        if (targetTable.totalRowCount > 200) {
+        if (targetTable.totalRowCount > maxRowCountCheck) {
           LOG.warn("Cannot check data on table $targetTable")
         } else {
           LOG.warn("Checking equality for table $targetTable by reading full data")

@@ -67,7 +67,7 @@ class SchemaScriptCreatorTool(
           .any { it.jdbcColumnType.isBinaryType() || it.jdbcColumnType.isBlobType() || it.jdbcColumnType.isClobType() }
 
         if (!columnsFormPrimaryKey && !conflictedIndex) {
-          if (containsBinaryType && targetDatabase.databaseType != DatabaseType.MYSQL) {
+          if (containsBinaryType) {
             LOG.warn("Skipping index ${indexMetaData.indexName} on table ${tableMetaData.tableName} because it contains binary columns")
           } else {
             result.add(createIndex(indexMetaData, counter++))
