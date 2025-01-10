@@ -151,8 +151,7 @@ open class CheckEqualTableDataTool(
               currentID.toString(),
               targetConnectorId, tableName1, resultSet1,
               resultSet2, rowIndex, targetColumnIndex,
-              sourceColumnIndex, columnMapping, columnName1, sourceColumn,
-              targetColumn
+              sourceColumnIndex, columnMapping, columnName1
             )
 
             if (sourceColumn.isPrimaryKey) {
@@ -177,22 +176,23 @@ open class CheckEqualTableDataTool(
     targetConnectorId: String, tableName: String,
     resultSet1: ResultSet, resultSet2: ResultSet, rowIndex: Int,
     targetColumnIndex: Int, sourceColumnIndex: Int, mapping: ColumnDataMapping,
-    columnName: String, sourceColumn: ColumnMetaData,
-    targetColumn: ColumnMetaData
+    columnName: String
   ): Pair<Any?, Any?> {
     val sourceColumnType = mapping.sourceColumnType
     val targetColumnType = mapping.targetColumnType
     val targetDatabaseType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
-    var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex)
-    var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex)
+    var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex, mapping.sourceColumn)
+    var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex, mapping.targetColumn)
 
-    data1 = mapping.columnDataMapper.map(mapping, data1)
-    data1 = convertData(data1)
-    data2 = convertData(data2)
+    if (data1?.javaClass != data2?.javaClass) {
+      data1 = mapping.columnDataMapper.map(mapping, data1)
+      data1 = convertData(data1)
+      data2 = convertData(data2)
+    }
 
     when {
       data1 == null && data2 != null -> throw createUnequalDataException(
-        tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2, sourceColumn, targetColumn
+        tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2, mapping.sourceColumn, mapping.targetColumn
       )
 
       data1 != null && data2 == null -> {
@@ -200,14 +200,19 @@ open class CheckEqualTableDataTool(
         // https://stackoverflow.com/questions/13278773/null-vs-empty-string-in-oracle
         if (data1 is String && targetDatabaseType != ORACLE) {
           throw createUnequalDataException(
-            tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2, sourceColumn, targetColumn
+            tableName, primaryKey, rowIndex, sourceColumnType, columnName,
+            data1, data2, mapping.sourceColumn, mapping.targetColumn
           )
         }
       }
 
+      sourceColumnType == ColumnType.CLASS_UNKNOWN || sourceColumnType == ColumnType.CLASS_ARRAY ->
+        LOG.warn("Cannot check data for columns ${mapping.sourceColumn}/$sourceColumnType ${mapping.targetColumn}/$targetColumnType")
+
       data1 != null && data2 != null && !equalsValue(data1, data2, mapping.columnTypeDefinition.sourceColumn) ->
         throw createUnequalDataException(
-          tableName, primaryKey, rowIndex, sourceColumnType, columnName, data1, data2, sourceColumn, targetColumn
+          tableName, primaryKey, rowIndex, sourceColumnType, columnName,
+          data1, data2, mapping.sourceColumn, mapping.targetColumn
         )
     }
 

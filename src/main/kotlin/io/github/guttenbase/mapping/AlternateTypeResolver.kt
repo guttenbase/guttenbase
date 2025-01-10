@@ -201,7 +201,8 @@ private val NCHAR_RESOLVER = ColumnTypeDefinitionResolver {
 }
 
 private val LONGVARCHAR_RESOLVER = ColumnTypeDefinitionResolver {
-  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARCHAR", LONGVARCHAR))
+  LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONGVARCHAR", LONGVARCHAR))
+    ?: LookupPreciseMatchResolver.resolve(ColumnTypeDefinition(it, "LONG VARCHAR", LONGVARCHAR))
 }
 
 private val CHAR_RESOLVER = ColumnTypeDefinitionResolver {

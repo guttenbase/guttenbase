@@ -11,6 +11,7 @@
 - Introducing PreparedStatementPlaceholderFactory hint to allow for custom placeholder handling in prepared statements
 - Removed MaxNumberOfDataItems hint and NumberOfRowsPerBatchHint and merged them into new BatchInsertionConfigurationHint hint
 - Introduced ProprietaryColumnTypeDefinitionFactory to allow for custom column type handling
+- New support for JDBC type ARRAY
 
 ## 3.4.0
 

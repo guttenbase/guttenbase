@@ -5,6 +5,7 @@ import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.PRECISION_PLACEHOLDER
 import io.github.guttenbase.utils.Util.mormalizeNegativeScale
 import java.sql.JDBCType
+import java.sql.JDBCType.ARRAY
 
 /**
  * Resolve column type definition for given column and database type.
@@ -32,7 +33,7 @@ data class ColumnTypeDefinition @JvmOverloads constructor(
   val databaseType = targetDatabase.databaseType
   val usePrecision = (usePrecisionClause && precision > 0) || typeName.contains(PRECISION_PLACEHOLDER)
 
-  constructor(type: ColumnTypeDefinition, typeName: String, jdbcType: JDBCType)
+  constructor(type: ColumnTypeDefinition, typeName: String, jdbcType: JDBCType = type.sourceColumn.jdbcColumnType)
       : this(type.sourceColumn, type.targetDatabase, typeName, jdbcType, type.usePrecisionClause, type.precision, type.scale)
 
   private val precisionClause: String
@@ -57,8 +58,12 @@ data class ColumnTypeDefinition @JvmOverloads constructor(
       typeName + PRECISION_PLACEHOLDER
     } else {
       typeName
-    }
+    }.replace(PRECISION_PLACEHOLDER, precisionClause)
 
-    return typeName.replace(PRECISION_PLACEHOLDER, precisionClause)
+    return if (sourceColumn.jdbcColumnType == ARRAY) {
+      typeName + databaseType.arraySuffix
+    } else {
+      typeName
+    }
   }
 }

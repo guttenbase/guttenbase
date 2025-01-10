@@ -49,10 +49,10 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, targetConnec
   fun setParameter(columnName: String, value: Any?): InsertStatementTool {
     val column = columnMap[columnName.lowercase()] ?: throw IllegalStateException("Table $columnName not found")
     val columnIndex = columns.indexOfFirst { it.columnName.lowercase() == columnName.lowercase() } + 1
-    val columnDataMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(column, column)
+    val mapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(column, column)
       ?: throw IllegalStateException("Type mapping not found for $column")
 
-    columnDataMapping.sourceColumnType.setValue(statement, columnIndex, database, column, value)
+    mapping.sourceColumnType.setValue(statement, columnIndex, column, value)
 
     return this
   }

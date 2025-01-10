@@ -48,6 +48,11 @@ object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {
         else -> null
       }
 
+      HSQLDB -> when (type.typeName) {
+        "TEXT" -> ColumnTypeDefinition(type, "LONGVARCHAR")
+        else -> null
+      }
+
       else -> null
     }
 }

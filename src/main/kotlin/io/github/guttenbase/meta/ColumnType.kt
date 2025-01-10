@@ -1,8 +1,10 @@
 package io.github.guttenbase.meta
 
 import io.github.guttenbase.connector.GuttenBaseException
+import io.github.guttenbase.defaults.impl.BYTE_ONE
 import io.github.guttenbase.exceptions.UnhandledColumnTypeException
 import io.github.guttenbase.meta.ColumnType.entries
+import io.github.guttenbase.meta.DatabaseType.POSTGRESQL
 import io.github.guttenbase.utils.Util
 import java.io.Closeable
 import java.io.InputStream
@@ -23,7 +25,7 @@ import java.time.LocalTime
  *
  * @author M. Dahm
  */
-@Suppress("MemberVisibilityCanBePrivate", "unused")
+@Suppress("MemberVisibilityCanBePrivate", "unused", "RemoveRedundantQualifierName")
 enum class ColumnType(
   /**
    * @return JDBC types corresponding to this type
@@ -46,7 +48,9 @@ enum class ColumnType(
 
   CLASS_SQLXML(SQLXML, SQLXML::class.java),
 
-  CLASS_OBJECT(OBJECT_TYPES, Any::class.java, Serializable::class.java),
+  CLASS_OBJECT(JAVA_OBJECT, Any::class.java, Serializable::class.java),
+
+  CLASS_ARRAY(ARRAY, Array::class.java, java.sql.Array::class.java),
 
   CLASS_DATE(DATE, Date::class.java, LocalDate::class.java),
 
@@ -97,8 +101,8 @@ enum class ColumnType(
   /**
    * Get value from [ResultSet]
    */
-  fun getValue(resultSet: ResultSet, columnIndex: Int): Any? {
-    val result = getValueFromResultset(resultSet, columnIndex)
+  fun getValue(resultSet: ResultSet, columnIndex: Int, column: ColumnMetaData): Any? {
+    val result = getValueFromResultset(resultSet, columnIndex, column)
 
     return if (resultSet.wasNull()) {
       null
@@ -107,7 +111,7 @@ enum class ColumnType(
     }
   }
 
-  private fun getValueFromResultset(resultSet: ResultSet, columnIndex: Int): Any? = when (this) {
+  private fun getValueFromResultset(resultSet: ResultSet, columnIndex: Int, column: ColumnMetaData): Any? = when (this) {
     CLASS_STRING -> resultSet.getString(columnIndex)
     CLASS_DOUBLE -> resultSet.getDouble(columnIndex)
     CLASS_INTEGER -> resultSet.getInt(columnIndex)
@@ -122,28 +126,41 @@ enum class ColumnType(
     CLASS_DATE -> resultSet.getDate(columnIndex)
     CLASS_SHORT -> resultSet.getShort(columnIndex)
     CLASS_TIME -> resultSet.getTime(columnIndex)
-    CLASS_OBJECT -> resultSet.getObject(columnIndex)
-    CLASS_BYTE -> resultSet.getByte(columnIndex)
+
+    CLASS_UNKNOWN, // OTHER data -> let the JDBC driver decide
+    CLASS_OBJECT -> {
+      resultSet.getObject(columnIndex)
+    }
+
+    CLASS_ARRAY -> resultSet.getArray(columnIndex)
+
+    CLASS_BYTE -> {
+      if (column.databaseType == POSTGRESQL && column.columnTypeName == "BOOL") {
+        resultSet.getBoolean(columnIndex)
+      } else {
+        resultSet.getByte(columnIndex)
+      }
+    }
+
     CLASS_BYTES -> resultSet.getBytes(columnIndex)
-    else -> throw UnhandledColumnTypeException("Unhandled column type ($this)")
   }
 
   /**
    * Set value in [PreparedStatement]
    */
   fun setValue(
-    insertStatement: PreparedStatement, columnIndex: Int, databaseMetaData: DatabaseMetaData, column: ColumnMetaData, data: Any?
+    insertStatement: PreparedStatement, columnIndex: Int, column: ColumnMetaData, data: Any?
   ): Closeable? {
     return if (data == null) {
       insertStatement.setNull(columnIndex, column.columnType)
       null
     } else {
-      setStatementValue(insertStatement, column, columnIndex, databaseMetaData, data)
+      setStatementValue(insertStatement, column, columnIndex, data)
     }
   }
 
   private fun setStatementValue(
-    insertStatement: PreparedStatement, column: ColumnMetaData, columnIndex: Int, databaseMetaData: DatabaseMetaData, data: Any
+    insertStatement: PreparedStatement, column: ColumnMetaData, columnIndex: Int, data: Any
   ): Closeable? {
     var result: Closeable? = null
 
@@ -152,7 +169,7 @@ enum class ColumnType(
         is String -> insertStatement.setString(columnIndex, data)
         is Char -> insertStatement.setString(columnIndex, data.toString())
         is Clob -> {
-          if (databaseMetaData.databaseType == DatabaseType.POSTGRESQL) { // Workaround for PostgreSQL
+          if (column.databaseType == POSTGRESQL) { // Workaround for PostgreSQL
             data.characterStream.use {
               insertStatement.setString(columnIndex, it.readText())
             }
@@ -202,11 +219,20 @@ enum class ColumnType(
       CLASS_SHORT -> insertStatement.setShort(columnIndex, (data as Short))
       CLASS_TIME -> insertStatement.setTime(columnIndex, data as Time)
 
-      CLASS_OBJECT -> insertStatement.setObject(columnIndex, data)
+      CLASS_UNKNOWN, CLASS_OBJECT -> {
+        insertStatement.setObject(columnIndex, data)
+      }
 
-      CLASS_BYTE -> if (databaseMetaData.databaseType == DatabaseType.POSTGRESQL) {
-        // Postgres has a weird concept of setting a BIT value
-        insertStatement.setInt(columnIndex, (data as Byte).toInt())
+      CLASS_ARRAY -> insertStatement.setArray(columnIndex, data as java.sql.Array)
+
+      CLASS_BYTE -> if (column.databaseType == POSTGRESQL) {
+        if (column.columnTypeName == "BOOL") {
+          val value = data as? Boolean ?: (data == BYTE_ONE) // See object ToBitMapper in DefaultColumnDataMapperProvider
+          insertStatement.setBoolean(columnIndex, value)
+        } else {
+          // Postgres has a weird concept of setting a BIT value
+          insertStatement.setInt(columnIndex, (data as Byte).toInt())
+        }
       } else {
         insertStatement.setByte(columnIndex, data as Byte)
       }
@@ -214,7 +240,7 @@ enum class ColumnType(
       CLASS_BYTES -> when (data) {
         is ByteArray -> insertStatement.setBytes(columnIndex, data)
         is Blob -> {
-          if (databaseMetaData.databaseType == DatabaseType.POSTGRESQL) { // Workaround for PostgreSQL
+          if (column.databaseType == POSTGRESQL) { // Workaround for PostgreSQL
             data.binaryStream.use {
               insertStatement.setBytes(columnIndex, it.readAllBytes())
             }
@@ -226,8 +252,6 @@ enum class ColumnType(
 
         else -> throw IllegalStateException("This is no byte array: ${data.javaClass}")
       }
-
-      else -> throw UnhandledColumnTypeException("setStatementValue: Unhandled column type ($this)")
     }
 
     return result

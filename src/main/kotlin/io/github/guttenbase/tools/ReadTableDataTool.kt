@@ -98,7 +98,7 @@ open class ReadTableDataTool(
         val columnMapping = ColumnDataMappingTool(connectorRepository).getCommonColumnTypeMapping(
           sourceColumn, sourceColumn
         ) ?: throw IllegalStateException("Type mapping not found for $sourceColumn")
-        val data = columnMapping.sourceColumnType.getValue(resultSet, columnIndex)
+        val data = columnMapping.sourceColumnType.getValue(resultSet, columnIndex, sourceColumn)
         val mappedData = columnMapping.columnDataMapper.map(columnMapping, data)
 
         rowData[columnName] = mappedData

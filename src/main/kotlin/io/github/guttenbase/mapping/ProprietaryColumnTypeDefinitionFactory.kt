@@ -26,6 +26,13 @@ object ProprietaryColumnTypeDefinitionFactory : ColumnTypeDefinitionFactory {
           ColumnTypeDefinition(sourceColumn, targetDatabase, "BLOB", BLOB)
         } else null
 
+        POSTGRESQL -> if (sourceColumn.columnTypeName.startsWith("_")) {
+          ColumnTypeDefinition(sourceColumn, targetDatabase, sourceColumn.columnTypeName.substring(1), ARRAY)
+        } else if(sourceColumn.columnTypeName == "BOOL") { // JDBCType is "BIT" for some reason...
+          ColumnTypeDefinition(sourceColumn, targetDatabase, "BOOLEAN", BOOLEAN)
+        }
+        else null
+
 //        MSSQL -> if (sourceColumn.columnTypeName == "MONEY") {
 //          ColumnTypeDefinition(sourceColumn, targetDatabase, "DECIMAL", DECIMAL)
 //        } else null

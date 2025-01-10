@@ -160,6 +160,13 @@ enum class DatabaseType(
       else -> ""
     }
 
+  val arraySuffix: String
+    get() = when (this) {
+      HSQLDB -> " ARRAY"
+      POSTGRESQL -> "[]"
+      else -> "[]"
+    }
+
   /**
    * @return clause with template variable to be replaced with actual data
    */

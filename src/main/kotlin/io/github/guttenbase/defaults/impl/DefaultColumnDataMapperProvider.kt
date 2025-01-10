@@ -248,5 +248,5 @@ internal fun Double.toBigDecimal(mapping: ColumnTypeDefinition): BigDecimal =
     // precision may be smaller and thus cause an java.lang.ArithmeticException: Rounding necessary otherwise
     .setScale(mapping.scale, RoundingMode.HALF_DOWN)
 
-private const val BYTE_ZERO = 0.toByte()
-private const val BYTE_ONE = 1.toByte()
+internal const val BYTE_ZERO = 0.toByte()
+internal const val BYTE_ONE = 1.toByte()
