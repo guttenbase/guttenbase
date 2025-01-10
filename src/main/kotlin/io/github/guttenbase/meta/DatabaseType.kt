@@ -41,7 +41,7 @@ enum class DatabaseType(
 
   POSTGRESQL(
     "", // Handled by column type, see below)
-    "SELECT setval('${TABLE_NAME}_${COLUMN_NAME}_seq', $NEXT_VALUE, true);",
+    """SELECT setval('"${TABLE_NAME}_${COLUMN_NAME}_seq"', $NEXT_VALUE, true);""",
     false
   ),
 

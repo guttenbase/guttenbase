@@ -12,6 +12,11 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
   private val mappings = HashMap<String, List<ColumnTypeDefinitionResolver>>()
 
   init {
+    val blobResolvers = listOf(
+      BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER,
+      VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
+    )
+
     mappings["LONGTEXT"] = listOf(TEXT_RESOLVER, LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
     mappings["MEDIUMTEXT"] = listOf(TEXT_RESOLVER, LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
     mappings["TEXT"] = listOf(TEXT_RESOLVER, LONGVARCHAR_RESOLVER, CLOB_RESOLVER)
@@ -29,22 +34,15 @@ object AlternateTypeResolver : ColumnTypeDefinitionResolver {
 
     mappings["VARBINARY"] = listOf(BLOB_RESOLVER, IMAGE_RESOLVER, BYTEA_RESOLVER, BINARY_RESOLVER)
     mappings["LONGVARBINARY"] = listOf(BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER)
-    mappings["BLOB"] = listOf(
-      BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER, VARBINARY_BIT_DATA_RESOLVER,
-      BINARY_RESOLVER
-    )
-    mappings["BYTEA"] = listOf(
-      BLOB_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER, VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
-    )
-    mappings["LONGBLOB"] = listOf(
-      BLOB_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER,
-      VARBINARY_BIT_DATA_RESOLVER, BINARY_RESOLVER
-    )
-    mappings["OID"] = mappings["LONGBLOB"]!!
-    mappings["MEDIUMBLOB"] = mappings["LONGBLOB"]!!
-    mappings["SMALLBLOB"] = mappings["LONGBLOB"]!!
-    mappings["TINYBLOB"] = mappings["LONGBLOB"]!!
-    mappings["BINARY LARGE OBJECT"] = mappings["LONGBLOB"]!!
+    mappings["LONGBLOB"] = blobResolvers
+    mappings["BLOB"] = blobResolvers
+    mappings["BYTEA"] = blobResolvers
+    mappings["IMAGE"] = blobResolvers
+    mappings["OID"] = blobResolvers
+    mappings["MEDIUMBLOB"] = blobResolvers
+    mappings["SMALLBLOB"] = blobResolvers
+    mappings["TINYBLOB"] = blobResolvers
+    mappings["BINARY LARGE OBJECT"] = blobResolvers
     mappings["BINARY"] = listOf(
       RAW_RESOLVER, BINARY_RESOLVER,
       BLOB_RESOLVER, LONGVARBINARY_RESOLVER, VARBINARY_RESOLVER, BYTEA_RESOLVER, IMAGE_RESOLVER, VARBINARY_BIT_DATA_RESOLVER
