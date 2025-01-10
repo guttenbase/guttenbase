@@ -1,7 +1,6 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.statements.AbstractInsertStatementCreator
 import java.sql.PreparedStatement
@@ -13,7 +12,6 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, targetConnec
   private lateinit var statement: PreparedStatement
   private lateinit var columns: List<ColumnMetaData>
   private val columnMap: Map<String, ColumnMetaData> by lazy { columns.associateBy { it.columnName.lowercase() } }
-  private val database: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(targetConnectorId) }
 
   @JvmOverloads
   fun createInsertStatementSQL(
