@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <groupId>io.github.guttenbase</groupId>
     <artifactId>guttenbase</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.1</version>
 
     <modelVersion>4.0.0</modelVersion>
     <url>https://github.com/guttenbase/guttenbase</url>
@@ -299,6 +299,7 @@
                 - Remove "-SNAPSHOT" from version number
                 - mvn clean deploy -Prelease
                 - Enter password for GNUPG
+                - On Error 401 (Token expired?): Login as mdahm https://central.sonatype.com/account an refresh the token
             -->
             <id>release</id>
 
@@ -307,7 +308,7 @@
                     <plugin>
                         <groupId>org.jetbrains.dokka</groupId>
                         <artifactId>dokka-maven-plugin</artifactId>
-                        <version>1.8.20</version>
+                        <version>2.0.0</version>
 
                         <executions>
                             <execution>
@@ -322,7 +323,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
+                        <version>1.7.0</version>
                         <extensions>true</extensions>
 
                         <configuration>
@@ -336,7 +337,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>3.2.7</version>
 
                         <configuration>
                             <gpgArguments>
