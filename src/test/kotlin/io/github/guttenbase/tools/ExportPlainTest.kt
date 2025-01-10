@@ -25,7 +25,6 @@ import kotlin.text.Charsets.UTF_8
  * @author M. Dahm
  */
 class ExportPlainTest : AbstractGuttenBaseTest() {
-
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())

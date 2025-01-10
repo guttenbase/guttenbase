@@ -63,7 +63,7 @@ class SchemaScriptCreatorTool(
         val conflictedIndex = conflictedIndexes.contains(indexMetaData)
         // Most DBs do not support indexes on binary columns
         val containsBinaryType = columns
-          .any { it.jdbcColumnType.isBinaryType() || it.jdbcColumnType.isBlobType() || it.jdbcColumnType.isClobType() }
+          .any { it.jdbcColumnType.isBinaryType() || it.jdbcColumnType.isBlobType() || it.jdbcColumnType.isClobType() || it.jdbcColumnType.isOtherType() }
 
         if (!columnsFormPrimaryKey && !conflictedIndex) {
           if (containsBinaryType) {

@@ -13,7 +13,9 @@ object DatabaseColumnTypeDefinitionResolver : AbstractSupportedTypeResolver() {
   override fun match(possibleTypes: List<DatabaseSupportedColumnType>, typeName: String): DatabaseSupportedColumnType? {
     // 1. Prefer standard types over proprietary types
     // 2. Prefer types with highest precision
-    return possibleTypes.firstOrNull { it.typeName in STANDARD_TYPES } ?: possibleTypes.maxByOrNull { it.maxPrecision }
+    return possibleTypes.firstOrNull { it.typeName in STANDARD_TYPES }
+      ?: possibleTypes.firstOrNull { it.typeName.contains(typeName) || typeName.contains(it.typeName) }
+      ?: possibleTypes.maxByOrNull { it.maxPrecision }
   }
 }
 

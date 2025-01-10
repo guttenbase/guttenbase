@@ -57,6 +57,7 @@ val BINARY_TYPES = listOf(LONGVARBINARY, VARBINARY, BINARY)
 val BOOLEAN_TYPES = listOf(BOOLEAN, BIT)
 val NUMERIC_TYPES = listOf(NUMERIC, DECIMAL, REAL)
 val DATE_TYPES = listOf(TIME, TIMESTAMP, DATE)
+val OTHER_TYPES = listOf(OTHER, JAVA_OBJECT)
 
 fun JDBCType.isClobType() = this in CLOB_TYPES
 fun JDBCType.isIntegerType() = this in INTEGER_TYPES
@@ -66,6 +67,7 @@ fun JDBCType.isBlobType() = this in BLOB_TYPES
 fun JDBCType.isBinaryType() = this in BINARY_TYPES
 fun JDBCType.isNumericType() = this in NUMERIC_TYPES
 fun JDBCType.isDateType() = this in DATE_TYPES
+fun JDBCType.isOtherType() = this in OTHER_TYPES
 fun Int.hasJDBCType(): Boolean = JDBCType.entries.any { it.vendorTypeNumber.toInt() == this.toInt() }
 
 val STANDARD_TYPES = JDBCType.entries.map { it.name }.toSet()

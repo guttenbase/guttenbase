@@ -1,6 +1,7 @@
 package io.github.guttenbase.tools
 
 import io.github.guttenbase.configuration.SourceDatabaseConfiguration
+import io.github.guttenbase.defaults.impl.BYTE_ONE
 import io.github.guttenbase.exceptions.IncompatibleColumnsException
 import io.github.guttenbase.exceptions.TableConfigurationException
 import io.github.guttenbase.exceptions.UnequalDataException
@@ -184,11 +185,9 @@ open class CheckEqualTableDataTool(
     var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex, mapping.sourceColumn)
     var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex, mapping.targetColumn)
 
-    if (data1?.javaClass != data2?.javaClass) {
-      data1 = mapping.columnDataMapper.map(mapping, data1)
-      data1 = convertData(data1)
-      data2 = convertData(data2)
-    }
+    data1 = mapping.columnDataMapper.map(mapping, data1)
+    data1 = convertData(data1)
+    data2 = convertData(data2)
 
     when {
       data1 == null && data2 != null -> throw createUnequalDataException(
@@ -240,12 +239,13 @@ open class CheckEqualTableDataTool(
     else -> data
   }
 
-
   private fun equalsValue(data1: Any, data2: Any, sourceColumn: ColumnMetaData) = when {
     data1 is Date && data2 is Date -> data1.toDate().toLocalDateTime().roundToWholeSeconds() ==
         data2.toDate().toLocalDateTime().roundToWholeSeconds()
 
     sourceColumn.columnTypeName == "YEAR" -> (data1 as Number).toInt() == (data2 as Number).toInt()
+
+    sourceColumn.columnTypeName == "BOOL" -> toBoolean(data1) == toBoolean(data2)
 
     data1 is ByteArray -> data1.contentEquals(data2 as ByteArray)
 
@@ -260,6 +260,8 @@ open class CheckEqualTableDataTool(
 
     else -> data1 == data2
   }
+
+  private fun toBoolean(data: Any) = data as? Boolean ?: (data == BYTE_ONE)
 
   private fun checkRowCount(
     sourceTableMetaData: TableMetaData, targetTableMetaData: TableMetaData,

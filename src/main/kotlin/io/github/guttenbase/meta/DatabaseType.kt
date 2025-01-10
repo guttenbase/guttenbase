@@ -160,12 +160,20 @@ enum class DatabaseType(
       else -> ""
     }
 
-  val arraySuffix: String
-    get() = when (this) {
-      HSQLDB -> " ARRAY"
-      POSTGRESQL -> "[]"
-      else -> "[]"
-    }
+  fun arrayType(typeName: String): String = when (this) {
+    HSQLDB -> "$typeName ARRAY"
+    POSTGRESQL -> "$typeName[]"
+    MSSQL -> "ARRAY<$typeName>"
+    ORACLE ->  // CREATE TYPE string_array AS VARRAY(NULL ) OF VARCHAR(50);
+      when {
+        typeName.contains("CHAR") || typeName.contains("TEXT") || typeName.contains("CLOB") -> "SYS.ODCIVARCHAR2LIST"
+        typeName.contains("INT") || typeName.contains("NUMBER") -> "SYS.ODCINUMBERLIST"
+        typeName == "DATE" -> "SYS.ODCIDATELIST"
+        else -> " VARRAY(32768) OF $typeName" // Actually give up
+      }
+
+    else -> "$typeName[]"
+  }
 
   /**
    * @return clause with template variable to be replaced with actual data

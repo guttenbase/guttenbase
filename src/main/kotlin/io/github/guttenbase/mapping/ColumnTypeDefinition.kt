@@ -58,12 +58,12 @@ data class ColumnTypeDefinition @JvmOverloads constructor(
       typeName + PRECISION_PLACEHOLDER
     } else {
       typeName
-    }.replace(PRECISION_PLACEHOLDER, precisionClause)
+    }
 
     return if (sourceColumn.jdbcColumnType == ARRAY) {
-      typeName + databaseType.arraySuffix
+      databaseType.arrayType(typeName)
     } else {
       typeName
-    }
+    }.replace(PRECISION_PLACEHOLDER, precisionClause)
   }
 }
