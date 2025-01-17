@@ -294,13 +294,6 @@
 
     <profiles>
         <profile>
-            <!--
-                - Update settings.xml with my password and remove other password for https://s01.oss.sonatype.org/
-                - Remove "-SNAPSHOT" from version number
-                - mvn clean deploy -Prelease
-                - Enter password for GNUPG
-                - On Error 401 (Token expired?): Login as mdahm https://central.sonatype.com/account an refresh the token
-            -->
             <id>release</id>
 
             <build>
