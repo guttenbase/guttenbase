@@ -18,7 +18,7 @@ import java.nio.charset.Charset
 data class ExportPlainTextConnectorInfo
 @JvmOverloads constructor(
   internal val sourceConnectorId: String,
-  internal val sourceDatabaseType: DatabaseType,
+  override val databaseType: DatabaseType,
   internal val outputStream: OutputStream,
   override val schema: String = "",
   internal val encoding: Charset = Charsets.UTF_8,
@@ -35,7 +35,6 @@ data class ExportPlainTextConnectorInfo
 
   override val user: String get() = "user"
   override val password: String get() = "password"
-  override val databaseType = sourceDatabaseType
 
   private lateinit var exportPlainConnector: ExportPlainConnector
 

@@ -48,7 +48,7 @@ class ExportPlainConnector(
     val tableMetaDataMap = tableMetaData.associateBy { it.tableName.uppercase() }
 
     return object : InternalDatabaseMetaData by data {
-      override val databaseType get() = connectorInfo.sourceDatabaseType
+      override val databaseType get() = connectorInfo.databaseType
 
       override val tableMetaData get() = tableMetaData
 
