@@ -8,6 +8,7 @@ import io.github.guttenbase.meta.impl.*
 import io.github.guttenbase.repository.*
 import io.github.guttenbase.tools.SelectWhereClause
 import io.github.guttenbase.utils.Util
+import io.github.guttenbase.utils.Util.RIGHT_ARROW
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.sql.*
@@ -416,17 +417,17 @@ internal class DatabaseMetaDataInspectorTool(
       "SELECT MIN($COLUMN_PLACEHOLDER), MAX($COLUMN_PLACEHOLDER) FROM $TABLE_PLACEHOLDER"
     private const val SELECT_NOTHING_STATEMENT = "SELECT * FROM $TABLE_PLACEHOLDER WHERE 1 > 2"
 
-    private fun getValue(method: Method, data: JdbcDatabaseMetaData): Pair<String, Any>? {
+    private fun getValue(method: Method, data: JdbcDatabaseMetaData): Pair<String, PrimitiveValue<*>>? {
       val key = method.name
 
       try {
         val value = method.invoke(data)
 
         if (value != null) {
-          return key to value
+          return key to value.toPrimitiveValue()
         }
       } catch (e: Exception) {
-        LOG.warn("Could not get meta data property:" + key + "->" + e.message)
+        LOG.warn("Could not get meta data property: $key $RIGHT_ARROW ${e.message}")
       }
 
       return null

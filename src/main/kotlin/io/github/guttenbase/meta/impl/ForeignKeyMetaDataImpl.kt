@@ -4,6 +4,8 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ForeignKeyMetaData
 import io.github.guttenbase.meta.InternalForeignKeyMetaData
 import io.github.guttenbase.meta.TableMetaData
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import org.slf4j.LoggerFactory
 
 /**
@@ -13,21 +15,21 @@ import org.slf4j.LoggerFactory
  *
  * @author M. Dahm
  */
+@Serializable
 class ForeignKeyMetaDataImpl(
-  override val tableMetaData: TableMetaData,
+  @Transient
+  override val tableMetaData: TableMetaData = DUMMYTABLE,  // TODO
   override val foreignKeyName: String,
-  referencingColumns: List<ColumnMetaData>,
-  referencedColumns: List<ColumnMetaData>
+  private val referencingColumnData: MutableList<ColumnMetaData>,
+  private val referencedColumnData: MutableList<ColumnMetaData>
 ) : InternalForeignKeyMetaData {
-  private val referencingColumnData = ArrayList(referencingColumns)
-  private val referencedColumnData = ArrayList(referencedColumns)
 
   constructor(
     tableMetaData: TableMetaData,
     foreignKeyName: String,
     referencingColumn: ColumnMetaData,
     referencedColumn: ColumnMetaData
-  ) : this(tableMetaData, foreignKeyName, listOf(referencingColumn), listOf(referencedColumn))
+  ) : this(tableMetaData, foreignKeyName, mutableListOf(referencingColumn), mutableListOf(referencedColumn))
 
   override val referencingTableMetaData: TableMetaData
     get() {

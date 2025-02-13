@@ -1,7 +1,15 @@
 package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.meta.*
+import io.github.guttenbase.repository.ConnectorRepository
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.util.*
+
+val DUMMYDB = DatabaseMetaDataImpl(ConnectorRepository(), "", "", mapOf(), DatabaseType.GENERIC)
+val DUMMYTABLE = TableMetaDataImpl(DUMMYDB, "", "", null, null)
+val DUMMYFK = ForeignKeyMetaDataImpl(DUMMYTABLE, "", mutableListOf(), mutableListOf())
+val DUMMYCOLUMN = ColumnMetaDataImpl(DUMMYTABLE, 0, "", "", "", false, false, 0, 0)
 
 /**
  * Information about a table.
@@ -10,9 +18,10 @@ import java.util.*
  *
  * @author M. Dahm
  */
-@Suppress("unused")
+@Serializable
 class TableMetaDataImpl(
-  override val databaseMetaData: DatabaseMetaData,
+  @Transient
+  override val databaseMetaData: DatabaseMetaData = DUMMYDB, // TODO
   override val tableName: String,
   override val tableType: String,
   override val tableCatalog: String?,
@@ -51,7 +60,9 @@ class TableMetaDataImpl(
   private val importedForeignKeyMap = LinkedHashMap<String, ForeignKeyMetaData>()
   private val exportedForeignKeyMap = LinkedHashMap<String, ForeignKeyMetaData>()
 
+  //
   // Derived values
+  //
   override val columnMetaData: List<ColumnMetaData> get() = ArrayList(columnMap.values)
 
   override val indexes: List<IndexMetaData> get() = ArrayList(indexMap.values)
@@ -121,6 +132,7 @@ class TableMetaDataImpl(
   override fun equals(other: Any?) = other is TableMetaData && tableName.equals(other.tableName, ignoreCase = true)
 
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
   }
 }

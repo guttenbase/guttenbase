@@ -1,13 +1,16 @@
 package io.github.guttenbase.meta.impl
 
-import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
+import kotlinx.serialization.*
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.sql.JDBCType
 import java.util.*
+import kotlin.jvm.Transient
+import kotlin.jvm.java
+import kotlin.jvm.javaClass
 
 /**
  * Information about a data base/schema.
@@ -16,13 +19,16 @@ import java.util.*
  *
  * @author M. Dahm
  */
-@Suppress("unused")
+@Serializable
 class DatabaseMetaDataImpl(
   @Transient
-  override val connectorRepository: ConnectorRepository,
+  @kotlinx.serialization.Transient
+  override val connectorRepository: ConnectorRepository = ConnectorRepository(),
   override val connectorId: String,
-  schema: String,
-  override val databaseProperties: Map<String, Any>,
+  override val schema: String,
+
+//  @Serializable(with = DatabasePropertiesSerializer::class)
+  override val databaseProperties: DatabasePropertiesType,
   override val databaseType: DatabaseType
 ) : InternalDatabaseMetaData {
   constructor(databaseMetaData: DatabaseMetaData) : this(
@@ -33,19 +39,23 @@ class DatabaseMetaDataImpl(
     databaseMetaData.databaseType
   )
 
+  @SerialName("tableMetaData")
+  private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()
+
+  @SerialName("supportedTypes")
+  private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseSupportedColumnType>>()
+
+  //
+  // Derived values, not to be serialized
+  //
   override val supportedTypes: Map<JDBCType, List<DatabaseSupportedColumnType>>
     get() = supportedTypeMap.entries.associate { entry -> entry.key to entry.value.toList() }
 
   override val allTypes: List<DatabaseSupportedColumnType>
     get() = supportedTypes.values.flatten().sorted()
 
-  override val schema = schema.trim { it <= ' ' }
-
-  private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()
-
-  private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseSupportedColumnType>>()
-
-  override val databaseMetaData get() = createMetaDataProxy(databaseProperties)
+  override val databaseMetaData: JdbcDatabaseMetaData
+    get() = createMetaDataProxy()
 
   override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
 
@@ -71,13 +81,15 @@ class DatabaseMetaDataImpl(
   override fun equals(other: Any?) = other is DatabaseMetaData &&
       databaseType == other.databaseType && schema.equals(other.schema, ignoreCase = true)
 
-  private fun createMetaDataProxy(properties: Map<String, Any>): JdbcDatabaseMetaData {
-    return Proxy.newProxyInstance(
-      javaClass.classLoader, arrayOf<Class<*>>(JdbcDatabaseMetaData::class.java)
-    ) { _: Any, method: Method, _: Array<Any?>? -> properties[method.name] } as JdbcDatabaseMetaData
-  }
+  private fun createMetaDataProxy() = Proxy.newProxyInstance(
+    javaClass.classLoader, arrayOf<Class<*>>(JdbcDatabaseMetaData::class.java)
+  ) { _, method: Method, _ -> databaseProperties[method.name]?.value } as JdbcDatabaseMetaData
 
   companion object {
+    @Suppress("unused")
     private const val serialVersionUID = 1L
   }
 }
+
+typealias ValueType = @Polymorphic PrimitiveValue<*>
+typealias DatabasePropertiesType = Map<String,  ValueType>

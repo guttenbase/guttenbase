@@ -3,12 +3,11 @@ package io.github.guttenbase.meta
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.defaults.impl.BYTE_ONE
 import io.github.guttenbase.exceptions.UnhandledColumnTypeException
-import io.github.guttenbase.meta.ColumnType.entries
 import io.github.guttenbase.meta.DatabaseType.POSTGRESQL
 import io.github.guttenbase.utils.Util
+import kotlinx.serialization.Serializable
 import java.io.Closeable
 import java.io.InputStream
-import java.io.Serializable
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.sql.*
@@ -26,6 +25,7 @@ import java.time.LocalTime
  * @author M. Dahm
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused", "RemoveRedundantQualifierName")
+@Serializable
 enum class ColumnType(
   /**
    * @return JDBC types corresponding to this type
@@ -48,7 +48,7 @@ enum class ColumnType(
 
   CLASS_SQLXML(SQLXML, SQLXML::class.java),
 
-  CLASS_OBJECT(JAVA_OBJECT, Any::class.java, Serializable::class.java),
+  CLASS_OBJECT(JAVA_OBJECT, Any::class.java, java.io.Serializable::class.java),
 
   CLASS_ARRAY(ARRAY, Array::class.java, java.sql.Array::class.java),
 

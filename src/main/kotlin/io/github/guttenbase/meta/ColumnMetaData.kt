@@ -2,7 +2,6 @@
 
 package io.github.guttenbase.meta
 
-import java.io.Serializable
 import java.sql.JDBCType
 import java.sql.JDBCType.*
 
@@ -13,7 +12,7 @@ import java.sql.JDBCType.*
  *
  * @author M. Dahm
  */
-interface ColumnMetaData : Comparable<ColumnMetaData>, Serializable {
+interface ColumnMetaData : Comparable<ColumnMetaData>, java.io.Serializable {
   /**
    * Column type as defined in [java.sql.Types]
    */

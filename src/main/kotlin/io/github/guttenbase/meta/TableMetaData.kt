@@ -1,7 +1,6 @@
 package io.github.guttenbase.meta
 
 import io.github.guttenbase.repository.TableRowCountFilter
-import java.io.Serializable
 import java.sql.JDBCType.BIGINT
 
 /**
@@ -13,7 +12,7 @@ import java.sql.JDBCType.BIGINT
  *
  * @author M. Dahm
  */
-interface TableMetaData : Comparable<TableMetaData>, Serializable {
+interface TableMetaData : Comparable<TableMetaData>, java.io.Serializable {
   /**
    * Row count of table using given filter clause [TableRowCountFilter]
    */

@@ -4,6 +4,8 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.IndexMetaData
 import io.github.guttenbase.meta.InternalIndexMetaData
 import io.github.guttenbase.meta.TableMetaData
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * Information about index in table.
@@ -12,8 +14,10 @@ import io.github.guttenbase.meta.TableMetaData
  *
  * @author M. Dahm
  */
+@Serializable
 class IndexMetaDataImpl(
-  override val tableMetaData: TableMetaData,
+  @Transient
+  override val tableMetaData: TableMetaData = DUMMYTABLE, // TODO
   override val indexName: String,
   override val isAscending: Boolean,
   override val isUnique: Boolean,

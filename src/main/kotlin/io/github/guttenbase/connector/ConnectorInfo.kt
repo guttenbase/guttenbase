@@ -2,7 +2,6 @@ package io.github.guttenbase.connector
 
 import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
-import java.io.Serializable
 
 /**
  * Information about connectors, in particular, parameters needed to establish a [java.sql.Connection] to the data base.
@@ -11,7 +10,7 @@ import java.io.Serializable
  *
  * @author M. Dahm
  */
-interface ConnectorInfo : Serializable {
+interface ConnectorInfo : java.io.Serializable {
   /**
    * @return Data base user
    */

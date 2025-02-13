@@ -2,8 +2,6 @@
 
 package io.github.guttenbase.meta
 
-import java.io.Serializable
-
 const val SYNTHETIC_INDEX_PREFIX = "IDX_"
 
 /**
@@ -13,7 +11,7 @@ const val SYNTHETIC_INDEX_PREFIX = "IDX_"
  *
  * @author M. Dahm
  */
-interface IndexMetaData : Comparable<IndexMetaData>, Serializable {
+interface IndexMetaData : Comparable<IndexMetaData>, java.io.Serializable {
   val indexName: String
   val isAscending: Boolean
   val isUnique: Boolean

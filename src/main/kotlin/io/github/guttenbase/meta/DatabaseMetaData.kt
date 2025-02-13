@@ -1,8 +1,9 @@
 package io.github.guttenbase.meta
 
+import io.github.guttenbase.meta.impl.DatabasePropertiesType
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 import java.sql.JDBCType
 
 /**
@@ -13,11 +14,11 @@ import java.sql.JDBCType
  *
  * @author M. Dahm
  */
-interface DatabaseMetaData : Serializable {
+interface DatabaseMetaData : java.io.Serializable {
   val schema: String
   val schemaPrefix: String
 
-  val databaseProperties: Map<String, Any>
+  val databaseProperties: DatabasePropertiesType
 
   /**
    * Return tables list filtered by @see [io.github.guttenbase.repository.RepositoryTableFilter]
@@ -38,12 +39,13 @@ interface DatabaseMetaData : Serializable {
 
 const val PRECISION_PLACEHOLDER = "()"
 
+@Serializable
 data class DatabaseSupportedColumnType(
   val typeName: String,
   val jdbcType: JDBCType,
   val maxPrecision: Int = 0,
   val maxScale: Int = 0,
   val nullable: Boolean = true
-) : Serializable, Comparable<DatabaseSupportedColumnType> {
+) : java.io.Serializable, Comparable<DatabaseSupportedColumnType> {
   override fun compareTo(other: DatabaseSupportedColumnType) = typeName.compareTo(other.typeName)
 }

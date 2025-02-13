@@ -5,10 +5,7 @@ import java.sql.JDBCType
 /**
  * Extension for internal access.
  *
- *
- *
  * &copy; 2012-2044 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */

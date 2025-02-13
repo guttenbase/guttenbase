@@ -11,7 +11,9 @@ import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
+import io.github.guttenbase.meta.IntValue
 import io.github.guttenbase.meta.SYNTHETIC_CONSTRAINT_PREFIX
+import io.github.guttenbase.meta.StringValue
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.meta.impl.*
 import io.github.guttenbase.repository.ConnectorRepository
@@ -181,8 +183,8 @@ class SchemaScriptCreatorToolTest {
         connectorRepository,
         SOURCE,
         SCHEMA_NAME, mapOf(
-          "getMaxColumnNameLength" to 42,
-          "getDatabaseProductName" to "GuttenBaseDB"
+          "getMaxColumnNameLength" to IntValue(42),
+          "getDatabaseProductName" to StringValue("GuttenBaseDB")
         ), DatabaseType.GENERIC
       )
       val table1 = createTable(1, databaseMetaData)

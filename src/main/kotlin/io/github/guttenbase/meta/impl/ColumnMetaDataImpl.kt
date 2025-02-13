@@ -4,6 +4,9 @@ import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.InternalColumnMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.meta.hasJDBCType
+import io.github.guttenbase.serialization.UUIDSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.sql.JDBCType
 import java.util.*
 
@@ -14,8 +17,10 @@ import java.util.*
  *
  * @author M. Dahm
  */
+@Serializable
 class ColumnMetaDataImpl(
-  override val tableMetaData: TableMetaData,
+  @Transient
+  override val tableMetaData: TableMetaData = DUMMYTABLE, // TODO
   override val columnType: Int,
   override val columnName: String,
   override val columnTypeName: String,
@@ -31,8 +36,6 @@ class ColumnMetaDataImpl(
     columnMetaData.isNullable, columnMetaData.isAutoIncrement, columnMetaData.precision, columnMetaData.scale
   )
 
-  override val jdbcColumnType: JDBCType = if (columnType.hasJDBCType()) JDBCType.valueOf(columnType) else JDBCType.OTHER
-
   /**
    * {@inheritDoc}
    */
@@ -45,8 +48,9 @@ class ColumnMetaDataImpl(
   override var defaultValue: String? = null
 
   /**
-   * / ** {@inheritDoc}
+   * {@inheritDoc}
    */
+  @Serializable(with = UUIDSerializer::class)
   override val columnId = UUID.randomUUID()!!
 
   override val referencedColumns: Map<String, List<ColumnMetaData>>
@@ -56,6 +60,8 @@ class ColumnMetaDataImpl(
   override val referencingColumns: Map<String, List<ColumnMetaData>>
     get() = tableMetaData.exportedForeignKeys.filter { it.referencedColumns.contains(this) }
       .associate { it.foreignKeyName to it.referencingColumns }
+
+  override val jdbcColumnType: JDBCType = if (columnType.hasJDBCType()) JDBCType.valueOf(columnType) else JDBCType.OTHER
 
   override operator fun compareTo(other: ColumnMetaData) =
     columnName.uppercase().compareTo(other.columnName.uppercase())
