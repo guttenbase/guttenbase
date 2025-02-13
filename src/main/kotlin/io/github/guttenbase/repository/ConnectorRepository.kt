@@ -53,6 +53,7 @@ open class ConnectorRepository {
   /**
    * Remove all information about connector
    */
+  @Suppress("unused")
   open fun removeConnectionInfo(connectorId: String): ConnectorRepository {
     connectionInfoMap.remove(connectorId)
     connectionHintMap.remove(connectorId)
