@@ -7,8 +7,8 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.connector.impl.PropertiesEncryptionTool
 import io.github.guttenbase.connector.impl.PropertiesURLConnectorInfo
 import io.github.guttenbase.connector.impl.URLConnectorInfo
-import io.github.guttenbase.hints.DERBY
-import io.github.guttenbase.hints.H2
+import io.github.guttenbase.hints.DERBYDB
+import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.hints.impl.LoggingScriptExecutorProgressIndicatorHint
@@ -37,14 +37,14 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
     val decryptedProperties = PropertiesEncryptionTool(encrypted!!).decrypt("guttenbase")
 
     connectorRepository.addConnectionInfo(SOURCE, TestH2ConnectionInfo())
-      .addConnectionInfo(H2, TestH2ConnectionInfo()).addConnectionInfo(DERBY, TestDerbyConnectionInfo())
+      .addConnectionInfo(H2DB, TestH2ConnectionInfo()).addConnectionInfo(DERBYDB, TestDerbyConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
       .addConnectionInfo(PROPS, PropertiesURLConnectorInfo(stream!!))
       .addConnectionInfo(ENCRYPTED, PropertiesURLConnectorInfo(decryptedProperties))
-      .addConnectorHint(H2, LoggingTableCopyProgressIndicatorHint)
-      .addConnectorHint(H2, LoggingScriptExecutorProgressIndicatorHint)
-      .addConnectorHint(DERBY, LoggingTableCopyProgressIndicatorHint)
-      .addConnectorHint(DERBY, LoggingScriptExecutorProgressIndicatorHint)
+      .addConnectorHint(H2DB, LoggingTableCopyProgressIndicatorHint)
+      .addConnectorHint(H2DB, LoggingScriptExecutorProgressIndicatorHint)
+      .addConnectorHint(DERBYDB, LoggingTableCopyProgressIndicatorHint)
+      .addConnectorHint(DERBYDB, LoggingScriptExecutorProgressIndicatorHint)
       .addConnectorHint(HSQLDB, LoggingTableCopyProgressIndicatorHint)
       .addConnectorHint(HSQLDB, LoggingScriptExecutorProgressIndicatorHint)
       .addConnectorHint(PROPS, LoggingTableCopyProgressIndicatorHint)
@@ -60,7 +60,7 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testDerby() {
-    test(DERBY)
+    test(DERBYDB)
   }
 
   @Test
@@ -70,7 +70,7 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testH2() {
-    test(H2)
+    test(H2DB)
   }
 
   @Test

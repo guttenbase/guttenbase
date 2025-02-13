@@ -4,8 +4,8 @@ import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
-import io.github.guttenbase.hints.DERBY
-import io.github.guttenbase.hints.H2
+import io.github.guttenbase.hints.DERBYDB
+import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.tools.DropTablesTool
 import io.github.guttenbase.tools.InsertStatementTool
@@ -30,22 +30,22 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
     val scriptExecutorTool = ScriptExecutorTool(connectorRepository)
 
     connectorRepository.addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
-    connectorRepository.addConnectionInfo(H2, TestH2ConnectionInfo())
-    connectorRepository.addConnectionInfo(DERBY, TestDerbyConnectionInfo())
+    connectorRepository.addConnectionInfo(H2DB, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(DERBYDB, TestDerbyConnectionInfo())
 
     scriptExecutorTool.executeFileScript(HSQLDB, resourceName = "/ddl/tables-hsqldb.sql")
-    scriptExecutorTool.executeFileScript(H2, resourceName = "/ddl/tables-h2.sql")
-    scriptExecutorTool.executeFileScript(DERBY, resourceName = "/ddl/tables-derby.sql")
+    scriptExecutorTool.executeFileScript(H2DB, resourceName = "/ddl/tables-h2.sql")
+    scriptExecutorTool.executeFileScript(DERBYDB, resourceName = "/ddl/tables-derby.sql")
     scriptExecutorTool.executeFileScript(HSQLDB, false, false, "/data/test-data.sql")
-    scriptExecutorTool.executeFileScript(H2, false, false, "/data/test-data.sql")
-    scriptExecutorTool.executeFileScript(DERBY, false, false, "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(H2DB, false, false, "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(DERBYDB, false, false, "/data/test-data.sql")
   }
 
   @Test
   fun `Delete data, but keep schema`() {
     delete(HSQLDB)
-    delete(H2)
-    delete(DERBY)
+    delete(H2DB)
+    delete(DERBYDB)
   }
 
   private fun delete(target: String) {
@@ -67,8 +67,8 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   @Test
   fun `Drop tables`() {
     drop(HSQLDB)
-    drop(H2)
-    drop(DERBY)
+    drop(H2DB)
+    drop(DERBYDB)
   }
 
   private fun drop(target: String) {
@@ -80,8 +80,8 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   @Test
   fun `Drop all`() {
     dropAll(HSQLDB)
-    dropAll(H2)
-    dropAll(DERBY)
+    dropAll(H2DB)
+    dropAll(DERBYDB)
   }
 
   private fun dropAll(target: String) {
@@ -93,8 +93,8 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   @Test
   fun `Drop constraints`() {
     dropConstraints(HSQLDB)
-    dropConstraints(H2)
-    dropConstraints(DERBY)
+    dropConstraints(H2DB)
+    dropConstraints(DERBYDB)
   }
 
   private fun dropConstraints(target: String) {
@@ -113,9 +113,9 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Drop indexes`() {
-    dropIndexes(H2)
+    dropIndexes(H2DB)
     dropIndexes(HSQLDB)
-    dropIndexes(DERBY)
+    dropIndexes(DERBYDB)
   }
 
   private fun dropIndexes(target: String) {

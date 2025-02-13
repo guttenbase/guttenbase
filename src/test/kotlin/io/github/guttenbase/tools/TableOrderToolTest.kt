@@ -3,7 +3,7 @@ package io.github.guttenbase.io.github.guttenbase.tools
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
-import io.github.guttenbase.hints.H2
+import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.tools.ScriptExecutorTool
@@ -13,14 +13,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class TableOrderToolTest : AbstractGuttenBaseTest() {
-  private val h2DatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(H2) }
+  private val h2DatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(H2DB) }
   private val hsqldbDatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(HSQLDB) }
 
   @BeforeEach
   fun setupTables() {
-    connectorRepository.addConnectionInfo(H2, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(H2DB, TestH2ConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(H2, resourceName = "/ddl/departments.sql")
+    ScriptExecutorTool(connectorRepository).executeFileScript(H2DB, resourceName = "/ddl/departments.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(
       HSQLDB,
       resourceName = "/ddl/countries-cities-currencies.sql"

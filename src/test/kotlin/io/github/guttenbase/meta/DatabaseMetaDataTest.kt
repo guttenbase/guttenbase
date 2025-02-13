@@ -4,8 +4,8 @@ import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
-import io.github.guttenbase.hints.DERBY
-import io.github.guttenbase.hints.H2
+import io.github.guttenbase.hints.DERBYDB
+import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseSupportedColumnType
@@ -20,15 +20,15 @@ import java.sql.JDBCType.*
 class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
-    connectorRepository.addConnectionInfo(DERBY, TestDerbyConnectionInfo())
-      .addConnectionInfo(H2, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(DERBYDB, TestDerbyConnectionInfo())
+      .addConnectionInfo(H2DB, TestH2ConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
     val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = Charsets.UTF_8)
-    scriptExecutorTool.executeFileScript(DERBY, resourceName = "/ddl/tables-derby.sql")  }
+    scriptExecutorTool.executeFileScript(DERBYDB, resourceName = "/ddl/tables-derby.sql")  }
 
   @Test
   fun `Inspect database meta data`() {
-    val derby = connectorRepository.getDatabaseMetaData(DERBY)
+    val derby = connectorRepository.getDatabaseMetaData(DERBYDB)
     val derbyVarchar = DatabaseSupportedColumnType("VARCHAR", VARCHAR, 32672, 0, true)
 
     assertEquals("Apache Derby Embedded JDBC Driver", derby.databaseMetaData.driverName)
@@ -39,7 +39,7 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     )
     assertThat(derby.supportedTypes[VARCHAR]).containsOnly(derbyVarchar)
 
-    val h2 = connectorRepository.getDatabaseMetaData(H2)
+    val h2 = connectorRepository.getDatabaseMetaData(H2DB)
     val h2Varchar = DatabaseSupportedColumnType("CHARACTER VARYING", VARCHAR, 1000000000, 0, true)
 
     assertEquals("H2 JDBC Driver", h2.databaseMetaData.driverName)
@@ -64,7 +64,7 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Copy complex object`() {
-    val data = connectorRepository.getDatabaseMetaData(DERBY)
+    val data = connectorRepository.getDatabaseMetaData(DERBYDB)
     val result = Util.copyObject(DatabaseMetaData::class.java, data)
 
     assertEquals(data, result)
