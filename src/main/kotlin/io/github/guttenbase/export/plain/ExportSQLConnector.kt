@@ -15,14 +15,14 @@ import java.sql.Connection
  *
  * @author M. Dahm
  */
-class ExportPlainConnector(
+class ExportSQLConnector(
   private val connectorRepository: ConnectorRepository,
-  internal val connectorInfo: ExportPlainTextConnectorInfo
+  internal val connectorInfo: ExportSQLConnectorInfo
 ) : Connector {
-  internal lateinit var connection: ExportPlainTextConnection
+  internal lateinit var connection: ExportSQLConnection
 
   override fun openConnection(): Connection {
-    connection = ExportPlainTextConnection(this)
+    connection = ExportSQLConnection(this)
     return connection
   }
 

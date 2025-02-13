@@ -6,10 +6,7 @@ import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.defaults.impl.DefaultDatabaseForeignKeyFilter
 import io.github.guttenbase.defaults.impl.DefaultDatabaseIndexFilter
-import io.github.guttenbase.export.ExportDumpDatabaseConfiguration
-import io.github.guttenbase.export.ImportDumpDatabaseConfiguration
-import io.github.guttenbase.export.plain.ExportPlainTextConnectorInfo
-import io.github.guttenbase.export.zip.DefaultZipExporterClassResourcesHint
+import io.github.guttenbase.export.plain.ExportSQLConnectorInfo
 import io.github.guttenbase.hints.*
 import io.github.guttenbase.hints.impl.*
 import io.github.guttenbase.mapping.ForeignKeyMapper
@@ -136,7 +133,7 @@ open class ConnectorRepository {
     val connectionInfo: ConnectorInfo = getConnectionInfo(connectorId)
     val databaseType: DatabaseType = connectionInfo.databaseType
 
-    return if (connectionInfo is ExportPlainTextConnectorInfo) {
+    return if (connectionInfo is ExportSQLConnectorInfo) {
       DefaultSourceDatabaseConfiguration(this)
     } else {
       sourceDatabaseConfigurationMap[databaseType]
@@ -173,7 +170,7 @@ open class ConnectorRepository {
     val connectionInfo = getConnectionInfo(connectorId)
     val databaseType = connectionInfo.databaseType
 
-    return if (connectionInfo is ExportPlainTextConnectorInfo) {
+    return if (connectionInfo is ExportSQLConnectorInfo) {
       DefaultTargetDatabaseConfiguration(this)
     } else {
       targetDatabaseConfigurationMap[databaseType]
@@ -209,8 +206,6 @@ open class ConnectorRepository {
     addSourceDatabaseConfiguration(MARIADB, MariaDbSourceDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(POSTGRESQL, PostgresqlSourceDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(ORACLE, OracleSourceDatabaseConfiguration(this))
-    addSourceDatabaseConfiguration(EXPORT_DUMP, ImportDumpDatabaseConfiguration(this))
-    addSourceDatabaseConfiguration(IMPORT_DUMP, ImportDumpDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(HSQLDB, HsqldbSourceDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(H2DB, H2DbSourceDatabaseConfiguration(this))
     addSourceDatabaseConfiguration(DERBY, DerbySourceDatabaseConfiguration(this))
@@ -223,8 +218,6 @@ open class ConnectorRepository {
     addTargetDatabaseConfiguration(MARIADB, MariaDbTargetDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(ORACLE, OracleTargetDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(POSTGRESQL, PostgresqlTargetDatabaseConfiguration(this))
-    addTargetDatabaseConfiguration(EXPORT_DUMP, ExportDumpDatabaseConfiguration(this))
-    addTargetDatabaseConfiguration(IMPORT_DUMP, ExportDumpDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(HSQLDB, HsqldbTargetDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(H2DB, H2DbTargetDatabaseConfiguration(this))
     addTargetDatabaseConfiguration(DERBY, DerbyTargetDatabaseConfiguration(this))
@@ -248,9 +241,6 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultNumberOfCheckedTableDataHint)
     addConnectorHint(connectorId, DefaultSplitColumnHint)
     addConnectorHint(connectorId, DefaultEntityTableCheckerHint)
-    addConnectorHint(connectorId, DefaultExporterFactoryHint)
-    addConnectorHint(connectorId, DefaultImporterFactoryHint)
-    addConnectorHint(connectorId, DefaultZipExporterClassResourcesHint())
     addConnectorHint(connectorId, DefaultColumnDataMapperProviderHint)
     addConnectorHint(connectorId, DefaultTableOrderHint())
     addConnectorHint(connectorId, DefaultColumnOrderHint)
@@ -259,8 +249,6 @@ open class ConnectorRepository {
     addConnectorHint(connectorId, DefaultColumnMapperHint)
     addConnectorHint(connectorId, DefaultPreparedStatementPlaceholderFactoryHint)
     addConnectorHint(connectorId, DefaultRepositoryColumnFilterHint)
-    addConnectorHint(connectorId, DefaultExportDumpExtraInformationHint)
-    addConnectorHint(connectorId, DefaultImportDumpExtraInformationHint)
     addConnectorHint(connectorId, DefaultTableCopyProgressIndicatorHint)
     addConnectorHint(connectorId, DefaultScriptExecutorProgressIndicatorHint)
     addConnectorHint(connectorId, DefaultRefreshTargetConnectionHint)

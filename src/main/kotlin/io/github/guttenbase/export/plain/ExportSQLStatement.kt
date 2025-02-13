@@ -22,7 +22,7 @@ private val SQL_TIME_FORMAT = DateTimeFormatter.ofPattern("''HH:mm:ss''")
  *
  * @author M. Dahm
  */
-class ExportPlainTextStatement(sql: String, private val connection: ExportPlainTextConnection) : PreparedStatement {
+class ExportSQLStatement(sql: String, private val connection: ExportSQLConnection) : PreparedStatement {
   private var closed = false
   private var sql: String = ""
     set(sql) {

@@ -17,9 +17,9 @@ typealias TO_STRING = (PrintWriter) -> Unit
  *
  * @author M. Dahm
  */
-class ExportPlainTextConnection(internal val connector: ExportPlainConnector) : Connection {
+class ExportSQLConnection(internal val connector: ExportSQLConnector) : Connection {
   private var closed = false
-  private val preparedStatements = ArrayList<ExportPlainTextStatement>()
+  private val preparedStatements = ArrayList<ExportSQLStatement>()
   internal val printWriter = PrintWriter(BufferedWriter(outputStreamWriter()))
 
   private fun outputStreamWriter(): OutputStreamWriter {
@@ -31,8 +31,8 @@ class ExportPlainTextConnection(internal val connector: ExportPlainConnector) : 
     return OutputStreamWriter(outputStream, connector.connectorInfo.encoding)
   }
 
-  private fun createStatement(sql: String = ""): ExportPlainTextStatement {
-    val result = ExportPlainTextStatement(sql, this)
+  private fun createStatement(sql: String = ""): ExportSQLStatement {
+    val result = ExportSQLStatement(sql, this)
     preparedStatements.add(result)
     return result
   }
@@ -56,7 +56,7 @@ class ExportPlainTextConnection(internal val connector: ExportPlainConnector) : 
   override fun createStatement(resultSetType: Int, resultSetConcurrency: Int, resultSetHoldability: Int) =
     createStatement("")
 
-  override fun prepareStatement(sql: String) = ExportPlainTextStatement(sql, this)
+  override fun prepareStatement(sql: String) = ExportSQLStatement(sql, this)
 
   override fun prepareStatement(sql: String, resultSetType: Int, resultSetConcurrency: Int) = createStatement(sql)
 

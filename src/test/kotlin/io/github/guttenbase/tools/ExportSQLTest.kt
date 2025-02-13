@@ -2,7 +2,7 @@ package io.github.guttenbase.io.github.guttenbase.tools
 
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
-import io.github.guttenbase.export.plain.ExportPlainTextConnectorInfo
+import io.github.guttenbase.export.plain.ExportSQLConnectorInfo
 import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.hints.TARGET
 import io.github.guttenbase.schema.CopySchemaTool
@@ -24,14 +24,14 @@ import kotlin.text.Charsets.UTF_8
  *
  * @author M. Dahm
  */
-class ExportPlainTest : AbstractGuttenBaseTest() {
+class ExportSQLTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
     connectorRepository.addConnectionInfo(TARGET, TestHsqlConnectionInfo())
 
     val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
-    val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(sourceDatabase, FILE, "", UTF_8)
+    val exportPlainConnectorInfo = ExportSQLConnectorInfo(sourceDatabase, FILE, "", UTF_8)
 
     connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
 
@@ -56,7 +56,7 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
   @Test
   fun `Compress data`() {
     val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
-    val compressedInfo = ExportPlainTextConnectorInfo(sourceDatabase, FILE, "", UTF_8, true)
+    val compressedInfo = ExportSQLConnectorInfo(sourceDatabase, FILE, "", UTF_8, true)
     connectorRepository.addConnectionInfo(COMPRESSED, compressedInfo)
 
     DefaultTableCopyTool(connectorRepository, SOURCE, COMPRESSED).copyTables()
@@ -68,7 +68,7 @@ class ExportPlainTest : AbstractGuttenBaseTest() {
   @Test
   fun `Explicit encoding`() {
     val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
-    val exportPlainConnectorInfo = ExportPlainTextConnectorInfo(sourceDatabase, FILE, "", ISO_8859_1)
+    val exportPlainConnectorInfo = ExportSQLConnectorInfo(sourceDatabase, FILE, "", ISO_8859_1)
     connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
 
     DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()

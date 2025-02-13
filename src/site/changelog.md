@@ -1,5 +1,10 @@
 # Change log
 
+## 4.0.2
+
+- Remove unmaintained binary exporter/importer
+- Supply database metadata for offline usage when using ExportSQLConnector
+
 ## 4.0.1
 
 - Complete refactoring of column type mapping algorithm: Use values supplied as supported types by the JDBC data base meta data.

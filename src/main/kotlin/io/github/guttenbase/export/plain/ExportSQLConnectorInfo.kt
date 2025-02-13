@@ -15,7 +15,7 @@ import java.nio.charset.Charset
  *
  * @author M. Dahm
  */
-data class ExportPlainTextConnectorInfo
+data class ExportSQLConnectorInfo
 @JvmOverloads constructor(
   internal val sourceConnectorId: String,
   override val databaseType: DatabaseType,
@@ -36,11 +36,11 @@ data class ExportPlainTextConnectorInfo
   override val user: String get() = "user"
   override val password: String get() = "password"
 
-  private lateinit var exportPlainConnector: ExportPlainConnector
+  private lateinit var exportPlainConnector: ExportSQLConnector
 
-  override fun createConnector(connectorRepository: ConnectorRepository, connectorId: String): ExportPlainConnector {
+  override fun createConnector(connectorRepository: ConnectorRepository, connectorId: String): ExportSQLConnector {
     if (!this::exportPlainConnector.isInitialized) {
-      exportPlainConnector = ExportPlainConnector(connectorRepository, this)
+      exportPlainConnector = ExportSQLConnector(connectorRepository, this)
     }
 
     return exportPlainConnector
