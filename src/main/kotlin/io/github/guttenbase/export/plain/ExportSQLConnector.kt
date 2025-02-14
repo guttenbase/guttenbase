@@ -1,10 +1,12 @@
 package io.github.guttenbase.export.plain
 
 import io.github.guttenbase.connector.Connector
+import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.InternalTableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.tools.DatabaseMetaDataExporterTool.Companion.importDataBaseMetaData
 import io.github.guttenbase.utils.Util
 import java.sql.Connection
 
@@ -31,32 +33,35 @@ class ExportSQLConnector(
   }
 
   /**
-   * Table metadata is the same as the metadata of the source connector. The only difference is that the row count
-   * of all tables is reset to 0 and the database type is set
+   * Database meta data is created as an empty instance of the intended target database. The required (offline) information
+   * is read from the supplied file (JSON).
    *
    * {@inheritDoc}
    */
   override fun retrieveDatabaseMetaData(): DatabaseMetaData {
-    val data = retrieveSourceDatabaseMetaData()
-    val tableMetaData = Util.copyObject(InternalDatabaseMetaData::class.java, data).tableMetaData
+    val supplier = connectorInfo.databaseTemplateSupplier(connectorInfo.databaseType)
+      ?: throw GuttenBaseException("Database template supplier resolves to null for ${connectorInfo.databaseType}")
+
+    val targetDatabase = importDataBaseMetaData(supplier, connectorRepository)
+    val sourceDatabase = retrieveSourceDatabaseMetaData()
+    val tableMetaData = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).tableMetaData
 
     tableMetaData.map { it as InternalTableMetaData }.forEach {
       it.totalRowCount = 0
       it.filteredRowCount = 0
     }
-
     val tableMetaDataMap = tableMetaData.associateBy { it.tableName.uppercase() }
 
-    return object : InternalDatabaseMetaData by data {
+    return object : InternalDatabaseMetaData by targetDatabase {
       override val databaseType get() = connectorInfo.databaseType
+
+      override val schema get() = connectorInfo.schema.ifBlank { targetDatabase.schema }
+
+      override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
 
       override val tableMetaData get() = tableMetaData
 
       override fun getTable(tableName: String) = tableMetaDataMap[tableName.uppercase()]
-
-      override val schema get() = connectorInfo.schema.ifBlank { data.schema }
-
-      override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
     }
   }
 

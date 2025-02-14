@@ -5,6 +5,7 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.export.plain.ExportSQLConnectorInfo
 import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.hints.TARGET
+import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.CheckEqualTableDataTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
@@ -29,11 +30,8 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
   fun setup() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
     connectorRepository.addConnectionInfo(TARGET, TestHsqlConnectionInfo())
-
-    val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
-    val exportPlainConnectorInfo = ExportSQLConnectorInfo(sourceDatabase, FILE, "", UTF_8)
-
-    connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
+    connectorRepository.addConnectionInfo(SCRIPT, ExportSQLConnectorInfo(SOURCE, DatabaseType.HSQLDB, FILE_HSQL, schema = ""))
+    connectorRepository.addConnectionInfo(MYSQL, ExportSQLConnectorInfo(SOURCE, DatabaseType.MYSQL, FILE_MYSQL, schema = "lokal"))
 
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
@@ -42,7 +40,7 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
   @Test
   fun `Export SQL data`() {
     DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
-    val dataScript = File(FILE).readLines(UTF_8)
+    val dataScript = File(FILE_HSQL).readLines(UTF_8)
     assertThat(dataScript).contains("	(3, 'Häagen daß', 'Y');")
 
     val ddlScript = CopySchemaTool(connectorRepository, SOURCE, SCRIPT).createDDLScript()
@@ -55,35 +53,37 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Compress data`() {
-    val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
-    val compressedInfo = ExportSQLConnectorInfo(sourceDatabase, FILE, "", UTF_8, true)
+    val compressedInfo =
+      ExportSQLConnectorInfo(SOURCE, DatabaseType.HSQLDB, path = FILE_HSQL, schema = "", encoding = UTF_8, compress = true)
     connectorRepository.addConnectionInfo(COMPRESSED, compressedInfo)
 
     DefaultTableCopyTool(connectorRepository, SOURCE, COMPRESSED).copyTables()
-    val contentType = Files.probeContentType(File(FILE).toPath())
+    val contentType = Files.probeContentType(File(FILE_HSQL).toPath())
 
     assertThat(contentType).isEqualTo("application/x-gzip-compressed")
   }
 
   @Test
   fun `Explicit encoding`() {
-    val sourceDatabase = connectorRepository.getDatabaseMetaData(SOURCE)
-    val exportPlainConnectorInfo = ExportSQLConnectorInfo(sourceDatabase, FILE, "", ISO_8859_1)
+    val exportPlainConnectorInfo =
+      ExportSQLConnectorInfo(SOURCE, DatabaseType.HSQLDB, path = FILE_HSQL, schema = "", encoding = ISO_8859_1)
     connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
 
     DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
 
-    val dataScriptUtf8 = File(FILE).readLines(UTF_8)
-    val dataScriptIso = File(FILE).readLines(ISO_8859_1)
+    val dataScriptUtf8 = File(FILE_HSQL).readLines(UTF_8)
+    val dataScriptIso = File(FILE_HSQL).readLines(ISO_8859_1)
 
     assertThat(dataScriptUtf8).contains("	(3, 'H�agen da�', 'Y');")
     assertThat(dataScriptIso).contains("	(3, 'Häagen daß', 'Y');")
   }
 
   companion object {
-    private const val FILE = "./target/dump.sql"
+    private const val FILE_HSQL = "./target/dump.sql"
+    private const val FILE_MYSQL = "./target/dump-mysql.sql"
 
     const val SCRIPT = "SCRIPT"
+    const val MYSQL = "MYSQL"
     const val COMPRESSED = "COMPRESSED"
   }
 }

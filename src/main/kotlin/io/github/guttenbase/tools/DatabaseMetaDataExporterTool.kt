@@ -11,6 +11,7 @@ import kotlinx.serialization.json.encodeToStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.util.*
 
 class DatabaseMetaDataExporterTool(
@@ -28,8 +29,15 @@ class DatabaseMetaDataExporterTool(
   companion object {
     @JvmOverloads
     @JvmStatic
-    fun importDataBaseMetaData(file: File, connectorRepository: ConnectorRepository = ConnectorRepository()): DatabaseMetaData {
-      FileInputStream(file).use {
+    fun importDataBaseMetaData(file: File, connectorRepository: ConnectorRepository = ConnectorRepository()) =
+      importDataBaseMetaData(FileInputStream(file), connectorRepository)
+
+    @JvmOverloads
+    @JvmStatic
+    fun importDataBaseMetaData(
+      stream: InputStream, connectorRepository: ConnectorRepository = ConnectorRepository()
+    ): DatabaseMetaData {
+      stream.use {
         val databaseMetaData = JSON.decodeFromStream<DatabaseMetaData>(it) as InternalDatabaseMetaData
         val columnMap = HashMap<UUID, ColumnMetaData>()
 
