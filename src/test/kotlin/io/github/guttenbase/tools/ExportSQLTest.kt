@@ -42,13 +42,27 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
     DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
     val dataScript = File(FILE_HSQL).readLines(UTF_8)
     assertThat(dataScript).contains("	(3, 'Häagen daß', 'Y');")
+      .contains("""INSERT INTO "FOO_ROLE" ("ID", "FIXED_ROLE", "ROLE_NAME") VALUES""")
 
     val ddlScript = CopySchemaTool(connectorRepository, SOURCE, SCRIPT).createDDLScript()
+    assertThat(ddlScript.joinToString("\n")).contains("""CREATE TABLE IF NOT EXISTS "FOO_ROLE"""")
 
     ScriptExecutorTool(connectorRepository).executeScript(TARGET, true, true, ddlScript)
     ScriptExecutorTool(connectorRepository).executeScript(TARGET, true, true, dataScript)
 
     CheckEqualTableDataTool(connectorRepository, SOURCE, TARGET).checkTableData()
+  }
+
+  @Test
+  fun `Export to MySQL`() {
+    DefaultTableCopyTool(connectorRepository, SOURCE, MYSQL).copyTables()
+
+    val dataScript = File(FILE_MYSQL).readLines(UTF_8)
+    assertThat(dataScript).contains("	(3, 'Häagen daß', 'Y');")
+      .contains("""INSERT INTO lokal.`FOO_ROLE` (`ID`, `FIXED_ROLE`, `ROLE_NAME`) VALUES""")
+
+    val ddlScript = CopySchemaTool(connectorRepository, SOURCE, MYSQL).createDDLScript()
+    assertThat(ddlScript.joinToString("\n")).contains("lokal.`FOO_USER`")
   }
 
   @Test

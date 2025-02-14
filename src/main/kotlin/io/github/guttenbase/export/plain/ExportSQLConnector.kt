@@ -19,6 +19,7 @@ import java.sql.Connection
  */
 class ExportSQLConnector(
   private val connectorRepository: ConnectorRepository,
+  internal val connectorId: String,
   internal val connectorInfo: ExportSQLConnectorInfo
 ) : Connector {
   internal lateinit var connection: ExportSQLConnection
@@ -42,13 +43,14 @@ class ExportSQLConnector(
     val supplier = connectorInfo.databaseTemplateSupplier(connectorInfo.databaseType)
       ?: throw GuttenBaseException("Database template supplier resolves to null for ${connectorInfo.databaseType}")
 
-    val targetDatabase = importDataBaseMetaData(supplier, connectorRepository)
+    val targetDatabase = importDataBaseMetaData(supplier, connectorId, connectorRepository)
     val sourceDatabase = retrieveSourceDatabaseMetaData()
     val tableMetaData = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).tableMetaData
 
     tableMetaData.map { it as InternalTableMetaData }.forEach {
       it.totalRowCount = 0
       it.filteredRowCount = 0
+      it.database = targetDatabase
     }
     val tableMetaDataMap = tableMetaData.associateBy { it.tableName.uppercase() }
 

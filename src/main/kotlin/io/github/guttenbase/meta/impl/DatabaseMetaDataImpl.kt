@@ -24,7 +24,7 @@ class DatabaseMetaDataImpl(
   @kotlinx.serialization.Transient
   @Transient
   override var connectorRepository: ConnectorRepository = REPO_FOR_SERIALIZATION,
-  override val connectorId: String,
+  override var connectorId: String,
   override val schema: String,
 
   override val databaseProperties: DatabasePropertiesType,

@@ -12,6 +12,7 @@ import java.sql.JDBCType
  */
 internal interface InternalDatabaseMetaData : DatabaseMetaData {
   override var connectorRepository: ConnectorRepository
+  override var connectorId: String
 
   fun addTable(tableMetaData: TableMetaData)
   fun removeTable(tableMetaData: TableMetaData)

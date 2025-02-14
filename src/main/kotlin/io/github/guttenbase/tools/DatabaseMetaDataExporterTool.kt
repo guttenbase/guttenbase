@@ -29,19 +29,23 @@ class DatabaseMetaDataExporterTool(
   companion object {
     @JvmOverloads
     @JvmStatic
-    fun importDataBaseMetaData(file: File, connectorRepository: ConnectorRepository = ConnectorRepository()) =
-      importDataBaseMetaData(FileInputStream(file), connectorRepository)
+    fun importDataBaseMetaData(
+      file: File, connectorId: String,
+      connectorRepository: ConnectorRepository = ConnectorRepository()
+    ) = importDataBaseMetaData(FileInputStream(file), connectorId, connectorRepository)
 
     @JvmOverloads
     @JvmStatic
     fun importDataBaseMetaData(
-      stream: InputStream, connectorRepository: ConnectorRepository = ConnectorRepository()
+      stream: InputStream, connectorId: String,
+      connectorRepository: ConnectorRepository = ConnectorRepository()
     ): DatabaseMetaData {
       stream.use {
         val databaseMetaData = JSON.decodeFromStream<DatabaseMetaData>(it) as InternalDatabaseMetaData
         val columnMap = HashMap<UUID, ColumnMetaData>()
 
         databaseMetaData.connectorRepository = connectorRepository
+        databaseMetaData.connectorId = connectorId
 
         // Pass 1: Make sure all columns are updated
         databaseMetaData.tableMetaData.forEach { table ->

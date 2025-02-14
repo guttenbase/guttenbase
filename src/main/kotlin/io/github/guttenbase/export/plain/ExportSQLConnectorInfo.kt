@@ -46,7 +46,7 @@ constructor(
 
   override fun createConnector(connectorRepository: ConnectorRepository, connectorId: String): ExportSQLConnector {
     if (!this::exportPlainConnector.isInitialized) {
-      exportPlainConnector = ExportSQLConnector(connectorRepository, this)
+      exportPlainConnector = ExportSQLConnector(connectorRepository, connectorId, this)
     }
 
     return exportPlainConnector
