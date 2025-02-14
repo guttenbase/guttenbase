@@ -1,0 +1,795 @@
+{
+    "type": "io.github.guttenbase.meta.impl.DatabaseMetaDataImpl",
+    "connectorId": "MSSQL_GB",
+    "schema": "dbo",
+    "databaseProperties": {
+        "isReadOnly": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "getDriverName": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "Microsoft JDBC Driver 12.6 for SQL Server"
+        },
+        "getURL": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "jdbc:sqlserver://localhost:11433;connectRetryInterval=10;connectRetryCount=1;maxResultBuffer=-1;sendTemporalDataTypesAsStringForBulkCopy=true;delayLoadingLobs=true;useFmtOnly=false;useBulkCopyForBatchInsert=true;cancelQueryTimeout=-1;sslProtocol=TLS;calcBigDecimalPrecision=false;useDefaultJaasConfig=false;jaasConfigurationName=SQLJDBCDriver;statementPoolingCacheSize=0;serverPreparedStatementDiscardThreshold=10;enablePrepareOnFirstPreparedStatementCall=false;fips=false;socketTimeout=0;authentication=NotSpecified;authenticationScheme=nativeAuthentication;xopenStates=false;datetimeParameterType=datetime2;sendTimeAsDatetime=true;replication=false;trustStoreType=JKS;trustServerCertificate=true;TransparentNetworkIPResolution=true;iPAddressPreference=IPv4First;serverNameAsACE=false;sendStringParametersAsUnicode=true;selectMethod=direct;responseBuffering=adaptive;queryTimeout=-1;packetSize=8000;multiSubnetFailover=false;loginTimeout=30;lockTimeout=-1;lastUpdateCount=true;useFlexibleCallableStatements=true;useDefaultGSSCredential=false;prepareMethod=prepexec;encrypt=True;disableStatementPooling=true;databaseName=guttenbase;columnEncryptionSetting=Disabled;applicationName=Microsoft JDBC Driver for SQL Server;applicationIntent=readwrite;"
+        },
+        "getUserName": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "sa"
+        },
+        "supportsDataDefinitionAndDataManipulationTransactions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsDataManipulationTransactionsOnly": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsSubqueriesInQuantifieds": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSubqueriesInComparisons": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsCatalogsInPrivilegeDefinitions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsCatalogsInIndexDefinitions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsMixedCaseQuotedIdentifiers": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "storesUpperCaseQuotedIdentifiers": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "storesLowerCaseQuotedIdentifiers": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "storesMixedCaseQuotedIdentifiers": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsAlterTableWithAddColumn": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsAlterTableWithDropColumn": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsDifferentTableCorrelationNames": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsIntegrityEnhancementFacility": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsSchemasInDataManipulation": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSchemasInProcedureCalls": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSchemasInTableDefinitions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSchemasInIndexDefinitions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSchemasInPrivilegeDefinitions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsCatalogsInDataManipulation": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsCatalogsInProcedureCalls": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsCatalogsInTableDefinitions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsOpenCursorsAcrossCommit": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsOpenCursorsAcrossRollback": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsOpenStatementsAcrossCommit": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsOpenStatementsAcrossRollback": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "dataDefinitionCausesTransactionCommit": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "dataDefinitionIgnoredInTransactions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsStoredFunctionsUsingCallSyntax": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "autoCommitFailureClosesAllResultSets": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "getDatabaseMajorVersion": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 16
+        },
+        "allProceduresAreCallable": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsMixedCaseIdentifiers": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "storesUpperCaseIdentifiers": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "storesLowerCaseIdentifiers": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "storesMixedCaseIdentifiers": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getIdentifierQuoteString": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "\""
+        },
+        "supportsTableCorrelationNames": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsExpressionsInOrderBy": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsOrderByUnrelated": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsGroupByUnrelated": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsGroupByBeyondSelect": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsLikeEscapeClause": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsMultipleResultSets": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsMultipleTransactions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsNonNullableColumns": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsMinimumSQLGrammar": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsExtendedSQLGrammar": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsANSI92EntryLevelSQL": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsANSI92IntermediateSQL": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsLimitedOuterJoins": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsPositionedDelete": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsPositionedUpdate": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSelectForUpdate": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsStoredProcedures": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSubqueriesInExists": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSubqueriesInIns": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsCorrelatedSubqueries": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getMaxBinaryLiteralLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 0
+        },
+        "getMaxCharLiteralLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 0
+        },
+        "getMaxProcedureNameLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 128
+        },
+        "getMaxCatalogNameLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 128
+        },
+        "doesMaxRowSizeIncludeBlobs": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "getDefaultTransactionIsolation": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 2
+        },
+        "supportsNamedParameters": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsMultipleOpenResults": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsGetGeneratedKeys": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getDatabaseMinorVersion": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 0
+        },
+        "supportsStatementPooling": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "generatedKeyAlwaysReturned": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getResultSetHoldability": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 1
+        },
+        "getDatabaseProductVersion": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "16.00.4165"
+        },
+        "allTablesAreSelectable": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "nullsAreSortedHigh": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "nullsAreSortedLow": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "nullsAreSortedAtStart": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "nullsAreSortedAtEnd": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "getDatabaseProductName": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "Microsoft SQL Server"
+        },
+        "getDriverMajorVersion": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 12
+        },
+        "getDriverMinorVersion": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 6
+        },
+        "usesLocalFilePerTable": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "getNumericFunctions": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "ABS,ACOS,ASIN,ATAN,ATAN2,CEILING,COS,COT,DEGREES,EXP,FLOOR,LOG,LOG10,MOD,PI,POWER,RADIANS,RAND,ROUND,SIGN,SIN,SQRT,TAN,TRUNCATE"
+        },
+        "getStringFunctions": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "ASCII,CHAR,CONCAT,DIFFERENCE,INSERT,LCASE,LEFT,LENGTH,LOCATE,LTRIM,REPEAT,REPLACE,RIGHT,RTRIM,SOUNDEX,SPACE,SUBSTRING,UCASE"
+        },
+        "getSystemFunctions": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "DATABASE,IFNULL,USER"
+        },
+        "getTimeDateFunctions": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "CURDATE,CURTIME,DAYNAME,DAYOFMONTH,DAYOFWEEK,DAYOFYEAR,HOUR,MINUTE,MONTH,MONTHNAME,NOW,QUARTER,SECOND,TIMESTAMPADD,TIMESTAMPDIFF,WEEK,YEAR"
+        },
+        "getSearchStringEscape": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "\\"
+        },
+        "getExtraNameCharacters": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "$#@"
+        },
+        "supportsColumnAliasing": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "nullPlusNonNullIsNull": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsConvert": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsGroupBy": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsCoreSQLGrammar": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsANSI92FullSQL": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsOuterJoins": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsFullOuterJoins": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getProcedureTerm": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "stored procedure"
+        },
+        "isCatalogAtStart": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getCatalogSeparator": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "."
+        },
+        "supportsUnionAll": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getMaxColumnNameLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 128
+        },
+        "getMaxColumnsInGroupBy": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 0
+        },
+        "getMaxColumnsInIndex": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 16
+        },
+        "getMaxColumnsInOrderBy": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 0
+        },
+        "getMaxColumnsInSelect": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 4096
+        },
+        "getMaxColumnsInTable": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 1024
+        },
+        "getMaxConnections": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 32767
+        },
+        "getMaxCursorNameLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 0
+        },
+        "getMaxIndexLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 900
+        },
+        "getMaxSchemaNameLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 128
+        },
+        "getMaxStatementLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 524288000
+        },
+        "getMaxTableNameLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 128
+        },
+        "getMaxTablesInSelect": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 256
+        },
+        "getMaxUserNameLength": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 128
+        },
+        "supportsTransactions": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsBatchUpdates": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "supportsSavepoints": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getJDBCMajorVersion": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 4
+        },
+        "getJDBCMinorVersion": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 3
+        },
+        "getSQLStateType": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 2
+        },
+        "locatorsUpdateCopy": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getMaxLogicalLobSize": {
+            "type": "io.github.guttenbase.meta.LongValue",
+            "value": 2147483647
+        },
+        "supportsRefCursors": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "supportsSharding": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "getMaxStatements": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 0
+        },
+        "getDriverVersion": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "12.6.1.0"
+        },
+        "usesLocalFiles": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": false
+        },
+        "getSQLKeywords": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "ADD,ALL,ALTER,AND,ANY,AS,ASC,AUTHORIZATION,BACKUP,BEGIN,BETWEEN,BREAK,BROWSE,BULK,BY,CASCADE,CASE,CHECK,CHECKPOINT,CLOSE,CLUSTERED,COALESCE,COLLATE,COLUMN,COMMIT,COMPUTE,CONSTRAINT,CONTAINS,CONTAINSTABLE,CONTINUE,CONVERT,CREATE,CROSS,CURRENT,CURRENT_DATE,CURRENT_TIME,CURRENT_TIMESTAMP,CURRENT_USER,CURSOR,DATABASE,DBCC,DEALLOCATE,DECLARE,DEFAULT,DELETE,DENY,DESC,DISK,DISTINCT,DISTRIBUTED,DOUBLE,DROP,DUMP,ELSE,END,ERRLVL,ESCAPE,EXCEPT,EXEC,EXECUTE,EXISTS,EXIT,EXTERNAL,FETCH,FILE,FILLFACTOR,FOR,FOREIGN,FREETEXT,FREETEXTTABLE,FROM,FULL,FUNCTION,GOTO,GRANT,GROUP,HAVING,HOLDLOCK,IDENTITY,IDENTITY_INSERT,IDENTITYCOL,IF,IN,INDEX,INNER,INSERT,INTERSECT,INTO,IS,JOIN,KEY,KILL,LEFT,LIKE,LINENO,LOAD,MERGE,NATIONAL,NOCHECK,NONCLUSTERED,NOT,NULL,NULLIF,OF,OFF,OFFSETS,ON,OPEN,OPENDATASOURCE,OPENQUERY,OPENROWSET,OPENXML,OPTION,OR,ORDER,OUTER,OVER,PERCENT,PIVOT,PLAN,PRECISION,PRIMARY,PRINT,PROC,PROCEDURE,PUBLIC,RAISERROR,READ,READTEXT,RECONFIGURE,REFERENCES,REPLICATION,RESTORE,RESTRICT,RETURN,REVERT,REVOKE,RIGHT,ROLLBACK,ROWCOUNT,ROWGUIDCOL,RULE,SAVE,SCHEMA,SECURITYAUDIT,SELECT,SEMANTICKEYPHRASETABLE,SEMANTICSIMILARITYDETAILSTABLE,SEMANTICSIMILARITYTABLE,SESSION_USER,SET,SETUSER,SHUTDOWN,SOME,STATISTICS,SYSTEM_USER,TABLE,TABLESAMPLE,TEXTSIZE,THEN,TO,TOP,TRAN,TRANSACTION,TRIGGER,TRUNCATE,TRY_CONVERT,TSEQUAL,UNION,UNIQUE,UNPIVOT,UPDATE,UPDATETEXT,USE,USER,VALUES,VARYING,VIEW,WAITFOR,WHEN,WHERE,WHILE,WITH,WITHIN GROUP,WRITETEXT"
+        },
+        "getSchemaTerm": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "schema"
+        },
+        "getCatalogTerm": {
+            "type": "io.github.guttenbase.meta.StringValue",
+            "value": "database"
+        },
+        "supportsUnion": {
+            "type": "io.github.guttenbase.meta.BooleanValue",
+            "value": true
+        },
+        "getMaxRowSize": {
+            "type": "io.github.guttenbase.meta.IntValue",
+            "value": 8060
+        }
+    },
+    "databaseType": "MSSQL",
+    "syntheticId": "6f2b2849-5c19-4147-9a13-a51c45e9a380",
+    "supportedTypes": {
+        "OTHER": [
+            {
+                "typeName": "DATETIMEOFFSET",
+                "jdbcType": "OTHER",
+                "maxPrecision": 34,
+                "maxScale": 7
+            },
+            {
+                "typeName": "SQL_VARIANT",
+                "jdbcType": "OTHER",
+                "maxPrecision": 8000
+            }
+        ],
+        "TIME": [
+            {
+                "typeName": "TIME",
+                "jdbcType": "TIME",
+                "maxPrecision": 16,
+                "maxScale": 7
+            }
+        ],
+        "LONGNVARCHAR": [
+            {
+                "typeName": "XML",
+                "jdbcType": "LONGNVARCHAR"
+            },
+            {
+                "typeName": "NTEXT",
+                "jdbcType": "LONGNVARCHAR",
+                "maxPrecision": 1073741823
+            }
+        ],
+        "CHAR": [
+            {
+                "typeName": "UNIQUEIDENTIFIER",
+                "jdbcType": "CHAR",
+                "maxPrecision": 36
+            },
+            {
+                "typeName": "CHAR",
+                "jdbcType": "CHAR",
+                "maxPrecision": 8000
+            }
+        ],
+        "NVARCHAR": [
+            {
+                "typeName": "NVARCHAR",
+                "jdbcType": "NVARCHAR",
+                "maxPrecision": 4000
+            },
+            {
+                "typeName": "SYSNAME",
+                "jdbcType": "NVARCHAR",
+                "maxPrecision": 128,
+                "nullable": false
+            }
+        ],
+        "NCHAR": [
+            {
+                "typeName": "NCHAR",
+                "jdbcType": "NCHAR",
+                "maxPrecision": 4000
+            }
+        ],
+        "BIT": [
+            {
+                "typeName": "BIT",
+                "jdbcType": "BIT",
+                "maxPrecision": 1
+            }
+        ],
+        "TINYINT": [
+            {
+                "typeName": "TINYINT",
+                "jdbcType": "TINYINT",
+                "maxPrecision": 3
+            },
+            {
+                "typeName": "TINYINT IDENTITY",
+                "jdbcType": "TINYINT",
+                "maxPrecision": 3,
+                "nullable": false
+            }
+        ],
+        "BIGINT": [
+            {
+                "typeName": "BIGINT",
+                "jdbcType": "BIGINT",
+                "maxPrecision": 19
+            },
+            {
+                "typeName": "BIGINT IDENTITY",
+                "jdbcType": "BIGINT",
+                "maxPrecision": 19,
+                "nullable": false
+            }
+        ],
+        "LONGVARBINARY": [
+            {
+                "typeName": "IMAGE",
+                "jdbcType": "LONGVARBINARY",
+                "maxPrecision": 2147483647
+            }
+        ],
+        "VARBINARY": [
+            {
+                "typeName": "VARBINARY",
+                "jdbcType": "VARBINARY",
+                "maxPrecision": 8000
+            }
+        ],
+        "BINARY": [
+            {
+                "typeName": "BINARY",
+                "jdbcType": "BINARY",
+                "maxPrecision": 8000
+            },
+            {
+                "typeName": "TIMESTAMP",
+                "jdbcType": "BINARY",
+                "maxPrecision": 8,
+                "nullable": false
+            }
+        ],
+        "LONGVARCHAR": [
+            {
+                "typeName": "TEXT",
+                "jdbcType": "LONGVARCHAR",
+                "maxPrecision": 2147483647
+            }
+        ],
+        "NUMERIC": [
+            {
+                "typeName": "NUMERIC",
+                "jdbcType": "NUMERIC",
+                "maxPrecision": 38,
+                "maxScale": 38
+            },
+            {
+                "typeName": "NUMERIC() IDENTITY",
+                "jdbcType": "NUMERIC",
+                "maxPrecision": 38,
+                "nullable": false
+            }
+        ],
+        "DECIMAL": [
+            {
+                "typeName": "DECIMAL",
+                "jdbcType": "DECIMAL",
+                "maxPrecision": 38,
+                "maxScale": 38
+            },
+            {
+                "typeName": "MONEY",
+                "jdbcType": "DECIMAL",
+                "maxPrecision": 19,
+                "maxScale": 4
+            },
+            {
+                "typeName": "SMALLMONEY",
+                "jdbcType": "DECIMAL",
+                "maxPrecision": 10,
+                "maxScale": 4
+            },
+            {
+                "typeName": "DECIMAL() IDENTITY",
+                "jdbcType": "DECIMAL",
+                "maxPrecision": 38,
+                "nullable": false
+            }
+        ],
+        "INTEGER": [
+            {
+                "typeName": "INT",
+                "jdbcType": "INTEGER",
+                "maxPrecision": 10
+            },
+            {
+                "typeName": "INT IDENTITY",
+                "jdbcType": "INTEGER",
+                "maxPrecision": 10,
+                "nullable": false
+            }
+        ],
+        "SMALLINT": [
+            {
+                "typeName": "SMALLINT",
+                "jdbcType": "SMALLINT",
+                "maxPrecision": 5
+            },
+            {
+                "typeName": "SMALLINT IDENTITY",
+                "jdbcType": "SMALLINT",
+                "maxPrecision": 5,
+                "nullable": false
+            }
+        ],
+        "DOUBLE": [
+            {
+                "typeName": "FLOAT",
+                "jdbcType": "DOUBLE",
+                "maxPrecision": 53
+            }
+        ],
+        "REAL": [
+            {
+                "typeName": "REAL",
+                "jdbcType": "REAL",
+                "maxPrecision": 24
+            }
+        ],
+        "VARCHAR": [
+            {
+                "typeName": "VARCHAR",
+                "jdbcType": "VARCHAR",
+                "maxPrecision": 8000
+            }
+        ],
+        "DATE": [
+            {
+                "typeName": "DATE",
+                "jdbcType": "DATE",
+                "maxPrecision": 10
+            }
+        ],
+        "TIMESTAMP": [
+            {
+                "typeName": "DATETIME2",
+                "jdbcType": "TIMESTAMP",
+                "maxPrecision": 27,
+                "maxScale": 7
+            },
+            {
+                "typeName": "DATETIME",
+                "jdbcType": "TIMESTAMP",
+                "maxPrecision": 23,
+                "maxScale": 3
+            },
+            {
+                "typeName": "SMALLDATETIME",
+                "jdbcType": "TIMESTAMP",
+                "maxPrecision": 16
+            }
+        ]
+    }
+}
