@@ -14,7 +14,7 @@ import java.sql.JDBCType
  *
  * @author M. Dahm
  */
-interface DatabaseMetaData : java.io.Serializable {
+interface DatabaseMetaData : java.io.Serializable, MetaData {
   val schema: String
   val schemaPrefix: String
 
@@ -24,7 +24,7 @@ interface DatabaseMetaData : java.io.Serializable {
    * Return tables list filtered by @see [io.github.guttenbase.repository.RepositoryTableFilter]
    */
   val tableMetaData: List<TableMetaData>
-  fun getTableMetaData(tableName: String): TableMetaData?
+  fun getTable(tableName: String): TableMetaData?
 
   /**
    * @return (cached) meta data

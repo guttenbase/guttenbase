@@ -3,14 +3,14 @@ package io.github.guttenbase.meta.impl
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.JdbcDatabaseMetaData
-import kotlinx.serialization.*
+import io.github.guttenbase.serialization.UUIDSerializer
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.sql.JDBCType
 import java.util.*
-import kotlin.jvm.Transient
-import kotlin.jvm.java
-import kotlin.jvm.javaClass
 
 /**
  * Information about a data base/schema.
@@ -21,13 +21,12 @@ import kotlin.jvm.javaClass
  */
 @Serializable
 class DatabaseMetaDataImpl(
-  @Transient
   @kotlinx.serialization.Transient
-  override val connectorRepository: ConnectorRepository = ConnectorRepository(),
+  @Transient
+  override var connectorRepository: ConnectorRepository = REPO_FOR_SERIALIZATION,
   override val connectorId: String,
   override val schema: String,
 
-//  @Serializable(with = DatabasePropertiesSerializer::class)
   override val databaseProperties: DatabasePropertiesType,
   override val databaseType: DatabaseType
 ) : InternalDatabaseMetaData {
@@ -39,8 +38,14 @@ class DatabaseMetaDataImpl(
     databaseMetaData.databaseType
   )
 
-  @SerialName("tableMetaData")
-  private val tableMetaDataMap = LinkedHashMap<String, TableMetaData>()
+  /**
+   * {@inheritDoc}
+   */
+  @Serializable(with = UUIDSerializer::class)
+  override val syntheticId = UUID.randomUUID()!!
+
+  @SerialName("tables")
+  private val tableMap = LinkedHashMap<String, TableMetaData>()
 
   @SerialName("supportedTypes")
   private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseSupportedColumnType>>()
@@ -59,16 +64,16 @@ class DatabaseMetaDataImpl(
 
   override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
 
-  override val tableMetaData get() = ArrayList(tableMetaDataMap.values)
+  override val tableMetaData get() = ArrayList(tableMap.values)
 
-  override fun getTableMetaData(tableName: String) = tableMetaDataMap[tableName.uppercase()]
+  override fun getTable(tableName: String) = tableMap[tableName.uppercase()]
 
   override fun addTable(tableMetaData: TableMetaData) {
-    tableMetaDataMap[tableMetaData.tableName.uppercase()] = tableMetaData
+    tableMap[tableMetaData.tableName.uppercase()] = tableMetaData
   }
 
   override fun removeTable(tableMetaData: TableMetaData) {
-    tableMetaDataMap.remove(tableMetaData.tableName.uppercase())
+    tableMap.remove(tableMetaData.tableName.uppercase())
   }
 
   override fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, scale: Int, nullable: Boolean) {
@@ -84,12 +89,7 @@ class DatabaseMetaDataImpl(
   private fun createMetaDataProxy() = Proxy.newProxyInstance(
     javaClass.classLoader, arrayOf<Class<*>>(JdbcDatabaseMetaData::class.java)
   ) { _, method: Method, _ -> databaseProperties[method.name]?.value } as JdbcDatabaseMetaData
-
-  companion object {
-    @Suppress("unused")
-    private const val serialVersionUID = 1L
-  }
 }
 
 typealias ValueType = @Polymorphic PrimitiveValue<*>
-typealias DatabasePropertiesType = Map<String,  ValueType>
+typealias DatabasePropertiesType = Map<String, ValueType>

@@ -13,7 +13,7 @@ import io.github.guttenbase.tools.EntityTableChecker
 object DefaultEntityTableCheckerHint : EntityTableCheckerHint() {
   override val value: EntityTableChecker
     get() = EntityTableChecker { tableMetaData ->
-      for (columnMetaData in tableMetaData.columnMetaData) {
+      for (columnMetaData in tableMetaData.columns) {
         val columnName: String = columnMetaData.columnName.uppercase()
 
         if (columnMetaData.isPrimaryKey && (columnName == "ID" || columnName == "IDENT")) {

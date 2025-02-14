@@ -7,6 +7,10 @@ package io.github.guttenbase.meta
  *
  * @author M. Dahm
  */
-interface InternalIndexMetaData : IndexMetaData {
-  fun addColumn(columnMetaData: ColumnMetaData)
+internal interface InternalIndexMetaData : IndexMetaData {
+  override var table: TableMetaData
+
+  fun addColumn(column: ColumnMetaData)
+
+  fun clearColumns()
 }

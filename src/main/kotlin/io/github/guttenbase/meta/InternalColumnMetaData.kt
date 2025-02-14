@@ -1,7 +1,5 @@
 package io.github.guttenbase.meta
 
-import java.util.*
-
 /**
  * Extension for internal access.
  *
@@ -10,10 +8,7 @@ import java.util.*
  * @author M. Dahm
  */
 internal interface InternalColumnMetaData : ColumnMetaData {
-  /**
-   * Make columns globally uniq since the name may not be uniq within the data base.
-   */
-  val columnId: UUID
+  override var table: TableMetaData
 
   override var isPrimaryKey: Boolean
 

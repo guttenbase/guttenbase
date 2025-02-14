@@ -57,7 +57,7 @@ class SchemaScriptCreatorTool(
         .map { (it as DuplicateIndexIssue).indexMetaData }
 
       for (indexMetaData in tableMetaData.indexes) {
-        val columns = indexMetaData.columnMetaData
+        val columns = indexMetaData.columns
         val columnsFormPrimaryKey =
           columns.map(ColumnMetaData::isPrimaryKey).reduce { a: Boolean, b: Boolean -> a && b }
         val conflictedIndex = conflictedIndexes.contains(indexMetaData)
@@ -89,7 +89,7 @@ class SchemaScriptCreatorTool(
     val notExistsClause = (" " + databaseType.tableNotExistsClause).trimEnd()
 
     return ("CREATE TABLE$notExistsClause $tableName\n" +
-        tableMetaData.columnMetaData.joinToString(newline = true) { "  " + createColumn(it) }
+        tableMetaData.columns.joinToString(newline = true) { "  " + createColumn(it) }
         ) + ";"
   }
 
@@ -127,7 +127,7 @@ class SchemaScriptCreatorTool(
   }
 
   private fun createIndex(indexMetaData: IndexMetaData, counter: Int): String {
-    val tableMetaData = indexMetaData.tableMetaData
+    val tableMetaData = indexMetaData.table
     val indexMapper = connectorRepository.hint<IndexMapper>(targetConnectorId)
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
@@ -150,14 +150,14 @@ class SchemaScriptCreatorTool(
     val databaseType = targetDatabaseMetaData.databaseType
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
-    val tableMetaData = index.tableMetaData
+    val tableMetaData = index.table
     val unique = if (index.isUnique) " UNIQUE " else " "
-    val containsClob = index.columnMetaData.any { it.jdbcColumnType.isClobType() }
+    val containsClob = index.columns.any { it.jdbcColumnType.isClobType() }
     val fulltext = if (databaseType == DatabaseType.MYSQL && containsClob) " FULLTEXT " else ""
 
     return ("CREATE" + unique + fulltext + "INDEX " + databaseType.escapeDatabaseEntity(indexName) + " ON "
         + tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)) +
-        index.columnMetaData.joinToString {
+        index.columns.joinToString {
           val rawColumnName = columnMapper.mapColumnName(it, tableMetaData)
           targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
         } + ";"
@@ -167,20 +167,20 @@ class SchemaScriptCreatorTool(
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val fkMapper = connectorRepository.hint<ForeignKeyMapper>(targetConnectorId)
     val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
-    val tableMetaData = foreignKeyMetaData.referencingTableMetaData
+    val tableMetaData = foreignKeyMetaData.referencingTable
     val qualifiedTableName = tableMapper.fullyQualifiedTableName(tableMetaData, targetDatabaseMetaData)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val fkName = targetDatabaseMetaData.databaseType.escapeDatabaseEntity(fkMapper.mapForeignKeyName(foreignKeyMetaData))
 
     return (("""ALTER TABLE $qualifiedTableName ADD CONSTRAINT $fkName FOREIGN KEY """
         + foreignKeyMetaData.referencingColumns.joinToString {
-      val rawColumnName = columnMapper.mapColumnName(it, it.tableMetaData)
+      val rawColumnName = columnMapper.mapColumnName(it, it.table)
       targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
     }
         ) + " REFERENCES "
-        + tableMapper.fullyQualifiedTableName(foreignKeyMetaData.referencedTableMetaData, targetDatabaseMetaData)
+        + tableMapper.fullyQualifiedTableName(foreignKeyMetaData.referencedTable, targetDatabaseMetaData)
         + foreignKeyMetaData.referencedColumns.joinToString {
-      val rawColumnName = columnMapper.mapColumnName(it, it.tableMetaData)
+      val rawColumnName = columnMapper.mapColumnName(it, it.table)
       targetDatabaseMetaData.databaseType.escapeDatabaseEntity(rawColumnName)
     }) + ";"
   }
@@ -212,11 +212,11 @@ class SchemaScriptCreatorTool(
     val columnTypeMapper = connectorRepository.hint<ColumnTypeMapper>(targetConnectorId)
     val sourceDatabase = connectorRepository.getDatabaseMetaData(sourceConnectorId)
     val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
-    val rawColumnName = columnMapper.mapColumnName(columnMetaData, columnMetaData.tableMetaData)
+    val rawColumnName = columnMapper.mapColumnName(columnMetaData, columnMetaData.table)
     val columnName = targetDatabase.databaseType.escapeDatabaseEntity(rawColumnName)
     val columnType = columnTypeMapper.mapColumnType(columnMetaData, sourceDatabase, targetDatabase)
     val maxNameLength = targetMaxNameLength
-    val rawTableName = tableMapper.mapTableName(columnMetaData.tableMetaData, targetDatabase)
+    val rawTableName = tableMapper.mapTableName(columnMetaData.table, targetDatabase)
 
     if (columnName.length > maxNameLength) {
       throw IncompatibleColumnsException(
@@ -230,7 +230,7 @@ class SchemaScriptCreatorTool(
   }
 
   fun addTableColumn(columnMetaData: ColumnMetaData) =
-    "ALTER TABLE " + getTableName(columnMetaData.tableMetaData) + " ADD " + createColumn(columnMetaData) + ";"
+    "ALTER TABLE " + getTableName(columnMetaData.table) + " ADD " + createColumn(columnMetaData) + ";"
 
   fun createConstraintName(prefix: String, preferredName: String, uniqueId: Any): String {
     val name = StringBuilder(preferredName)

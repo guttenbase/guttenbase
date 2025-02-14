@@ -24,7 +24,7 @@ class ColumnOrderHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tabl
 
   @Test
   fun `By default, PK column comes first`() {
-    val tableMetaData = connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_USER")!!
+    val tableMetaData = connectorRepository.getDatabaseMetaData(TARGET).getTable("FOO_USER")!!
     val columns = ColumnOrderHint.getSortedColumns(connectorRepository, tableMetaData)
 
     assertThat(columns).hasSize(7).extracting<String> { it.columnName }

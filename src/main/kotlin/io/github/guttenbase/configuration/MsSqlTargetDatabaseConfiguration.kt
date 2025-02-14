@@ -65,7 +65,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
   ) {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val sqls = tableMetaDatas.map {
-      val tableName = tableMapper.fullyQualifiedTableName(it, it.databaseMetaData)
+      val tableName = tableMapper.fullyQualifiedTableName(it, it.database)
       val flag = if (enable) "CHECK CONSTRAINT ALL" else "NOCHECK CONSTRAINT ALL"
 
       """ALTER TABLE $tableName $flag"""
@@ -79,7 +79,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     tableMetaData: TableMetaData
   ) {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.database)
 
     if (hasIdentityColumn(tableMetaData)) {
       val flag = if (enable) "ON" else "OFF"
@@ -89,10 +89,10 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
   }
 
   private fun hasIdentityColumn(tableMetaData: TableMetaData) =
-    tableMetaData.columnMetaData.any { isIdentityColumn(it) }
+    tableMetaData.columns.any { isIdentityColumn(it) }
 
   private fun isIdentityColumn(columnMetaData: ColumnMetaData) =
     columnMetaData.columnTypeName.uppercase().contains("IDENTITY")
         || (columnMetaData.isPrimaryKey && columnMetaData.isAutoIncrement
-        && columnMetaData.tableMetaData.primaryKeyColumns.size == 1)
+        && columnMetaData.table.primaryKeyColumns.size == 1)
 }

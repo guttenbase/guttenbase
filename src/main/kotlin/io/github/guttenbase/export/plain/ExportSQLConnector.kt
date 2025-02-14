@@ -52,7 +52,7 @@ class ExportSQLConnector(
 
       override val tableMetaData get() = tableMetaData
 
-      override fun getTableMetaData(tableName: String) = tableMetaDataMap[tableName.uppercase()]
+      override fun getTable(tableName: String) = tableMetaDataMap[tableName.uppercase()]
 
       override val schema get() = connectorInfo.schema.ifBlank { data.schema }
 

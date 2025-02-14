@@ -28,7 +28,7 @@ abstract class AbstractStatementCreator(
 
   protected open fun createColumnClause(columns: List<ColumnMetaData>) =
     columns.joinToString(separator = ", ", transform = {
-      val rawColumnName = columnMapper.mapColumnName(it, it.tableMetaData)
+      val rawColumnName = columnMapper.mapColumnName(it, it.table)
 
       it.databaseType.escapeDatabaseEntity(rawColumnName)
     })

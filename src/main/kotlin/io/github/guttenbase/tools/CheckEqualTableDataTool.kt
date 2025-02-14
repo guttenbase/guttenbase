@@ -105,9 +105,9 @@ open class CheckEqualTableDataTool(
     targetTable: TableMetaData, numberOfCheckData: Int
   ) {
     val tableName1 = connectorRepository.hint<TableMapper>(sourceConnectorId)
-      .fullyQualifiedTableName(sourceTable, sourceTable.databaseMetaData)
+      .fullyQualifiedTableName(sourceTable, sourceTable.database)
     val tableName2 = connectorRepository.hint<TableMapper>(targetConnectorId)
-      .fullyQualifiedTableName(targetTable, targetTable.databaseMetaData)
+      .fullyQualifiedTableName(targetTable, targetTable.database)
     val sourceColumnNameMapper = connectorRepository.hint<ColumnMapper>(sourceConnectorId)
     val targetColumnNameMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
 

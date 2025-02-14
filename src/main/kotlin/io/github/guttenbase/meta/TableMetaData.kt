@@ -12,7 +12,7 @@ import java.sql.JDBCType.BIGINT
  *
  * @author M. Dahm
  */
-interface TableMetaData : Comparable<TableMetaData>, java.io.Serializable {
+interface TableMetaData : Comparable<TableMetaData>, java.io.Serializable, MetaData {
   /**
    * Row count of table using given filter clause [TableRowCountFilter]
    */
@@ -33,8 +33,8 @@ interface TableMetaData : Comparable<TableMetaData>, java.io.Serializable {
    */
   val minId: Long
 
-  val columnMetaData: List<ColumnMetaData>
-  fun getColumnMetaData(columnName: String): ColumnMetaData?
+  val columns: List<ColumnMetaData>
+  fun getColumn(columnName: String): ColumnMetaData?
   val columnCount: Int
 
   /**
@@ -48,11 +48,11 @@ interface TableMetaData : Comparable<TableMetaData>, java.io.Serializable {
   /**
    * @return containing data base
    */
-  val databaseMetaData: DatabaseMetaData
-  fun getIndexMetaData(indexName: String): IndexMetaData?
+  val database: DatabaseMetaData
+  fun getIndex(indexName: String): IndexMetaData?
   val primaryKeyColumns: List<ColumnMetaData>
   val indexes: List<IndexMetaData>
-  fun getIndexesContainingColumn(columnMetaData: ColumnMetaData): List<IndexMetaData>
+  fun getIndexesContainingColumn(column: ColumnMetaData): List<IndexMetaData>
   val importedForeignKeys: List<ForeignKeyMetaData>
   val exportedForeignKeys: List<ForeignKeyMetaData>
 }
@@ -69,6 +69,6 @@ fun TableMetaData.getNumericPrimaryKeyColumn(): ColumnMetaData? {
   return null
 }
 
-val TableMetaData.databaseType get() = databaseMetaData.databaseType
-val TableMetaData.connectorId get() = databaseMetaData.connectorId
-val TableMetaData.connectorRepository get() = databaseMetaData.connectorRepository
+val TableMetaData.databaseType get() = database.databaseType
+val TableMetaData.connectorId get() = database.connectorId
+val TableMetaData.connectorRepository get() = database.connectorRepository

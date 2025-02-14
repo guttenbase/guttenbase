@@ -31,7 +31,7 @@ abstract class ColumnOrderHint : ConnectorHint<ColumnOrderComparatorFactory> {
       val sourceColumnComparator =
         connectorRepository.hint<ColumnOrderComparatorFactory>(tableMetaData.connectorId).createComparator()
 
-      return tableMetaData.columnMetaData.sortedWith(sourceColumnComparator)
+      return tableMetaData.columns.sortedWith(sourceColumnComparator)
     }
   }
 }

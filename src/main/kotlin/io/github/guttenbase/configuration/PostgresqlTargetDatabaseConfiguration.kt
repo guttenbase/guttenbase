@@ -49,7 +49,7 @@ open class PostgresqlTargetDatabaseConfiguration(connectorRepository: ConnectorR
   ) {
     val tableNameMapper = connectorRepository.hint<TableMapper>(connectorId)
     val sqls = tableMetaDatas.map {
-      val tableName = tableNameMapper.fullyQualifiedTableName(it, it.databaseMetaData)
+      val tableName = tableNameMapper.fullyQualifiedTableName(it, it.database)
 
       "ALTER TABLE " + tableName + (if (enable) " ENABLE " else " DISABLE ") + "TRIGGER ALL;"
     }

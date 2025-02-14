@@ -59,7 +59,7 @@ class SchemaComparatorTool(
     for (sourceFK in sourceTable.importedForeignKeys) {
       targetTable.importedForeignKeys.firstOrNull {
         sourceFK.referencedColumns == it.referencedColumns &&
-            sourceFK.tableMetaData == it.tableMetaData &&
+            sourceFK.table == it.table &&
             sourceFK.referencingColumns == it.referencingColumns
       } ?: schemaCompatibilityIssues.addIssue(
         MissingForeignKeyIssue(
@@ -74,7 +74,7 @@ class SchemaComparatorTool(
 
   fun checkEqualIndexes(sourceTable: TableMetaData, targetTable: TableMetaData): SchemaCompatibilityIssues {
     for (sourceIndex in sourceTable.indexes) {
-      targetTable.indexes.firstOrNull { sourceIndex.columnMetaData == it.columnMetaData }
+      targetTable.indexes.firstOrNull { sourceIndex.columns == it.columns }
         ?: schemaCompatibilityIssues.addIssue(MissingIndexIssue("Missing index $sourceIndex", sourceIndex))
     }
 
@@ -85,7 +85,7 @@ class SchemaComparatorTool(
     val indexMetaDataMap = LinkedHashMap<String, IndexMetaData>()
 
     for (index in table.indexes) {
-      val keyColumns = index.columnMetaData.sorted().joinToString { it.columnName }
+      val keyColumns = index.columns.sorted().joinToString { it.columnName }
 
       if (indexMetaDataMap.containsKey(keyColumns)) {
         val conflictingIndex = indexMetaDataMap[keyColumns]
@@ -131,7 +131,7 @@ class SchemaComparatorTool(
     val targetColumnNameMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
     val tableName = sourceTableMetaData.tableName
     val sourceColumns = ColumnOrderHint.getSortedColumns(connectorRepository, sourceTableMetaData)
-    val mappedTargetColumns = HashSet<ColumnMetaData>(targetTableMetaData.columnMetaData)
+    val mappedTargetColumns = HashSet<ColumnMetaData>(targetTableMetaData.columns)
 
     for (sourceColumn in sourceColumns) {
       val mapping = columnMapper.map(sourceColumn, targetTableMetaData)
@@ -214,6 +214,6 @@ class SchemaComparatorTool(
     private fun getFullyQualifiedColumnNames(columnMetaData: List<ColumnMetaData>) =
       columnMetaData.joinToString(
         separator = ", ", prefix = "(", postfix = ")",
-        transform = { it.tableMetaData.tableName + "." + it.columnName })
+        transform = { it.table.tableName + "." + it.columnName })
   }
 }

@@ -19,7 +19,7 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, targetConnec
     includePrimaryKey: Boolean = true,
   ): String {
     val tableMetaData =
-      connectorRepository.getDatabaseMetaData(this@InsertStatementTool.targetConnectorId).getTableMetaData(tableName)
+      connectorRepository.getDatabaseMetaData(this@InsertStatementTool.targetConnectorId).getTable(tableName)
         ?: throw IllegalStateException("Table $tableName not found")
     columns = getMappedTargetColumns(tableMetaData, tableMetaData)
       .filter { if (!includePrimaryKey) !it.isPrimaryKey else true }

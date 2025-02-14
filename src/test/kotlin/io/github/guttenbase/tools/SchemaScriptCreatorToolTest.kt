@@ -128,13 +128,13 @@ class SchemaScriptCreatorToolTest {
 
   @Test
   fun createColumn() {
-    val sql = objectUnderTest.addTableColumn(databaseMetaData.tableMetaData[0].columnMetaData[1])
+    val sql = objectUnderTest.addTableColumn(databaseMetaData.tableMetaData[0].columns[1])
     assertEquals("""ALTER TABLE schemaName."MY_TABLE1" ADD "NAME" VARCHAR(100) NOT NULL;""", sql)
   }
 
   @Test
   fun testIndex() {
-    val columnMetaData = databaseMetaData.tableMetaData[0].getColumnMetaData("name")!!
+    val columnMetaData = databaseMetaData.tableMetaData[0].getColumn("name")!!
     val index = databaseMetaData.tableMetaData[0].getIndexesContainingColumn(columnMetaData)[0]
     val sql = objectUnderTest.createIndex(index)
 
@@ -191,11 +191,11 @@ class SchemaScriptCreatorToolTest {
       val table2 = createTable(2, databaseMetaData)
       val foreignKeyMeta1 = ForeignKeyMetaDataImpl(
         table1, "FK_Name",
-        table1.getColumnMetaData("Name")!!, table2.getColumnMetaData("Name")!!
+        table1.getColumn("Name")!!, table2.getColumn("Name")!!
       )
       val foreignKeyMeta2 = ForeignKeyMetaDataImpl(
         table1, "FK_Name",
-        table1.getColumnMetaData("Name")!!, table2.getColumnMetaData("Name")!!
+        table1.getColumn("Name")!!, table2.getColumn("Name")!!
       )
 
       table1.addImportedForeignKey(foreignKeyMeta1)

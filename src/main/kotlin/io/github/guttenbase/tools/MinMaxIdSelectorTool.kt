@@ -37,7 +37,7 @@ open class MinMaxIdSelectorTool(private val connectorRepository: ConnectorReposi
    */
   fun computeMinMax(connectorId: String, tableMetaData: TableMetaData, connection: Connection) {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.database)
     val minMaxStatement = SplitByColumnSelectMinMaxStatementCreator(connectorRepository, connectorId)
       .createSelectStatement(connection, tableName, tableMetaData)
     val rangeResultSet = minMaxStatement.executeQuery()

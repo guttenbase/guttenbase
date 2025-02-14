@@ -27,7 +27,7 @@ open class ReadTableDataTool(
 ) : AutoCloseable {
   constructor(connectorRepository: ConnectorRepository, connectorId: String, tableName: String) : this(
     connectorRepository, connectorId,
-    connectorRepository.getDatabaseMetaData(connectorId).getTableMetaData(tableName)
+    connectorRepository.getDatabaseMetaData(connectorId).getTable(tableName)
       ?: throw IllegalStateException("Table $tableName not found")
   )
 

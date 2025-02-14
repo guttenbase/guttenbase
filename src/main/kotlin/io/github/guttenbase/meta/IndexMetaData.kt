@@ -11,15 +11,15 @@ const val SYNTHETIC_INDEX_PREFIX = "IDX_"
  *
  * @author M. Dahm
  */
-interface IndexMetaData : Comparable<IndexMetaData>, java.io.Serializable {
+interface IndexMetaData : Comparable<IndexMetaData>, java.io.Serializable, MetaData  {
   val indexName: String
   val isAscending: Boolean
   val isUnique: Boolean
-  val columnMetaData: List<ColumnMetaData>
-  val tableMetaData: TableMetaData
+  val columns: List<ColumnMetaData>
+  val table: TableMetaData
   val isPrimaryKeyIndex: Boolean
 }
 
-val IndexMetaData.databaseType get() = tableMetaData.databaseType
-val IndexMetaData.connectorId get() = tableMetaData.connectorId
-val IndexMetaData.connectorRepository get() = tableMetaData.connectorRepository
+val IndexMetaData.databaseType get() = table.databaseType
+val IndexMetaData.connectorId get() = table.connectorId
+val IndexMetaData.connectorRepository get() = table.connectorRepository

@@ -16,7 +16,7 @@ class TestColumnRenameNameMapper : ColumnMapper {
   override fun map(source: ColumnMetaData, targetTableMetaData: TableMetaData): ColumnMapper.ColumnMapperResult {
     val defaultColumnName = source.columnName
     val columnName = replacementsColumns.getOrDefault(defaultColumnName, defaultColumnName)
-    val columnMetaData2 = targetTableMetaData.getColumnMetaData(columnName)!!
+    val columnMetaData2 = targetTableMetaData.getColumn(columnName)!!
 
     return ColumnMapper.ColumnMapperResult(listOf(columnMetaData2))
   }
@@ -28,6 +28,7 @@ class TestColumnRenameNameMapper : ColumnMapper {
     return columnName ?: result
   }
 
+  @Suppress("unused")
   fun addReplacement(sourceComn: String, targetColumn: String): TestColumnRenameNameMapper {
     replacementsColumns[sourceComn] = targetColumn
     return this

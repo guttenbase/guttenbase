@@ -34,10 +34,10 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectorHint(TARGET, object : TableRowDataFilterHint() {
       override val value: TableRowDataFilter
         get() = TableRowDataFilter { sourceValues, _ ->
-          val tableMetaData: TableMetaData = sourceValues.keys.firstOrNull()?.tableMetaData ?: throw IllegalStateException()
+          val tableMetaData: TableMetaData = sourceValues.keys.firstOrNull()?.table ?: throw IllegalStateException()
 
           if (tableMetaData.tableName.equals("FOO_COMPANY", ignoreCase = true)) {
-            val name = sourceValues[tableMetaData.getColumnMetaData("NAME")]!!
+            val name = sourceValues[tableMetaData.getColumn("NAME")]!!
             return@TableRowDataFilter name != "Company 2"
           }
 
@@ -56,8 +56,8 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectorHint(TARGET, DisableMultipleValueBatchInsertionHint)
     DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables()
 
-    val sourceTable = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_COMPANY")!!
-    val targetTable = connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_COMPANY")!!
+    val sourceTable = connectorRepository.getDatabaseMetaData(SOURCE).getTable("FOO_COMPANY")!!
+    val targetTable = connectorRepository.getDatabaseMetaData(TARGET).getTable("FOO_COMPANY")!!
 
     assertEquals(4, sourceTable.totalRowCount)
     assertEquals(3, targetTable.totalRowCount)

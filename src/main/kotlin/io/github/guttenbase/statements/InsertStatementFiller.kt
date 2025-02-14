@@ -147,7 +147,7 @@ class InsertStatementFiller(private val connectorRepository: ConnectorRepository
         """|
           |Columns have incompatible types: ${sourceColumn.columnName}/${sourceColumn.columnTypeName}, ${sourceColumn.jdbcColumnType}
           |vs.                              ${targetColumn.columnName}/${targetColumn.columnTypeName}, ${targetColumn.jdbcColumnType} 
-          |in table ${sourceColumn.tableMetaData.tableName}
+          |in table ${sourceColumn.table.tableName}
           |Please add a mapping using ${DefaultColumnDataMapperProvider::class.java.name}
        });
       """.trimMargin()

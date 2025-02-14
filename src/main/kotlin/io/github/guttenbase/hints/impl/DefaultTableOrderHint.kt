@@ -18,10 +18,10 @@ open class DefaultTableOrderHint : TableOrderHint() {
   override val value: TableOrderComparatorFactory
     get() = TableOrderComparatorFactory {
       Comparator { table1, table2 ->
-        assert(table1.databaseMetaData === table2.databaseMetaData)
+        assert(table1.database === table2.database)
 
         if (!this@DefaultTableOrderHint::tables.isInitialized) {
-          tables = TableOrderTool(table1.databaseMetaData).orderTables()
+          tables = TableOrderTool(table1.database).orderTables()
         }
 
         val index1 = tables.indexOf(table1)

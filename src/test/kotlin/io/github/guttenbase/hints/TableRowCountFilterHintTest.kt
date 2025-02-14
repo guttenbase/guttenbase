@@ -32,8 +32,8 @@ class TableRowCountFilterHintTest :
   }
 
   override fun executeChecks() {
-    val source = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")!!
-    val target = connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_USER")!!
+    val source = connectorRepository.getDatabaseMetaData(SOURCE).getTable("FOO_USER")!!
+    val target = connectorRepository.getDatabaseMetaData(TARGET).getTable("FOO_USER")!!
 
     assertEquals(1, source.filteredRowCount)
     assertEquals(1, target.filteredRowCount)

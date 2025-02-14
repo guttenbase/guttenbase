@@ -80,7 +80,7 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
   private fun getOffset(sourceColumnMetaData: ColumnMetaData): Long {
     val iterator = sourceColumnMetaData.referencedColumns.values.iterator()
     val idColumnMetaData = if (iterator.hasNext()) iterator.next()[0] else sourceColumnMetaData
-    val tableMetaData: TableMetaData = idColumnMetaData.tableMetaData
+    val tableMetaData: TableMetaData = idColumnMetaData.table
     val maxId = maxTableIds[tableMetaData]
     assertNotNull(maxId, "$sourceColumnMetaData:$tableMetaData")
 

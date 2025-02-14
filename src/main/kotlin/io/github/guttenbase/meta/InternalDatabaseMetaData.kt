@@ -1,5 +1,6 @@
 package io.github.guttenbase.meta
 
+import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.JDBCType
 
 /**
@@ -10,6 +11,8 @@ import java.sql.JDBCType
  * @author M. Dahm
  */
 internal interface InternalDatabaseMetaData : DatabaseMetaData {
+  override var connectorRepository: ConnectorRepository
+
   fun addTable(tableMetaData: TableMetaData)
   fun removeTable(tableMetaData: TableMetaData)
   fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, scale: Int, nullable: Boolean)

@@ -72,8 +72,8 @@ class TableOrderTool(private val databaseMetaData: DatabaseMetaData) {
       val tableNode = graph.getTableNode(table)
 
       for (foreignKeyMetaData in importedForeignKeys) {
-        val referencingTable = graph.getTableNode(foreignKeyMetaData.referencingTableMetaData)
-        val referencedTable = graph.getTableNode(foreignKeyMetaData.referencedTableMetaData)
+        val referencingTable = graph.getTableNode(foreignKeyMetaData.referencingTable)
+        val referencedTable = graph.getTableNode(foreignKeyMetaData.referencedTable)
 
         assert(tableNode == referencingTable)
 

@@ -19,7 +19,7 @@ class SelectStatementCreator(connectorRepository: ConnectorRepository, connector
    * Retrieve data in some deterministic order
    */
   override fun createOrderBy(table: TableMetaData): String {
-    val columns = table.columnMetaData.filter { it.columnType.comparable() }
+    val columns = table.columns.filter { it.columnType.comparable() }
       .sortedWith(DefaultColumnComparator).map {
         val rawColumnName = columnMapper.mapColumnName(it, table)
         table.databaseType.escapeDatabaseEntity(rawColumnName)

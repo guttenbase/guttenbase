@@ -50,7 +50,7 @@ open class ColumnDataMappingTool(private val connectorRepository: ConnectorRepos
       val targetConnectorId = targetColumn.connectorId
       val columnDataMapperFactory = connectorRepository.hint<ColumnDataMapperProvider>(targetConnectorId)
       val columnTypeDefinition = connectorRepository.hint<ColumnTypeMapper>(targetConnectorId)
-        .createColumnDefinition(sourceColumn, targetColumn.tableMetaData.databaseMetaData)!!
+        .createColumnDefinition(sourceColumn, targetColumn.table.database)!!
       val columnDataMapper = columnDataMapperFactory.findMapping(sourceColumn, targetColumn, sourceColumnType, targetColumnType)
 
       if (columnDataMapper != null) {

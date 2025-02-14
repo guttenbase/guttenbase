@@ -29,8 +29,8 @@ class SelectWhereClauseHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/dd
   }
 
   override fun executeChecks() {
-    val source = connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData("FOO_USER")!!
-    val target = connectorRepository.getDatabaseMetaData(TARGET).getTableMetaData("FOO_USER")!!
+    val source = connectorRepository.getDatabaseMetaData(SOURCE).getTable("FOO_USER")!!
+    val target = connectorRepository.getDatabaseMetaData(TARGET).getTable("FOO_USER")!!
     assertEquals(4, source.totalRowCount)
     assertEquals(3, source.filteredRowCount)
     assertEquals(3, target.totalRowCount)

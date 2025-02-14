@@ -22,10 +22,10 @@ class TableMetaDataTest {
 
   @Test
   fun `immutable delegation`() {
-    Assertions.assertThat(objectUnderTest.columnMetaData).isEmpty()
-    (objectUnderTest.columnMetaData as MutableList).add(column)
-    Assertions.assertThat(objectUnderTest.columnMetaData).isEmpty()
+    Assertions.assertThat(objectUnderTest.columns).isEmpty()
+    (objectUnderTest.columns as MutableList).add(column)
+    Assertions.assertThat(objectUnderTest.columns).isEmpty()
     objectUnderTest.addColumn(column)
-    Assertions.assertThat(objectUnderTest.columnMetaData).containsExactly(column)
+    Assertions.assertThat(objectUnderTest.columns).containsExactly(column)
   }
 }

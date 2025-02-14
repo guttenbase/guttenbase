@@ -23,7 +23,7 @@ class SplitByColumnSelectMinMaxStatementCreator(connectorRepository: ConnectorRe
   override fun createColumnClause(columns: List<ColumnMetaData>): String {
     assert(columns.isNotEmpty())
 
-    val table = columns[0].tableMetaData
+    val table = columns[0].table
     val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(table)
     val columnName = table.databaseType.escapeDatabaseEntity(splitColumn.columnName)
 

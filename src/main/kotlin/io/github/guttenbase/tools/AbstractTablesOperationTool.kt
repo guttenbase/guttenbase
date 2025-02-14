@@ -46,7 +46,7 @@ abstract class AbstractTablesOperationTool(
 
   private fun createSql(connectorId: String, tableMetaData: TableMetaData): String {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.databaseMetaData)
+    val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, tableMetaData.database)
     return template.replace(TABLE_PLACEHOLDER.toRegex(), tableName)
   }
 

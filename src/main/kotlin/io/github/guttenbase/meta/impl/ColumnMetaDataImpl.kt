@@ -20,7 +20,7 @@ import java.util.*
 @Serializable
 class ColumnMetaDataImpl(
   @Transient
-  override val tableMetaData: TableMetaData = DUMMYTABLE, // TODO
+  override var table: TableMetaData = TABLE_FOR_SERIALIZATION,
   override val columnType: Int,
   override val columnName: String,
   override val columnTypeName: String,
@@ -51,14 +51,14 @@ class ColumnMetaDataImpl(
    * {@inheritDoc}
    */
   @Serializable(with = UUIDSerializer::class)
-  override val columnId = UUID.randomUUID()!!
+  override val syntheticId = UUID.randomUUID()!!
 
   override val referencedColumns: Map<String, List<ColumnMetaData>>
-    get() = tableMetaData.importedForeignKeys.filter { it.referencingColumns.contains(this) }
+    get() = table.importedForeignKeys.filter { it.referencingColumns.contains(this) }
       .associate { it.foreignKeyName to it.referencedColumns }
 
   override val referencingColumns: Map<String, List<ColumnMetaData>>
-    get() = tableMetaData.exportedForeignKeys.filter { it.referencedColumns.contains(this) }
+    get() = table.exportedForeignKeys.filter { it.referencedColumns.contains(this) }
       .associate { it.foreignKeyName to it.referencingColumns }
 
   override val jdbcColumnType: JDBCType = if (columnType.hasJDBCType()) JDBCType.valueOf(columnType) else JDBCType.OTHER
@@ -66,14 +66,9 @@ class ColumnMetaDataImpl(
   override operator fun compareTo(other: ColumnMetaData) =
     columnName.uppercase().compareTo(other.columnName.uppercase())
 
-  override fun toString() = "$tableMetaData:$columnName:$columnTypeName:$jdbcColumnType"
+  override fun toString() = "$table:$columnName:$columnTypeName:$jdbcColumnType"
 
   override fun hashCode() = columnName.uppercase().hashCode()
 
   override fun equals(other: Any?) = other is ColumnMetaData && columnName.equals(other.columnName, ignoreCase = true)
-
-  companion object {
-    @Suppress("unused")
-    private const val serialVersionUID = 1L
-  }
 }

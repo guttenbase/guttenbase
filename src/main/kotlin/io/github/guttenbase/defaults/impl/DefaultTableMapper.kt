@@ -17,7 +17,7 @@ open class DefaultTableMapper @JvmOverloads constructor(private val caseConversi
 
   override fun map(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData): TableMetaData? {
     val tableName = mapTableName(source, targetDatabaseMetaData)
-    return targetDatabaseMetaData.getTableMetaData(tableName)
+    return targetDatabaseMetaData.getTable(tableName)
   }
 
   override fun fullyQualifiedTableName(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData) =

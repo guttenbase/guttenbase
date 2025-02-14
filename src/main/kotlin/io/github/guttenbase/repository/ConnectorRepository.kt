@@ -185,7 +185,7 @@ open class ConnectorRepository {
 
     for (tableMetaData in tableMetaData) {
       if (tableFilter.accept(tableMetaData)) {
-        for (columnMetaData in tableMetaData.columnMetaData) {
+        for (columnMetaData in tableMetaData.columns) {
           if (!columnFilter.accept(columnMetaData)) {
             (tableMetaData as InternalTableMetaData).removeColumn(columnMetaData)
           }

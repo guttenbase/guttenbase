@@ -36,7 +36,7 @@ open class DropTablesTool(
 
     return tableMetaData.map { table ->
       table.importedForeignKeys.map {
-        val fullTableName = tableMapper.fullyQualifiedTableName(table, table.databaseMetaData)
+        val fullTableName = tableMapper.fullyQualifiedTableName(table, table.database)
 
         DEFAULT_CONSTRAINT_DROP.replace(FULL_TABLE_NAME, fullTableName)
           .replace(IF_EXISTS, existsClause)
@@ -51,8 +51,8 @@ open class DropTablesTool(
     val ifExistsClause = connectorRepository.getConnectionInfo(connectorId).databaseType.indexExistsClause
 
     return tableMetaData.map { table ->
-      val schemaPrefix = table.databaseMetaData.schemaPrefix
-      val fullTableName = tableMapper.fullyQualifiedTableName(table, table.databaseMetaData)
+      val schemaPrefix = table.database.schemaPrefix
+      val fullTableName = tableMapper.fullyQualifiedTableName(table, table.database)
 
       table.indexes.filter { !it.isPrimaryKeyIndex }.map {
         val fullIndexName = schemaPrefix + it.indexName
@@ -128,7 +128,7 @@ open class DropTablesTool(
     val suffix = if ("" == Util.trim(clauseSuffix)) "" else " $clauseSuffix"
 
     return tableMetaData.map {
-      "$clausePrefix " + tableMapper.fullyQualifiedTableName(it, it.databaseMetaData) + suffix + ";"
+      "$clausePrefix " + tableMapper.fullyQualifiedTableName(it, it.database) + suffix + ";"
     }
   }
 

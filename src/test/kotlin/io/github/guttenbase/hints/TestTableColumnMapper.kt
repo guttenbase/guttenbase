@@ -11,7 +11,7 @@ class TestTableColumnMapper : DefaultColumnMapper() {
 
     return if (columnName.equals("ID", ignoreCase = true)) {
       val newColumnName = mapColumnName(source)
-      val columnMetaData = targetTableMetaData.getColumnMetaData(newColumnName)
+      val columnMetaData = targetTableMetaData.getColumn(newColumnName)
       val result = if (columnMetaData != null) listOf(columnMetaData) else ArrayList()
 
       ColumnMapperResult(result)
@@ -21,5 +21,5 @@ class TestTableColumnMapper : DefaultColumnMapper() {
   }
 
   private fun mapColumnName(columnMetaData: ColumnMetaData) =
-    columnMetaData.tableMetaData.tableName.substring("FOO_".length) + "_ID"
+    columnMetaData.table.tableName.substring("FOO_".length) + "_ID"
 }

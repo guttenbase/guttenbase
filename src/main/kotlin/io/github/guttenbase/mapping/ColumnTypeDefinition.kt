@@ -29,7 +29,7 @@ data class ColumnTypeDefinition @JvmOverloads constructor(
   // https://forums.oracle.com/ords/apexds/post/number-data-type-s-negative-scale-4474
   val scale: Int = if (sourceColumn.scale < 0) sourceColumn.scale.mormalizeNegativeScale() else sourceColumn.scale
 ) {
-  val sourceDatabase get() = sourceColumn.tableMetaData.databaseMetaData
+  val sourceDatabase get() = sourceColumn.table.database
   val databaseType = targetDatabase.databaseType
   val usePrecision = (usePrecisionClause && precision > 0) || typeName.contains(PRECISION_PLACEHOLDER)
 

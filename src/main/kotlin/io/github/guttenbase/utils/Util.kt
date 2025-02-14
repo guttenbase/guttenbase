@@ -33,7 +33,7 @@ object Util {
   val ByteArrayClass: Class<*> = ByteArray::class.java
 
   const val DEFAULT_BUFFER_SIZE = 1024 * 4
-  const val RIGHT_ARROW = '\u2192'
+    const val RIGHT_ARROW = '\u2192'
   const val LEFT_RIGHT_ARROW = '\u2194'
 
   @JvmStatic

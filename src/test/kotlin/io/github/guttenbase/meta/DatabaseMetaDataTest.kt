@@ -72,12 +72,12 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     assertEquals(data.databaseMetaData.driverName, result.databaseMetaData.driverName)
     assertEquals(data.tableMetaData, result.tableMetaData)
 
-    val tableMetaData1 = data.getTableMetaData("FOO_USER")!!
-    val tableMetaData2 = result.getTableMetaData("FOO_USER")!!
-    assertEquals(tableMetaData1.columnMetaData, tableMetaData2.columnMetaData)
+    val tableMetaData1 = data.getTable("FOO_USER")!!
+    val tableMetaData2 = result.getTable("FOO_USER")!!
+    assertEquals(tableMetaData1.columns, tableMetaData2.columns)
 
-    val columnMetaData1 = tableMetaData1.getColumnMetaData("ID")!!
-    val columnMetaData2 = tableMetaData2.getColumnMetaData("ID")!!
+    val columnMetaData1 = tableMetaData1.getColumn("ID")!!
+    val columnMetaData2 = tableMetaData2.getColumn("ID")!!
     assertEquals(columnMetaData1, columnMetaData2)
     assertThat(columnMetaData1.referencingColumns).hasSize(2)
     assertThat(columnMetaData1.referencingColumns).isEqualTo(columnMetaData2.referencingColumns)

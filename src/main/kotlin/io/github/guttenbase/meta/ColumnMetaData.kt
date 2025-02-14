@@ -12,7 +12,7 @@ import java.sql.JDBCType.*
  *
  * @author M. Dahm
  */
-interface ColumnMetaData : Comparable<ColumnMetaData>, java.io.Serializable {
+interface ColumnMetaData : Comparable<ColumnMetaData>, java.io.Serializable, MetaData {
   /**
    * Column type as defined in [java.sql.Types]
    */
@@ -25,7 +25,7 @@ interface ColumnMetaData : Comparable<ColumnMetaData>, java.io.Serializable {
   /**
    * @return containing table
    */
-  val tableMetaData: TableMetaData
+  val table: TableMetaData
   val isNullable: Boolean
   val isAutoIncrement: Boolean
   val precision: Int
@@ -71,6 +71,6 @@ fun Int.hasJDBCType(): Boolean = JDBCType.entries.any { it.vendorTypeNumber.toIn
 
 val STANDARD_TYPES = JDBCType.entries.map { it.name }.toSet()
 
-val ColumnMetaData.databaseType get() = tableMetaData.databaseType
-val ColumnMetaData.connectorId get() = tableMetaData.connectorId
-val ColumnMetaData.connectorRepository get() = tableMetaData.connectorRepository
+val ColumnMetaData.databaseType get() = table.databaseType
+val ColumnMetaData.connectorId get() = table.connectorId
+val ColumnMetaData.connectorRepository get() = table.connectorRepository

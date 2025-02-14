@@ -99,7 +99,7 @@ enum class DatabaseType(
 
     return autoincrementColumnClause.replace(NEXT_VALUE, startValue.toString())
       .replace(STEP_VALUE, stepValue.toString())
-      .replace(TABLE_NAME, escapeDatabaseEntity(column.tableMetaData.tableName))
+      .replace(TABLE_NAME, escapeDatabaseEntity(column.table.tableName))
       .replace(COLUMN_NAME, escapeDatabaseEntity(column.columnName))
   }
 
@@ -119,7 +119,7 @@ enum class DatabaseType(
       val startValue = autoIncrementValue.startValue(column)
       val stepValue = autoIncrementValue.stepWidth(column)
       val mapper: (String) -> String = { if (escapeDatabaseEntities) escapeDatabaseEntity(it) else it }
-      val tableName = mapper.invoke(column.tableMetaData.tableName)
+      val tableName = mapper.invoke(column.table.tableName)
       val columnName = mapper.invoke(column.columnName)
 
       autoincrementColumnStatement.replace(NEXT_VALUE, startValue.toString())

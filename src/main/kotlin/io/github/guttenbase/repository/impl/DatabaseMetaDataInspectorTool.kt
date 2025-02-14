@@ -101,15 +101,15 @@ internal class DatabaseMetaDataInspectorTool(
         val fkTableName = resultSet.getStringNotNull("FKTABLE_NAME")
         val fkColumnName = resultSet.getStringNotNull("FKCOLUMN_NAME")
         val fkName = resultSet.getString("FK_NAME") ?: "${SYNTHETIC_CONSTRAINT_PREFIX}UNKNOWN_$fkColumnName"
-        val pkTableMetaData = databaseMetaData.getTableMetaData(pkTableName) as InternalTableMetaData?
-        val fkTableMetaData = databaseMetaData.getTableMetaData(fkTableName) as InternalTableMetaData?
+        val pkTableMetaData = databaseMetaData.getTable(pkTableName) as InternalTableMetaData?
+        val fkTableMetaData = databaseMetaData.getTable(fkTableName) as InternalTableMetaData?
 
         if (fkTableMetaData == null || pkTableMetaData == null) {
           // this table might have been excluded from the list of tables handled by this batch
           LOG.warn("Unable to retrieve metadata information for table $fkTableName referenced by $pkTableName")
         } else {
-          val pkColumn = pkTableMetaData.getColumnMetaData(pkColumnName)!!
-          val fkColumn = fkTableMetaData.getColumnMetaData(fkColumnName)!!
+          val pkColumn = pkTableMetaData.getColumn(pkColumnName)!!
+          val fkColumn = fkTableMetaData.getColumn(fkColumnName)!!
           var exportedForeignKey = pkTableMetaData.getExportedForeignKey(fkName) as InternalForeignKeyMetaData?
           var importedForeignKey = fkTableMetaData.getImportedForeignKey(fkName) as InternalForeignKeyMetaData?
 
@@ -161,10 +161,10 @@ internal class DatabaseMetaDataInspectorTool(
         val ascOrDesc = resultSet.getString("ASC_OR_DESC")
 
         if (columnName != null) {
-          val column = table.getColumnMetaData(columnName)
+          val column = table.getColumn(columnName)
 
           if (column != null && !table.hasForeignKey(indexName)) {
-            var indexMetaData = table.getIndexMetaData(indexName) as InternalIndexMetaData?
+            var indexMetaData = table.getIndex(indexName) as InternalIndexMetaData?
 
             if (indexMetaData == null) {
               val ascending = ascOrDesc == null || "A" == ascOrDesc
@@ -209,7 +209,7 @@ internal class DatabaseMetaDataInspectorTool(
           resultSet.getString("COLUMN_NAME") ?: throw GuttenBaseException("COLUMN_NAME must not be null")
 
         if (pkName != null) {
-          val columnMetaData = table.getColumnMetaData(columnName) as InternalColumnMetaData?
+          val columnMetaData = table.getColumn(columnName) as InternalColumnMetaData?
             ?: throw IllegalStateException("No column meta data for $columnName")
           columnMetaData.isPrimaryKey = true
         }
@@ -239,7 +239,7 @@ internal class DatabaseMetaDataInspectorTool(
         val columnSize = resultSet.getInt("COLUMN_SIZE")
         val defaultValue = resultSet.getString("COLUMN_DEF")
         val generated = resultSet.getString("IS_GENERATEDCOLUMN") == "YES"
-        val columnMetaData = table.getColumnMetaData(columnName) as InternalColumnMetaData?
+        val columnMetaData = table.getColumn(columnName) as InternalColumnMetaData?
 
         if (columnMetaData != null) {
           columnMetaData.isGenerated = generated

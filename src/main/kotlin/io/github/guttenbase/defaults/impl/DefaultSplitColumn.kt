@@ -20,9 +20,9 @@ import io.github.guttenbase.tools.SplitColumn
  */
 open class DefaultSplitColumn : SplitColumn {
   override fun getSplitColumn(table: TableMetaData): ColumnMetaData {
-    val columnMetaData1 = table.columnMetaData.firstOrNull { it.isPrimaryKey }
+    val columnMetaData1 = table.columns.firstOrNull { it.isPrimaryKey }
     val columnMetaData2 by lazy {
-      table.columnMetaData.firstOrNull {
+      table.columns.firstOrNull {
         val columnClassName = it.columnClassName
 
         if (columnClassName.isSupportedColumnType()) {
@@ -38,7 +38,7 @@ open class DefaultSplitColumn : SplitColumn {
     return when {
       columnMetaData1 != null -> columnMetaData1
       columnMetaData2 != null -> columnMetaData2!!
-      else -> table.columnMetaData[0]
+      else -> table.columns[0]
     }
   }
 }

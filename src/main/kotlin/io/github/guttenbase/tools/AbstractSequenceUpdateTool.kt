@@ -12,7 +12,6 @@ import io.github.guttenbase.repository.hint
  *
  * &copy; 2012-2044 akquinet tech@spree
  *
- *
  * @author M. Dahm
  * Uses [io.github.guttenbase.hints.EntityTableCheckerHint] to look for entity classes, i.e. classes that may use an ID sequence
  */
@@ -21,6 +20,7 @@ abstract class AbstractSequenceUpdateTool(protected val connectorRepository: Con
   protected val scriptExecutor = ScriptExecutorTool(connectorRepository)
   protected val minMaxIdSelector = MinMaxIdSelectorTool(connectorRepository)
 
+  @Suppress("unused")
   fun updateSequences(connectorId: String) {
     val tableMetaDatas = TableOrderHint.getSortedTables(connectorRepository, connectorId)
     val entityTableChecker = connectorRepository.hint<EntityTableChecker>(connectorId)
@@ -32,7 +32,7 @@ abstract class AbstractSequenceUpdateTool(protected val connectorRepository: Con
         minMaxIdSelector.computeMinMax(connectorId, tableMetaData)
 
         val sequenceValue = minMaxIdSelector.maxValue + 1
-        val tableName: String = tableMapper.mapTableName(tableMetaData, tableMetaData.databaseMetaData)
+        val tableName: String = tableMapper.mapTableName(tableMetaData, tableMetaData.database)
         val sequenceName = getSequenceName(tableName)
 
         updateClauses.add(getUpdateSequenceClause(sequenceName, sequenceValue))

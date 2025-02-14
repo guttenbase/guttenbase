@@ -15,7 +15,7 @@ abstract class AbstractColumnTypeMapper : ColumnTypeMapper {
    */
   override fun mapColumnType(column: ColumnMetaData, sourceDatabase: DatabaseMetaData, targetDatabase: DatabaseMetaData): String {
     val columnDefinition = createColumnDefinition(column, targetDatabase)
-    val singlePrimaryKey = column.isPrimaryKey && column.tableMetaData.primaryKeyColumns.size < 2
+    val singlePrimaryKey = column.isPrimaryKey && column.table.primaryKeyColumns.size < 2
     val autoincrementClause =
       if (column.isAutoIncrement) " " + targetDatabase.databaseType.createColumnAutoincrementClause(column) else ""
     val notNullClause = if (column.isNullable || singlePrimaryKey) "" else " NOT NULL" // Primary key implies NOT NULL

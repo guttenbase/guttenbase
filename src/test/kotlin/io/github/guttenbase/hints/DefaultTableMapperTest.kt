@@ -13,7 +13,7 @@ class DefaultTableMapperTest {
   fun testDefaultNameMapper() {
     val databaseMetaData = SchemaScriptCreatorToolTest.createDatabaseMetaData(ConnectorRepository())
     val tableName = TABLE + 1
-    val tableMetaData = databaseMetaData.getTableMetaData(tableName)!!
+    val tableMetaData = databaseMetaData.getTable(tableName)!!
     assertEquals(tableName, DefaultTableMapper().mapTableName(tableMetaData, databaseMetaData))
     assertEquals("$SCHEMA_NAME.\"$tableName\"", DefaultTableMapper().fullyQualifiedTableName(tableMetaData, databaseMetaData))
     assertEquals(

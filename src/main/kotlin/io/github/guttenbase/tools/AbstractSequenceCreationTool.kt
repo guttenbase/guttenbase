@@ -31,7 +31,7 @@ abstract class AbstractSequenceCreationTool(protected val connectorRepository: C
 
     for (tableMetaData in tableMetaDatas) {
       if (entityTableChecker.isEntityTable(tableMetaData)) {
-        val tableName = tableMapper.mapTableName(tableMetaData, tableMetaData.databaseMetaData)
+        val tableName = tableMapper.mapTableName(tableMetaData, tableMetaData.database)
         val sequenceName = getSequenceName(tableName)
 
         updateClauses.addAll(getCreateSequenceClauses(tableName, getIdColumn(tableMetaData), sequenceName, start, incrementBy))

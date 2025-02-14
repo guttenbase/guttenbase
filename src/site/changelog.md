@@ -1,9 +1,10 @@
 # Change log
 
-## 4.0.2
-
+## 4.1.1
 - Remove unmaintained binary exporter/importer
+- Export database related metadata to JSON
 - Supply database metadata for offline usage when using ExportSQLConnector
+- Remove MetaData suffix from methods and fields
 
 ## 4.0.1
 

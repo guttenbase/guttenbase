@@ -8,5 +8,11 @@ package io.github.guttenbase.meta
  * @author M. Dahm
  */
 internal interface InternalForeignKeyMetaData : ForeignKeyMetaData {
+  override var table: TableMetaData
+
+  fun clearReferencingColumns()
+
+  fun clearReferencedColumns()
+
   fun addColumnTuple(referencingColumn: ColumnMetaData, referencedColumn: ColumnMetaData)
 }

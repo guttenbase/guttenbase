@@ -13,8 +13,8 @@ import io.github.guttenbase.meta.StringValue
 import io.github.guttenbase.meta.impl.ValueType
 import io.github.guttenbase.serialization.JSON
 import io.github.guttenbase.tools.DatabaseMetaDataExporterTool
+import io.github.guttenbase.tools.DatabaseMetaDataExporterTool.Companion.importDataBaseMetaData
 import io.github.guttenbase.tools.ScriptExecutorTool
-import io.github.guttenbase.tools.importDataBaseMetaData
 import kotlinx.serialization.Serializable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -34,7 +34,7 @@ class DatabaseMetaDataExporterToolTest : AbstractGuttenBaseTest() {
     }
 
     val databaseProperties = JSON.decodeFromString<List<DatabaseProperty>>(asJSON)
-   assertThat(databaseProperties).contains(property1,  property2,  property3)
+    assertThat(databaseProperties).contains(property1, property2, property3)
   }
 
   @Test
@@ -52,11 +52,31 @@ class DatabaseMetaDataExporterToolTest : AbstractGuttenBaseTest() {
     DatabaseMetaDataExporterTool(connectorRepository, connectorId).export(file)
 
     val metaData1 = connectorRepository.getDatabaseMetaData(connectorId)
-    val metaData2 = importDataBaseMetaData(file)
+    val metaData2 = importDataBaseMetaData(file, connectorRepository)
 
     assertThat(metaData2.databaseMetaData.driverName).isEqualTo(metaData1.databaseMetaData.driverName)
       .isEqualTo(expectedDriverName)
     assertThat(metaData2.supportedTypes).isEqualTo(metaData1.supportedTypes)
+    assertThat(metaData2.tableMetaData).isEqualTo(metaData1.tableMetaData)
+
+    metaData2.getTable("FOO_COMPANY")!!.exportedForeignKeys.forEach { fk ->
+      val referencedTable2 = fk.referencedTable
+      val referencedTable1 = metaData1.getTable(referencedTable2.tableName)!!
+      val referencingTable2 = fk.referencingTable
+      val referencedColumn = fk.referencedColumns[0]
+      val referencingColumn = fk.referencingColumns[0]
+
+      assertThat(referencedTable2.syntheticId).isEqualTo(referencedTable1.syntheticId)
+
+      assertThat(referencedColumn).isSameAs(referencedTable2.getColumn(referencedColumn.columnName))
+      assertThat(referencingColumn).isSameAs(referencingTable2.getColumn(referencingColumn.columnName))
+      assertThat(referencingColumn).isNotEqualTo(referencedColumn)
+
+      assertThat(referencingColumn.table).isEqualTo(metaData1.getTable(referencingColumn.table.tableName))
+      assertThat(referencingColumn).isEqualTo(
+        metaData1.getTable(referencingColumn.table.tableName)!!.getColumn(referencingColumn.columnName)
+      )
+    }
   }
 
   private fun setup() {

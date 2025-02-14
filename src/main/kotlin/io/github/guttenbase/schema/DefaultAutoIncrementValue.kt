@@ -9,7 +9,7 @@ import io.github.guttenbase.meta.ColumnMetaData
  * Using this hint the @see [io.github.guttenbase.mapping.DefaultColumnTypeMapper] generate a clause with the given start value and step factor.
  */
 open class DefaultAutoIncrementValue : AutoIncrementValue {
-  override fun startValue(columnMetaData: ColumnMetaData): Long = columnMetaData.tableMetaData.maxId + 1
+  override fun startValue(columnMetaData: ColumnMetaData): Long = columnMetaData.table.maxId + 1
 
   override fun stepWidth(columnMetaData: ColumnMetaData): Long = 1
 }

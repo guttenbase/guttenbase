@@ -2,6 +2,13 @@ package io.github.guttenbase.meta
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Serializable classes for polymorphic values.
+ *
+ * &copy; 2012-2044 akquinet tech@spree
+ *
+ * @author M. Dahm
+ */
 sealed class PrimitiveValue<T> : java.io.Serializable {
   abstract val value: T
 }
