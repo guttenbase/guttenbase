@@ -10,6 +10,7 @@ import java.nio.charset.Charset
 
 typealias TEMPLATE_SUPPLIER = (DatabaseType) -> InputStream?
 
+@JvmField
 val DEFAULT_TEMPLATE_SUPPLIER: TEMPLATE_SUPPLIER =
   { ExportSQLConnectorInfo::class.java.getResourceAsStream("/dbmetadata/${it.name}.json") }
 
@@ -26,18 +27,17 @@ constructor(
   internal val sourceConnectorId: String,
   override val databaseType: DatabaseType,
   internal val outputStream: OutputStream,
-  internal val databaseTemplateSupplier: TEMPLATE_SUPPLIER = DEFAULT_TEMPLATE_SUPPLIER,
   override val schema: String = "",
   internal val encoding: Charset = Charsets.UTF_8,
-  internal val compress: Boolean = false
+  internal val compress: Boolean = false,
+  internal val databaseTemplateSupplier: TEMPLATE_SUPPLIER = DEFAULT_TEMPLATE_SUPPLIER
 ) : ConnectorInfo {
   @JvmOverloads
   constructor(
-    sourceConnectorId: String,
-    databaseType: DatabaseType, path: String,
-    databaseTemplateSupplier: TEMPLATE_SUPPLIER = DEFAULT_TEMPLATE_SUPPLIER,
-    schema: String = "", encoding: Charset = Charsets.UTF_8, compress: Boolean = false
-  ) : this(sourceConnectorId, databaseType, FileOutputStream(path), databaseTemplateSupplier, schema, encoding, compress)
+    sourceConnectorId: String, databaseType: DatabaseType, path: String,
+    schema: String = "", encoding: Charset = Charsets.UTF_8, compress: Boolean = false,
+    databaseTemplateSupplier: TEMPLATE_SUPPLIER = DEFAULT_TEMPLATE_SUPPLIER
+  ) : this(sourceConnectorId, databaseType, FileOutputStream(path), schema, encoding, compress, databaseTemplateSupplier)
 
   override val user: String get() = "user"
   override val password: String get() = "password"
