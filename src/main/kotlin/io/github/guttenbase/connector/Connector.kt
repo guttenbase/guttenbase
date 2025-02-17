@@ -24,7 +24,7 @@ interface Connector : AutoCloseable {
   /**
    * Return information about database and tables
    */
-  fun retrieveDatabaseMetaData(): DatabaseMetaData
+  fun retrieveDatabase(): DatabaseMetaData
 
   override fun close() {
     closeConnection()

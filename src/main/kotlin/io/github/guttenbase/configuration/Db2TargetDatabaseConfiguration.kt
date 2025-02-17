@@ -58,7 +58,7 @@ open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorReposito
   }
 
   private fun loadConstraints(connection: Connection, connectorId: String) {
-    val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
+    val databaseMetaData = connectorRepository.getDatabase(connectorId)
     val tableMetaDatas = TableOrderHint.getSortedTables(connectorRepository, connectorId)
 
     if (connection.autoCommit) {

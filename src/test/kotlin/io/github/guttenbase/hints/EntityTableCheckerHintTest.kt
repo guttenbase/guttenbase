@@ -23,17 +23,17 @@ class EntityTableCheckerHintTest : AbstractGuttenBaseTest() {
 
     assertTrue(
       objectUnderTest.isEntityTable(
-        connectorRepository.getDatabaseMetaData(CONNECTOR_ID).getTable("FOO_COMPANY")!!
+        connectorRepository.getDatabase(CONNECTOR_ID).getTable("FOO_COMPANY")!!
       )
     )
     assertTrue(
       objectUnderTest.isEntityTable(
-        connectorRepository.getDatabaseMetaData(CONNECTOR_ID).getTable("FOO_USER")!!
+        connectorRepository.getDatabase(CONNECTOR_ID).getTable("FOO_USER")!!
       )
     )
     assertFalse(
       objectUnderTest.isEntityTable(
-        connectorRepository.getDatabaseMetaData(CONNECTOR_ID).getTable("FOO_USER_COMPANY")!!
+        connectorRepository.getDatabase(CONNECTOR_ID).getTable("FOO_USER_COMPANY")!!
       )
     )
   }

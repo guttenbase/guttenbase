@@ -24,7 +24,7 @@ open class DropTablesTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String
 ) {
-  private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(connectorId) }
+  private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabase(connectorId) }
   private val tableMetaData by lazy { TableOrderTool(databaseMetaData).orderTables(topDown = false) }
   private val dropTablesSuffix = databaseMetaData.databaseType.dropTablesSuffix
 

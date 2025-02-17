@@ -18,7 +18,7 @@ private typealias TableNodes = LinkedHashMap<String, TableNode>
  */
 class TableOrderTool(private val databaseMetaData: DatabaseMetaData) {
   @JvmOverloads
-  fun orderTables(tables: List<TableMetaData> = databaseMetaData.tableMetaData, topDown: Boolean = true): List<TableMetaData> {
+  fun orderTables(tables: List<TableMetaData> = databaseMetaData.tables, topDown: Boolean = true): List<TableMetaData> {
     val result = ArrayList<TableMetaData>()
     val tableNodes = createGraph(tables)
 

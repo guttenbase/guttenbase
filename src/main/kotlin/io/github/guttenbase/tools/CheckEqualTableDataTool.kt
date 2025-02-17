@@ -50,7 +50,7 @@ open class CheckEqualTableDataTool(
     val numberOfCheckData =
       connectorRepository.hint<NumberOfCheckedTableData>(sourceConnectorId).numberOfCheckedTableData
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
-    val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
+    val targetDatabase = connectorRepository.getDatabase(targetConnectorId)
     val sourceDatabaseConfiguration1 = connectorRepository
       .getSourceDatabaseConfiguration(sourceConnectorId)
     val sourceDatabaseConfiguration2 = connectorRepository
@@ -181,7 +181,7 @@ open class CheckEqualTableDataTool(
   ): Pair<Any?, Any?> {
     val sourceColumnType = mapping.sourceColumnType
     val targetColumnType = mapping.targetColumnType
-    val targetDatabaseType = connectorRepository.getDatabaseMetaData(targetConnectorId).databaseType
+    val targetDatabaseType = connectorRepository.getDatabase(targetConnectorId).databaseType
     var data1 = sourceColumnType.getValue(resultSet1, sourceColumnIndex, mapping.sourceColumn)
     var data2 = targetColumnType.getValue(resultSet2, targetColumnIndex, mapping.targetColumn)
 

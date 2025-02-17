@@ -8,16 +8,16 @@ from the connector repository that contains all the information about a data bas
 Read some data from the data base in a JUnit test.
 
 ```java
-final DatabaseMetaData databaseMetaData = connectorRepository.getDatabaseMetaData(CONNECTOR_ID);
+final DatabaseMetaData databaseMetaData = connectorRepository.getDatabase(CONNECTOR_ID);
 assertNotNull(databaseMetaData);
 assertEquals("Apache Derby", databaseMetaData.getDatabaseName());
 
-assertEquals(6, databaseMetaData.getTableMetaData().size());
-final TableMetaData userTableMetaData = databaseMetaData.getTableMetaData("FOO_USER");
+assertEquals(6, databaseMetaData.getTable().size());
+final TableMetaData userTableMetaData = databaseMetaData.getTable("FOO_USER");
 assertNotNull(userTableMetaData);
 
 assertEquals(6, userTableMetaData.getColumnCount());
-final ColumnMetaData idColumn = userTableMetaData.getColumnMetaData("ID");
+final ColumnMetaData idColumn = userTableMetaData.getColumn("ID");
 assertNotNull(idColumn);
 assertEquals("BIGINT", idColumn.getColumnTypeName());
 ```

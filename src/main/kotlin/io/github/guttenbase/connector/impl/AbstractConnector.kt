@@ -50,7 +50,7 @@ abstract class AbstractConnector(
   /**
    * {@inheritDoc}
    */
-  override fun retrieveDatabaseMetaData(): DatabaseMetaData {
+  override fun retrieveDatabase(): DatabaseMetaData {
     val inspector = DatabaseMetaDataInspectorTool(connectorRepository, connectorId)
     val connection = openConnection()
     val sourceDatabaseConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)

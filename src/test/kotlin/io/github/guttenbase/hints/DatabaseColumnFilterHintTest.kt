@@ -25,7 +25,7 @@ class DatabaseColumnFilterHintTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testDefault() {
-    val tableMetaData = connectorRepository.getDatabaseMetaData(SOURCE).getTable("FOO_USER")
+    val tableMetaData = connectorRepository.getDatabase(SOURCE).getTable("FOO_USER")
     assertNotNull(tableMetaData)
     assertNotNull(tableMetaData!!.getColumn("USERNAME"))
     assertNotNull(tableMetaData.getColumn("PASSWORD"))
@@ -39,7 +39,7 @@ class DatabaseColumnFilterHintTest : AbstractGuttenBaseTest() {
           columnMetaData.table.tableName != "FOO_USER" || columnMetaData.columnName != "PASSWORD"
         }
     })
-    val tableMetaData = connectorRepository.getDatabaseMetaData(SOURCE).getTable("FOO_USER")
+    val tableMetaData = connectorRepository.getDatabase(SOURCE).getTable("FOO_USER")
     assertNotNull(tableMetaData)
     assertNotNull(tableMetaData!!.getColumn("USERNAME"))
     assertNull(tableMetaData.getColumn("PASSWORD"))

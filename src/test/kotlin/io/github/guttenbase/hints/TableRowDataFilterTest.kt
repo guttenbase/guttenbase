@@ -56,8 +56,8 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectorHint(TARGET, DisableMultipleValueBatchInsertionHint)
     DefaultTableCopyTool(connectorRepository, SOURCE, TARGET).copyTables()
 
-    val sourceTable = connectorRepository.getDatabaseMetaData(SOURCE).getTable("FOO_COMPANY")!!
-    val targetTable = connectorRepository.getDatabaseMetaData(TARGET).getTable("FOO_COMPANY")!!
+    val sourceTable = connectorRepository.getDatabase(SOURCE).getTable("FOO_COMPANY")!!
+    val targetTable = connectorRepository.getDatabase(TARGET).getTable("FOO_COMPANY")!!
 
     assertEquals(4, sourceTable.totalRowCount)
     assertEquals(3, targetTable.totalRowCount)

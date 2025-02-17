@@ -59,12 +59,12 @@ class DatabaseMetaDataImpl(
   override val allTypes: List<DatabaseSupportedColumnType>
     get() = supportedTypes.values.flatten().sorted()
 
-  override val databaseMetaData: JdbcDatabaseMetaData
+  override val metaData: JdbcDatabaseMetaData
     get() = createMetaDataProxy()
 
   override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
 
-  override val tableMetaData get() = ArrayList(tableMap.values)
+  override val tables get() = ArrayList(tableMap.values)
 
   override fun getTable(tableName: String) = tableMap[tableName.uppercase()]
 

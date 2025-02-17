@@ -23,7 +23,7 @@ interface DatabaseMetaData : java.io.Serializable, MetaData {
   /**
    * Return tables list filtered by @see [io.github.guttenbase.repository.RepositoryTableFilter]
    */
-  val tableMetaData: List<TableMetaData>
+  val tables: List<TableMetaData>
   fun getTable(tableName: String): TableMetaData?
 
   /**
@@ -31,7 +31,7 @@ interface DatabaseMetaData : java.io.Serializable, MetaData {
    */
   val supportedTypes: Map<JDBCType, List<DatabaseSupportedColumnType>>
   val allTypes: List<DatabaseSupportedColumnType>
-  val databaseMetaData: JdbcDatabaseMetaData
+  val metaData: JdbcDatabaseMetaData
   val databaseType: DatabaseType
   val connectorRepository: ConnectorRepository
   val connectorId: String

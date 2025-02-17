@@ -92,7 +92,7 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
     CopySchemaTool(connectorRepository, SOURCE, target).copySchema()
     DefaultTableCopyTool(connectorRepository, SOURCE, target).copyTables()
 
-    val databaseMetaData = connectorRepository.getDatabaseMetaData(target)
+    val databaseMetaData = connectorRepository.getDatabase(target)
     val tableMetaData = databaseMetaData.getTable("FOO_COMPANY")!!
 
     assertThat(tableMetaData.totalRowCount).isEqualTo((4))

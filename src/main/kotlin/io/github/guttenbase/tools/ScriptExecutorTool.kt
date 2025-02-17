@@ -106,7 +106,7 @@ constructor(
             }
 
             if (scriptUpdatesSchema) {
-              connectorRepository.refreshDatabaseMetaData(connectorId)
+              connectorRepository.refreshDatabase(connectorId)
             }
 
             if (prepareTargetConnection) {
@@ -114,7 +114,7 @@ constructor(
             }
 
             if (scriptUpdatesSchema) {
-              connectorRepository.refreshDatabaseMetaData(connectorId)
+              connectorRepository.refreshDatabase(connectorId)
             }
           }
         }

@@ -18,7 +18,7 @@ class DatabaseMetaDataExporterTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String
 ) {
-  private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(connectorId) }
+  private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabase(connectorId) }
 
   fun export(file: File) {
     FileOutputStream(file).use {
@@ -48,7 +48,7 @@ class DatabaseMetaDataExporterTool(
         databaseMetaData.connectorId = connectorId
 
         // Pass 1: Make sure all columns are updated
-        databaseMetaData.tableMetaData.forEach { table ->
+        databaseMetaData.tables.forEach { table ->
           (table as InternalTableMetaData).database = databaseMetaData
 
           table.columns.forEach { column ->
@@ -58,7 +58,7 @@ class DatabaseMetaDataExporterTool(
         }
 
         // Pass 2: Now we safely may replace column references in indexes and foreign keys
-        databaseMetaData.tableMetaData.forEach { table ->
+        databaseMetaData.tables.forEach { table ->
           table.indexes.forEach { index -> updateIndex(index as InternalIndexMetaData, table, columnMap) }
 
           table.exportedForeignKeys.forEach { fk -> updateForeignKey(fk as InternalForeignKeyMetaData, table, columnMap) }

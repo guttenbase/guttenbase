@@ -50,7 +50,7 @@ internal class DatabaseMetaDataInspectorTool(
     connection: Connection, metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, schemaPrefix: String
   ) {
     connection.createStatement().use { statement ->
-      for (table in databaseMetaData.tableMetaData) {
+      for (table in databaseMetaData.tables) {
         val tableMetaData = table as InternalTableMetaData
 
         retrieveColumns(statement, tableMetaData, schemaPrefix)
@@ -58,7 +58,7 @@ internal class DatabaseMetaDataInspectorTool(
     }
 
     try {
-      for (table in databaseMetaData.tableMetaData) {
+      for (table in databaseMetaData.tables) {
         val tableMetaData = table as InternalTableMetaData
 
         updateColumnsTypeInformation(metaData, databaseMetaData, tableMetaData)
@@ -71,7 +71,7 @@ internal class DatabaseMetaDataInspectorTool(
     }
 
     connection.createStatement().use { statement ->
-      for (table in databaseMetaData.tableMetaData) {
+      for (table in databaseMetaData.tables) {
         val tableMetaData = table as InternalTableMetaData
 
         enrichTableMetaData(statement, tableMetaData, schemaPrefix)
@@ -402,7 +402,7 @@ internal class DatabaseMetaDataInspectorTool(
         }
       }
 
-      LOG.info("${databaseMetaData.tableMetaData.size} accepted tables: ${databaseMetaData.tableMetaData}")
+      LOG.info("${databaseMetaData.tables.size} accepted tables: ${databaseMetaData.tables}")
     }
   }
 

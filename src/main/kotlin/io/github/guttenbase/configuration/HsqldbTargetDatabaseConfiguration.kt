@@ -23,18 +23,18 @@ open class HsqldbTargetDatabaseConfiguration(connectorRepository: ConnectorRepos
       connection.autoCommit = false
     }
 
-    setReferentialIntegrity(connection, false, connectorRepository.getDatabaseMetaData(connectorId))
+    setReferentialIntegrity(connection, false, connectorRepository.getDatabase(connectorId))
   }
 
   /**
    * {@inheritDoc}
    */
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
-    setReferentialIntegrity(connection, true, connectorRepository.getDatabaseMetaData(connectorId))
+    setReferentialIntegrity(connection, true, connectorRepository.getDatabase(connectorId))
   }
 
   private fun setReferentialIntegrity(connection: Connection, enable: Boolean, databaseMetaData: DatabaseMetaData) {
-    val databaseMajorVersion: Int = databaseMetaData.databaseMetaData.databaseMajorVersion
+    val databaseMajorVersion: Int = databaseMetaData.metaData.databaseMajorVersion
     val referentialIntegrity = if (enable) "TRUE" else "FALSE"
     val command = if (databaseMajorVersion < 2) "SET REFERENTIAL_INTEGRITY " else "SET DATABASE REFERENTIAL INTEGRITY "
     executeSQL(connection, command + referentialIntegrity)

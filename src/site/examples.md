@@ -95,7 +95,7 @@ public class MassDataProducerTest extends AbstractGuttenBaseTest
       idColumnMetaData = sourceColumnMetaData;
     }
 
-    final TableMetaData tableMetaData = idColumnMetaData.getTableMetaData();
+    final TableMetaData tableMetaData = idColumnMetaData.getTable();
     final Long maxId = _maxTableIds.get(tableMetaData);
 
     assertNotNull(sourceColumnMetaData + ":" + tableMetaData, maxId);
@@ -105,7 +105,7 @@ public class MassDataProducerTest extends AbstractGuttenBaseTest
 
   private void computeMaximumIds() throws SQLException
   {
-    final List<TableMetaData> tables = _connectorRepository.getDatabaseMetaData(SOURCE).getTableMetaData();
+    final List<TableMetaData> tables = _connectorRepository.getDatabase(SOURCE).getTable();
     final EntityTableChecker entityTableChecker = _connectorRepository.getConnectorHint(SOURCE, EntityTableChecker.class)
         .getValue();
     final MinMaxIdSelectorTool minMaxIdSelectorTool = new MinMaxIdSelectorTool(_connectorRepository);

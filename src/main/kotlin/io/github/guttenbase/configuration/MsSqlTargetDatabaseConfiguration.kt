@@ -26,14 +26,14 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
       connection.autoCommit = false
     }
 
-    disableTableForeignKeys(connection, connectorId, getTableMetaData(connectorId))
+    disableTableForeignKeys(connection, connectorId, getTable(connectorId))
   }
 
   /**
    * {@inheritDoc}
    */
   override fun finalizeTargetConnection(connection: Connection, connectorId: String) {
-    enableTableForeignKeys(connection, connectorId, getTableMetaData(connectorId))
+    enableTableForeignKeys(connection, connectorId, getTable(connectorId))
   }
 
   /**
@@ -50,7 +50,7 @@ open class MsSqlTargetDatabaseConfiguration(connectorRepository: ConnectorReposi
     setIdentityInsert(connection, connectorId, false, table)
   }
 
-  private fun getTableMetaData(connectorId: String) = connectorRepository.getDatabaseMetaData(connectorId).tableMetaData
+  private fun getTable(connectorId: String) = connectorRepository.getDatabase(connectorId).tables
 
   private fun disableTableForeignKeys(connection: Connection, connectorId: String, tableMetaData: List<TableMetaData>) {
     setTableForeignKeys(connection, connectorId, tableMetaData, false)

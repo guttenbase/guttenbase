@@ -29,7 +29,7 @@ import java.sql.Types
 class SchemaScriptCreatorToolTest {
   private var databaseMetaData: DatabaseMetaData
   private val connectorRepository = object : ConnectorRepository() {
-    override fun getDatabaseMetaData(connectorId: String): DatabaseMetaData {
+    override fun getDatabase(connectorId: String): DatabaseMetaData {
       return databaseMetaData
     }
   }.apply { updateRepository(this) }
@@ -41,8 +41,8 @@ class SchemaScriptCreatorToolTest {
 
   @Test
   fun testMetaData() {
-    assertEquals("GuttenBaseDB", databaseMetaData.databaseMetaData.databaseProductName)
-    assertEquals(42, databaseMetaData.databaseMetaData.maxColumnNameLength)
+    assertEquals("GuttenBaseDB", databaseMetaData.metaData.databaseProductName)
+    assertEquals(42, databaseMetaData.metaData.maxColumnNameLength)
   }
 
   @Test
@@ -117,7 +117,7 @@ class SchemaScriptCreatorToolTest {
 
   @Test
   fun testForeignKey() {
-    val foreignKeyMetaData = databaseMetaData.tableMetaData[0].importedForeignKeys[0]
+    val foreignKeyMetaData = databaseMetaData.tables[0].importedForeignKeys[0]
     val sql = objectUnderTest.createForeignKey(foreignKeyMetaData)
 
     assertEquals(
@@ -128,14 +128,14 @@ class SchemaScriptCreatorToolTest {
 
   @Test
   fun createColumn() {
-    val sql = objectUnderTest.addTableColumn(databaseMetaData.tableMetaData[0].columns[1])
+    val sql = objectUnderTest.addTableColumn(databaseMetaData.tables[0].columns[1])
     assertEquals("""ALTER TABLE schemaName."MY_TABLE1" ADD "NAME" VARCHAR(100) NOT NULL;""", sql)
   }
 
   @Test
   fun testIndex() {
-    val columnMetaData = databaseMetaData.tableMetaData[0].getColumn("name")!!
-    val index = databaseMetaData.tableMetaData[0].getIndexesContainingColumn(columnMetaData)[0]
+    val columnMetaData = databaseMetaData.tables[0].getColumn("name")!!
+    val index = databaseMetaData.tables[0].getIndexesContainingColumn(columnMetaData)[0]
     val sql = objectUnderTest.createIndex(index)
 
     assertEquals("""CREATE UNIQUE INDEX "NAME_IDX1" ON schemaName."MY_TABLE1"("NAME");""", sql)

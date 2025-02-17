@@ -24,7 +24,7 @@ class RepositoryColumnFilterHintTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testFilter() {
-    val tableMetaData1 = connectorRepository.getDatabaseMetaData(SOURCE).getTable("FOO_USER")!!
+    val tableMetaData1 = connectorRepository.getDatabase(SOURCE).getTable("FOO_USER")!!
 
     assertEquals(7, tableMetaData1.columnCount, "Before")
     connectorRepository.addConnectorHint(SOURCE, object : RepositoryColumnFilterHint() {
@@ -32,7 +32,7 @@ class RepositoryColumnFilterHintTest : AbstractGuttenBaseTest() {
         get() = RepositoryColumnFilter { column -> !column.columnName.equals("password", ignoreCase = true) }
     })
 
-    val tableMetaData2 = connectorRepository.getDatabaseMetaData(SOURCE).getTable("FOO_USER")!!
+    val tableMetaData2 = connectorRepository.getDatabase(SOURCE).getTable("FOO_USER")!!
     assertEquals(6, tableMetaData2.columnCount, "After")
   }
 }

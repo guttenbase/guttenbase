@@ -27,7 +27,7 @@ open class ReadTableDataTool(
 ) : AutoCloseable {
   constructor(connectorRepository: ConnectorRepository, connectorId: String, tableName: String) : this(
     connectorRepository, connectorId,
-    connectorRepository.getDatabaseMetaData(connectorId).getTable(tableName)
+    connectorRepository.getDatabase(connectorId).getTable(tableName)
       ?: throw IllegalStateException("Table $tableName not found")
   )
 
@@ -47,7 +47,7 @@ open class ReadTableDataTool(
   fun start(connection: Connection): ReadTableDataTool {
     val sourceConfiguration = connectorRepository.getSourceDatabaseConfiguration(connectorId)
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
-    val databaseMetaData = connectorRepository.getDatabaseMetaData(connectorId)
+    val databaseMetaData = connectorRepository.getDatabase(connectorId)
     val tableName = tableMapper.fullyQualifiedTableName(tableMetaData, databaseMetaData)
     val selectStatement = SelectStatementCreator(connectorRepository, connectorId)
       .createSelectStatement(connection, tableName, tableMetaData)

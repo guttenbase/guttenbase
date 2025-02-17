@@ -28,10 +28,10 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Inspect database meta data`() {
-    val derby = connectorRepository.getDatabaseMetaData(DERBYDB)
+    val derby = connectorRepository.getDatabase(DERBYDB)
     val derbyVarchar = DatabaseSupportedColumnType("VARCHAR", VARCHAR, 32672, 0, true)
 
-    assertEquals("Apache Derby Embedded JDBC Driver", derby.databaseMetaData.driverName)
+    assertEquals("Apache Derby Embedded JDBC Driver", derby.metaData.driverName)
     assertThat(derby.supportedTypes.values.flatten()).contains(
       derbyVarchar,
       DatabaseSupportedColumnType("BIGINT", BIGINT, 19, 0, true),
@@ -39,10 +39,10 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     )
     assertThat(derby.supportedTypes[VARCHAR]).containsOnly(derbyVarchar)
 
-    val h2 = connectorRepository.getDatabaseMetaData(H2DB)
+    val h2 = connectorRepository.getDatabase(H2DB)
     val h2Varchar = DatabaseSupportedColumnType("CHARACTER VARYING", VARCHAR, 1000000000, 0, true)
 
-    assertEquals("H2 JDBC Driver", h2.databaseMetaData.driverName)
+    assertEquals("H2 JDBC Driver", h2.metaData.driverName)
     assertThat(h2.supportedTypes.values.flatten()).contains(
       h2Varchar,
       DatabaseSupportedColumnType("BIGINT", BIGINT, 64, 0, true),
@@ -50,10 +50,10 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     )
     assertThat(h2.supportedTypes[VARCHAR]).contains(h2Varchar)
 
-    val hsqldb = connectorRepository.getDatabaseMetaData(HSQLDB)
+    val hsqldb = connectorRepository.getDatabase(HSQLDB)
     val hsqldbVarchar = DatabaseSupportedColumnType("VARCHAR", VARCHAR, 2147483647, 0, true)
 
-    assertEquals("HSQL Database Engine Driver", hsqldb.databaseMetaData.driverName)
+    assertEquals("HSQL Database Engine Driver", hsqldb.metaData.driverName)
     assertThat(hsqldb.supportedTypes.values.flatten()).contains(
       hsqldbVarchar,
       DatabaseSupportedColumnType("BIGINT", BIGINT, 64, 0, true),
@@ -64,13 +64,13 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Copy complex object`() {
-    val data = connectorRepository.getDatabaseMetaData(DERBYDB)
+    val data = connectorRepository.getDatabase(DERBYDB)
     val result = Util.copyObject(DatabaseMetaData::class.java, data)
 
     assertEquals(data, result)
-    assertEquals("Apache Derby Embedded JDBC Driver", result.databaseMetaData.driverName)
-    assertEquals(data.databaseMetaData.driverName, result.databaseMetaData.driverName)
-    assertEquals(data.tableMetaData, result.tableMetaData)
+    assertEquals("Apache Derby Embedded JDBC Driver", result.metaData.driverName)
+    assertEquals(data.metaData.driverName, result.metaData.driverName)
+    assertEquals(data.tables, result.tables)
 
     val tableMetaData1 = data.getTable("FOO_USER")!!
     val tableMetaData2 = result.getTable("FOO_USER")!!

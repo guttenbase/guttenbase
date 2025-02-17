@@ -217,7 +217,7 @@ connectorRepository.addConnectorHint(SOURCE, new DatabaseColumnFilterHint() {
     @Override
     public DatabaseColumnFilter getValue() {
         return columnMetaData ->
-          !columnMetaData.getTableMetaData().getTableName().equals("FOO_USER")
+          !columnMetaData.getTable().getTableName().equals("FOO_USER")
           || !columnMetaData.getColumnName().equals("PASSWORD");
     }
 }
@@ -252,7 +252,7 @@ connectorRepository.addConnectorHint(SOURCE, new EntityTableCheckerHint() {
     @Override
     public EntityTableChecker getValue() {
         return tableMetaData -> {
-            for (final ColumnMetaData columnMetaData :tableMetaData.getColumnMetaData()) {
+            for (final ColumnMetaData columnMetaData :tableMetaData.getColumn()) {
                 final String columnName = columnMetaData.getColumnName().toUpperCase();
                 if (columnMetaData.isPrimaryKey() && (columnName.equals("ID") || columnName.equals("IDENT"))) {
                   return true;

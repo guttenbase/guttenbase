@@ -34,7 +34,7 @@ class SchemaComparatorTool(
   fun check(): SchemaCompatibilityIssues {
     val sourceTables = TableOrderHint.getSortedTables(connectorRepository, sourceConnectorId)
     val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
-    val targetDatabase = connectorRepository.getDatabaseMetaData(targetConnectorId)
+    val targetDatabase = connectorRepository.getDatabase(targetConnectorId)
 
     checkEqualTables(sourceTables, targetDatabase, tableMapper)
 

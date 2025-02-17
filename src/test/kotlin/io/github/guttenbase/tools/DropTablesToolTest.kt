@@ -74,7 +74,7 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   private fun drop(target: String) {
     DropTablesTool(connectorRepository, target).dropTables()
 
-    assertThat(connectorRepository.getDatabaseMetaData(target).tableMetaData).isEmpty()
+    assertThat(connectorRepository.getDatabase(target).tables).isEmpty()
   }
 
   @Test
@@ -87,7 +87,7 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   private fun dropAll(target: String) {
     DropTablesTool(connectorRepository, target).dropAll()
 
-    assertThat(connectorRepository.getDatabaseMetaData(target).tableMetaData).isEmpty()
+    assertThat(connectorRepository.getDatabase(target).tables).isEmpty()
   }
 
   @Test

@@ -13,8 +13,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class TableOrderToolTest : AbstractGuttenBaseTest() {
-  private val h2DatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(H2DB) }
-  private val hsqldbDatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabaseMetaData(HSQLDB) }
+  private val h2DatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabase(H2DB) }
+  private val hsqldbDatabaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabase(HSQLDB) }
 
   @BeforeEach
   fun setupTables() {

@@ -39,13 +39,13 @@ class ExportSQLConnector(
    *
    * {@inheritDoc}
    */
-  override fun retrieveDatabaseMetaData(): DatabaseMetaData {
+  override fun retrieveDatabase(): DatabaseMetaData {
     val supplier = connectorInfo.databaseTemplateSupplier(connectorInfo.databaseType)
       ?: throw GuttenBaseException("Database template supplier resolves to null for ${connectorInfo.databaseType}")
 
     val targetDatabase = importDataBaseMetaData(supplier, connectorId, connectorRepository)
     val sourceDatabase = retrieveSourceDatabaseMetaData()
-    val tableMetaData = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).tableMetaData
+    val tableMetaData = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).tables
 
     tableMetaData.map { it as InternalTableMetaData }.forEach {
       it.totalRowCount = 0
@@ -61,12 +61,12 @@ class ExportSQLConnector(
 
       override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
 
-      override val tableMetaData get() = tableMetaData
+      override val tables get() = tableMetaData
 
       override fun getTable(tableName: String) = tableMetaDataMap[tableName.uppercase()]
     }
   }
 
   private fun retrieveSourceDatabaseMetaData() =
-    connectorRepository.getDatabaseMetaData(connectorInfo.sourceConnectorId) as InternalDatabaseMetaData
+    connectorRepository.getDatabase(connectorInfo.sourceConnectorId) as InternalDatabaseMetaData
 }

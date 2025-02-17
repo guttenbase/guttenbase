@@ -4,7 +4,7 @@ import io.github.guttenbase.repository.DatabaseTableFilter
 
 /**
  * Which tables should be regarded when [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is looking for tables in the given data base. The
- * [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is triggered by default in [io.github.guttenbase.connector.impl.AbstractConnector.retrieveDatabaseMetaData].
+ * [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is triggered by default in [io.github.guttenbase.connector.impl.AbstractConnector.retrieveDatabase].
  *
  *
  * &copy; 2012-2044 akquinet tech@spree

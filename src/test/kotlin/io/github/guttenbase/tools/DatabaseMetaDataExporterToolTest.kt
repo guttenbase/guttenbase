@@ -51,13 +51,13 @@ class DatabaseMetaDataExporterToolTest : AbstractGuttenBaseTest() {
 
     DatabaseMetaDataExporterTool(connectorRepository, connectorId).export(file)
 
-    val metaData1 = connectorRepository.getDatabaseMetaData(connectorId)
+    val metaData1 = connectorRepository.getDatabase(connectorId)
     val metaData2 = importDataBaseMetaData(file, connectorId, connectorRepository)
 
-    assertThat(metaData2.databaseMetaData.driverName).isEqualTo(metaData1.databaseMetaData.driverName)
+    assertThat(metaData2.metaData.driverName).isEqualTo(metaData1.metaData.driverName)
       .isEqualTo(expectedDriverName)
     assertThat(metaData2.supportedTypes).isEqualTo(metaData1.supportedTypes)
-    assertThat(metaData2.tableMetaData).isEqualTo(metaData1.tableMetaData)
+    assertThat(metaData2.tables).isEqualTo(metaData1.tables)
 
     metaData2.getTable("FOO_COMPANY")!!.exportedForeignKeys.forEach { fk ->
       val referencedTable2 = fk.referencedTable

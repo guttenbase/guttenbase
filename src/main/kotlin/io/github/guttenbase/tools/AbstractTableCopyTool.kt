@@ -41,8 +41,8 @@ abstract class AbstractTableCopyTool(
     val sourceTableMapper = connectorRepository.hint<TableMapper>(sourceConnectorId)
     val targetTableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
     val refreshTargetConnection = connectorRepository.hint<RefreshTargetConnection>(targetConnectorId)
-    val sourceDatabaseMetaData = connectorRepository.getDatabaseMetaData(sourceConnectorId)
-    val targetDatabaseMetaData = connectorRepository.getDatabaseMetaData(targetConnectorId)
+    val sourceDatabaseMetaData = connectorRepository.getDatabase(sourceConnectorId)
+    val targetDatabaseMetaData = connectorRepository.getDatabase(targetConnectorId)
     val sourceConnector = connectorRepository.createConnector(sourceConnectorId)
     val targetConnector = connectorRepository.createConnector(targetConnectorId)
     val sourceConnection = sourceConnector.openConnection()
@@ -108,7 +108,7 @@ abstract class AbstractTableCopyTool(
     sourceConnector.closeConnection()
     targetConnector.closeConnection()
     progressIndicator.finalizeIndicator()
-    connectorRepository.refreshDatabaseMetaData(targetConnectorId)
+    connectorRepository.refreshDatabase(targetConnectorId)
   }
 
   protected abstract fun copyTable(

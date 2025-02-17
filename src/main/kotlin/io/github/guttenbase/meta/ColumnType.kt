@@ -259,7 +259,7 @@ enum class ColumnType(
 
   private fun driverSupportsJavaTimeAPI(databaseMetaData: DatabaseMetaData) = when {
     // We know that this driver is too old
-    databaseMetaData.databaseMetaData.driverName.startsWith("jTDS Type 4 JDBC Driver") -> false
+    databaseMetaData.metaData.driverName.startsWith("jTDS Type 4 JDBC Driver") -> false
     else -> true
   }
 

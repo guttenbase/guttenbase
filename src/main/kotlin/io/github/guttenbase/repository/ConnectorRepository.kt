@@ -71,7 +71,7 @@ open class ConnectorRepository {
     val hintMap = connectionHintMap.getOrPut(connectorId) { HashMap() }
     hintMap[hint.connectorHintType] = hint
 
-    refreshDatabaseMetaData(connectorId)
+    refreshDatabase(connectorId)
     return this
   }
 
@@ -93,14 +93,14 @@ open class ConnectorRepository {
   /**
    * Get all meta data from data base.
    */
-  open fun getDatabaseMetaData(connectorId: String): DatabaseMetaData {
+  open fun getDatabase(connectorId: String): DatabaseMetaData {
     return try {
       var databaseMetaData: InternalDatabaseMetaData? = databaseMetaDataMap[connectorId]
 
       if (databaseMetaData == null) {
         val connector = createConnector(connectorId)
 
-        databaseMetaData = connector.retrieveDatabaseMetaData() as InternalDatabaseMetaData
+        databaseMetaData = connector.retrieveDatabase() as InternalDatabaseMetaData
 
         databaseMetaDataMap[connectorId] = databaseMetaData.withFilteredTables(connectorId)
       }
@@ -114,7 +114,7 @@ open class ConnectorRepository {
   /**
    * Reset table data, i.e. reload data from the data base.
    */
-  open fun refreshDatabaseMetaData(connectorId: String) {
+  open fun refreshDatabase(connectorId: String) {
     databaseMetaDataMap.remove(connectorId)
   }
 
@@ -183,7 +183,7 @@ open class ConnectorRepository {
     val tableFilter = hint<RepositoryTableFilter>(connectorId)
     val columnFilter = hint<RepositoryColumnFilter>(connectorId)
 
-    for (tableMetaData in tableMetaData) {
+    for (tableMetaData in tables) {
       if (tableFilter.accept(tableMetaData)) {
         for (columnMetaData in tableMetaData.columns) {
           if (!columnFilter.accept(columnMetaData)) {

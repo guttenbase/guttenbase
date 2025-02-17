@@ -37,7 +37,7 @@ class DatabaseTableFilterHintTest : AbstractGuttenBaseTest() {
 
   @Test
   fun testFilter() {
-    val tableMetaData = connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData
+    val tableMetaData = connectorRepository.getDatabase(SOURCE).tables
     assertEquals(3, tableMetaData.size)
     for (table in tableMetaData) {
       assertTrue(table.tableName.uppercase().contains("USER"))

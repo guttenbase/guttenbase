@@ -88,7 +88,7 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
   }
 
   private fun computeMaximumIds() {
-    val tables: List<TableMetaData> = connectorRepository.getDatabaseMetaData(SOURCE).tableMetaData
+    val tables: List<TableMetaData> = connectorRepository.getDatabase(SOURCE).tables
     val entityTableChecker = connectorRepository.hint<EntityTableChecker>(SOURCE)
     val minMaxIdSelectorTool = MinMaxIdSelectorTool(connectorRepository)
 
