@@ -6,22 +6,23 @@ import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Connection
 
-typealias CLOSER = (Connection) -> Unit
 
 /**
  * Connection info via alternate connection provider
  *
  * &copy; 2012-2044 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
+typealias ConnectionProvider = () -> Connection
+typealias ConnectionCloser = (Connection) -> Unit
+
 @Suppress("unused")
 open class WrapperConnectorInfo @JvmOverloads constructor(
   override val schema: String,
   override val databaseType: DatabaseType,
-  private val connectionProvider: () -> Connection,
-  private val connectionCloser: CLOSER? = null
+  private val connectionProvider: ConnectionProvider,
+  private val connectionCloser: ConnectionCloser? = null
 ) : ConnectorInfo {
 
   override val user: String = ""

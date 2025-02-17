@@ -1,7 +1,10 @@
 package io.github.guttenbase.tools
 
+import io.github.guttenbase.mapping.TableMapper
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.AbstractInsertStatementCreator
 import java.sql.PreparedStatement
 
@@ -14,21 +17,25 @@ class InsertStatementTool(connectorRepository: ConnectorRepository, targetConnec
   private val columnMap: Map<String, ColumnMetaData> by lazy { columns.associateBy { it.columnName.lowercase() } }
 
   @JvmOverloads
-  fun createInsertStatementSQL(
-    tableName: String,
-    includePrimaryKey: Boolean = true,
-  ): String {
-    val tableMetaData =
-      connectorRepository.getDatabase(this@InsertStatementTool.targetConnectorId).getTable(tableName)
-        ?: throw IllegalStateException("Table $tableName not found")
-    columns = getMappedTargetColumns(tableMetaData, tableMetaData)
+  fun createInsertStatementSQL(tableName: String, includePrimaryKey: Boolean = true): String {
+    val table = connectorRepository.getDatabase(this@InsertStatementTool.targetConnectorId).getTable(tableName)
+      ?: throw IllegalStateException("Table $tableName not found")
+    columns = getMappedTargetColumns(table, table)
       .filter { if (!includePrimaryKey) !it.isPrimaryKey else true }
 
     if (columns.isEmpty()) {
       throw IllegalStateException("No matching columns for $tableName")
     }
 
-    return "INSERT INTO " + tableName + " (" + createColumnClause(columns) + ") VALUES\n" + createValueTuples(1, columns)
+    return "INSERT INTO " + table.getTableName() + " (" + createColumnClause(columns) + ") VALUES\n" +
+        createValueTuples(1, columns)
+  }
+
+  private fun TableMetaData.getTableName(): String {
+    val targetDatabaseMetaData = connectorRepository.getDatabase(targetConnectorId)
+    val tableMapper = connectorRepository.hint<TableMapper>(targetConnectorId)
+
+    return tableMapper.fullyQualifiedTableName(this, targetDatabaseMetaData)
   }
 
   @JvmOverloads

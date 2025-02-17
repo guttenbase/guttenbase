@@ -43,9 +43,6 @@ abstract class AbstractStatementCreator(
     val sourceColumns = getSortedColumns(connectorRepository, sourceTableMetaData)
     val columnMapper = connectorRepository.hint<ColumnMapper>(targetConnectorId)
 
-    return sourceColumns.map {
-      val mapping = columnMapper.map(it, targetTableMetaData)
-      mapping.columns
-    }.flatten()
+    return sourceColumns.map { columnMapper.map(it, targetTableMetaData).columns }.flatten()
   }
 }

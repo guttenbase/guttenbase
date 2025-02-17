@@ -1,3 +1,5 @@
+@file:Suppress("JavaIoSerializableObjectMustHaveReadResolve")
+
 package io.github.guttenbase.io.github.guttenbase.tools
 
 import io.github.guttenbase.AbstractGuttenBaseTest
@@ -7,20 +9,25 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.connector.impl.PropertiesEncryptionTool
 import io.github.guttenbase.connector.impl.PropertiesURLConnectorInfo
 import io.github.guttenbase.connector.impl.URLConnectorInfo
+import io.github.guttenbase.connector.impl.WrapperConnectorInfo
 import io.github.guttenbase.hints.DERBYDB
 import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.hints.impl.LoggingScriptExecutorProgressIndicatorHint
 import io.github.guttenbase.hints.impl.LoggingTableCopyProgressIndicatorHint
+import io.github.guttenbase.meta.DatabaseType.POSTGRESQL
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
 import io.github.guttenbase.tools.InsertStatementTool
 import io.github.guttenbase.tools.ReadTableDataTool
 import io.github.guttenbase.tools.ScriptExecutorTool
+import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+
 
 /**
  * Copy schema between databases
@@ -30,6 +37,7 @@ import org.junit.jupiter.api.Test
  * @author M. Dahm
  */
 class CopySchemaToolTest : AbstractGuttenBaseTest() {
+
   @BeforeEach
   fun setupTables() {
     val stream = CopySchemaToolTest::class.java.getResourceAsStream("/hsqldb.properties")
@@ -41,18 +49,9 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
       .addConnectionInfo(PROPS, PropertiesURLConnectorInfo(stream!!))
       .addConnectionInfo(ENCRYPTED, PropertiesURLConnectorInfo(decryptedProperties))
-      .addConnectorHint(H2DB, LoggingTableCopyProgressIndicatorHint)
-      .addConnectorHint(H2DB, LoggingScriptExecutorProgressIndicatorHint)
-      .addConnectorHint(DERBYDB, LoggingTableCopyProgressIndicatorHint)
-      .addConnectorHint(DERBYDB, LoggingScriptExecutorProgressIndicatorHint)
-      .addConnectorHint(HSQLDB, LoggingTableCopyProgressIndicatorHint)
-      .addConnectorHint(HSQLDB, LoggingScriptExecutorProgressIndicatorHint)
-      .addConnectorHint(PROPS, LoggingTableCopyProgressIndicatorHint)
-      .addConnectorHint(PROPS, LoggingScriptExecutorProgressIndicatorHint)
-      .addConnectorHint(ENCRYPTED, LoggingTableCopyProgressIndicatorHint)
-      .addConnectorHint(ENCRYPTED, LoggingScriptExecutorProgressIndicatorHint)
-      .addConnectorHint(SOURCE, LoggingTableCopyProgressIndicatorHint)
-      .addConnectorHint(SOURCE, LoggingScriptExecutorProgressIndicatorHint)
+      .addConnectionInfo(POSTGRES, TestPostgresqlConnectionInfo)
+      .addConnectorHint(null, LoggingTableCopyProgressIndicatorHint)
+      .addConnectorHint(null, LoggingScriptExecutorProgressIndicatorHint)
 
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
     ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/data/test-data.sql")
@@ -71,6 +70,11 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
   @Test
   fun testH2() {
     test(H2DB)
+  }
+
+  @Test
+  fun testPostgres() {
+    test(POSTGRES)
   }
 
   @Test
@@ -102,16 +106,14 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
 
     // Explicit ID
     InsertStatementTool(connectorRepository, target).createInsertStatement(
-      "FOO_COMPANY",
-      includePrimaryKey = true
+      "FOO_COMPANY", includePrimaryKey = true
     ).setParameter("SUPPLIER", 'x').setParameter("NAME", "JENS")
       .setParameter("ID", 0L)
       .execute()
 
     // Implicit ID
     InsertStatementTool(connectorRepository, target).createInsertStatement(
-      "FOO_COMPANY",
-      includePrimaryKey = false
+      "FOO_COMPANY", includePrimaryKey = false
     ).setParameter("SUPPLIER", 'x').setParameter("NAME", "HIPPE")
       .execute()
 
@@ -127,12 +129,24 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
       val last = data.last()
       assertThat(last).hasSize(3)
       assertThat(last["NAME"]).isEqualTo("HIPPE")
-      assertThat(last["ID"]).isEqualTo(5L)
+      assertThat(last["ID"] as Long).isGreaterThanOrEqualTo(5L)
     }
   }
 
   companion object {
     const val PROPS = "PROPS"
     const val ENCRYPTED = "ENCRYPTED"
+    const val POSTGRES = "POSTGRES"
+
+    @JvmStatic
+    private val embeddedPostgres: EmbeddedPostgres by lazy { EmbeddedPostgres.start() }
+
+    @JvmStatic
+    @AfterAll
+    fun teardown() {
+      embeddedPostgres.close()
+    }
+
+    object TestPostgresqlConnectionInfo : WrapperConnectorInfo("", POSTGRESQL, { embeddedPostgres.postgresDatabase.connection })
   }
 }

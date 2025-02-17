@@ -34,7 +34,7 @@ open class ConnectorRepository {
   /**
    * Cache metadata since some databases are very slow on retrieving it.
    */
-  private val databaseMetaDataMap = HashMap<String, InternalDatabaseMetaData>()
+  private val databaseMap = HashMap<String, InternalDatabaseMetaData>()
   private val connectionHintMap = HashMap<String, MutableMap<Class<*>, ConnectorHint<*>>>()
 
   init {
@@ -57,21 +57,26 @@ open class ConnectorRepository {
   open fun removeConnectionInfo(connectorId: String): ConnectorRepository {
     connectionInfoMap.remove(connectorId)
     connectionHintMap.remove(connectorId)
-    databaseMetaDataMap.remove(connectorId)
+    databaseMap.remove(connectorId)
 
     return this
   }
 
   /**
-   * Add configuration hint for connector
+   * Add configuration hint for connector, if you pass "null" as connector ID, the hint will be applied to all connectors present
    */
-  open fun <T> addConnectorHint(connectorId: String, hint: ConnectorHint<T>): ConnectorRepository {
-    // Check connector if is configured
-    getConnectionInfo(connectorId)
-    val hintMap = connectionHintMap.getOrPut(connectorId) { HashMap() }
-    hintMap[hint.connectorHintType] = hint
+  open fun <T> addConnectorHint(connectorId: String?, hint: ConnectorHint<T>): ConnectorRepository {
+    val ids = if (connectorId == null) connectionInfoMap.keys else setOf(connectorId)
 
-    refreshDatabase(connectorId)
+    ids.forEach {
+      // Check connector if is configured
+      getConnectionInfo(it)
+      val hintMap = connectionHintMap.getOrPut(it) { HashMap() }
+      hintMap[hint.connectorHintType] = hint
+
+      refreshDatabase(it)
+    }
+
     return this
   }
 
@@ -95,14 +100,14 @@ open class ConnectorRepository {
    */
   open fun getDatabase(connectorId: String): DatabaseMetaData {
     return try {
-      var databaseMetaData: InternalDatabaseMetaData? = databaseMetaDataMap[connectorId]
+      var databaseMetaData: InternalDatabaseMetaData? = databaseMap[connectorId]
 
       if (databaseMetaData == null) {
         val connector = createConnector(connectorId)
 
         databaseMetaData = connector.retrieveDatabase() as InternalDatabaseMetaData
 
-        databaseMetaDataMap[connectorId] = databaseMetaData.withFilteredTables(connectorId)
+        databaseMap[connectorId] = databaseMetaData.withFilteredTables(connectorId)
       }
 
       databaseMetaData
@@ -115,7 +120,7 @@ open class ConnectorRepository {
    * Reset table data, i.e. reload data from the data base.
    */
   open fun refreshDatabase(connectorId: String) {
-    databaseMetaDataMap.remove(connectorId)
+    databaseMap.remove(connectorId)
   }
 
   /**
