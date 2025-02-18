@@ -1,6 +1,6 @@
 # Change log
 
-## 4.1.2
+## 4.1.3
 - Added PostgreSQL test support
 - Minor fixes
 
