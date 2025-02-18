@@ -1,5 +1,9 @@
 # Change log
 
+## 4.1.2
+- Added PostgreSQL test support
+- Minor fixes
+
 ## 4.1.1
 - Remove unmaintained binary exporter/importer
 - Export database related metadata to JSON
