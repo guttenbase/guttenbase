@@ -8,7 +8,6 @@ import io.github.guttenbase.hints.impl.LoggingTableCopyProgressIndicatorHint
 import io.github.guttenbase.schema.comparison.SchemaComparatorTool
 import io.github.guttenbase.tools.CheckEqualTableDataTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,7 +36,6 @@ abstract class AbstractHintTest(
       .addConnectorHint(TARGET, LoggingTableCopyProgressIndicatorHint)
       .addConnectorHint(TARGET, LoggingScriptExecutorProgressIndicatorHint)
 
-    val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = Charsets.UTF_8)
     scriptExecutorTool.executeFileScript(SOURCE, resourceName = sourceTableSchemaScript)
     scriptExecutorTool.executeFileScript(TARGET, resourceName = targetTableSchemaScript)
     scriptExecutorTool.executeFileScript(SOURCE, false, false, dataScript)

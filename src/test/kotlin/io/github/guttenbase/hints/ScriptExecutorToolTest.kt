@@ -17,14 +17,12 @@ import java.util.*
 /**
  * Execute updates on schema
  *
- *
  * &copy; 2012-2044 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
 class ScriptExecutorToolTest : AbstractGuttenBaseTest() {
-  private val objectUnderTest = ScriptExecutorTool(connectorRepository)
+  private val objectUnderTest = scriptExecutorTool
 
   @BeforeEach
   fun setup() {

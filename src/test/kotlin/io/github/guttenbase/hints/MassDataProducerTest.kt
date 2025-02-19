@@ -11,7 +11,10 @@ import io.github.guttenbase.meta.ColumnType.CLASS_LONG
 import io.github.guttenbase.meta.ColumnType.CLASS_STRING
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.hint
-import io.github.guttenbase.tools.*
+import io.github.guttenbase.tools.DefaultTableCopyTool
+import io.github.guttenbase.tools.EntityTableChecker
+import io.github.guttenbase.tools.MinMaxIdSelectorTool
+import io.github.guttenbase.tools.RESULT_LIST
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -48,9 +51,9 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
   fun setup() {
     connectorRepository.addConnectionInfo(SOURCE, TestDerbyConnectionInfo())
     connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-derby.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables-h2.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/ddl/tables-derby.sql")
+    scriptExecutorTool.executeFileScript(TARGET, resourceName = "/ddl/tables-h2.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, false, false, "/data/test-data.sql")
 
     DefaultColumnDataMapperProvider.addMapping(CLASS_STRING, CLASS_STRING, nameDataMapper)
     DefaultColumnDataMapperProvider.addMapping(CLASS_LONG, CLASS_LONG, idDataMapper)
@@ -67,11 +70,11 @@ class MassDataProducerTest : AbstractGuttenBaseTest() {
       loopCounter++
     }
 
-    val listUserTable = ScriptExecutorTool(connectorRepository).executeQuery(
+    val listUserTable = scriptExecutorTool.executeQuery(
       TARGET, "SELECT DISTINCT ID, USERNAME, NAME, PASSWORD FROM FOO_USER ORDER BY ID"
     )
     assertEquals(4 * MAX_LOOP, listUserTable.size)
-    val listUserCompanyTable: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
+    val listUserCompanyTable: RESULT_LIST = scriptExecutorTool.executeQuery(
       TARGET, "SELECT DISTINCT USER_ID, ASSIGNED_COMPANY_ID FROM FOO_USER_COMPANY ORDER BY USER_ID"
     )
     assertEquals(2 * MAX_LOOP, listUserCompanyTable.size)

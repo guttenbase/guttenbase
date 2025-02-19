@@ -3,7 +3,6 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.repository.DatabaseColumnFilter
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -20,7 +19,7 @@ class DatabaseColumnFilterHintTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
   }
 
   @Test

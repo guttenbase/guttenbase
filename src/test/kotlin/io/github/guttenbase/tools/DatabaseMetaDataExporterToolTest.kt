@@ -14,7 +14,6 @@ import io.github.guttenbase.meta.impl.ValueType
 import io.github.guttenbase.serialization.JSON
 import io.github.guttenbase.tools.DatabaseMetaDataExporterTool
 import io.github.guttenbase.tools.DatabaseMetaDataExporterTool.Companion.importDataBaseMetaData
-import io.github.guttenbase.tools.ScriptExecutorTool
 import kotlinx.serialization.Serializable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -80,8 +79,6 @@ class DatabaseMetaDataExporterToolTest : AbstractGuttenBaseTest() {
   }
 
   private fun setup() {
-    val scriptExecutorTool = ScriptExecutorTool(connectorRepository)
-
     connectorRepository.addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
     connectorRepository.addConnectionInfo(H2DB, TestH2ConnectionInfo())
     connectorRepository.addConnectionInfo(DERBYDB, TestDerbyConnectionInfo())

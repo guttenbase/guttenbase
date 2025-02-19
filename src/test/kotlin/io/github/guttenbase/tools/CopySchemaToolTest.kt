@@ -21,7 +21,6 @@ import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
 import io.github.guttenbase.tools.InsertStatementTool
 import io.github.guttenbase.tools.ReadTableDataTool
-import io.github.guttenbase.tools.ScriptExecutorTool
 import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
@@ -53,8 +52,8 @@ class CopySchemaToolTest : AbstractGuttenBaseTest() {
       .addConnectorHint(null, LoggingTableCopyProgressIndicatorHint)
       .addConnectorHint(null, LoggingScriptExecutorProgressIndicatorHint)
 
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/data/test-data.sql")
   }
 
   @Test

@@ -1,5 +1,8 @@
 # Change log
 
+## 4.1.4
+- Fixed encoding issues
+
 ## 4.1.3
 - Added PostgreSQL test support
 - Minor fixes

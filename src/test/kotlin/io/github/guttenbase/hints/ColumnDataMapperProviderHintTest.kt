@@ -3,7 +3,6 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.tools.RESULT_LIST
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -26,7 +25,7 @@ class ColumnDataMapperProviderHintTest :
   }
 
   override fun executeChecks() {
-    val list: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
+    val list: RESULT_LIST = scriptExecutorTool.executeQuery(
       TARGET, "SELECT DISTINCT ID FROM FOO_USER ORDER BY ID"
     )
     assertEquals(4, list.size)

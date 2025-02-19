@@ -6,7 +6,6 @@ import io.github.guttenbase.mapping.ColumnDataMapping
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.ColumnType
 import io.github.guttenbase.tools.RESULT_LIST
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 
@@ -31,7 +30,7 @@ class DataTransformerTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tabl
   }
 
   override fun executeChecks() {
-    val list: RESULT_LIST = ScriptExecutorTool(connectorRepository).executeQuery(
+    val list: RESULT_LIST = scriptExecutorTool.executeQuery(
       TARGET, "SELECT DISTINCT ID, USERNAME, NAME, PASSWORD FROM FOO_USER ORDER BY ID"
     )
     assertEquals(4, list.size)

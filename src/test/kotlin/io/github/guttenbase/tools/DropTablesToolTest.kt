@@ -10,7 +10,6 @@ import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.tools.DropTablesTool
 import io.github.guttenbase.tools.InsertStatementTool
 import io.github.guttenbase.tools.ReadTableDataTool
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,8 +26,6 @@ import java.sql.SQLIntegrityConstraintViolationException
 class DropTablesToolTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setup() {
-    val scriptExecutorTool = ScriptExecutorTool(connectorRepository)
-
     connectorRepository.addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
     connectorRepository.addConnectionInfo(H2DB, TestH2ConnectionInfo())
     connectorRepository.addConnectionInfo(DERBYDB, TestDerbyConnectionInfo())

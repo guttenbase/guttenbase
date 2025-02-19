@@ -7,7 +7,6 @@ import io.github.guttenbase.hints.impl.DisableMultipleValueBatchInsertionHint
 import io.github.guttenbase.mapping.TableRowDataFilter
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.tools.DefaultTableCopyTool
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,9 +26,9 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectionInfo(SOURCE, TestDerbyConnectionInfo())
     connectorRepository.addConnectionInfo(TARGET, TestH2ConnectionInfo())
 
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-derby.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(TARGET, resourceName = "/ddl/tables-h2.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/ddl/tables-derby.sql")
+    scriptExecutorTool.executeFileScript(TARGET, resourceName = "/ddl/tables-h2.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, false, false, "/data/test-data.sql")
 
     connectorRepository.addConnectorHint(TARGET, object : TableRowDataFilterHint() {
       override val value: TableRowDataFilter

@@ -9,7 +9,6 @@ import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseSupportedColumnType
-import io.github.guttenbase.tools.ScriptExecutorTool
 import io.github.guttenbase.utils.Util
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -23,7 +22,6 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectionInfo(DERBYDB, TestDerbyConnectionInfo())
       .addConnectionInfo(H2DB, TestH2ConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
-    val scriptExecutorTool = ScriptExecutorTool(connectorRepository, encoding = Charsets.UTF_8)
     scriptExecutorTool.executeFileScript(DERBYDB, resourceName = "/ddl/tables-derby.sql")  }
 
   @Test

@@ -6,7 +6,6 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.meta.DatabaseMetaData
-import io.github.guttenbase.tools.ScriptExecutorTool
 import io.github.guttenbase.tools.TableOrderTool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -20,11 +19,8 @@ class TableOrderToolTest : AbstractGuttenBaseTest() {
   fun setupTables() {
     connectorRepository.addConnectionInfo(H2DB, TestH2ConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(H2DB, resourceName = "/ddl/departments.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(
-      HSQLDB,
-      resourceName = "/ddl/countries-cities-currencies.sql"
-    )
+    scriptExecutorTool.executeFileScript(H2DB, resourceName = "/ddl/departments.sql")
+    scriptExecutorTool.executeFileScript(HSQLDB, resourceName = "/ddl/countries-cities-currencies.sql")
   }
 
   @Test

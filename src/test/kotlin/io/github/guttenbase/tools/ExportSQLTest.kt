@@ -9,7 +9,6 @@ import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.schema.CopySchemaTool
 import io.github.guttenbase.tools.CheckEqualTableDataTool
 import io.github.guttenbase.tools.DefaultTableCopyTool
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,13 +32,14 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectionInfo(SCRIPT, ExportSQLConnectorInfo(SOURCE, DatabaseType.HSQLDB, FILE_HSQL, "", UTF_8))
     connectorRepository.addConnectionInfo(MYSQL, ExportSQLConnectorInfo(SOURCE, DatabaseType.MYSQL, FILE_MYSQL, "lokal", UTF_8))
 
-    ScriptExecutorTool(connectorRepository, encoding = UTF_8).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
-    ScriptExecutorTool(connectorRepository, encoding = UTF_8).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, false, false, "/data/test-data.sql")
   }
 
   @Test
   fun `Export SQL data`() {
     DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
+
     val dataScript = File(FILE_HSQL).readLines(UTF_8)
     assertThat(dataScript).contains(TEST_STRING)
       .contains("""INSERT INTO "FOO_ROLE" ("ID", "FIXED_ROLE", "ROLE_NAME") VALUES""")
@@ -47,8 +47,8 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
     val ddlScript = CopySchemaTool(connectorRepository, SOURCE, SCRIPT).createDDLScript()
     assertThat(ddlScript.joinToString("\n")).contains("""CREATE TABLE IF NOT EXISTS "FOO_ROLE"""")
 
-    ScriptExecutorTool(connectorRepository).executeScript(TARGET, true, true, ddlScript)
-    ScriptExecutorTool(connectorRepository).executeScript(TARGET, true, true, dataScript)
+    scriptExecutorTool.executeScript(TARGET, true, true, ddlScript)
+    scriptExecutorTool.executeScript(TARGET, true, true, dataScript)
 
     CheckEqualTableDataTool(connectorRepository, SOURCE, TARGET).checkTableData()
   }

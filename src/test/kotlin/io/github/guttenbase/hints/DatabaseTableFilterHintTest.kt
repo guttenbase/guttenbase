@@ -5,7 +5,6 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.defaults.impl.DefaultDatabaseTableFilter
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.DatabaseTableFilter
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -24,7 +23,7 @@ class DatabaseTableFilterHintTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
+    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
     connectorRepository.addConnectorHint(SOURCE, object : DatabaseTableFilterHint() {
       override val value: DatabaseTableFilter
         get() = object : DefaultDatabaseTableFilter() {

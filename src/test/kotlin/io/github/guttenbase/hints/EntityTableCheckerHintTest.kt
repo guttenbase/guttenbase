@@ -4,7 +4,6 @@ import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.EntityTableChecker
-import io.github.guttenbase.tools.ScriptExecutorTool
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -14,7 +13,7 @@ class EntityTableCheckerHintTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setup() {
     connectorRepository.addConnectionInfo(CONNECTOR_ID, TestDerbyConnectionInfo())
-    ScriptExecutorTool(connectorRepository).executeFileScript(CONNECTOR_ID, resourceName = "/ddl/tables-derby.sql")
+    scriptExecutorTool.executeFileScript(CONNECTOR_ID, resourceName = "/ddl/tables-derby.sql")
   }
 
   @Test
