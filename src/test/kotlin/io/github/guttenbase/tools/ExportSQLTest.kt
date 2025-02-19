@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Files
-import kotlin.text.Charsets.ISO_8859_1
 import kotlin.text.Charsets.UTF_8
 
 /**
