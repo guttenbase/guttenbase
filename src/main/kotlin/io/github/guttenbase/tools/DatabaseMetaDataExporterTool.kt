@@ -41,7 +41,7 @@ class DatabaseMetaDataExporterTool(
       connectorRepository: ConnectorRepository = ConnectorRepository()
     ): DatabaseMetaData {
       stream.use {
-        val databaseMetaData = JSON.decodeFromStream<DatabaseMetaData>(it) as InternalDatabaseMetaData
+        val databaseMetaData = JSON.decodeFromStream<DatabaseMetaData>(it) as InternalDatabaseMetaData // UTF-8 by default
         val columnMap = HashMap<UUID, ColumnMetaData>()
 
         databaseMetaData.connectorRepository = connectorRepository

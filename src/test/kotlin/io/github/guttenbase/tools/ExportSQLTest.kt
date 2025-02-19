@@ -54,7 +54,7 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
   }
 
   @Test
-  fun `Export to MySQL`() {
+  fun `Export to MySQL offline`() {
     DefaultTableCopyTool(connectorRepository, SOURCE, MYSQL).copyTables()
 
     val dataScript = File(FILE_MYSQL).readLines(UTF_8)
