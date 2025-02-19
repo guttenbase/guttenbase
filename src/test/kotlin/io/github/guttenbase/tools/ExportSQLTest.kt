@@ -18,6 +18,7 @@ import java.nio.file.Files
 import kotlin.text.Charsets.ISO_8859_1
 import kotlin.text.Charsets.UTF_8
 
+
 /**
  * Create a plain SQL dump of the source database
  *
@@ -41,7 +42,7 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
   fun `Export SQL data`() {
     DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
     val dataScript = File(FILE_HSQL).readLines(UTF_8)
-    assertThat(dataScript).contains("	(3, 'Häagen daß', 'Y');")
+    assertThat(dataScript).contains(TEST_STRING)
       .contains("""INSERT INTO "FOO_ROLE" ("ID", "FIXED_ROLE", "ROLE_NAME") VALUES""")
 
     val ddlScript = CopySchemaTool(connectorRepository, SOURCE, SCRIPT).createDDLScript()
@@ -58,7 +59,7 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
     DefaultTableCopyTool(connectorRepository, SOURCE, MYSQL).copyTables()
 
     val dataScript = File(FILE_MYSQL).readLines(UTF_8)
-    assertThat(dataScript).contains("	(3, 'Häagen daß', 'Y');")
+    assertThat(dataScript).contains(TEST_STRING)
       .contains("""INSERT INTO lokal.`FOO_ROLE` (`ID`, `FIXED_ROLE`, `ROLE_NAME`) VALUES""")
 
     val ddlScript = CopySchemaTool(connectorRepository, SOURCE, MYSQL).createDDLScript()
@@ -88,13 +89,14 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
     val dataScriptUtf8 = File(FILE_HSQL).readLines(UTF_8)
     val dataScriptIso = File(FILE_HSQL).readLines(ISO_8859_1)
 
-    assertThat(dataScriptUtf8).contains("	(3, 'H�agen da�', 'Y');")
-    assertThat(dataScriptIso).contains("	(3, 'Häagen daß', 'Y');")
+    assertThat(dataScriptUtf8).doesNotContain(TEST_STRING)
+    assertThat(dataScriptIso).contains(TEST_STRING)
   }
 
   companion object {
     private const val FILE_HSQL = "./target/dump.sql"
     private const val FILE_MYSQL = "./target/dump-mysql.sql"
+    private const val TEST_STRING = "	(3, 'Häagen daß', 'Y');"
 
     const val SCRIPT = "SCRIPT"
     const val MYSQL = "MYSQL"
