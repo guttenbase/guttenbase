@@ -5,6 +5,7 @@ import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.sql.SQLLexer
+import io.github.guttenbase.utils.Util.DEFAULT_ENCODING
 import io.github.guttenbase.utils.Util
 import io.github.guttenbase.utils.Util.RIGHT_ARROW
 import org.slf4j.LoggerFactory
@@ -15,7 +16,6 @@ import java.sql.*
  * Execute given SQL script or single statements separated by given delimiter. Delimiter is ';' by default.
  *
  * @author M. Dahm
- *
  *
  * &copy; 2012-2044 akquinet tech@spree
  *
@@ -277,8 +277,6 @@ constructor(
   companion object {
     @JvmStatic
     private val LOG = LoggerFactory.getLogger(ScriptExecutorTool::class.java)
-
-    val DEFAULT_ENCODING: Charset = Charset.defaultCharset()
 
     @JvmStatic
     fun executeScriptWithRetry(

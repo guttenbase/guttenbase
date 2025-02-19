@@ -30,10 +30,12 @@ object Util {
   @JvmStatic
   private val LOG = LoggerFactory.getLogger(Util::class.java)
 
+  val DEFAULT_ENCODING: Charset = Charset.defaultCharset()
+
   val ByteArrayClass: Class<*> = ByteArray::class.java
 
   const val DEFAULT_BUFFER_SIZE = 1024 * 4
-    const val RIGHT_ARROW = '\u2192'
+  const val RIGHT_ARROW = '\u2192'
   const val LEFT_RIGHT_ARROW = '\u2194'
 
   @JvmStatic
@@ -258,7 +260,7 @@ object Util {
 
   // https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html#GUID-9401BC04-81C4-4CD5-99E7-C5E25C83F608
   @JvmStatic
-  fun Int.mormalizeNegativeScale() :Int= log2(this.nextPowerOf2().toDouble()).toInt()+1
+  fun Int.mormalizeNegativeScale(): Int = log2(this.nextPowerOf2().toDouble()).toInt() + 1
 
   /**
    * Deserialize from byte array

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Files
+import kotlin.text.Charsets.ISO_8859_1
 import kotlin.text.Charsets.UTF_8
 
 /**
@@ -29,11 +30,11 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
   fun setup() {
     connectorRepository.addConnectionInfo(SOURCE, TestHsqlConnectionInfo())
     connectorRepository.addConnectionInfo(TARGET, TestHsqlConnectionInfo())
-    connectorRepository.addConnectionInfo(SCRIPT, ExportSQLConnectorInfo(SOURCE, DatabaseType.HSQLDB, FILE_HSQL, schema = ""))
-    connectorRepository.addConnectionInfo(MYSQL, ExportSQLConnectorInfo(SOURCE, DatabaseType.MYSQL, FILE_MYSQL, schema = "lokal"))
+    connectorRepository.addConnectionInfo(SCRIPT, ExportSQLConnectorInfo(SOURCE, DatabaseType.HSQLDB, FILE_HSQL, "", UTF_8))
+    connectorRepository.addConnectionInfo(MYSQL, ExportSQLConnectorInfo(SOURCE, DatabaseType.MYSQL, FILE_MYSQL, "lokal", UTF_8))
 
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
-    ScriptExecutorTool(connectorRepository).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
+    ScriptExecutorTool(connectorRepository, encoding = UTF_8).executeFileScript(SOURCE, resourceName = "/ddl/tables-hsqldb.sql")
+    ScriptExecutorTool(connectorRepository, encoding = UTF_8).executeFileScript(SOURCE, false, false, "/data/test-data.sql")
   }
 
   @Test
@@ -74,6 +75,21 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
     val contentType = Files.probeContentType(File(FILE_HSQL).toPath())
 
     assertThat(contentType).isEqualTo("application/x-gzip-compressed")
+  }
+
+  @Test
+  fun `Explicit encoding`() {
+    val exportPlainConnectorInfo =
+      ExportSQLConnectorInfo(SOURCE, DatabaseType.HSQLDB, path = FILE_HSQL, schema = "", encoding = ISO_8859_1)
+    connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
+
+    DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
+
+    val dataScriptUtf8 = File(FILE_HSQL).readLines(UTF_8)
+    val dataScriptIso = File(FILE_HSQL).readLines(ISO_8859_1)
+
+    assertThat(dataScriptUtf8).doesNotContain(TEST_STRING)
+    assertThat(dataScriptIso).contains(TEST_STRING)
   }
 
   companion object {

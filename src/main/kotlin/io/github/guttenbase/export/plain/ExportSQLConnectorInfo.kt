@@ -3,6 +3,7 @@ package io.github.guttenbase.export.plain
 import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.repository.ConnectorRepository
+import io.github.guttenbase.utils.Util.DEFAULT_ENCODING
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -28,14 +29,14 @@ constructor(
   override val databaseType: DatabaseType,
   internal val outputStream: OutputStream,
   override val schema: String = "",
-  internal val encoding: Charset = Charsets.UTF_8,
+  internal val encoding: Charset = DEFAULT_ENCODING,
   internal val compress: Boolean = false,
   internal val databaseTemplateSupplier: TEMPLATE_SUPPLIER = DEFAULT_TEMPLATE_SUPPLIER
 ) : ConnectorInfo {
   @JvmOverloads
   constructor(
     sourceConnectorId: String, databaseType: DatabaseType, path: String,
-    schema: String = "", encoding: Charset = Charsets.UTF_8, compress: Boolean = false,
+    schema: String = "", encoding: Charset = DEFAULT_ENCODING, compress: Boolean = false,
     databaseTemplateSupplier: TEMPLATE_SUPPLIER = DEFAULT_TEMPLATE_SUPPLIER
   ) : this(sourceConnectorId, databaseType, FileOutputStream(path), schema, encoding, compress, databaseTemplateSupplier)
 
