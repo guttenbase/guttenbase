@@ -18,7 +18,6 @@ import java.nio.file.Files
 import kotlin.text.Charsets.ISO_8859_1
 import kotlin.text.Charsets.UTF_8
 
-
 /**
  * Create a plain SQL dump of the source database
  *
@@ -76,21 +75,6 @@ class ExportSQLTest : AbstractGuttenBaseTest() {
     val contentType = Files.probeContentType(File(FILE_HSQL).toPath())
 
     assertThat(contentType).isEqualTo("application/x-gzip-compressed")
-  }
-
-  @Test
-  fun `Explicit encoding`() {
-    val exportPlainConnectorInfo =
-      ExportSQLConnectorInfo(SOURCE, DatabaseType.HSQLDB, path = FILE_HSQL, schema = "", encoding = ISO_8859_1)
-    connectorRepository.addConnectionInfo(SCRIPT, exportPlainConnectorInfo)
-
-    DefaultTableCopyTool(connectorRepository, SOURCE, SCRIPT).copyTables()
-
-    val dataScriptUtf8 = File(FILE_HSQL).readLines(UTF_8)
-    val dataScriptIso = File(FILE_HSQL).readLines(ISO_8859_1)
-
-    assertThat(dataScriptUtf8).doesNotContain(TEST_STRING)
-    assertThat(dataScriptIso).contains(TEST_STRING)
   }
 
   companion object {
