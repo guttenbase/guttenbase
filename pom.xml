@@ -118,11 +118,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!--  required for zonky tests to be run in ARM base machines -->
+        <!-- Explicit artifact id required for zonky tests to be run on ARM base machines, e.g. -->
         <dependency>
             <groupId>io.zonky.test.postgres</groupId>
             <artifactId>embedded-postgres-binaries-${os}-${arch}</artifactId>
-            <version>17.2.0</version>
+            <version>17.4.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -395,6 +395,33 @@
             <properties>
                 <os>windows</os>
                 <arch>amd64</arch>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-amd64</id>
+            <activation>
+                <os>
+                    <family>linux</family>
+                </os>
+            </activation>
+
+            <properties>
+                <os>linux</os>
+                <arch>amd64</arch>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>linux-arm64</id>
+            <activation>
+                <os>
+                    <family>linux</family>
+                </os>
+            </activation>
+
+            <properties>
+                <os>linux</os>
+                <arch>arm64v8</arch>
             </properties>
         </profile>
 
