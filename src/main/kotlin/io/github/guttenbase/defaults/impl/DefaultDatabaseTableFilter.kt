@@ -11,9 +11,7 @@ import io.github.guttenbase.utils.Util
  * Regard which tables when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for tables. The methods refer to
  * the parameters passed to JDBC data base meta data methods such as [DatabaseMetaData.getTable]
  *
- *
  * &copy; 2012-2044 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -36,6 +34,8 @@ open class DefaultDatabaseTableFilter : DatabaseTableFilter {
   override fun getColumnNamePattern(databaseMetaData: DatabaseMetaData)= "%"
 
   override fun getTableTypes(databaseMetaData: DatabaseMetaData) = arrayOf("TABLE")
+
+  override fun getViewTypes(databaseMetaData: DatabaseMetaData) = arrayOf("VIEW")
 
   override fun accept(table: TableMetaData) = when (table.database.databaseType) {
     POSTGRESQL -> !table.tableName.uppercase().startsWith("SQL_")

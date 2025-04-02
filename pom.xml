@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <groupId>io.github.guttenbase</groupId>
     <artifactId>guttenbase</artifactId>
-    <version>4.1.5-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
 
     <modelVersion>4.0.0</modelVersion>
     <url>https://github.com/guttenbase/guttenbase</url>
@@ -22,7 +22,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <kotlin.version>2.1.10</kotlin.version>
+        <kotlin.version>2.1.20</kotlin.version>
         <kotlin.serialization.version>1.8.0</kotlin.serialization.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 
@@ -62,7 +62,6 @@
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-serialization-json-jvm</artifactId>
             <version>${kotlin.serialization.version}</version>
-            <scope>runtime</scope>
         </dependency>
 
         <dependency>

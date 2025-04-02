@@ -8,9 +8,7 @@ import io.github.guttenbase.meta.TableMetaData
  * the parameters passed to JDBC data base meta data methods such as
  * [DatabaseMetaData.getTable]
  *
- *
  * &copy; 2012-2044 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -21,6 +19,7 @@ interface DatabaseTableFilter {
   fun getTableNamePattern(databaseMetaData: DatabaseMetaData): String?
   fun getColumnNamePattern(databaseMetaData: DatabaseMetaData): String?
   fun getTableTypes(databaseMetaData: DatabaseMetaData): Array<String>
+  fun getViewTypes(databaseMetaData: DatabaseMetaData): Array<String>
 
   /**
    * Additionally you may add checks to the resulting meta data object
