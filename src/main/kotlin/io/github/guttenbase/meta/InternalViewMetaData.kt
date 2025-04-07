@@ -7,4 +7,6 @@ package io.github.guttenbase.meta
  *
  * @author M. Dahm
  */
-interface InternalViewMetaData : ViewMetaData, InternalDatabaseEntityMetaData
+interface InternalViewMetaData : ViewMetaData, InternalDatabaseEntityMetaData {
+  override var viewDefinition: String
+}

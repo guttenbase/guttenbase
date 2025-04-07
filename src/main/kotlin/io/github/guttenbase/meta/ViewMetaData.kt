@@ -7,5 +7,7 @@ package io.github.guttenbase.meta
  *
  * @author M. Dahm
  */
-interface ViewMetaData : Comparable<ViewMetaData>, DatabaseEntityMetaData
+interface ViewMetaData : Comparable<ViewMetaData>, DatabaseEntityMetaData {
+  val viewDefinition: String
+}
 

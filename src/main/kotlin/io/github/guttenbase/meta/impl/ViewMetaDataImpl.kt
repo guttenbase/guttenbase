@@ -27,6 +27,8 @@ class ViewMetaDataImpl(
     database, table.tableName, table.tableType, table.tableCatalog, table.tableSchema
   )
 
+  override var viewDefinition: String = ""
+
   override operator fun compareTo(other: ViewMetaData) =
     tableName.uppercase(Locale.getDefault()).compareTo(other.tableName.uppercase())
 }

@@ -15,7 +15,7 @@ import java.lang.reflect.Method
 import java.sql.*
 
 /**
- * Get table meta data from connection.
+ * Get database meta data from connection: tables, vewis, columns, etc.
  *
  * (C) 2012-2045 by akquinet tech@spree
  *
@@ -26,7 +26,7 @@ internal class DatabaseMetaDataInspectorTool(
   private val connectorId: String
 ) {
   internal fun getDatabaseMetaData(connection: Connection): DatabaseMetaData {
-    val connectionInfo: ConnectorInfo = connectorRepository.getConnectionInfo(connectorId)
+    val connectionInfo = connectorRepository.getConnectionInfo(connectorId)
 
     LOG.info("Retrieving meta data for $connectorId:$connectionInfo")
 
@@ -40,14 +40,29 @@ internal class DatabaseMetaDataInspectorTool(
 
     loadSupportedTypes(result, metaData)
     loadTables(result, metaData)
-    updateTableMetaData(connection, metaData, result, schemaPrefix)
+    loadColumns(connection, metaData, result, schemaPrefix)
+    loadViewDefinitions(connection, result)
 
     LOG.info("Retrieving meta data for $connectorId DONE")
 
     return result
   }
 
-  private fun updateTableMetaData(
+  private fun loadViewDefinitions(connection: Connection, databaseMetaData: DatabaseMetaData) {
+    connection.createStatement().use {
+      for (viewMetaData in databaseMetaData.views) {
+        val resultSet = it.executeQuery(databaseMetaData.databaseType.createViewDefinitionClause(viewMetaData))
+
+        resultSet.use {
+          if (resultSet.next()) {
+            (viewMetaData as InternalViewMetaData).viewDefinition = resultSet.getString(1)
+          }
+        }
+      }
+    }
+  }
+
+  private fun loadColumns(
     connection: Connection, metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, schemaPrefix: String
   ) {
     connection.createStatement().use { statement ->
