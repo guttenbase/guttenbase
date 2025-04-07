@@ -7,6 +7,7 @@ import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.hints.DERBYDB
+import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.tools.ReadTableDataTool
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 /**
- * Reda view data
+ * Read view data
  *
  * &copy; 2025-2044 akquinet tech@spree
  *
@@ -24,18 +25,28 @@ import org.junit.jupiter.api.Test
 class ViewTest : AbstractGuttenBaseTest() {
   @BeforeEach
   fun setupTables() {
-    connectorRepository.addConnectionInfo(SOURCE, TestH2ConnectionInfo())
+    connectorRepository.addConnectionInfo(H2DB, TestH2ConnectionInfo())
       .addConnectionInfo(DERBYDB, TestDerbyConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
 
-    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/ddl/tables-h2.sql")
-    scriptExecutorTool.executeFileScript(SOURCE, resourceName = "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(H2DB, resourceName = "/ddl/tables-h2.sql")
+    scriptExecutorTool.executeFileScript(DERBYDB, resourceName = "/ddl/tables-derby.sql")
+    scriptExecutorTool.executeFileScript(HSQLDB, resourceName = "/ddl/tables-hsqldb.sql")
+    scriptExecutorTool.executeFileScript(H2DB, resourceName = "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(DERBYDB, resourceName = "/data/test-data.sql")
+    scriptExecutorTool.executeFileScript(HSQLDB, resourceName = "/data/test-data.sql")
   }
 
   @Test
   fun `Read from view`() {
-    assertThat(connectorRepository.getDatabase(SOURCE).views).hasSize(1).extracting<String> { it.tableName }.containsExactly("VIEW_DATA")
-    val data = ReadTableDataTool(connectorRepository, SOURCE, "VIEW_DATA", true).start().use { it.readTableData(-1) }
+    test(H2DB)
+    test(DERBYDB)
+    test(H2DB)
+  }
+
+  private fun test(connectorId: String) {
+    assertThat(connectorRepository.getDatabase(connectorId).views).hasSize(1).extracting<String> { it.tableName }.containsExactly("VIEW_DATA")
+    val data = ReadTableDataTool(connectorRepository, connectorId, "VIEW_DATA", true).start().use { it.readTableData(-1) }
 
     assertThat(data.map { it.values }.flatten()).containsExactly("Role 1", "Role 3")
   }
