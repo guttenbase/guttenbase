@@ -12,6 +12,7 @@ import io.github.guttenbase.utils.Util.RIGHT_ARROW
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.sql.*
+import kotlin.math.max
 
 /**
  * Get database meta data from connection: tables, views, columns, etc.
@@ -54,7 +55,10 @@ internal class DatabaseMetaDataInspectorTool(
 
         resultSet.use {
           if (resultSet.next()) {
-            (viewMetaData as InternalViewMetaData).viewDefinition = resultSet.getString(1)
+            val sql = resultSet.getString(1)
+            val index = max(sql.indexOf("SELECT", 0, true), 0)
+
+            (viewMetaData as InternalViewMetaData).viewDefinition = sql.substring(index)
           }
         }
       }
