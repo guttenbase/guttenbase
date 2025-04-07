@@ -4,7 +4,6 @@ import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.defaults.impl.DefaultDatabaseTableFilter
 import io.github.guttenbase.meta.DatabaseEntityMetaData
-import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.DatabaseTableFilter
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

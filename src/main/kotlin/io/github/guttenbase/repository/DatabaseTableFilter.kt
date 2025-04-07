@@ -2,7 +2,6 @@ package io.github.guttenbase.repository
 
 import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
-import io.github.guttenbase.meta.TableMetaData
 
 /**
  * Regard which tables when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for tables. The methods refer to

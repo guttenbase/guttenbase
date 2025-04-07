@@ -2,7 +2,6 @@ package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.meta.ColumnMetaData
 import io.github.guttenbase.meta.DatabaseEntityMetaData
-import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.serialization.UUIDSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable

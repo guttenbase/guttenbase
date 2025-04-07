@@ -5,7 +5,6 @@ import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestH2ConnectionInfo
 import io.github.guttenbase.hints.impl.DisableMultipleValueBatchInsertionHint
 import io.github.guttenbase.mapping.TableRowDataFilter
-import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.tools.DefaultTableCopyTool
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

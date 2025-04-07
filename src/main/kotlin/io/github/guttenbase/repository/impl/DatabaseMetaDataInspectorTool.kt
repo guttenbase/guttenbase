@@ -3,7 +3,6 @@ package io.github.guttenbase.repository.impl
 import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.defaults.impl.TABLE_TYPE
-import io.github.guttenbase.defaults.impl.VIEW_TYPE
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.impl.*

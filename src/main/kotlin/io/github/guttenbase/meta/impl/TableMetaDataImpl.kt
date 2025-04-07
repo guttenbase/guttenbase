@@ -2,9 +2,7 @@ package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
-import io.github.guttenbase.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import java.util.*
 
 internal val REPO_FOR_SERIALIZATION = ConnectorRepository()
