@@ -64,13 +64,6 @@ class TableMetaDataImpl(
   /**
    * {@inheritDoc}
    */
-  override fun addColumn(column: ColumnMetaData) {
-    columnMap[column.columnName.uppercase()] = column
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   override fun removeColumn(column: ColumnMetaData) {
     columnMap.remove(column.columnName.uppercase())
   }

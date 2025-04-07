@@ -1,6 +1,7 @@
 package io.github.guttenbase.hints
 
 import io.github.guttenbase.configuration.DefaultSourceDatabaseConfiguration
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.DatabaseType
 import io.github.guttenbase.meta.TableMetaData
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -37,11 +38,11 @@ class ConfigurationLifeCycleTest : AbstractHintTest("/ddl/tables-derby.sql", "/d
           finalizeSourceConnection++
         }
 
-        override fun beforeSelect(connection: Connection, connectorId: String, table: TableMetaData) {
+        override fun beforeSelect(connection: Connection, connectorId: String, table: DatabaseEntityMetaData) {
           beforeSelect++
         }
 
-        override fun afterSelect(connection: Connection, connectorId: String, table: TableMetaData) {
+        override fun afterSelect(connection: Connection, connectorId: String, table: DatabaseEntityMetaData) {
           afterSelect++
         }
 

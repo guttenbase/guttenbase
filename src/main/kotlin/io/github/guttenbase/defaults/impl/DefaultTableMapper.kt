@@ -2,6 +2,7 @@ package io.github.guttenbase.defaults.impl
 
 import io.github.guttenbase.hints.CaseConversionMode
 import io.github.guttenbase.mapping.TableMapper
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 
@@ -20,10 +21,10 @@ open class DefaultTableMapper @JvmOverloads constructor(private val caseConversi
     return targetDatabaseMetaData.getTable(tableName)
   }
 
-  override fun fullyQualifiedTableName(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData) =
+  override fun fullyQualifiedTableName(source: DatabaseEntityMetaData, targetDatabaseMetaData: DatabaseMetaData) =
     targetDatabaseMetaData.schemaPrefix + targetDatabaseMetaData.databaseType
       .escapeDatabaseEntity(mapTableName(source, targetDatabaseMetaData))
 
-  override fun mapTableName(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData) =
+  override fun mapTableName(source: DatabaseEntityMetaData, targetDatabaseMetaData: DatabaseMetaData) =
     caseConversionMode.convert(source.tableName)
 }

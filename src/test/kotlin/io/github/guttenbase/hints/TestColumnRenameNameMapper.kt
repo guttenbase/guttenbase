@@ -2,6 +2,7 @@ package io.github.guttenbase.hints
 
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.TableMetaData
 
 /**
@@ -21,7 +22,7 @@ class TestColumnRenameNameMapper : ColumnMapper {
     return ColumnMapper.ColumnMapperResult(listOf(columnMetaData2))
   }
 
-  override fun mapColumnName(source: ColumnMetaData, targetTableMetaData: TableMetaData): String {
+  override fun mapColumnName(source: ColumnMetaData, targetTableMetaData: DatabaseEntityMetaData): String {
     val result = source.columnName
     val columnName = replacementsColumns[result]
 

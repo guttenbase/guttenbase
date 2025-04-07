@@ -2,7 +2,7 @@ package io.github.guttenbase.hints
 
 import io.github.guttenbase.mapping.ColumnOrderComparatorFactory
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.connectorId
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
@@ -27,7 +27,7 @@ abstract class ColumnOrderHint : ConnectorHint<ColumnOrderComparatorFactory> {
      * Helper method
      */
     @JvmStatic
-    fun getSortedColumns(connectorRepository: ConnectorRepository, tableMetaData: TableMetaData): List<ColumnMetaData> {
+    fun getSortedColumns(connectorRepository: ConnectorRepository, tableMetaData: DatabaseEntityMetaData): List<ColumnMetaData> {
       val sourceColumnComparator =
         connectorRepository.hint<ColumnOrderComparatorFactory>(tableMetaData.connectorId).createComparator()
 

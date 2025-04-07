@@ -1,6 +1,6 @@
 package io.github.guttenbase.tools
 
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 
 /**
  * Set fetch size and result set parameters, i.e.
@@ -14,7 +14,7 @@ import io.github.guttenbase.meta.TableMetaData
  * @author M. Dahm
  */
 interface ResultSetParameters {
-  fun getFetchSize(tableMetaData: TableMetaData): Int
-  fun getResultSetType(tableMetaData: TableMetaData): Int
-  fun getResultSetConcurrency(tableMetaData: TableMetaData): Int
+  fun getFetchSize(tableMetaData: DatabaseEntityMetaData): Int
+  fun getResultSetType(tableMetaData: DatabaseEntityMetaData): Int
+  fun getResultSetConcurrency(tableMetaData: DatabaseEntityMetaData): Int
 }

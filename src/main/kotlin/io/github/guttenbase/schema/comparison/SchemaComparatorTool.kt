@@ -214,6 +214,6 @@ class SchemaComparatorTool(
     private fun getFullyQualifiedColumnNames(columnMetaData: List<ColumnMetaData>) =
       columnMetaData.joinToString(
         separator = ", ", prefix = "(", postfix = ")",
-        transform = { it.table.tableName + "." + it.columnName })
+        transform = { it.container.tableName + "." + it.columnName })
   }
 }

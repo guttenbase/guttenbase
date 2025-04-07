@@ -1,14 +1,13 @@
 package io.github.guttenbase.mapping
 
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 
 /**
  * Select target table for given source table.
  *
- *
  * &copy; 2012-2044 akquinet tech@spree
- *
  *
  * @author M. Dahm
  */
@@ -21,10 +20,10 @@ interface TableMapper {
   /**
    * @return plain table name in target data base
    */
-  fun mapTableName(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData): String
+  fun mapTableName(source: DatabaseEntityMetaData, targetDatabaseMetaData: DatabaseMetaData): String
 
   /**
    * @return fully qualifed table name in target data base, i.e. including schema prefix and escape characters
    */
-  fun fullyQualifiedTableName(source: TableMetaData, targetDatabaseMetaData: DatabaseMetaData): String
+  fun fullyQualifiedTableName(source: DatabaseEntityMetaData, targetDatabaseMetaData: DatabaseMetaData): String
 }

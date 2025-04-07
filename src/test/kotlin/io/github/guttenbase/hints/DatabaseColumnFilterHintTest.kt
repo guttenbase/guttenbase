@@ -35,7 +35,7 @@ class DatabaseColumnFilterHintTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectorHint(SOURCE, object : DatabaseColumnFilterHint() {
       override val value: DatabaseColumnFilter
         get() = DatabaseColumnFilter { columnMetaData ->
-          columnMetaData.table.tableName != "FOO_USER" || columnMetaData.columnName != "PASSWORD"
+          columnMetaData.container.tableName != "FOO_USER" || columnMetaData.columnName != "PASSWORD"
         }
     })
     val tableMetaData = connectorRepository.getDatabase(SOURCE).getTable("FOO_USER")

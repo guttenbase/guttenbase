@@ -1,7 +1,7 @@
 package io.github.guttenbase.meta.impl
 
 import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.DatabaseEntityMetaData
+import io.github.guttenbase.meta.InternalDatabaseEntityMetaData
 import io.github.guttenbase.serialization.UUIDSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
@@ -16,7 +16,7 @@ import java.util.*
  */
 @Serializable
 @Polymorphic
-abstract class DatabaseEntityMetaDataImpl() : DatabaseEntityMetaData {
+abstract class DatabaseEntityMetaDataImpl() : InternalDatabaseEntityMetaData {
   // Workaround for kotlinx serialzation: https://github.com/Kotlin/kotlinx.serialization/issues/599#issuecomment-672889458
   abstract override val tableName: String
 
@@ -44,6 +44,13 @@ abstract class DatabaseEntityMetaDataImpl() : DatabaseEntityMetaData {
    * {@inheritDoc}
    */
   override fun getColumn(columnName: String): ColumnMetaData? = columnMap[columnName.uppercase()]
+
+  /**
+   * {@inheritDoc}
+   */
+  override fun addColumn(column: ColumnMetaData) {
+    columnMap[column.columnName.uppercase()] = column
+  }
 
   override fun toString() = tableName
 

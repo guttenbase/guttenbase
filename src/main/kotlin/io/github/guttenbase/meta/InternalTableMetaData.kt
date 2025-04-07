@@ -12,7 +12,6 @@ internal interface InternalTableMetaData : TableMetaData, InternalDatabaseEntity
   override var maxId: Long
   override var minId: Long
 
-  fun addColumn(column: ColumnMetaData)
   fun removeColumn(column: ColumnMetaData)
   fun addIndex(index: IndexMetaData)
   fun getExportedForeignKey(foreignKeyname: String): ForeignKeyMetaData?

@@ -21,5 +21,5 @@ class TestTableColumnMapper : DefaultColumnMapper() {
   }
 
   private fun mapColumnName(columnMetaData: ColumnMetaData) =
-    columnMetaData.table.tableName.substring("FOO_".length) + "_ID"
+    columnMetaData.container.tableName.substring("FOO_".length) + "_ID"
 }

@@ -56,6 +56,11 @@ internal class DatabaseMetaDataInspectorTool(
 
         retrieveColumns(statement, tableMetaData, schemaPrefix)
       }
+      for (table in databaseMetaData.views) {
+        val tableMetaData = table as InternalViewMetaData
+
+        retrieveColumns(statement, tableMetaData, schemaPrefix)
+      }
     }
 
     try {
@@ -251,7 +256,7 @@ internal class DatabaseMetaDataInspectorTool(
     }
   }
 
-  private fun retrieveColumns(statement: Statement, tableMetaData: InternalTableMetaData, schemaPrefix: String) {
+  private fun retrieveColumns(statement: Statement, tableMetaData: InternalDatabaseEntityMetaData, schemaPrefix: String) {
     val databaseType = tableMetaData.databaseType
     val tableName = databaseType.escapeDatabaseEntity(tableMetaData.tableName, schemaPrefix)
     val columnFilter = connectorRepository.hint<DatabaseColumnFilter>(connectorId)

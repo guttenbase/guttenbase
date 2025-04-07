@@ -35,3 +35,5 @@ val DatabaseEntityMetaData.databaseType get() = database.databaseType
 val DatabaseEntityMetaData.connectorId get() = database.connectorId
 val DatabaseEntityMetaData.connectorRepository get() = database.connectorRepository
 
+fun DatabaseEntityMetaData.isView() = this is ViewMetaData
+fun DatabaseEntityMetaData.isTable() = this is TableMetaData

@@ -4,6 +4,7 @@ import io.github.guttenbase.hints.CaseConversionMode
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.ColumnMapper.ColumnMapperResult
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.TableMetaData
 
 /**
@@ -16,7 +17,7 @@ import io.github.guttenbase.meta.TableMetaData
 open class DefaultColumnMapper @JvmOverloads constructor(
   private val caseConversionMode: CaseConversionMode = CaseConversionMode.NONE
 ) : ColumnMapper {
-  override fun mapColumnName(source: ColumnMetaData, targetTableMetaData: TableMetaData): String {
+  override fun mapColumnName(source: ColumnMetaData, targetTableMetaData: DatabaseEntityMetaData): String {
     return caseConversionMode.convert(source.columnName)
   }
 

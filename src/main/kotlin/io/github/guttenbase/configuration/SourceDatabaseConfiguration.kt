@@ -1,6 +1,6 @@
 package io.github.guttenbase.configuration
 
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import java.sql.Connection
 
 /**
@@ -28,10 +28,10 @@ interface SourceDatabaseConfiguration : DatabaseConfiguration {
   /**
    * Called before a SELECT clause is executed.
    */
-  fun beforeSelect(connection: Connection, connectorId: String, table: TableMetaData)
+  fun beforeSelect(connection: Connection, connectorId: String, table: DatabaseEntityMetaData)
 
   /**
    * Called after a SELECT clause is executed.
    */
-  fun afterSelect(connection: Connection, connectorId: String, table: TableMetaData)
+  fun afterSelect(connection: Connection, connectorId: String, table: DatabaseEntityMetaData)
 }

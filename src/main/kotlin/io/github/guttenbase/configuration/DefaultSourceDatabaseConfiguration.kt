@@ -1,6 +1,6 @@
 package io.github.guttenbase.configuration
 
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Connection
 
@@ -37,10 +37,10 @@ open class DefaultSourceDatabaseConfiguration(connectorRepository: ConnectorRepo
   /**
    * {@inheritDoc}
    */
-  override fun beforeSelect(connection: Connection, connectorId: String, table: TableMetaData) {}
+  override fun beforeSelect(connection: Connection, connectorId: String, table: DatabaseEntityMetaData) {}
 
   /**
    * {@inheritDoc}
    */
-  override fun afterSelect(connection: Connection, connectorId: String, table: TableMetaData) {}
+  override fun afterSelect(connection: Connection, connectorId: String, table: DatabaseEntityMetaData) {}
 }

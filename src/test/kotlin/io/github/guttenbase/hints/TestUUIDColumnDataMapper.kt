@@ -40,7 +40,7 @@ class TestUUIDColumnDataMapper : ColumnDataMapper {
    * complicated.
    */
   private fun createKey(columnMetaData: ColumnMetaData, id: Long): String {
-    val key = columnMetaData.table.tableName + ":" + columnMetaData.columnName
+    val key = columnMetaData.container.tableName + ":" + columnMetaData.columnName
     val uuid = UUID(key.hashCode().toLong(), id)
 
     return uuid.toString()

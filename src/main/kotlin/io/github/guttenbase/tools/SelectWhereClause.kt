@@ -1,6 +1,6 @@
 package io.github.guttenbase.tools
 
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 
 /**
  * Optionally configure the SELECT statement created to read data from source tables with a WHERE clause.
@@ -10,5 +10,5 @@ import io.github.guttenbase.meta.TableMetaData
  * @author M. Dahm
  */
 fun interface SelectWhereClause {
-  fun getWhereClause(table: TableMetaData): String
+  fun getWhereClause(table: DatabaseEntityMetaData): String
 }

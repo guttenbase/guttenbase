@@ -72,6 +72,6 @@ fun Int.hasJDBCType(): Boolean = JDBCType.entries.any { it.vendorTypeNumber.toIn
 
 val STANDARD_TYPES = JDBCType.entries.map { it.name }.toSet()
 
-val ColumnMetaData.databaseType get() = table.databaseType
-val ColumnMetaData.connectorId get() = table.connectorId
-val ColumnMetaData.connectorRepository get() = table.connectorRepository
+val ColumnMetaData.databaseType get() = container.databaseType
+val ColumnMetaData.connectorId get() = container.connectorId
+val ColumnMetaData.connectorRepository get() = container.connectorRepository

@@ -2,7 +2,7 @@ package io.github.guttenbase.hints.impl
 
 
 import io.github.guttenbase.hints.ResultSetParametersHint
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.tools.ResultSetParameters
 import java.sql.ResultSet
 
@@ -17,15 +17,15 @@ import java.sql.ResultSet
 object DefaultResultSetParametersHint : ResultSetParametersHint() {
   override val value: ResultSetParameters
     get() = object : ResultSetParameters {
-      override fun getFetchSize(tableMetaData: TableMetaData): Int {
+      override fun getFetchSize(tableMetaData: DatabaseEntityMetaData): Int {
         return 2000
       }
 
-      override fun getResultSetType(tableMetaData: TableMetaData): Int {
+      override fun getResultSetType(tableMetaData: DatabaseEntityMetaData): Int {
         return ResultSet.TYPE_FORWARD_ONLY
       }
 
-      override fun getResultSetConcurrency(tableMetaData: TableMetaData): Int {
+      override fun getResultSetConcurrency(tableMetaData: DatabaseEntityMetaData): Int {
         return ResultSet.CONCUR_READ_ONLY
       }
     }

@@ -96,7 +96,7 @@ class DatabaseMetaDataExporterToolTest : AbstractGuttenBaseTest() {
       assertThat(referencingColumn).isSameAs(referencingTable2.getColumn(referencingColumn.columnName))
       assertThat(referencingColumn).isNotEqualTo(referencedColumn)
 
-      assertThat(referencingColumn.table).isEqualTo(originalMetaData.getTable(referencingColumn.table.tableName))
+      assertThat(referencingColumn.container).isEqualTo(originalMetaData.getTable(referencingColumn.container.tableName))
       assertThat(referencingColumn).isEqualTo(
         originalMetaData.getTable(referencingColumn.table.tableName)!!.getColumn(referencingColumn.columnName)
       )

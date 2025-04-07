@@ -9,6 +9,7 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.hints.DERBYDB
 import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.hints.SOURCE
+import io.github.guttenbase.tools.ReadTableDataTool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,8 +35,8 @@ class ViewTest : AbstractGuttenBaseTest() {
   @Test
   fun `Read from view`() {
     assertThat(connectorRepository.getDatabase(SOURCE).views).hasSize(1).extracting<String> { it.tableName }.containsExactly("VIEW_DATA")
-//    val data = ReadTableDataTool(connectorRepository, SOURCE, "VIEW_DATA", true).start().use { it.readTableData(-1) }
-//
-//    assertThat(data).hasSize(1)
+    val data = ReadTableDataTool(connectorRepository, SOURCE, "VIEW_DATA", true).start().use { it.readTableData(-1) }
+
+    assertThat(data.map { it.values }.flatten()).containsExactly("Role 1", "Role 3")
   }
 }

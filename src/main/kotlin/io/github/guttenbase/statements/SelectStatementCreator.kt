@@ -1,7 +1,7 @@
 package io.github.guttenbase.statements
 
 import io.github.guttenbase.defaults.impl.DefaultColumnComparator
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.repository.ConnectorRepository
 import java.sql.Types
@@ -18,7 +18,7 @@ class SelectStatementCreator(connectorRepository: ConnectorRepository, connector
   /**
    * Retrieve data in some deterministic order
    */
-  override fun createOrderBy(table: TableMetaData): String {
+  override fun createOrderBy(table: DatabaseEntityMetaData): String {
     val columns = table.columns.filter { it.columnType.comparable() }
       .sortedWith(DefaultColumnComparator).map {
         val rawColumnName = columnMapper.mapColumnName(it, table)

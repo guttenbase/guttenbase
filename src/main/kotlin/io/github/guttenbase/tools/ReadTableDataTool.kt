@@ -4,7 +4,7 @@ import io.github.guttenbase.connector.Connector
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.mapping.TableMapper
-import io.github.guttenbase.meta.TableMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.statements.SelectStatementCreator
@@ -23,12 +23,14 @@ import java.util.*
 open class ReadTableDataTool(
   private val connectorRepository: ConnectorRepository,
   private val connectorId: String,
-  private val tableMetaData: TableMetaData,
+  private val tableMetaData: DatabaseEntityMetaData,
 ) : AutoCloseable {
-  constructor(connectorRepository: ConnectorRepository, connectorId: String, tableName: String) : this(
+  constructor(connectorRepository: ConnectorRepository, connectorId: String, tableName: String, view: Boolean = false) : this(
     connectorRepository, connectorId,
-    connectorRepository.getDatabase(connectorId).getTable(tableName)
-      ?: throw IllegalStateException("Table $tableName not found")
+    if (view)
+      connectorRepository.getDatabase(connectorId).getView(tableName) ?: throw IllegalStateException("View $tableName not found")
+    else
+      connectorRepository.getDatabase(connectorId).getTable(tableName) ?: throw IllegalStateException("Table $tableName not found")
   )
 
   private lateinit var connector: Connector

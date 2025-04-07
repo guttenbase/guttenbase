@@ -4,6 +4,7 @@ import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.hints.ColumnOrderHint.Companion.getSortedColumns
 import io.github.guttenbase.mapping.ColumnMapper
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.progress.TableCopyProgressIndicator
@@ -28,12 +29,12 @@ abstract class AbstractStatementCreator(
 
   protected open fun createColumnClause(columns: List<ColumnMetaData>) =
     columns.joinToString(separator = ", ", transform = {
-      val rawColumnName = columnMapper.mapColumnName(it, it.table)
+      val rawColumnName = columnMapper.mapColumnName(it, it.container)
 
       it.databaseType.escapeDatabaseEntity(rawColumnName)
     })
 
-  protected open fun createWhereClause(tableMetaData: TableMetaData): String = ""
+  protected open fun createWhereClause(tableMetaData: DatabaseEntityMetaData): String = ""
 
   /**
    * Get the list of target columns with appropriate mappings as defined by [io.github.guttenbase.hints.ColumnMapperHint]

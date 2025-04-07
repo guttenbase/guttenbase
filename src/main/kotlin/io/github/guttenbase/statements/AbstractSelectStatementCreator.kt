@@ -2,6 +2,7 @@ package io.github.guttenbase.statements
 
 import io.github.guttenbase.hints.ColumnOrderHint
 import io.github.guttenbase.meta.ColumnMetaData
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.meta.connectorId
 import io.github.guttenbase.repository.ConnectorRepository
@@ -24,7 +25,7 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   /**
    * Create SELECT statement in the source table to retrieve data from the configured source columns.
    */
-  fun createSelectStatement(connection: Connection, tableName: String, tableMetaData: TableMetaData): PreparedStatement {
+  fun createSelectStatement(connection: Connection, tableName: String, tableMetaData: DatabaseEntityMetaData): PreparedStatement {
     val resultSetParameters = connectorRepository.hint<ResultSetParameters>(targetConnectorId)
     val columns = ColumnOrderHint.getSortedColumns(connectorRepository, tableMetaData)
     val sql = createSQL(tableName, tableMetaData, columns)
@@ -40,7 +41,7 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
     }
   }
 
-  override fun createWhereClause(tableMetaData: TableMetaData) =
+  override fun createWhereClause(tableMetaData: DatabaseEntityMetaData) =
     connectorRepository.hint<SelectWhereClause>(targetConnectorId).getWhereClause(tableMetaData)
 
   /**
@@ -69,9 +70,9 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   /**
    * Retrieve data in some deterministic order
    */
-  protected open fun createOrderBy(tableMetaData: TableMetaData) = ""
+  protected open fun createOrderBy(tableMetaData: DatabaseEntityMetaData) = ""
 
-  private fun createSQL(tableName: String, tableMetaData: TableMetaData, columns: List<ColumnMetaData>) =
+  private fun createSQL(tableName: String, tableMetaData: DatabaseEntityMetaData, columns: List<ColumnMetaData>) =
     "SELECT " + createColumnClause(columns) +
         " FROM " + tableName +
         " " + createWhereClause(tableMetaData) +
