@@ -14,7 +14,7 @@ import java.lang.reflect.Method
 import java.sql.*
 
 /**
- * Get database meta data from connection: tables, vewis, columns, etc.
+ * Get database meta data from connection: tables, views, columns, etc.
  *
  * (C) 2012-2045 by akquinet tech@spree
  *

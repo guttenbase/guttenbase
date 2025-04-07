@@ -44,9 +44,11 @@ class ViewTest : AbstractGuttenBaseTest() {
   }
 
   private fun test(connectorId: String) {
-    assertThat(connectorRepository.getDatabase(connectorId).views).hasSize(1).extracting<String> { it.tableName }.containsExactly("VIEW_DATA")
-    val data = ReadTableDataTool(connectorRepository, connectorId, "VIEW_DATA", true).start().use { it.readTableData(-1) }
+    val views = connectorRepository.getDatabase(connectorId).views
+    assertThat(views).hasSize(1).extracting<String> { it.tableName }.containsExactly("VIEW_DATA")
+    assertThat(views[0].viewDefinition.replace('\n', ' ')).contains("SELECT DISTINCT")
 
+    val data = ReadTableDataTool(connectorRepository, connectorId, "VIEW_DATA", true).start().use { it.readTableData(-1) }
     assertThat(data.map { it.values }.flatten()).containsExactly("Role 1", "Role 3")
   }
 }
