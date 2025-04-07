@@ -11,7 +11,7 @@ const val SYNTHETIC_INDEX_PREFIX = "IDX_"
  *
  * @author M. Dahm
  */
-interface IndexMetaData : Comparable<IndexMetaData>, java.io.Serializable, MetaData  {
+interface IndexMetaData : Comparable<IndexMetaData>, MetaData  {
   val indexName: String
   val isAscending: Boolean
   val isUnique: Boolean

@@ -12,7 +12,7 @@ import java.sql.JDBCType.*
  *
  * @author M. Dahm
  */
-interface ColumnMetaData : Comparable<ColumnMetaData>, java.io.Serializable, MetaData {
+interface ColumnMetaData : Comparable<ColumnMetaData>, MetaData {
   /**
    * Column type as defined in [java.sql.Types]
    */

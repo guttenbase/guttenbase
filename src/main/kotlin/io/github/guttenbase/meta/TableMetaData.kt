@@ -10,7 +10,7 @@ import java.sql.JDBCType.BIGINT
  *
  * @author M. Dahm
  */
-interface TableMetaData : Comparable<TableMetaData>, java.io.Serializable, DatabaseEntityMetaData {
+interface TableMetaData : Comparable<TableMetaData>, DatabaseEntityMetaData {
   /**
    * Row count of table using given filter clause [TableRowCountFilter]
    */

@@ -22,7 +22,6 @@ import kotlin.math.log2
  *
  * &copy; 2012-2044 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
 @Suppress("MemberVisibilityCanBePrivate")
@@ -209,34 +208,6 @@ object Util {
 
   @JvmStatic
   fun String.abbreviate(length: Int) = if (this.length > length) substring(0, length - 3) + "..." else this
-
-  /**
-   * Create deep copy of object.
-   */
-  @JvmStatic
-  fun <T> copyObject(clazz: Class<T>, sourceObject: T): T {
-    return try {
-      val byteArray = toByteArray(sourceObject!!)
-      fromByteArray(clazz, byteArray)
-    } catch (e: Exception) {
-      throw IllegalStateException("Can not copy ", e)
-    }
-  }
-
-  /**
-   * Serialize into byte array
-   */
-  @Throws(IOException::class)
-  @JvmStatic
-  internal fun toByteArray(sourceObject: Any): ByteArray {
-    val outStream = ByteArrayOutputStream()
-    val out: ObjectOutput = ObjectOutputStream(outStream)
-
-    return out.use {
-      it.writeObject(sourceObject)
-      outStream.toByteArray()
-    }
-  }
 
   @JvmStatic
   fun ByteArray.toHex(): String = joinToString(separator = "") { it.toHex() }

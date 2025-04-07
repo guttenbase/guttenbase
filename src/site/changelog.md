@@ -1,5 +1,9 @@
 # Change log
 
+## 4.2.x
+- Get rid of java.io.Serializable
+- Add views to database meta data
+
 ## 4.1.4
 - Fixed encoding issues
 

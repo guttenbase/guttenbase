@@ -9,7 +9,7 @@ const val SYNTHETIC_CONSTRAINT_PREFIX = "FK_"
  *
  * @author M. Dahm
  */
-interface ForeignKeyMetaData : Comparable<ForeignKeyMetaData>, java.io.Serializable, MetaData {
+interface ForeignKeyMetaData : Comparable<ForeignKeyMetaData>, MetaData {
   val foreignKeyName: String
   val table: TableMetaData
   val referencingColumns: List<ColumnMetaData>

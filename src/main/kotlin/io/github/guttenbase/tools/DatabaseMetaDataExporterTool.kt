@@ -12,6 +12,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.io.OutputStream
 import java.util.*
 
 class DatabaseMetaDataExporterTool(
@@ -21,9 +22,11 @@ class DatabaseMetaDataExporterTool(
   private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabase(connectorId) }
 
   fun export(file: File) {
-    FileOutputStream(file).use {
-      JSON.encodeToStream(databaseMetaData, it)
-    }
+    export(FileOutputStream(file))
+  }
+
+  fun export(stream: OutputStream) {
+    stream.use { JSON.encodeToStream(databaseMetaData, it) }
   }
 
   companion object {

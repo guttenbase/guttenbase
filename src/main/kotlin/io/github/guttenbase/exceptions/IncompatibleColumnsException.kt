@@ -7,7 +7,6 @@ import io.github.guttenbase.connector.GuttenBaseException
  *
  * &copy; 2012-2044 akquinet tech@spree
  *
- *
  * @author M. Dahm
  * @see io.github.guttenbase.statements.InsertStatementFiller
  *
@@ -15,9 +14,4 @@ import io.github.guttenbase.connector.GuttenBaseException
  *
  * @see io.github.guttenbase.tools.CheckEqualTableDataTool
  */
-class IncompatibleColumnsException(reason: String) : GuttenBaseException(reason) {
-  companion object {
-    @Suppress("unused")
-    private const val serialVersionUID = 1L
-  }
-}
+class IncompatibleColumnsException(reason: String) : GuttenBaseException(reason)

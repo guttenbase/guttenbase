@@ -26,9 +26,4 @@ open class DataSourceConnectorInfo(
    */
   override fun createConnector(connectorRepository: ConnectorRepository, connectorId: String) =
     DataSourceConnector(connectorRepository, connectorId, this)
-
-  companion object {
-    @Suppress("unused")
-    private const val serialVersionUID = 1L
-  }
 }

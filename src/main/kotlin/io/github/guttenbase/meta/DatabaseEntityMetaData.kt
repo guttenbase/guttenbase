@@ -1,7 +1,5 @@
 package io.github.guttenbase.meta
 
-import java.io.Serializable
-
 /**
  * Common data of views and tables.
  *
@@ -9,7 +7,7 @@ import java.io.Serializable
  *
  * @author M. Dahm
  */
-interface DatabaseEntityMetaData : Serializable, MetaData {
+interface DatabaseEntityMetaData : MetaData {
   /**
    * Total row count of table
    */

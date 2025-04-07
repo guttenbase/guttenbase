@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  *
  * @author M. Dahm
  */
-sealed class PrimitiveValue<T> : java.io.Serializable {
+sealed class PrimitiveValue<T> {
   abstract val value: T
 }
 

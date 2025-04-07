@@ -6,9 +6,9 @@ import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.InternalTableMetaData
 import io.github.guttenbase.meta.InternalViewMetaData
+import io.github.guttenbase.meta.copy
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.tools.DatabaseMetaDataExporterTool.Companion.importDataBaseMetaData
-import io.github.guttenbase.utils.Util
 import java.sql.Connection
 
 /**
@@ -36,7 +36,7 @@ class ExportSQLConnector(
 
   /**
    * Database meta data is created as an empty instance of the intended target database. The required (offline) information
-   * is read from the supplied file (JSON).
+   * is read from the supplied (JSON) file.
    *
    * {@inheritDoc}
    */
@@ -46,8 +46,9 @@ class ExportSQLConnector(
 
     val targetDatabase = importDataBaseMetaData(supplier, connectorId, connectorRepository)
     val sourceDatabase = retrieveSourceDatabaseMetaData()
-    val tables = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).tables
-    val views = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).views
+    val databaseMetaData = sourceDatabase.copy()
+    val tables = databaseMetaData.tables
+    val views = databaseMetaData.views
 
     tables.map { it as InternalTableMetaData }.forEach {
       it.totalRowCount = 0

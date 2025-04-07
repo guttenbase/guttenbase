@@ -1,7 +1,5 @@
 package io.github.guttenbase.meta
 
-import java.io.Serializable
-
 /**
  * Information about a database <a href="https://www.w3schools.com/sql/sql_view.asp">view</a>.
  *
@@ -9,5 +7,5 @@ import java.io.Serializable
  *
  * @author M. Dahm
  */
-interface ViewMetaData : Comparable<ViewMetaData>, Serializable, DatabaseEntityMetaData
+interface ViewMetaData : Comparable<ViewMetaData>, DatabaseEntityMetaData
 

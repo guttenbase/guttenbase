@@ -13,7 +13,7 @@ import java.sql.JDBCType
  *
  * @author M. Dahm
  */
-interface DatabaseMetaData : java.io.Serializable, MetaData {
+interface DatabaseMetaData : MetaData {
   val schema: String
   val schemaPrefix: String
 
@@ -48,6 +48,6 @@ data class DatabaseSupportedColumnType(
   val maxPrecision: Int = 0,
   val maxScale: Int = 0,
   val nullable: Boolean = true
-) : java.io.Serializable, Comparable<DatabaseSupportedColumnType> {
+) : Comparable<DatabaseSupportedColumnType> {
   override fun compareTo(other: DatabaseSupportedColumnType) = typeName.compareTo(other.typeName)
 }

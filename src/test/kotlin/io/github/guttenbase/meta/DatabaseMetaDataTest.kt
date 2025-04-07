@@ -7,9 +7,9 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.hints.DERBYDB
 import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
-import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseSupportedColumnType
-import io.github.guttenbase.utils.Util
+import io.github.guttenbase.meta.InternalDatabaseMetaData
+import io.github.guttenbase.meta.copy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -22,7 +22,8 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectionInfo(DERBYDB, TestDerbyConnectionInfo())
       .addConnectionInfo(H2DB, TestH2ConnectionInfo())
       .addConnectionInfo(HSQLDB, TestHsqlConnectionInfo())
-    scriptExecutorTool.executeFileScript(DERBYDB, resourceName = "/ddl/tables-derby.sql")  }
+    scriptExecutorTool.executeFileScript(DERBYDB, resourceName = "/ddl/tables-derby.sql")
+  }
 
   @Test
   fun `Inspect database meta data`() {
@@ -62,8 +63,8 @@ class DatabaseMetaDataTest : AbstractGuttenBaseTest() {
 
   @Test
   fun `Copy complex object`() {
-    val data = connectorRepository.getDatabase(DERBYDB)
-    val result = Util.copyObject(DatabaseMetaData::class.java, data)
+    val data = connectorRepository.getDatabase(DERBYDB) as InternalDatabaseMetaData
+    val result = data.copy()
 
     assertEquals(data, result)
     assertEquals("Apache Derby Embedded JDBC Driver", result.metaData.driverName)

@@ -10,7 +10,7 @@ import io.github.guttenbase.repository.ConnectorRepository
  *
  * @author M. Dahm
  */
-interface ConnectorInfo : java.io.Serializable {
+interface ConnectorInfo {
   /**
    * @return Data base user
    */
