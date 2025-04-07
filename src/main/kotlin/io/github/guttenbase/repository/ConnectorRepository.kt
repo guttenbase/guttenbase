@@ -116,10 +116,6 @@ open class ConnectorRepository {
     }
   }
 
-  internal fun addDatabase(connectorId: String, databaseMetaData: InternalDatabaseMetaData) {
-    databaseMap[connectorId] = databaseMetaData
-  }
-
   /**
    * Reset table data, i.e. reload data from the data base.
    */
