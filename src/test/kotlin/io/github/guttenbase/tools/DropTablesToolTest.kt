@@ -69,7 +69,9 @@ class DropTablesToolTest : AbstractGuttenBaseTest() {
   }
 
   private fun drop(target: String) {
-    DropTablesTool(connectorRepository, target).dropTables()
+    val tool = DropTablesTool(connectorRepository, target)
+    tool.dropViews()
+    tool.dropTables()
 
     assertThat(connectorRepository.getDatabase(target).tables).isEmpty()
   }

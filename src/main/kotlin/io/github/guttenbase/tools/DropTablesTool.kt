@@ -3,6 +3,7 @@ package io.github.guttenbase.tools
 import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.hints.TableOrderHint
 import io.github.guttenbase.mapping.TableMapper
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.IndexMetaData
@@ -26,6 +27,7 @@ open class DropTablesTool(
 ) {
   private val databaseMetaData: DatabaseMetaData by lazy { connectorRepository.getDatabase(connectorId) }
   private val tableMetaData by lazy { TableOrderTool(databaseMetaData).orderTables(topDown = false) }
+  private val viewMetaData by lazy { databaseMetaData.views }
   private val dropTablesSuffix = databaseMetaData.databaseType.dropTablesSuffix
 
   fun createDropForeignKeyStatements(): List<String> {
@@ -73,20 +75,33 @@ open class DropTablesTool(
     else -> DEFAULT_INDEX_DROP
   }
 
-  fun createDropAll() = createDropIndexStatements().plus(createDropForeignKeyStatements())
-    .plus(createDropTableStatements())
+  fun createDropAll() = createDropViewStatements().plus(
+    createDropIndexStatements().plus(createDropForeignKeyStatements())
+      .plus(createDropTableStatements())
+  )
 
-  fun createDropTableStatements() =
-    createTableStatements(
-      "DROP TABLE" + (" " + connectorRepository.getConnectionInfo(connectorId).databaseType.tableExistsClause).trimEnd(),
-      dropTablesSuffix
-    )
+  fun createDropTableStatements() = createTableStatements(
+    tableMetaData,
+    "DROP TABLE" + (" " + connectorRepository.getConnectionInfo(connectorId).databaseType.tableExistsClause).trimEnd(),
+    dropTablesSuffix
+  )
 
-  fun createDeleteTableStatements() = createTableStatements("DELETE FROM", "")
+  fun createDropViewStatements() = createTableStatements(
+    viewMetaData,
+    "DROP VIEW" + (" " + connectorRepository.getConnectionInfo(connectorId).databaseType.tableExistsClause).trimEnd(),
+    dropTablesSuffix
+  )
+
+  fun createDeleteTableStatements() = createTableStatements(this@DropTablesTool.tableMetaData, "DELETE FROM", "")
 
   @JvmOverloads
   fun dropTables(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
     executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropTableStatements())
+  }
+
+  @JvmOverloads
+  fun dropViews(prepareTargetConnection: Boolean = true, retryFailed: Boolean = false) {
+    executeScriptWithRetry(connectorRepository, connectorId, prepareTargetConnection, retryFailed, createDropViewStatements())
   }
 
   @JvmOverloads
@@ -123,11 +138,13 @@ open class DropTablesTool(
     }
   }
 
-  private fun createTableStatements(clausePrefix: String, clauseSuffix: String): List<String> {
+  private fun createTableStatements(
+    tables: List<DatabaseEntityMetaData>, clausePrefix: String, clauseSuffix: String
+  ): List<String> {
     val tableMapper = connectorRepository.hint<TableMapper>(connectorId)
     val suffix = if ("" == Util.trim(clauseSuffix)) "" else " $clauseSuffix"
 
-    return tableMetaData.map {
+    return tables.map {
       "$clausePrefix " + tableMapper.fullyQualifiedTableName(it, it.database) + suffix + ";"
     }
   }

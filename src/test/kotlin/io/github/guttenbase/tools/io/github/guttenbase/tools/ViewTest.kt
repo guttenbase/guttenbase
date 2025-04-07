@@ -9,7 +9,6 @@ import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.hints.DERBYDB
 import io.github.guttenbase.hints.H2DB
 import io.github.guttenbase.hints.HSQLDB
-import io.github.guttenbase.hints.SOURCE
 import io.github.guttenbase.tools.ReadTableDataTool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
