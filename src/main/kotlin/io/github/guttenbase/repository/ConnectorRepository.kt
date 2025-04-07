@@ -32,7 +32,7 @@ open class ConnectorRepository {
   private val targetDatabaseConfigurationMap = HashMap<DatabaseType, TargetDatabaseConfiguration>()
 
   /**
-   * Cache metadata since some databases are very slow on retrieving it.
+   * Cache metadata since some databases are very slow retrieving.
    */
   private val databaseMap = HashMap<String, InternalDatabaseMetaData>()
   private val connectionHintMap = HashMap<String, MutableMap<Class<*>, ConnectorHint<*>>>()
@@ -114,6 +114,10 @@ open class ConnectorRepository {
     } catch (e: SQLException) {
       throw GuttenBaseException("DatabaseMetaData:$connectorId", e)
     }
+  }
+
+  internal fun addDatabase(connectorId: String, databaseMetaData: InternalDatabaseMetaData) {
+    databaseMap[connectorId] = databaseMetaData
   }
 
   /**

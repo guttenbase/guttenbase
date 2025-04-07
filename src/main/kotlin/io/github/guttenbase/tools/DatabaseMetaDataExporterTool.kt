@@ -54,6 +54,8 @@ class DatabaseMetaDataExporterTool(
         databaseMetaData.connectorRepository = connectorRepository
         databaseMetaData.connectorId = connectorId
 
+        connectorRepository.addDatabase(connectorId, databaseMetaData)
+
         // Pass 1: Make sure all columns are updated
         databaseMetaData.tables.plus(databaseMetaData.views).forEach { table ->
           (table as InternalDatabaseEntityMetaData).database = databaseMetaData
