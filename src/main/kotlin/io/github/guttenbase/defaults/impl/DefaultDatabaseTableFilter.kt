@@ -1,11 +1,13 @@
 package io.github.guttenbase.defaults.impl
 
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.DatabaseType.*
 import io.github.guttenbase.meta.DatabaseMetaData
-import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.DatabaseTableFilter
 import io.github.guttenbase.utils.Util
 
+const val TABLE_TYPE = "TABLE"
+const val VIEW_TYPE = "VIEW"
 
 /**
  * Regard which tables when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for tables. The methods refer to
@@ -33,11 +35,9 @@ open class DefaultDatabaseTableFilter : DatabaseTableFilter {
 
   override fun getColumnNamePattern(databaseMetaData: DatabaseMetaData)= "%"
 
-  override fun getTableTypes(databaseMetaData: DatabaseMetaData) = arrayOf("TABLE")
+  override fun getTableTypes(databaseMetaData: DatabaseMetaData) = arrayOf(TABLE_TYPE, VIEW_TYPE)
 
-  override fun getViewTypes(databaseMetaData: DatabaseMetaData) = arrayOf("VIEW")
-
-  override fun accept(table: TableMetaData) = when (table.database.databaseType) {
+  override  fun accept(table: DatabaseEntityMetaData) = when (table.database.databaseType) {
     POSTGRESQL -> !table.tableName.uppercase().startsWith("SQL_")
     H2DB -> table.tableSchema?.uppercase() == "PUBLIC"
     else -> true

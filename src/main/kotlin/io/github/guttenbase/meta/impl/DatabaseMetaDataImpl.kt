@@ -47,6 +47,9 @@ class DatabaseMetaDataImpl(
   @SerialName("tables")
   private val tableMap = LinkedHashMap<String, TableMetaData>()
 
+  @SerialName("views")
+  private val viewMap = LinkedHashMap<String, ViewMetaData>()
+
   @SerialName("supportedTypes")
   private val supportedTypeMap = mutableMapOf<JDBCType, MutableList<DatabaseSupportedColumnType>>()
 
@@ -76,6 +79,18 @@ class DatabaseMetaDataImpl(
     tableMap.remove(tableMetaData.tableName.uppercase())
   }
 
+  override val views get() = ArrayList(viewMap.values)
+
+  override fun getView(viewName: String) = viewMap[viewName.uppercase()]
+
+  override fun addView(viewMetaData: ViewMetaData) {
+    viewMap[viewMetaData.tableName.uppercase()] = viewMetaData
+  }
+
+  override fun removeView(viewMetaData: ViewMetaData) {
+    viewMap.remove(viewMetaData.tableName.uppercase())
+  }
+
   override fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, scale: Int, nullable: Boolean) {
     val list = supportedTypeMap.computeIfAbsent(jdbcType) { mutableListOf<DatabaseSupportedColumnType>() }
     list.add(DatabaseSupportedColumnType(type.uppercase(), jdbcType, precision, scale, nullable))
@@ -84,7 +99,7 @@ class DatabaseMetaDataImpl(
   override fun hashCode() = databaseType.hashCode() + schema.uppercase(Locale.getDefault()).hashCode()
 
   override fun equals(other: Any?) = other is DatabaseMetaData &&
-      databaseType == other.databaseType && schema.equals(other.schema, ignoreCase = true)
+    databaseType == other.databaseType && schema.equals(other.schema, ignoreCase = true)
 
   private fun createMetaDataProxy() = Proxy.newProxyInstance(
     javaClass.classLoader, arrayOf<Class<*>>(JdbcDatabaseMetaData::class.java)

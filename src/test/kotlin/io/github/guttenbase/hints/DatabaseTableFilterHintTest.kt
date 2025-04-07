@@ -3,6 +3,7 @@ package io.github.guttenbase.hints
 import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.defaults.impl.DefaultDatabaseTableFilter
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.TableMetaData
 import io.github.guttenbase.repository.DatabaseTableFilter
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -27,7 +28,7 @@ class DatabaseTableFilterHintTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectorHint(SOURCE, object : DatabaseTableFilterHint() {
       override val value: DatabaseTableFilter
         get() = object : DefaultDatabaseTableFilter() {
-          override fun accept(table: TableMetaData): Boolean {
+          override fun accept(table: DatabaseEntityMetaData): Boolean {
             return table.tableName.uppercase().contains("USER")
           }
         }

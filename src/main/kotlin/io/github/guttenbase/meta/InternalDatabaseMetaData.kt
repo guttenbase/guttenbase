@@ -15,6 +15,8 @@ internal interface InternalDatabaseMetaData : DatabaseMetaData {
   override var connectorId: String
 
   fun addTable(tableMetaData: TableMetaData)
+  fun addView(viewMetaData: ViewMetaData)
   fun removeTable(tableMetaData: TableMetaData)
+  fun removeView(viewMetaData: ViewMetaData)
   fun addSupportedType(type: String, jdbcType: JDBCType, precision: Int, scale: Int, nullable: Boolean)
 }

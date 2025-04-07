@@ -2,6 +2,8 @@ package io.github.guttenbase.repository.impl
 
 import io.github.guttenbase.connector.ConnectorInfo
 import io.github.guttenbase.connector.GuttenBaseException
+import io.github.guttenbase.defaults.impl.TABLE_TYPE
+import io.github.guttenbase.defaults.impl.VIEW_TYPE
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.impl.*
@@ -187,7 +189,7 @@ internal class DatabaseMetaDataInspectorTool(
 
   private fun TableMetaData.hasForeignKey(name: String) =
     exportedForeignKeys.map { it.foreignKeyName.uppercase() }.contains(name.uppercase())
-        || importedForeignKeys.map { it.foreignKeyName.uppercase() }.contains(name.uppercase())
+      || importedForeignKeys.map { it.foreignKeyName.uppercase() }.contains(name.uppercase())
 
   private fun updateColumnsWithPrimaryKeyInformation(
     metaData: JdbcDatabaseMetaData, databaseMetaData: DatabaseMetaData, table: TableMetaData
@@ -395,10 +397,18 @@ internal class DatabaseMetaDataInspectorTool(
 
         LOG.debug("Found: $tableCatalog/$tableSchema/$tableName/$tableType")
 
-        val tableMetaData = TableMetaDataImpl(databaseMetaData, tableName, tableType, tableCatalog, tableSchema)
+        if (tableType.uppercase().contains(TABLE_TYPE)) {
+          val tableMetaData = TableMetaDataImpl(databaseMetaData, tableName, tableType, tableCatalog, tableSchema)
 
-        if (tableFilter.accept(tableMetaData)) {
-          databaseMetaData.addTable(tableMetaData)
+          if (tableFilter.accept(tableMetaData)) {
+            databaseMetaData.addTable(tableMetaData)
+          }
+        } else { // View
+          val viewMetaData = ViewMetaDataImpl(databaseMetaData, tableName, tableType, tableCatalog, tableSchema)
+
+          if (tableFilter.accept(viewMetaData)) {
+            databaseMetaData.addView(viewMetaData)
+          }
         }
       }
 

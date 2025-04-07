@@ -33,7 +33,7 @@ class TableRowDataFilterTest : AbstractGuttenBaseTest() {
     connectorRepository.addConnectorHint(TARGET, object : TableRowDataFilterHint() {
       override val value: TableRowDataFilter
         get() = TableRowDataFilter { sourceValues, _ ->
-          val tableMetaData: TableMetaData = sourceValues.keys.firstOrNull()?.table ?: throw IllegalStateException()
+          val tableMetaData = sourceValues.keys.firstOrNull()?.table ?: throw IllegalStateException()
 
           if (tableMetaData.tableName.equals("FOO_COMPANY", ignoreCase = true)) {
             val name = sourceValues[tableMetaData.getColumn("NAME")]!!

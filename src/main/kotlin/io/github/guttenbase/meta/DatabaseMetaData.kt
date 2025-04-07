@@ -26,6 +26,9 @@ interface DatabaseMetaData : java.io.Serializable, MetaData {
   val tables: List<TableMetaData>
   fun getTable(tableName: String): TableMetaData?
 
+  val views: List<ViewMetaData>
+  fun getView(viewName: String): ViewMetaData?
+
   /**
    * @return (cached) meta data
    */

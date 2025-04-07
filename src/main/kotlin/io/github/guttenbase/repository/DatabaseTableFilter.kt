@@ -1,5 +1,6 @@
 package io.github.guttenbase.repository
 
+import io.github.guttenbase.meta.DatabaseEntityMetaData
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.TableMetaData
 
@@ -19,12 +20,11 @@ interface DatabaseTableFilter {
   fun getTableNamePattern(databaseMetaData: DatabaseMetaData): String?
   fun getColumnNamePattern(databaseMetaData: DatabaseMetaData): String?
   fun getTableTypes(databaseMetaData: DatabaseMetaData): Array<String>
-  fun getViewTypes(databaseMetaData: DatabaseMetaData): Array<String>
 
   /**
    * Additionally you may add checks to the resulting meta data object
    *
    * @return true if the table should be added the database meta data
    */
-  fun accept(table: TableMetaData): Boolean
+  fun accept(table: DatabaseEntityMetaData): Boolean
 }
