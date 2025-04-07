@@ -27,18 +27,22 @@ class DatabaseMetaDataExporterTool(
   }
 
   companion object {
+    /**
+     * Import [DatabaseMetaData] from [InputStream] and update internal references
+     */
     @JvmOverloads
     @JvmStatic
     fun importDataBaseMetaData(
-      file: File, connectorId: String,
-      connectorRepository: ConnectorRepository = ConnectorRepository()
+      file: File, connectorId: String, connectorRepository: ConnectorRepository = ConnectorRepository()
     ) = importDataBaseMetaData(FileInputStream(file), connectorId, connectorRepository)
 
+    /**
+     * Import [DatabaseMetaData] from [InputStream] and update internal references
+     */
     @JvmOverloads
     @JvmStatic
     fun importDataBaseMetaData(
-      stream: InputStream, connectorId: String,
-      connectorRepository: ConnectorRepository = ConnectorRepository()
+      stream: InputStream, connectorId: String, connectorRepository: ConnectorRepository = ConnectorRepository()
     ): DatabaseMetaData {
       stream.use {
         val databaseMetaData = JSON.decodeFromStream<DatabaseMetaData>(it) as InternalDatabaseMetaData // UTF-8 by default
@@ -48,8 +52,8 @@ class DatabaseMetaDataExporterTool(
         databaseMetaData.connectorId = connectorId
 
         // Pass 1: Make sure all columns are updated
-        databaseMetaData.tables.forEach { table ->
-          (table as InternalTableMetaData).database = databaseMetaData
+        databaseMetaData.tables.plus(databaseMetaData.views).forEach { table ->
+          (table as InternalDatabaseEntityMetaData).database = databaseMetaData
 
           table.columns.forEach { column ->
             updateColumn(column as InternalColumnMetaData, table)
@@ -70,8 +74,8 @@ class DatabaseMetaDataExporterTool(
       }
     }
 
-    private fun updateColumn(column: InternalColumnMetaData, table: TableMetaData) {
-      column.table = table
+    private fun updateColumn(column: InternalColumnMetaData, container: DatabaseEntityMetaData) {
+      column.container = container
     }
 
     private fun updateIndex(index: InternalIndexMetaData, table: TableMetaData, columnMap: Map<UUID, ColumnMetaData>) {

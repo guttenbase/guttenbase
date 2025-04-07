@@ -3,7 +3,8 @@ package io.github.guttenbase.meta.impl
 import io.github.guttenbase.meta.*
 import io.github.guttenbase.repository.ConnectorRepository
 import kotlinx.serialization.Serializable
-import java.util.*
+import kotlinx.serialization.Transient
+import java.util.Locale
 
 internal val REPO_FOR_SERIALIZATION = ConnectorRepository()
 internal val DB_FOR_SERIALIZATION = DatabaseMetaDataImpl(REPO_FOR_SERIALIZATION, "", "", mapOf(), DatabaseType.GENERIC)
@@ -18,6 +19,7 @@ internal val TABLE_FOR_SERIALIZATION = TableMetaDataImpl(DB_FOR_SERIALIZATION, "
  */
 @Serializable
 class TableMetaDataImpl(
+  @Transient
   override var database: DatabaseMetaData = DB_FOR_SERIALIZATION,
   override val tableName: String,
   override val tableType: String,

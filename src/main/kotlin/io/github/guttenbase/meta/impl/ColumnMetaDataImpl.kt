@@ -1,9 +1,6 @@
 package io.github.guttenbase.meta.impl
 
-import io.github.guttenbase.meta.ColumnMetaData
-import io.github.guttenbase.meta.InternalColumnMetaData
-import io.github.guttenbase.meta.TableMetaData
-import io.github.guttenbase.meta.hasJDBCType
+import io.github.guttenbase.meta.*
 import io.github.guttenbase.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -20,7 +17,7 @@ import java.util.*
 @Serializable
 class ColumnMetaDataImpl(
   @Transient
-  override var table: TableMetaData = TABLE_FOR_SERIALIZATION,
+  override var container: DatabaseEntityMetaData = TABLE_FOR_SERIALIZATION,
   override val columnType: Int,
   override val columnName: String,
   override val columnTypeName: String,
@@ -35,6 +32,9 @@ class ColumnMetaDataImpl(
     columnMetaData.columnType, columnMetaData.columnName, columnMetaData.columnTypeName, columnMetaData.columnClassName,
     columnMetaData.isNullable, columnMetaData.isAutoIncrement, columnMetaData.precision, columnMetaData.scale
   )
+
+  override val table: TableMetaData
+    get() = container as? TableMetaData ?: throw IllegalStateException("Containing entity of column $columnName is not a TableMetaData")
 
   /**
    * {@inheritDoc}

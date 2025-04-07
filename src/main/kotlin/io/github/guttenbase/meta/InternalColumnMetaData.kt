@@ -8,7 +8,7 @@ package io.github.guttenbase.meta
  * @author M. Dahm
  */
 internal interface InternalColumnMetaData : ColumnMetaData {
-  override var table: TableMetaData
+  override var container: DatabaseEntityMetaData
 
   override var isPrimaryKey: Boolean
 

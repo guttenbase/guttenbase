@@ -5,6 +5,7 @@ import io.github.guttenbase.connector.GuttenBaseException
 import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalDatabaseMetaData
 import io.github.guttenbase.meta.InternalTableMetaData
+import io.github.guttenbase.meta.InternalViewMetaData
 import io.github.guttenbase.repository.ConnectorRepository
 import io.github.guttenbase.tools.DatabaseMetaDataExporterTool.Companion.importDataBaseMetaData
 import io.github.guttenbase.utils.Util
@@ -45,14 +46,21 @@ class ExportSQLConnector(
 
     val targetDatabase = importDataBaseMetaData(supplier, connectorId, connectorRepository)
     val sourceDatabase = retrieveSourceDatabaseMetaData()
-    val tableMetaData = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).tables
+    val tables = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).tables
+    val views = Util.copyObject(InternalDatabaseMetaData::class.java, sourceDatabase).views
 
-    tableMetaData.map { it as InternalTableMetaData }.forEach {
+    tables.map { it as InternalTableMetaData }.forEach {
       it.totalRowCount = 0
       it.filteredRowCount = 0
       it.database = targetDatabase
     }
-    val tableMetaDataMap = tableMetaData.associateBy { it.tableName.uppercase() }
+    val tableMetaDataMap = tables.associateBy { it.tableName.uppercase() }
+
+    views.map { it as InternalViewMetaData }.forEach {
+      it.totalRowCount = 0
+      it.database = targetDatabase
+    }
+    val viewMetaDataMap = views.associateBy { it.tableName.uppercase() }
 
     return object : InternalDatabaseMetaData by targetDatabase {
       override val databaseType get() = connectorInfo.databaseType
@@ -61,9 +69,13 @@ class ExportSQLConnector(
 
       override val schemaPrefix get() = if (schema.isNotBlank()) "$schema." else ""
 
-      override val tables get() = tableMetaData
+      override val tables get() = tables
 
       override fun getTable(tableName: String) = tableMetaDataMap[tableName.uppercase()]
+
+      override val views get() = views
+
+      override fun getView(tableName: String) = viewMetaDataMap[tableName.uppercase()]
     }
   }
 

@@ -7,4 +7,4 @@ package io.github.guttenbase.meta
  *
  * @author M. Dahm
  */
-interface InternalViewMetaData : ViewMetaData
+interface InternalViewMetaData : ViewMetaData, InternalDatabaseEntityMetaData

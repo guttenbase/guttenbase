@@ -11,7 +11,6 @@ import java.sql.JDBCType
  *
  * &copy; 2012-2044 akquinet tech@spree
  *
- *
  * @author M. Dahm
  */
 interface DatabaseMetaData : java.io.Serializable, MetaData {

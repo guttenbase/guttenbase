@@ -7,10 +7,8 @@ package io.github.guttenbase.meta
  *
  * @author M. Dahm
  */
-internal interface InternalTableMetaData : TableMetaData {
-  override var database: DatabaseMetaData
+internal interface InternalTableMetaData : TableMetaData, InternalDatabaseEntityMetaData {
   override var filteredRowCount: Int
-  override var totalRowCount: Int
   override var maxId: Long
   override var minId: Long
 

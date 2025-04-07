@@ -4,6 +4,7 @@ import io.github.guttenbase.meta.DatabaseMetaData
 import io.github.guttenbase.meta.InternalViewMetaData
 import io.github.guttenbase.meta.ViewMetaData
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.util.*
 
 /**
@@ -15,6 +16,7 @@ import java.util.*
  */
 @Serializable
 class ViewMetaDataImpl(
+  @Transient
   override var database: DatabaseMetaData = DB_FOR_SERIALIZATION,
   override val tableName: String,
   override val tableType: String,

@@ -22,6 +22,7 @@ interface ColumnMetaData : Comparable<ColumnMetaData>, java.io.Serializable, Met
   val columnTypeName: String
   val columnClassName: String
 
+  val container: DatabaseEntityMetaData
   /**
    * @return containing table
    */
