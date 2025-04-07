@@ -38,12 +38,12 @@ class DatabaseMetaDataExporterToolTest : AbstractGuttenBaseTest() {
   }
 
   @Test
-  fun `Export & Import Database MetaData`() {
+  fun `Export & Import Database meta data`() {
     setup()
 
+    test(H2DB, "H2 JDBC Driver")
     test(HSQLDB, "HSQL Database Engine Driver")
     test(DERBYDB, "Apache Derby Embedded JDBC Driver")
-    test(H2DB, "H2 JDBC Driver")
   }
 
   private fun test(connectorId: String, expectedDriverName: String) {

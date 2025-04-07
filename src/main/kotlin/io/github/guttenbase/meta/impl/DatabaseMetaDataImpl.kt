@@ -7,6 +7,7 @@ import io.github.guttenbase.serialization.UUIDSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.sql.JDBCType
@@ -21,7 +22,6 @@ import java.util.*
  */
 @Serializable
 class DatabaseMetaDataImpl(
-  @kotlinx.serialization.Transient
   @Transient
   override var connectorRepository: ConnectorRepository = REPO_FOR_SERIALIZATION,
   override var connectorId: String,

@@ -227,7 +227,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.4.2</version>
 
                     <executions>
                         <execution>
@@ -241,7 +241,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>3.3.1</version>
 
                     <executions>
                         <execution>
@@ -258,7 +258,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.2.5</version>
+                    <version>3.5.2</version>
 
                     <configuration>
                         <reuseForks>false</reuseForks>
@@ -403,6 +403,7 @@
                 <arch>amd64</arch>
             </properties>
         </profile>
+
         <profile>
             <id>linux-amd64</id>
             <activation>

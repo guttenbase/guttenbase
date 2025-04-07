@@ -49,28 +49,36 @@ class DatabaseMetaDataExporterTool(
     ): DatabaseMetaData {
       stream.use {
         val databaseMetaData = JSON.decodeFromStream<DatabaseMetaData>(it) as InternalDatabaseMetaData // UTF-8 by default
-        val columnMap = HashMap<UUID, ColumnMetaData>()
+        val tableColumnMap = HashMap<UUID, ColumnMetaData>()
 
         databaseMetaData.connectorRepository = connectorRepository
         databaseMetaData.connectorId = connectorId
 
         // Pass 1: Make sure all columns are updated
-        databaseMetaData.tables.plus(databaseMetaData.views).forEach { table ->
-          (table as InternalDatabaseEntityMetaData).database = databaseMetaData
+        databaseMetaData.tables.forEach {
+          (it as InternalTableMetaData).database = databaseMetaData
 
-          table.columns.forEach { column ->
-            updateColumn(column as InternalColumnMetaData, table)
-            columnMap[column.syntheticId] = column
+          it.columns.forEach { column ->
+            updateColumn(column as InternalColumnMetaData, it)
+            tableColumnMap[column.syntheticId] = column
+          }
+        }
+
+        databaseMetaData.views.forEach {
+          (it as InternalViewMetaData).database = databaseMetaData
+
+          it.columns.forEach { column ->
+            updateColumn(column as InternalColumnMetaData, it)
           }
         }
 
         // Pass 2: Now we safely may replace column references in indexes and foreign keys
         databaseMetaData.tables.forEach { table ->
-          table.indexes.forEach { index -> updateIndex(index as InternalIndexMetaData, table, columnMap) }
+          table.indexes.forEach { index -> updateIndex(index as InternalIndexMetaData, table, tableColumnMap) }
 
-          table.exportedForeignKeys.forEach { fk -> updateForeignKey(fk as InternalForeignKeyMetaData, table, columnMap) }
+          table.exportedForeignKeys.forEach { fk -> updateForeignKey(fk as InternalForeignKeyMetaData, table, tableColumnMap) }
 
-          table.importedForeignKeys.forEach { fk -> updateForeignKey(fk as InternalForeignKeyMetaData, table, columnMap) }
+          table.importedForeignKeys.forEach { fk -> updateForeignKey(fk as InternalForeignKeyMetaData, table, tableColumnMap) }
         }
 
         return databaseMetaData
