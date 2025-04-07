@@ -10,6 +10,7 @@ import io.github.guttenbase.hints.HSQLDB
 import io.github.guttenbase.meta.BooleanValue
 import io.github.guttenbase.meta.IntValue
 import io.github.guttenbase.meta.StringValue
+import io.github.guttenbase.meta.databaseType
 import io.github.guttenbase.meta.impl.ValueType
 import io.github.guttenbase.serialization.JSON
 import io.github.guttenbase.tools.DatabaseMetaDataExporterTool
@@ -50,17 +51,41 @@ class DatabaseMetaDataExporterToolTest : AbstractGuttenBaseTest() {
 
     DatabaseMetaDataExporterTool(connectorRepository, connectorId).export(file)
 
-    val metaData1 = connectorRepository.getDatabase(connectorId)
-    val metaData2 = importDataBaseMetaData(file, connectorId, connectorRepository)
+    val originalMetaData = connectorRepository.getDatabase(connectorId)
+    val importedMetaData = importDataBaseMetaData(file, connectorId, connectorRepository)
 
-    assertThat(metaData2.metaData.driverName).isEqualTo(metaData1.metaData.driverName)
+    assertThat(importedMetaData.metaData.driverName).isEqualTo(originalMetaData.metaData.driverName)
       .isEqualTo(expectedDriverName)
-    assertThat(metaData2.supportedTypes).isEqualTo(metaData1.supportedTypes)
-    assertThat(metaData2.tables).isEqualTo(metaData1.tables)
+    assertThat(importedMetaData.supportedTypes).isEqualTo(originalMetaData.supportedTypes)
+    assertThat(importedMetaData.tables).isEqualTo(originalMetaData.tables)
 
-    metaData2.getTable("FOO_COMPANY")!!.exportedForeignKeys.forEach { fk ->
+    importedMetaData.tables.forEach {
+      assertThat(it.database).isSameAs(importedMetaData)
+
+      val originalTable = originalMetaData.getTable(it.tableName)!!
+      assertThat(it).isEqualTo(originalTable)
+
+      it.columns.forEach { column ->
+        assertThat(column.container).isSameAs(it)
+        assertThat(column.databaseType).isSameAs(originalMetaData.databaseType)
+      }
+    }
+
+    importedMetaData.views.forEach {
+      assertThat(it.database).isSameAs(importedMetaData)
+
+      val originalView = originalMetaData.getView(it.tableName)!!
+      assertThat(it).isEqualTo(originalView)
+
+      it.columns.forEach { column ->
+        assertThat(column.container).isSameAs(it)
+        assertThat(column.databaseType).isSameAs(originalMetaData.databaseType)
+      }
+    }
+
+    importedMetaData.getTable("FOO_COMPANY")!!.exportedForeignKeys.forEach { fk ->
       val referencedTable2 = fk.referencedTable
-      val referencedTable1 = metaData1.getTable(referencedTable2.tableName)!!
+      val referencedTable1 = originalMetaData.getTable(referencedTable2.tableName)!!
       val referencingTable2 = fk.referencingTable
       val referencedColumn = fk.referencedColumns[0]
       val referencingColumn = fk.referencingColumns[0]
@@ -71,9 +96,9 @@ class DatabaseMetaDataExporterToolTest : AbstractGuttenBaseTest() {
       assertThat(referencingColumn).isSameAs(referencingTable2.getColumn(referencingColumn.columnName))
       assertThat(referencingColumn).isNotEqualTo(referencedColumn)
 
-      assertThat(referencingColumn.table).isEqualTo(metaData1.getTable(referencingColumn.table.tableName))
+      assertThat(referencingColumn.table).isEqualTo(originalMetaData.getTable(referencingColumn.table.tableName))
       assertThat(referencingColumn).isEqualTo(
-        metaData1.getTable(referencingColumn.table.tableName)!!.getColumn(referencingColumn.columnName)
+        originalMetaData.getTable(referencingColumn.table.tableName)!!.getColumn(referencingColumn.columnName)
       )
     }
   }
