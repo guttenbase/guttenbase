@@ -33,7 +33,7 @@ To start using framework guttenbase in a Maven project, just add the following d
 <dependency>
     <groupId>io.github.guttenbase</groupId>
     <artifactId>guttenbase</artifactId>
-    <version>4.1.4</version>
+    <version>4.2.0</version>
 </dependency>
 ```
 
