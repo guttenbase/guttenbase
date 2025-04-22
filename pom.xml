@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <groupId>io.github.guttenbase</groupId>
     <artifactId>guttenbase</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.2.1-SNAPSHOT</version>
 
     <modelVersion>4.0.0</modelVersion>
     <url>https://github.com/guttenbase/guttenbase</url>
