@@ -41,11 +41,12 @@ In many cases, that's it!
 
 # Core features
 
-- Dump a database into a ZIP/JAR file, transfer the file somewhere else via SSH/FTP/... and extract it locally
+- Dump a complete database into DDL and data SQL files, transfer the files somewhere else via SSH/FTP/... and run locally against target DB
 - GuttenBase supports many data base systems to automatically map different column types
 - Transform columns and tables during the migration
     - renaming columns
     - changing the column type
+    - map autoincrement columns
     - split columns into multiple columns
     - ...
 - Transform data during the migration
