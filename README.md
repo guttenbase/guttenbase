@@ -72,7 +72,7 @@ Add the following dependencies to your pom.xml file to get started using **gutte
 <dependency>
     <groupId>io.github.guttenbase</groupId>
     <artifactId>guttenbase</artifactId>
-    <version>4.2.0</version>
+    <version>4.2.2</version>
 </dependency>
 ```
 
