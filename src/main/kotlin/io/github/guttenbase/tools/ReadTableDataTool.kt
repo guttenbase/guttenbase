@@ -16,7 +16,7 @@ import java.util.*
  * Read data from given table and put into a List of maps where each map contains the columns and values of a single line from
  * the table.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

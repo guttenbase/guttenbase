@@ -10,7 +10,7 @@ import java.sql.SQLException
 /**
  * Map BLOB object to String using given charset. Use in conjunction with [io.github.guttenbase.defaults.impl.DefaultColumnDataMapperProvider]
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

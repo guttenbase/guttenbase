@@ -17,7 +17,7 @@ import kotlin.math.max
 /**
  * Get database meta data from connection: tables, views, columns, etc.
  *
- * (C) 2012-2045 by akquinet tech@spree
+ * (C) 2012-2045 by tech@spree
  *
  * @author M. Dahm
  */

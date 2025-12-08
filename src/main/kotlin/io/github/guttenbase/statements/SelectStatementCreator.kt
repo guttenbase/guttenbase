@@ -9,7 +9,7 @@ import java.sql.Types
 /**
  * Create SELECT statement for copying data.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */
@@ -18,11 +18,11 @@ class SelectStatementCreator(connectorRepository: ConnectorRepository, connector
   /**
    * Retrieve data in some deterministic order
    */
-  override fun createOrderBy(table: DatabaseEntityMetaData): String {
-    val columns = table.columns.filter { it.columnType.comparable() }
+  override fun createOrderBy(metaData: DatabaseEntityMetaData): String {
+    val columns = metaData.columns.filter { it.columnType.comparable() }
       .sortedWith(DefaultColumnComparator).map {
-        val rawColumnName = columnMapper.mapColumnName(it, table)
-        table.databaseType.escapeDatabaseEntity(rawColumnName)
+        val rawColumnName = columnMapper.mapColumnName(it, metaData)
+        metaData.databaseType.escapeDatabaseEntity(rawColumnName)
       }
 
     return if (columns.isEmpty()) "" else "ORDER BY " + columns.joinToString()

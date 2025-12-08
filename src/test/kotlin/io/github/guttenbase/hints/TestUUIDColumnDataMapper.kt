@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.guttenbase.hints
 
 import io.github.guttenbase.mapping.ColumnDataMapper
@@ -8,7 +10,7 @@ import java.util.*
 /**
  * Convert long ID to UUID
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

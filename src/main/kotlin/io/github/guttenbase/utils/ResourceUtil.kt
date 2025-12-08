@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.guttenbase.utils
 
 import io.github.guttenbase.utils.Util.isWindows
@@ -6,7 +8,7 @@ import java.io.IOException
 import java.net.URLDecoder
 
 /**
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

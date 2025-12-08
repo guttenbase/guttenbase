@@ -7,7 +7,7 @@ import io.github.guttenbase.mapping.PreparedStatementPlaceholderFactory
  * But there are situation that require special handling, e.g. the PostgreSQL JDBC driver does not allow to set the
  * value of a BIT column directly. Instead you have to usee an explicit cast in your statement, like `CAST(? AS BIT)`.
  *
- * &copy; 2025-2044 akquinet tech@spree
+ * &copy; 2025-2044 tech@spree
  *
  * @author M. Dahm
  */

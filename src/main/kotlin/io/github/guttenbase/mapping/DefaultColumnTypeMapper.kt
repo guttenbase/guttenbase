@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
  *
  * Users may add custom [ColumnTypeDefinitionResolver]s in special cases that need to be resolved manually.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   private val resolvers = mutableListOf<ColumnTypeDefinitionResolver>(
@@ -37,18 +37,19 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   )
 
   override fun lookupColumnTypeDefinition(
-    sourceColumn: ColumnMetaData, targetDatabase: DatabaseMetaData
+		column: ColumnMetaData, targetDatabase: DatabaseMetaData
   ): ColumnTypeDefinition {
-    val initialColumnTypeDefinition = ProprietaryColumnTypeDefinitionFactory.createColumnDefinition(sourceColumn, targetDatabase)
+    val initialColumnTypeDefinition = ProprietaryColumnTypeDefinitionFactory.createColumnDefinition(column, targetDatabase)
 
     return resolvers.asSequence().map { it.resolve(initialColumnTypeDefinition) }.firstOrNull { it != null }
-      ?: throw IllegalStateException("No column definition found for $sourceColumn")
+      ?: throw IllegalStateException("No column definition found for $column")
   }
 
   /**
    * Add custom resolver which is preferred over existing resolvers, i.e. it will be called first
    */
-  fun addColumnTypeDefinitionResolver(resolver: ColumnTypeDefinitionResolver) {
+	@Suppress("unused")
+	fun addColumnTypeDefinitionResolver(resolver: ColumnTypeDefinitionResolver) {
     resolvers.add(0, resolver)
   }
 }

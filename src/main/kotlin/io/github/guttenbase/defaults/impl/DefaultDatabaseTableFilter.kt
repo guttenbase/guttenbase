@@ -13,7 +13,7 @@ const val VIEW_TYPE = "VIEW"
  * Regard which tables when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for tables. The methods refer to
  * the parameters passed to JDBC data base meta data methods such as [DatabaseMetaData.getTable]
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

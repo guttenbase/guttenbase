@@ -3,7 +3,7 @@ package io.github.guttenbase.schema.comparison
 import java.util.logging.Level
 
 /**
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

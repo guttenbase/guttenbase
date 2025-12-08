@@ -8,7 +8,7 @@ import io.github.guttenbase.tools.EntityTableChecker
  *
  *
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * Hint is used by [io.github.guttenbase.tools.AbstractSequenceUpdateTool] to look for entity classes, i.e. classes that may use an ID sequence
  *

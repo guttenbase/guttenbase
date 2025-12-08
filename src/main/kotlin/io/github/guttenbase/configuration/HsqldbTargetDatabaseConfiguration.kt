@@ -8,7 +8,7 @@ import java.sql.Connection
 /**
  * Implementation for HSQLDB data base.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

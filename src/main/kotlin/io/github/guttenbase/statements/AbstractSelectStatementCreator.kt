@@ -16,7 +16,7 @@ import kotlin.math.min
 /**
  * Create SELECT statement for copying data.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */
@@ -41,8 +41,8 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
     }
   }
 
-  override fun createWhereClause(tableMetaData: DatabaseEntityMetaData) =
-    connectorRepository.hint<SelectWhereClause>(targetConnectorId).getWhereClause(tableMetaData)
+  override fun createWhereClause(metaData: DatabaseEntityMetaData) =
+    connectorRepository.hint<SelectWhereClause>(targetConnectorId).getWhereClause(metaData)
 
   /**
    * Create SELECT statement in the target table to retrieve data from the mapped columns. I.e., since the target table
@@ -70,7 +70,7 @@ abstract class AbstractSelectStatementCreator(connectorRepository: ConnectorRepo
   /**
    * Retrieve data in some deterministic order
    */
-  protected open fun createOrderBy(tableMetaData: DatabaseEntityMetaData) = ""
+  protected open fun createOrderBy(metaData: DatabaseEntityMetaData) = ""
 
   private fun createSQL(tableName: String, tableMetaData: DatabaseEntityMetaData, columns: List<ColumnMetaData>) =
     "SELECT " + createColumnClause(columns) +

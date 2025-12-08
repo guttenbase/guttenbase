@@ -5,7 +5,7 @@ import io.github.guttenbase.meta.DatabaseSupportedColumnType
 /**
  * Abstract super class combining common cod for supported type lookup
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 abstract class AbstractSupportedTypeResolver : ColumnTypeDefinitionResolver {
   override fun resolve(type: ColumnTypeDefinition): ColumnTypeDefinition? {

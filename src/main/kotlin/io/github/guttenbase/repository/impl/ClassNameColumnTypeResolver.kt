@@ -8,7 +8,7 @@ import io.github.guttenbase.meta.ColumnType.Companion.isSupportedColumnType
 /**
  * Try to resolve by JDBC class name.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

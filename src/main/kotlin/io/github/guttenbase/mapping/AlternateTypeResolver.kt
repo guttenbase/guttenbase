@@ -5,7 +5,7 @@ import java.sql.JDBCType.*
 /**
  * Try to resolve types by mapping types to alternate "standard" types and looking up those in the target database.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object AlternateTypeResolver : ColumnTypeDefinitionResolver {

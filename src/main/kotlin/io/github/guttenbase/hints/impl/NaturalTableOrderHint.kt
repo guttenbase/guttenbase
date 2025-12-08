@@ -6,7 +6,7 @@ import io.github.guttenbase.mapping.TableOrderComparatorFactory
 /**
  * By default order by natural order of table names.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

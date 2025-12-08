@@ -9,7 +9,7 @@ import io.github.guttenbase.repository.hint
  * Determine order of tables during copying/comparison.
  *
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * Hint is used by [io.github.guttenbase.schema.comparison.SchemaComparatorTool] to determine table order
  * Hint is used by [io.github.guttenbase.tools.AbstractTableCopyTool] to determine table order

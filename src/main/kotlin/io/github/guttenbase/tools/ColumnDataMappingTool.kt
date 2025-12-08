@@ -15,7 +15,7 @@ import io.github.guttenbase.repository.impl.JDBCColumnTypeResolver
 /**
  * Try to find common type mapping applicable for source and target columns.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * Tool is used by [io.github.guttenbase.statements.InsertStatementFiller], et.al. in order to determine mappings between different columns
  *

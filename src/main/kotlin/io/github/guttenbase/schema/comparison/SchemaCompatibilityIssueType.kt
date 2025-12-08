@@ -5,7 +5,7 @@ import java.util.logging.Level
 /**
  * Type of compatibility issue
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  */
 enum class SchemaCompatibilityIssueType(val severity: Level) {

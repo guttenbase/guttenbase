@@ -8,7 +8,7 @@ import java.util.*
 /**
  * Utility mapper that allows to drop columns in target tables.
  *
- * &copy; 2013 akquinet tech@spree
+ * &copy; 2013 tech@spree
  *
  * @author M. Dahm
  */

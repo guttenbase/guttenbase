@@ -7,7 +7,7 @@ import io.github.guttenbase.repository.DatabaseIndexFilter
 /**
  * Filter indexes when @see [io.github.guttenbase.repository.impl.DatabaseMetaDataInspectorTool] is inquiring the database for columns
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

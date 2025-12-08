@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 /**
  * Read view data
  *
- * &copy; 2025-2044 akquinet tech@spree
+ * &copy; 2025-2044 tech@spree
  *
  * @author M. Dahm
  */

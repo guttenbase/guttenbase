@@ -18,7 +18,7 @@ val DEFAULT_TEMPLATE_SUPPLIER: TEMPLATE_SUPPLIER =
 /**
  * Connection info for exporting data to a (optionally compressed) file.
  *
- * &copy; 2024-2044 akquinet tech@spree
+ * &copy; 2024-2044 tech@spree
  *
  * @author M. Dahm
  */

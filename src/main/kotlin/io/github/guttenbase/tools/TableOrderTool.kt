@@ -12,7 +12,7 @@ private typealias TableNodes = LinkedHashMap<String, TableNode>
  *
  * If there are cycles in the dependencies, we choose the node with the fewest incoming/outgoing edges.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

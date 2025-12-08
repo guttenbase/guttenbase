@@ -15,7 +15,7 @@ import java.sql.Connection
  * Running ANALYZE after insertions is recommended: http://www.postgresql.org/docs/7.4/static/populate.html
  *
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

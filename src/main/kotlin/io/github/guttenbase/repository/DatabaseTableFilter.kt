@@ -8,7 +8,7 @@ import io.github.guttenbase.meta.DatabaseMetaData
  * the parameters passed to JDBC data base meta data methods such as
  * [DatabaseMetaData.getTable]
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

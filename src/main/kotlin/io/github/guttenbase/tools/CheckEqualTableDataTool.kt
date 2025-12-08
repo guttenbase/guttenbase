@@ -32,7 +32,7 @@ import kotlin.math.min
 /**
  * Check two schemas for equal data where the tool takes a configurable number of sample data from each table.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.NumberOfCheckedTableDataHint] How many rows of tables shall be regarded when checking that data has been

@@ -10,7 +10,7 @@ import io.github.guttenbase.repository.hint
  * Will execute given SQL scriptlet on all tables or single table of given connector. The table name can be referenced with @TABLE@
  * placeholder.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  * Hint is used by [io.github.guttenbase.hints.TableMapperHint]

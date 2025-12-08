@@ -7,7 +7,7 @@ import io.github.guttenbase.meta.DatabaseMetaData
 /**
  * Often data types of columns are not compatible: Allow user to define specific mappings.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 interface ColumnTypeMapper : ColumnTypeDefinitionFactory {
   /**

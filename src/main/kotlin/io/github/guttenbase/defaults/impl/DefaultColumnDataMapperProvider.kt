@@ -24,7 +24,7 @@ typealias CDM = Pair<DatabaseType?, ColumnDataMapper>
 /**
  * Default implementation. To add or override mappings you may call [addMapping]
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */
@@ -78,11 +78,11 @@ object DefaultColumnDataMapperProvider : ColumnDataMapperProvider {
    * {@inheritDoc}
    */
   override fun findMapping(
-    sourceColumn: ColumnMetaData, targetColumn: ColumnMetaData,
-    sourceColumnType: ColumnType, targetColumnType: ColumnType
+		sourceColumnMetaData: ColumnMetaData, targetColumnMetaData: ColumnMetaData,
+		sourceColumnType: ColumnType, targetColumnType: ColumnType
   ): ColumnDataMapper? = findMappings(sourceColumnType, targetColumnType).filter {
-    (it.first == null || it.first == targetColumn.databaseType) // Matching DB type
-        && it.second.isApplicable(sourceColumn, targetColumn)
+    (it.first == null || it.first == targetColumnMetaData.databaseType) // Matching DB type
+        && it.second.isApplicable(sourceColumnMetaData, targetColumnMetaData)
   }.map { it.second }.firstOrNull()
 
   /**
@@ -189,6 +189,7 @@ object TimestampToTimeColumnDataMapper : ColumnDataMapper {
     if (value is Timestamp) Time(value.time) else value
 }
 
+@Suppress("unused")
 object BigDecimalColumnDataMapper : ColumnDataMapper {
   override fun map(mapping: ColumnDataMapping, value: Any?) =
     if (value is BigDecimal)

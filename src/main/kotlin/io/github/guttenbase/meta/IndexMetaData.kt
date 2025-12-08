@@ -7,7 +7,7 @@ const val SYNTHETIC_INDEX_PREFIX = "IDX_"
 /**
  * Information about index in table.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

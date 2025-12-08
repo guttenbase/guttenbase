@@ -11,8 +11,7 @@ import java.sql.Clob
  * Since BLOBs may be quite big. we do not load them into memory completely, but
  * read them in chunks and write the data to the output stream in a loop.
  *
- * &copy; 2012-2044 akquinet tech@spree
- *
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */
@@ -21,7 +20,7 @@ class GBClob(private val inputStream: InputStream) : Clob {
 
   override fun length() = inputStream.available().toLong()
 
-  override fun getSubString(pos: Long, length: Int): String? {
+  override fun getSubString(pos: Long, length: Int): String {
     throw UnsupportedOperationException()
   }
 
@@ -45,11 +44,11 @@ class GBClob(private val inputStream: InputStream) : Clob {
     throw UnsupportedOperationException()
   }
 
-  override fun setAsciiStream(pos: Long): OutputStream? {
+  override fun setAsciiStream(pos: Long): OutputStream {
     throw UnsupportedOperationException()
   }
 
-  override fun setCharacterStream(pos: Long): Writer? {
+  override fun setCharacterStream(pos: Long): Writer {
     throw UnsupportedOperationException()
   }
 
@@ -61,5 +60,5 @@ class GBClob(private val inputStream: InputStream) : Clob {
     inputStream.close()
   }
 
-  override fun getCharacterStream(pos: Long, length: Long): Reader? = characterStream
+  override fun getCharacterStream(pos: Long, length: Long): Reader = characterStream
 }

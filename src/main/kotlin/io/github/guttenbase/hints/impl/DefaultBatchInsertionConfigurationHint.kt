@@ -9,7 +9,7 @@ import io.github.guttenbase.tools.BatchInsertionConfiguration
 /**
  * Default number of VALUES clauses is 2000, default number of data items is 30000.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

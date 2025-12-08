@@ -6,7 +6,7 @@ import io.github.guttenbase.connector.GuttenBaseException
 /**
  * Thrown when tables do not match.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

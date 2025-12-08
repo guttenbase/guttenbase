@@ -8,7 +8,7 @@ import io.github.guttenbase.tools.TableOrderTool
 /**
  * By default order by foreign key dependency, i.e. top-down from main tables to depending tables
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

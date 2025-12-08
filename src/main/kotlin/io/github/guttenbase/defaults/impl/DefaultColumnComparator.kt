@@ -6,7 +6,7 @@ import io.github.guttenbase.meta.ColumnMetaData
 /**
  * By default order by natural order of column names, but put primary key first if any
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

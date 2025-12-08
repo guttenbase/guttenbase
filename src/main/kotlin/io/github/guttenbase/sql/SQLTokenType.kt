@@ -3,7 +3,7 @@ package io.github.guttenbase.sql
 /**
  * Tokens for [SQLLexer].
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

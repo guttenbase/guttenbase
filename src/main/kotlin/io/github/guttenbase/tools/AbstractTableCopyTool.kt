@@ -14,7 +14,7 @@ import java.sql.Connection
 /**
  * Copy all tables from one connection to the other.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

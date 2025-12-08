@@ -12,7 +12,7 @@ import java.sql.JDBCType.*
  * Create (initial) column type definition for given column and database type.
  * Handle proprietary column types here by adding custom resolvers.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 object ProprietaryColumnTypeDefinitionFactory : ColumnTypeDefinitionFactory {
   private val resolvers = mutableListOf<ColumnTypeDefinitionFactory>(

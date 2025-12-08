@@ -13,7 +13,7 @@ typealias TO_STRING = (PrintWriter) -> Unit
 /**
  * Connection info for exporting data to a file.
  *
- * &copy; 2024-2044 akquinet tech@spree
+ * &copy; 2024-2044 tech@spree
  *
  * @author M. Dahm
  */

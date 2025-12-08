@@ -3,7 +3,7 @@ package io.github.guttenbase.sql
 /**
  * Primitive implementation of SQL parser in order to check validity of script.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */
@@ -92,7 +92,7 @@ class SQLLexer @JvmOverloads constructor(lines: List<String>, private val delimi
       SQLTokenType.WHITESPACE
     } else if (ch1 == '\''.code && ch2 == '\''.code) {
       SQLTokenType.ESCAPED_STRING_DELIMITER
-    } else if (ch1 == '\''.code && ch2 != '\''.code) {
+    } else if (ch1 == '\''.code) {
       if (withinString) {
         SQLTokenType.STRING_DELIMITER_END
       } else {

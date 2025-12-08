@@ -6,7 +6,7 @@ import java.sql.JDBCType.*
 /**
  * Try to resolve types using heuristic mappings of proprietary DB types
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object ProprietaryColumnTypeDefinitionResolver : ColumnTypeDefinitionResolver {

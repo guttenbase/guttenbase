@@ -10,7 +10,7 @@ import io.github.guttenbase.repository.hint
 /**
  * Determine order of columns in SELECT statement. This will of course also influence the ordering of the resulting INSERT statement.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * Hint is used by [io.github.guttenbase.statements.AbstractStatementCreator] to determine column order
  * Hint is used by [io.github.guttenbase.statements.InsertStatementFiller] to determine column order

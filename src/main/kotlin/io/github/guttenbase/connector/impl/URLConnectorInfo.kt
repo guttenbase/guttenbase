@@ -5,7 +5,7 @@ import io.github.guttenbase.connector.ConnectorInfo
 /**
  * Connector info via explicit URL and driver.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

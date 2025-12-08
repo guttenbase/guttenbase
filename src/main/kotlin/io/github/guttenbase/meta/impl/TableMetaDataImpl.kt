@@ -13,7 +13,7 @@ internal val TABLE_FOR_SERIALIZATION = TableMetaDataImpl(DB_FOR_SERIALIZATION, "
 /**
  * Information about a table.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

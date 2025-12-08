@@ -6,7 +6,7 @@ import java.sql.Connection
 /**
  * Connectors maintain informations about the data base and how open and close the SQL [Connection]s.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

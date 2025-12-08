@@ -11,7 +11,7 @@ import java.sql.Connection
  * @author M. Dahm
  * @see [http://stackoverflow.com/questions/421518/is-there-a-way-to-enable-disable-constraints-in-db2-v7](http://stackoverflow.com/questions/421518/is-there-a-way-to-enable-disable-constraints-in-db2-v7)
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  */
 open class Db2TargetDatabaseConfiguration(connectorRepository: ConnectorRepository) :

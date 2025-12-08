@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.RefreshTargetConnection
 /**
  * By default, the connection is never flushed.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

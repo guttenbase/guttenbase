@@ -7,7 +7,7 @@ import io.github.guttenbase.meta.TableMetaData
  * Sometimes the amount of data exceeds any buffer. In these cases we need to split the data by some given range, usually the primary key.
  * I.e., the data is read in chunks where these chunks are split using the ID column range of values.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

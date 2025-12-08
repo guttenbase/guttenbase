@@ -10,7 +10,7 @@ import java.sql.Connection
 /**
  * Compute MIN and MAX of given Id-Column
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

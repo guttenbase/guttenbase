@@ -17,7 +17,7 @@ fun interface ColumnTypeDefinitionResolver {
 /**
  * Definition of column type as used in target DB
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 data class ColumnTypeDefinition @JvmOverloads constructor(
   val sourceColumn: ColumnMetaData,

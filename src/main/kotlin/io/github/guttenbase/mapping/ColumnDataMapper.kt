@@ -6,7 +6,7 @@ import io.github.guttenbase.meta.ColumnMetaData
  * Map data contained in a column to some other type. I.e., the target column may have a different type and the
  * INSERT statement arguments thus require some conversion.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

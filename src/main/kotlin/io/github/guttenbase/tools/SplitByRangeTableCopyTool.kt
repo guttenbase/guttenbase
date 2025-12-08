@@ -20,7 +20,7 @@ import kotlin.math.min
  * copying may take much longer than the [DefaultTableCopyTool].
  *
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  */
 open class SplitByRangeTableCopyTool(

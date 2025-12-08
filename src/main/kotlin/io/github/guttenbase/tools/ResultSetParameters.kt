@@ -9,7 +9,7 @@ import io.github.guttenbase.meta.DatabaseEntityMetaData
  * stmt.setFetchSize(100);
 </pre> *
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

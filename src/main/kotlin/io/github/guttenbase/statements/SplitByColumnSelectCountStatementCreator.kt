@@ -14,7 +14,7 @@ import io.github.guttenbase.tools.SplitColumn
  *
  * With this statement we count the number of rows that actually will be read for the given chunk.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * Hint is used by [io.github.guttenbase.hints.SplitColumnHint]
  *
@@ -24,9 +24,9 @@ class SplitByColumnSelectCountStatementCreator(connectorRepository: ConnectorRep
   AbstractSelectStatementCreator(connectorRepository, connectorId) {
   override fun createColumnClause(columns: List<ColumnMetaData>) = "COUNT(*)"
 
-  override fun createWhereClause(table: DatabaseEntityMetaData): String {
-    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(table as TableMetaData)
+  override fun createWhereClause(metaData: DatabaseEntityMetaData): String {
+    val splitColumn = connectorRepository.hint<SplitColumn>(targetConnectorId).getSplitColumn(metaData as TableMetaData)
 
-    return "WHERE " + table.databaseType.escapeDatabaseEntity(splitColumn.columnName) + " BETWEEN ? AND ?"
+    return "WHERE " + metaData.databaseType.escapeDatabaseEntity(splitColumn.columnName) + " BETWEEN ? AND ?"
   }
 }

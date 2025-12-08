@@ -9,7 +9,7 @@ import io.github.guttenbase.tools.AbstractSequenceCreationTool
  * Create an autoincrement ID sequence for tables.
  *
  *
- * &copy; 2012-2020 akquinet tech@spree
+ * &copy; 2012-2020 tech@spree
  *
  * @author M. Dahm
  */

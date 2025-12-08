@@ -9,7 +9,7 @@ import java.sql.JDBCType
 /**
  * Information about data base such as schema name.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

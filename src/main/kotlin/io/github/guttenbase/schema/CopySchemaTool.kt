@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.ScriptExecutorTool.Companion.executeScriptWith
 /**
  * Create Custom DDL from existing schema and run it on target schema.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class CopySchemaTool(

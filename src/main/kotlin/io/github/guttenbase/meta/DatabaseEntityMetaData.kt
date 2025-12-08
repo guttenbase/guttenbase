@@ -1,9 +1,11 @@
+@file:Suppress("unused")
+
 package io.github.guttenbase.meta
 
 /**
  * Common data of views and tables.
  *
- * &copy; 2025-2044 akquinet tech@spree
+ * &copy; 2025-2044 tech@spree
  *
  * @author M. Dahm
  */

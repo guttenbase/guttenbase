@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
 /**
  * Produce lots of data by duplicating and altering existing entries. IDs have to be adapted of course.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

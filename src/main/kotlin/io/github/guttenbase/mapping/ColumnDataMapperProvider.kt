@@ -6,7 +6,7 @@ import io.github.guttenbase.meta.ColumnType
 /**
  * Used to find mappings for column data. E.g., when converting a number to a String or casting a LONG to a BIGINT.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

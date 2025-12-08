@@ -5,7 +5,7 @@ import io.github.guttenbase.repository.ConnectorRepository
 /**
  * Implementation for generic/yet unhandled data base.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

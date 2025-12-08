@@ -14,7 +14,7 @@ import java.sql.Connection
 /**
  * Connector for exporting DDL and data to a file.
  *
- * &copy; 2024-2044 akquinet tech@spree
+ * &copy; 2024-2044 tech@spree
  *
  * @author M. Dahm
  */
@@ -44,7 +44,7 @@ class ExportSQLConnector(
     val supplier = connectorInfo.databaseTemplateSupplier(connectorInfo.databaseType)
       ?: throw GuttenBaseException("Database template supplier resolves to null for ${connectorInfo.databaseType}")
 
-    val targetDatabase = importDataBaseMetaData(supplier, connectorId, connectorRepository)
+    val targetDatabase = importDataBaseMetaData(supplier, connectorId, connectorRepository) as InternalDatabaseMetaData
     val sourceDatabase = retrieveSourceDatabaseMetaData()
     val databaseMetaData = sourceDatabase.copy()
     val tables = databaseMetaData.tables
@@ -76,7 +76,7 @@ class ExportSQLConnector(
 
       override val views get() = views
 
-      override fun getView(tableName: String) = viewMetaDataMap[tableName.uppercase()]
+      override fun getView(viewName: String) = viewMetaDataMap[viewName.uppercase()]
     }
   }
 

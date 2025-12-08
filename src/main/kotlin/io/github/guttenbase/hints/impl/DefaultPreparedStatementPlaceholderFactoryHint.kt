@@ -9,7 +9,7 @@ import java.sql.JDBCType
 /**
  * By default return just plain '?', plus some special handling for PostgreSQL.
  *
- * &copy; 2025-2034 akquinet tech@spree
+ * &copy; 2025-2034 tech@spree
  *
  * @author M. Dahm
  */

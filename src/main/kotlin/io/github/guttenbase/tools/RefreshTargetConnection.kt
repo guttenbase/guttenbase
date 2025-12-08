@@ -9,7 +9,7 @@ import io.github.guttenbase.meta.TableMetaData
  * To avoid this the connection can be flushed, closed and re-established periodically using this hint.
  *
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

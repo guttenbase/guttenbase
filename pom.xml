@@ -34,7 +34,7 @@
         <hsqldb.version>2.7.1</hsqldb.version>
         <zonky.version>2.1.0</zonky.version>
         <h2.version>2.2.224</h2.version>
-        <derby.version>10.15.2.0</derby.version> <!-- Last known version for JDK 11-->
+        <derby.version>10.15.2.0</derby.version> <!-- Last known version supporting JDK 11-->
     </properties>
 
     <dependencies>
@@ -289,14 +289,14 @@
         <developer>
             <id>mdahm</id>
             <name>Markus Dahm</name>
-            <email>markus (dot) dahm (at) akquinet.de</email>
-            <organization>akquinet tech@spree</organization>
+            <email>markus (dot) dahm (at) spree.de</email>
+            <organization>tech@spree</organization>
         </developer>
     </developers>
 
     <organization>
-        <name>akquinet</name>
-        <url>https://www.akquinet.de</url>
+        <name>tech@spree</name>
+        <url>https://www.spree.de</url>
     </organization>
 
     <scm>

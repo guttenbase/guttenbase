@@ -3,7 +3,7 @@ package io.github.guttenbase.progress
 /**
  * Common interface.
  *
- * 2013-2034 akquinet tech@spree
+ * 2013-2034 tech@spree
  *
  * @author M. Dahm
  */

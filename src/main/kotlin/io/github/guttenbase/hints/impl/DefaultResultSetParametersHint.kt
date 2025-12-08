@@ -10,7 +10,7 @@ import java.sql.ResultSet
  * Default result set fetch size is 2000. Result set type is ResultSet.TYPE_FORWARD_ONLY,
  * and concurrency type is ResultSet.CONCUR_READ_ONLY.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

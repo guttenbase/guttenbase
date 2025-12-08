@@ -6,7 +6,7 @@ import io.github.guttenbase.meta.DatabaseMetaData
 /**
  * Default uses same data type as source
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class AbstractColumnTypeMapper : ColumnTypeMapper {

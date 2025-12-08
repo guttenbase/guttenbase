@@ -7,7 +7,7 @@ import io.github.guttenbase.meta.STANDARD_TYPES
  * Resolve column type definition by looking for the best matching supported type of the target DB
  * as declared in [java.sql.DatabaseMetaData#getTypeInfo]
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  */
 object DatabaseColumnTypeDefinitionResolver : AbstractSupportedTypeResolver() {
   override fun match(possibleTypes: List<DatabaseSupportedColumnType>, typeName: String): DatabaseSupportedColumnType? {

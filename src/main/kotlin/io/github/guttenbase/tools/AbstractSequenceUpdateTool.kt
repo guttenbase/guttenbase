@@ -10,7 +10,7 @@ import io.github.guttenbase.repository.hint
  *
  * By default the sequence is updated to SELECT(MAX(ID) + 1) FROM table
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  * Uses [io.github.guttenbase.hints.EntityTableCheckerHint] to look for entity classes, i.e. classes that may use an ID sequence

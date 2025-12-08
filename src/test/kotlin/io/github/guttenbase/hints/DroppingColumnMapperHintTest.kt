@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach
  * Test a schema migration where ID columns have been renamed. ID in table USER became USER_ID, ID in table COMPANY became
  * COMPANY_ID and so on.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

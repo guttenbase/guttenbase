@@ -5,7 +5,7 @@ import io.github.guttenbase.meta.DatabaseEntityMetaData
 /**
  * Optionally configure the SELECT statement created to read data from source tables with a WHERE clause.
  *
- * &copy; 2012-2020 akquinet tech@spree
+ * &copy; 2012-2020 tech@spree
  *
  * @author M. Dahm
  */

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test
 /**
  * Copy schema between databases
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

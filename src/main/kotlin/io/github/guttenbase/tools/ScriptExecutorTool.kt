@@ -17,7 +17,7 @@ import java.sql.*
  *
  * @author M. Dahm
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  */
 open class ScriptExecutorTool
@@ -232,7 +232,6 @@ constructor(
           )
 
           throw e
-          false
         }
 
         FailureMode.STOP -> {
@@ -262,7 +261,7 @@ constructor(
     fun retry(
       connectorId: String, scriptUpdatesSchema: Boolean = true, prepareTargetConnection: Boolean = true
     ): ExecutionResult {
-      var statements = failedStatements.map { "${it.first};" }
+      val statements = failedStatements.map { "${it.first};" }
 
       return scriptExecutorTool.executeScript(
         connectorId, scriptUpdatesSchema, prepareTargetConnection, statements

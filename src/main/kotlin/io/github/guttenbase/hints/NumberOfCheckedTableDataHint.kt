@@ -7,7 +7,7 @@ import io.github.guttenbase.tools.NumberOfCheckedTableData
  * [io.github.guttenbase.tools.CheckEqualTableDataTool] tool.
  *
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * Hint is used by [io.github.guttenbase.tools.CheckEqualTableDataTool] How many rows of tables shall be regarded when checking that data has been transferred correctly.
  *

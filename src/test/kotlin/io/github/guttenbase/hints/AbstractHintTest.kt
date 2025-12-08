@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.guttenbase.hints
 
 import io.github.guttenbase.AbstractGuttenBaseTest
@@ -15,7 +17,7 @@ import org.junit.jupiter.api.Test
 /**
  * Super class for Hint tests
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

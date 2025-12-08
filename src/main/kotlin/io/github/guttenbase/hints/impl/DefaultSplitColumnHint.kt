@@ -12,7 +12,7 @@ import io.github.guttenbase.tools.SplitColumn
  *
  * By default use the first primary key column, if any. Otherwise returns the first column.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

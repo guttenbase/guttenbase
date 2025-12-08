@@ -8,7 +8,7 @@ import java.sql.Connection
 /**
  * Abstract base implementation of data base configuration.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

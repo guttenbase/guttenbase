@@ -8,7 +8,7 @@ import java.sql.JDBCType.*
 /**
  * Information about a table column.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */
@@ -68,7 +68,7 @@ fun JDBCType.isBinaryType() = this in BINARY_TYPES
 fun JDBCType.isNumericType() = this in NUMERIC_TYPES
 fun JDBCType.isDateType() = this in DATE_TYPES
 fun JDBCType.isOtherType() = this in OTHER_TYPES
-fun Int.hasJDBCType(): Boolean = JDBCType.entries.any { it.vendorTypeNumber.toInt() == this.toInt() }
+fun Int.hasJDBCType(): Boolean = JDBCType.entries.any { it.vendorTypeNumber.toInt() == this }
 
 val STANDARD_TYPES = JDBCType.entries.map { it.name }.toSet()
 

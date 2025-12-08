@@ -6,7 +6,7 @@ import java.sql.Connection
 /**
  * Implementations may execute specific initialization code before and after operations are executed.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

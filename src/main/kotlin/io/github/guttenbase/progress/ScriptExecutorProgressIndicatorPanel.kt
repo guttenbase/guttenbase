@@ -6,7 +6,7 @@ import javax.swing.border.EtchedBorder
 import javax.swing.border.TitledBorder
 
 /**
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

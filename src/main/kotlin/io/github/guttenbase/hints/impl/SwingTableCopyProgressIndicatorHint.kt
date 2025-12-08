@@ -7,7 +7,7 @@ import io.github.guttenbase.progress.TableCopyProgressIndicator
 /**
  * Use UI to show progress.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */

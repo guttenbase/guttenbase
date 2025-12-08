@@ -8,7 +8,7 @@ import javax.sql.DataSource
 /**
  * Connector info via data source with optional user/password. To be used when running in an application server.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  *
  * @author M. Dahm

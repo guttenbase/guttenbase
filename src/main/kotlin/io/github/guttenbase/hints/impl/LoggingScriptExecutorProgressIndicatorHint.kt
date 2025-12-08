@@ -7,7 +7,7 @@ import io.github.guttenbase.progress.ScriptExecutorProgressIndicator
 /**
  * By default return fancy progress var implementation.
  *
- * &copy; 2012-2044 akquinet tech@spree
+ * &copy; 2012-2044 tech@spree
  *
  * @author M. Dahm
  */
