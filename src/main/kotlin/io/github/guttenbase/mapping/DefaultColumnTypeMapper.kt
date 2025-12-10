@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
  * &copy; 2012-2044 tech@spree
  */
 object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
-  private val resolvers = mutableListOf<ColumnTypeDefinitionResolver>(
+  private val resolvers = mutableListOf(
     // Pass 0: Use user-defined resolvers, if any, see below #addColumnTypeDefinitionResolver()
 
     // Pass 1: Use heuristic knowledge about the target database to find a matching column type

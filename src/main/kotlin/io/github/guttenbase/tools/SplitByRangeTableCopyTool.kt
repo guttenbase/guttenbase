@@ -32,7 +32,7 @@ open class SplitByRangeTableCopyTool(
    *
    * @throws SQLException
    */
-/*!50705 0x0000000001010000003C94579D8B525DC0E860472DDE0D4140*/  override fun copyTable(
+ override fun copyTable(
     sourceConnection: Connection,
     sourceDatabaseConfiguration: SourceDatabaseConfiguration,
     sourceTableMetaData: TableMetaData,
