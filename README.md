@@ -41,7 +41,7 @@ In many cases, that's it!
 
 # Core features
 
-- Dump a complete database into DDL and data SQL files, transfer the files somewhere else via SSH/FTP/... and run locally against target DB
+- Dump a complete database to DDL and data SQL files, transfer the files somewhere else via SSH/FTP/... and run them locally against the target DB
 - GuttenBase supports many data base systems to automatically map different column types
 - Transform columns and tables during the migration
     - renaming columns
