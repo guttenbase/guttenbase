@@ -24,7 +24,7 @@ import java.time.LocalTime
  *
  * @author M. Dahm
  */
-@Suppress("MemberVisibilityCanBePrivate", "unused", "RemoveRedundantQualifierName")
+@Suppress("MemberVisibilityCanBePrivate", "unused", "RemoveRedundantQualifierName", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 @Serializable
 enum class ColumnType(
   /**

@@ -1,6 +1,11 @@
 # Change log
 
-## 4.2.x
+## 4.2.3
+- Add missing tests
+- Cleanup packages
+- Upgrade dependencies
+
+## 4.2.2
 - Get rid of java.io.Serializable
 - Add views to database meta data
 
