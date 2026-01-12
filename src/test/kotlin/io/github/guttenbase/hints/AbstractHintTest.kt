@@ -2,7 +2,7 @@
 
 package io.github.guttenbase.hints
 
-import io.github.guttenbase.AbstractGuttenBaseTest
+import io.github.guttenbase.io.github.guttenbase.tools.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.hints.impl.LoggingScriptExecutorProgressIndicatorHint

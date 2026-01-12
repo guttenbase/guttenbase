@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach
  *
  * &copy; 2012-2044 tech@spree
  *
- *
  * @author M. Dahm
  */
 class ColumnMapperHintTest : AbstractHintTest("/ddl/tables-derby.sql", "/ddl/tables-id-columns-renamed.sql", "/data/test-data.sql") {

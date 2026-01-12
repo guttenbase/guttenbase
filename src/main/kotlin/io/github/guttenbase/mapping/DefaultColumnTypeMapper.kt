@@ -48,7 +48,6 @@ object DefaultColumnTypeMapper : AbstractColumnTypeMapper() {
   /**
    * Add custom resolver which is preferred over existing resolvers, i.e. it will be called first
    */
-	@Suppress("unused")
 	fun addColumnTypeDefinitionResolver(resolver: ColumnTypeDefinitionResolver) {
     resolvers.add(0, resolver)
   }

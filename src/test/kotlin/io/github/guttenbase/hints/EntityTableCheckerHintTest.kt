@@ -1,6 +1,6 @@
 package io.github.guttenbase.hints
 
-import io.github.guttenbase.AbstractGuttenBaseTest
+import io.github.guttenbase.io.github.guttenbase.tools.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestDerbyConnectionInfo
 import io.github.guttenbase.repository.hint
 import io.github.guttenbase.tools.EntityTableChecker

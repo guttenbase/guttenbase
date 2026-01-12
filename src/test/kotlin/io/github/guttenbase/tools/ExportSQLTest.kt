@@ -1,6 +1,5 @@
 package io.github.guttenbase.io.github.guttenbase.tools
 
-import io.github.guttenbase.AbstractGuttenBaseTest
 import io.github.guttenbase.configuration.TestHsqlConnectionInfo
 import io.github.guttenbase.export.plain.ExportSQLConnectorInfo
 import io.github.guttenbase.hints.SOURCE
