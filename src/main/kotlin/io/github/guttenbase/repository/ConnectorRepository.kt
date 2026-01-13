@@ -244,7 +244,7 @@ open class ConnectorRepository {
     })
     addConnectorHint(connectorId, DefaultBatchInsertionConfigurationHint)
     addConnectorHint(connectorId, DefaultResultSetParametersHint)
-    addConnectorHint(connectorId, DefaultNumberOfCheckedTableDataHint)
+    addConnectorHint(connectorId, DefaultCheckTableDataHint)
     addConnectorHint(connectorId, DefaultSplitColumnHint)
     addConnectorHint(connectorId, DefaultEntityTableCheckerHint)
     addConnectorHint(connectorId, DefaultColumnDataMapperProviderHint)

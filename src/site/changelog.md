@@ -1,5 +1,8 @@
 # Change log
 
+## 4.2.4
+- Extend and rename hint for CheckEqualTableDataTool to CheckTableDataHint
+
 ## 4.2.3
 - Add missing tests
 - Cleanup packages

@@ -1,11 +1,10 @@
 package io.github.guttenbase.hints
 
-import io.github.guttenbase.tools.NumberOfCheckedTableData
+import io.github.guttenbase.tools.CheckTableData
 
 /**
  * How many rows of the copied tables shall be regarded when checking that data has been transferred correctly with the
  * [io.github.guttenbase.tools.CheckEqualTableDataTool] tool.
- *
  *
  * &copy; 2012-2044 tech@spree
  *
@@ -13,7 +12,7 @@ import io.github.guttenbase.tools.NumberOfCheckedTableData
  *
  * @author M. Dahm
  */
-abstract class NumberOfCheckedTableDataHint : ConnectorHint<NumberOfCheckedTableData> {
-  override val connectorHintType: Class<NumberOfCheckedTableData>
-    get() = NumberOfCheckedTableData::class.java
+abstract class CheckTableDataHint : ConnectorHint<CheckTableData> {
+  override val connectorHintType: Class<CheckTableData>
+    get() = CheckTableData::class.java
 }
